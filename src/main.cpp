@@ -5,7 +5,7 @@
 #include <fstream>
 #include <istream>
 #include<fastenvelope/Predicates.hpp>
-#include <fastenvelope/Mesh.hpp>
+//#include <fastenvelope/Mesh.hpp>
 #include <fastenvelope/AABBWrapper.h>
 #include <fastenvelope/Predicates.hpp>
 #include <igl/Timer.h>
@@ -24,6 +24,7 @@
 
 using namespace floatTetWild;
 using namespace fastEnvelope;
+using namespace std;
 
 
 
