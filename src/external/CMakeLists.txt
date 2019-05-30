@@ -7,15 +7,10 @@ set(SOURCES
 	mesh_AABB.cpp
 
 
-	MshSaver.h
-	MshSaver.cpp
-	Exception.h
+	#Exception.h
 
 	triangle_triangle_intersection.cpp
 
-        getRSS.c
-        get_mem.h
-        get_mem.cpp
 )
 
 prepend_current_path(SOURCES)

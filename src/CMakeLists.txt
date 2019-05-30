@@ -7,8 +7,8 @@ set(SOURCES
         FastEnvelopeV2.h
         MeshIO.hpp
         MeshIO.cpp
-        intersections.h
-        intersections.cpp
+       # intersections.h
+      #  intersections.cpp
         Logger.hpp
 		Parameters.h
         Types.hpp

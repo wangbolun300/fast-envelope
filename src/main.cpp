@@ -5,15 +5,12 @@
 #include <fstream>
 #include <istream>
 #include<fastenvelope/Predicates.hpp>
-//#include <fastenvelope/Mesh.hpp>
 #include <fastenvelope/AABBWrapper.h>
-#include <fastenvelope/Predicates.hpp>
 #include <igl/Timer.h>
 #include <ctime>
 #include <cstdlib>
 #include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
-#include<fastenvelope/intersections.h>
 #include<fastenvelope/AABBWrapper.h>
 
 //#include <igl/opengl/glfw/Viewer.h>// include this file may cause error
@@ -30,19 +27,7 @@ using namespace std;
 
 
 
-void tri_tri_cutting_try() {
-	Vector3 p1, p2, p3, q1, q2, q3;
-	p1 = { 1,0,0 };
-	p2 = { 0,1,0 };
-	p3 = { 0,0,0 };
-	
-	q1 = { 0,0,0};
-	q2 = { 0,1,0 };
-	q3 = { -1,1,0};
 
-	int a = is_tri_tri_cutted(p1 , p2, p3, q1, q3, q2);
-	std::cout << "a " << a << std::endl;
-}
 void unordered_map_try() {
 	std::vector<int> a, b;
 	a.push_back(0);
