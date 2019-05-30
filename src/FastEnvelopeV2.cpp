@@ -300,7 +300,7 @@ namespace fastEnvelope {
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
 		if (inter == 0) {
-			return 2;//not intersected
+			return NOT_INTERSECTD;//not intersected
 		}
 		for (int i = 0; i < envprism.size(); i++) {
 			if (jump.size() > 0) {
@@ -324,13 +324,13 @@ namespace fastEnvelope {
 				}
 				if (j == 7) {
 
-					return 0;
+					return IN_PRISM;
 				}
 			}
 
 
 		}
-		return 1;
+		return OUT_PRISM;
 	}
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_Wang(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
@@ -508,16 +508,16 @@ namespace fastEnvelope {
 		}
 
 		if (!tri_tri_intersection_test_3d(&p_1[0], &q_1[0], &r_1[0], &p_2[0], &q_2[0], &r_2[0], &coplanar, &s[0], &t[0]))
-			return -1;
+			return CUT_EMPTY;
 
 		if (coplanar == 1) {
-			return 4;
+			return CUT_COPLANAR;
 		}
 
 		if (s[0] == t[0] && s[1] == t[1] && s[2] == t[2])
-			return -1;
+			return CUT_EMPTY;
 
-		return 3;
+		return CUT_FACE;
 	}
 	void FastEnvelope::Segment_facet_intersection(std::vector<std::array<Vector3, 2>>& seglist, const std::array<Vector3, 3>& facet, std::vector<Vector3>& interp, std::vector<int>& interseg)
 	{

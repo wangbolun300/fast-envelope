@@ -13,11 +13,6 @@
 #include <unordered_map>
 #include<fastenvelope/AABBWrapper.h>
 
-//#include <igl/opengl/glfw/Viewer.h>// include this file may cause error
-
-//#include <geogram/mesh/mesh.h>
-//#include <geogram/mesh/mesh_geometry.h>
-//#include <geogram/mesh/mesh_AABB.h>
 
 using namespace floatTetWild;
 using namespace fastEnvelope;

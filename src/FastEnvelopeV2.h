@@ -9,6 +9,15 @@ namespace fastEnvelope {
 	class FastEnvelope
 	{
 	public:
+		static const int ORI_POSITIVE = 1;
+		static const int ORI_ZERO = 0;
+		static const int ORI_NEGATIVE = -1;
+		static const int NOT_INTERSECTD = 2;
+		static const int OUT_PRISM = 1;
+		static const int IN_PRISM = 0;
+		static const int CUT_COPLANAR = 4;
+		static const int CUT_EMPTY = -1;
+		static const int CUT_FACE = 3;
 		
 		static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
