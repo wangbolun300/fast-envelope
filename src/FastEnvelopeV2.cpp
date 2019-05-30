@@ -397,7 +397,7 @@ namespace fastEnvelope {
 						fout5.open("D:\\vs\\float project\\data\\output_0522\\facet_index.txt");
 
 					}
-					if (recordnumber < 10000) {
+					if (markhf==1&&recordnumber < 10000) {
 						/*std::cout << "number " << recordnumber<< std::endl;
 						std::cout << "ori and ori1 " << ori << " " << ori1 << std::endl;*/
 						ori = orient3D_LPI(
@@ -1161,7 +1161,7 @@ namespace fastEnvelope {
 		double eps = 3.5376137154540446e-011 * max6 * max7 * max4 * max1 *
 			max6 * max7 * max4 * max3 * max3 * max8 * max5 * max2;
 		/////////////////////////////////
-		if (markhf == 0) {
+		if (markhf == 1) {
 			if (rcdn == 0) {
 				fout6.open("D:\\vs\\float project\\data\\output_0522\\eps_and_det.txt");
 			}

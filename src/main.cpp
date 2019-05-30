@@ -1192,7 +1192,7 @@ void add_hashing() {
 		if (pos1[i] - pos2[i] != 0) {
 			//if (pos1[i]== 0) {
 			rcd = rcd + 1;
-			std::cout << "envelope test different! different face NO. " << i << "the difference: " << pos1[i] - pos2[i] << std::endl;
+			std::cout << "envelope test different! different face NO. " << i << " the difference: " << pos1[i] - pos2[i] << std::endl;
 			//std::cout << "envelope test same! same face NO. " << i << "the in and out : " <<pos1[i] <<","<<pos2[i] << std::endl;
 		}
 		if (pos1[i] == 0) {
@@ -1465,12 +1465,12 @@ int main(int argc, char const *argv[])
 	//EnvelopeWithTree();
 	//comparison();
 	//unordered_map_try();
-	//add_hashing();
+	add_hashing();
 	//tri_tri_cutting_try();
 	//FastEnvelope::timerecord();
 	//calculation();
 	//test_ttt();
-	test_diff();
+	//test_diff();
 
 	std::cout << "done!" << std::endl;
 	
