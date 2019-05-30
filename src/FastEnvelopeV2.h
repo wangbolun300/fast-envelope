@@ -64,112 +64,36 @@ namespace fastEnvelope {
 	// - the floating point precision is insufficient to guarantee an exact answer
 	// - the input coordinates cause an under/overflow during the computation.
 
-		static inline int orient3D_LPI_Modified(const std::array<Vector3,2>& pq,
-			const std::array<Vector3, 3>& rst,
-			const std::array<Vector3, 3>& abc )
+		static	inline double det4x4(
+			double a11, double a12, double a13, double a14,
+			double a21, double a22, double a23, double a24,
+			double a31, double a32, double a33, double a34,
+			double a41, double a42, double a43, double a44)
 		{
-			::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-
-			Scalar a11, a12, a13, a21, a22, a23, a31, a32, a33;
-			Scalar px_rx, py_ry, pz_rz;
-			Scalar a2233, a2133, a2132;
-			Scalar d, n;
-			Scalar ix, iy, iz;
-			Scalar m12, m13, m14, m23, m24, m34;
-			Scalar m123, m124, m134, m234;
-			Scalar det4x4_return_value;
-
-			a11 = (pq[0][0] - pq[1][0]);
-			a12 = (pq[0][1] - pq[1][1]);
-			a13 = (pq[0][2] - pq[1][2]);
-			a21 = (rst[1][0] - rst[0][0]);
-			a22 = (rst[1][1] - rst[0][1]);
-			a23 = (rst[1][2] - rst[0][2]);
-			a31 = (rst[2][0] - rst[0][0]);
-			a32 = (rst[2][1] - rst[0][1]);
-			a33 = (rst[2][2] - rst[0][2]);
-			px_rx = pq[0][0] - rst[0][0];
-			py_ry = pq[0][1] - rst[0][1];
-			pz_rz = pq[0][2] - rst[0][2];
-			a2233 = ((a22 * a33) - (a23 * a32));
-			a2133 = ((a21 * a33) - (a23 * a31));
-			a2132 = ((a21 * a32) - (a22 * a31));
-			d = (((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
-			n = ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
-			ix = ((d * pq[0][0]) + (a11 * n));
-			iy = ((d * pq[0][1]) + (a12 * n));
-			iz = ((d * pq[0][2]) + (a13 * n));
-			m12 = (((d * abc[0][0]) * iy) - (ix * (d * abc[0][1])));
-			m13 = (((d * abc[1][0]) * iy) - (ix * (d * abc[1][1])));
-			m14 = (((d * abc[2][0]) * iy) - (ix * (d * abc[2][1])));
-			m23 = (((d * abc[1][0]) * (d * abc[0][1])) - ((d * abc[0][0]) * (d * abc[1][1])));
-			m24 = (((d * abc[2][0])) * (d * abc[0][1])) - ((d * abc[0][0]) * (d * abc[2][1]));
-			m34 = (((d * abc[2][0])) * (d * abc[1][1])) - ((d * abc[1][0]) * (d * abc[2][1]));
-			m123 = (((m23 * iz) - (m13 * (d * abc[0][2]))) + (m12 * (d * abc[1][2])));
-			m124 = (((m24 * iz) - (m14 * (d * abc[0][2]))) + (m12 * (d * abc[2][2])));
-			m134 = (((m34 * iz) - (m14 * (d * abc[1][2]))) + (m13 * (d * abc[2][2])));
-			m234 = (((m34 * (d * abc[0][2])) - (m24 * (d * abc[1][2]))) + (m23 * (d * abc[2][2])));
-			det4x4_return_value = (m234 - m134 + m124 - m123)*d;
-			if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return 0; // Fast reject in case of under/overflow
-
-
-			// Almost static filter
-			Scalar fa11 = fabs(a11);
-			Scalar fa21 = fabs(a21);
-			Scalar fa31 = fabs(a31);
-			Scalar fa12 = fabs(a12);
-			Scalar fa22 = fabs(a22);
-			Scalar fa32 = fabs(a32);
-			Scalar fa13 = fabs(a13);
-			Scalar fa23 = fabs(a23);
-			Scalar fa33 = fabs(a33);
-			Scalar fax = fabs(abc[0][0]);
-			Scalar fay = fabs(abc[0][1]);
-			Scalar faz = fabs(abc[0][2]);
-			Scalar fbx = fabs(abc[1][0]);
-			Scalar fby = fabs(abc[1][1]);
-			Scalar fbz = fabs(abc[1][2]);
-			Scalar fcx = fabs(abc[2][0]);
-			Scalar fcy = fabs(abc[2][1]);
-			Scalar fcz = fabs(abc[2][2]);
-			Scalar fpxrx = fabs(px_rx);
-			Scalar fpyry = fabs(py_ry);
-			Scalar fpzrz = fabs(pz_rz);
-
-			Scalar max1, max2, max3, max4, max5, max6, max7, max8;
-			max4 = fa11;
-			if (max4 < fa31) max4 = fa31;
-			if (max4 < fa21) max4 = fa21;
-			max5 = max4;
-			if (max5 < fpxrx)  max5 = fpxrx;
-			max1 = max5;
-			if (max1 < fbx) max1 = fbx;
-			if (max1 < fax) max1 = fax;
-			if (max1 < fcx) max1 = fcx;
-			max2 = fbz;
-			if (max2 < faz) max2 = faz;
-			if (max2 < fcz) max2 = fcz;
-			if (max2 < fa13) max2 = fa13;
-			max6 = fa12;
-			if (max6 < fa22) max6 = fa22;
-			if (max6 < fa32) max6 = fa32;
-			max3 = max6;
-			if (max3 < fay) max3 = fay;
-			if (max3 < fcy) max3 = fcy;
-			if (max3 < fby) max3 = fby;
-			if (max3 < fpyry) max3 = fpyry;
-			max7 = fa13;
-			if (max7 < fa23) max7 = fa23;
-			if (max7 < fa33) max7 = fa33;
-			max8 = max7;
-			if (max8 < fpzrz) max8 = fpzrz;
-
-			Scalar eps = 3.53761371545404460000e-011 * max6 * max7 * max4 * max1 * max6 * max7 * max4 * max3 * max3 * max8 * max5 * max2;
-			if ((det4x4_return_value > eps)) return -1;
-			else if ((det4x4_return_value < -eps)) return 1;
-			else return 0;
+			double m12 = ((a21 * a12) - (a11 * a22));
+			double m13 = ((a31 * a12) - (a11 * a32));
+			double m14 = ((a41 * a12) - (a11 * a42));
+			double m23 = ((a31 * a22) - (a21 * a32));
+			double m24 = ((a41 * a22) - (a21 * a42));
+			double m34 = ((a41 * a32) - (a31 * a42));
+			double m123 = (((m23 * a13) - (m13 * a23)) + (m12 * a33));
+			double m124 = (((m24 * a13) - (m14 * a23)) + (m12 * a43));
+			double m134 = (((m34 * a13) - (m14 * a33)) + (m13 * a43));
+			double m234 = (((m34 * a23) - (m24 * a33)) + (m23 * a43));
+			return ((((m234 * a14) - (m134 * a24)) + (m124 * a34)) - (m123 * a44));
 		}
 
+		static inline double det3x3(double a11, double a12, double a13, double a21, double a22, double a23, double a31, double a32, double a33) {
+			return (((a11 * ((a22 * a33) - (a23 * a32))) - (a12 * ((a21 * a33) - (a23 * a31)))) + (a13 * ((a21 * a32) - (a22 * a31))));
+		}
+
+		static inline double dot(double v1x, double v1y, double v1z, double v2x, double v2y, double v2z) { return (((v1x * v2x) + (v1y * v2y)) + (v1z * v2z)); }
+		static inline void cross(double a1, double a2, double a3, double b1, double b2, double b3, double c1, double c2, double c3) {
+			c1 = a2 * b3 - a3 * b2;
+			c2 = b1 * a3 - a1 * b3;
+			c3 = a1 * b2 - a2 * b1;
+		}
+		static inline double det2x2(double a1, double a2, double b1, double b2) { return ((a1 * b2) - (a2 * b1)); }
 
 		// Indirect 3D orientation predicate with floating point filter.
 		//
@@ -198,18 +122,46 @@ namespace fastEnvelope {
 			const double& a21, const double& a22, const double& a23,
 			const double& a31, const double& a32, const double& a33,
 			const double& px_rx, const double& py_ry, const double& pz_rz,
-			const double& d, const double& n)
+			const double& d, const double& n);
+
+		static inline int orient3D_LPI_Original(double px, double py, double pz,
+			double qx, double qy, double qz,
+			double rx, double ry, double rz,
+			double sx, double sy, double sz,
+			double tx, double ty, double tz,
+			double ax, double ay, double az,
+			double bx, double by, double bz,
+			double cx, double cy, double cz)
 		{
 			::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 
-			
+			double a11, a12, a13, a21, a22, a23, a31, a32, a33;
+			double px_rx, py_ry, pz_rz;
+			double a2233, a2133, a2132;
+			double d, n;
 			double dax, day, daz, dbx, dby, dbz, dcx, dcy, dcz;
 			double ix, iy, iz;
 			double m12, m13, m14, m23, m24, m34;
 			double m123, m124, m134, m234;
 			double det4x4_return_value;
 
-			
+			a11 = (px - qx);
+			a12 = (py - qy);
+			a13 = (pz - qz);
+			a21 = (sx - rx);
+			a22 = (sy - ry);
+			a23 = (sz - rz);
+			a31 = (tx - rx);
+			a32 = (ty - ry);
+			a33 = (tz - rz);
+			px_rx = px - rx;
+			py_ry = py - ry;
+			pz_rz = pz - rz;
+			a2233 = ((a22 * a33) - (a23 * a32));
+			a2133 = ((a21 * a33) - (a23 * a31));
+			a2132 = ((a21 * a32) - (a22 * a31));
+			d = (((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
+			n = ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
 			ix = ((d * px) + (a11 * n));
 			iy = ((d * py) + (a12 * n));
 			iz = ((d * pz) + (a13 * n));
@@ -290,150 +242,213 @@ namespace fastEnvelope {
 
 			double eps = 3.5376137154540446e-011 * max6 * max7 * max4 * max1 *
 				max6 * max7 * max4 * max3 * max3 * max8 * max5 * max2;
-			//if ((det4x4_return_value > eps)) return (d > 0) ? (1) : (-1);
-			//if ((det4x4_return_value < -eps)) return (d > 0) ? (-1) : (1);
-			if ((det4x4_return_value > 0)) return (d > 0) ? (1) : (-1);//changed
-			if ((det4x4_return_value < 0)) return (d > 0) ? (-1) : (1);//changed
+			if ((det4x4_return_value > eps)) return (d > 0) ? (1) : (-1);
+			if ((det4x4_return_value < -eps)) return (d > 0) ? (-1) : (1);
 			return 0;
 		}
 
-		static inline int orient3D_LPI_Original(double px, double py, double pz,
-				double qx, double qy, double qz,
-				double rx, double ry, double rz,
-				double sx, double sy, double sz,
-				double tx, double ty, double tz,
-				double ax, double ay, double az,
-				double bx, double by, double bz,
-				double cx, double cy, double cz)
-			{
-				::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
+		static bool is_3triangle_intersect(double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
+			double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
+			double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
+			double m11, double m12, double m13, double d) {
+			::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
+			double t2x = v2x, t2y = v2y, t2z = v2z, t3x = v3x, t3y = v3y, t3z = v3z;//still need these
+			double v4x = v1x - v3x;
+			double v4y = v1y - v3y;
+			double v4z = v1z - v3z;
+			v3x -= v2x;
+			v3y -= v2y;
+			v3z -= v2z;
+			v2x -= v1x;
+			v2y -= v1y;
+			v2z -= v1z;
+			double nvx = det2x2(v2y, v2z, v3y, v3z);//v3=v2v3, v2=v1v2;v4=v3v1
+			double nvy = det2x2(v3x, v3z, v2x, v2z);
+			double nvz = det2x2(v2x, v2y, v3x, v3y);
 
-				double a11, a12, a13, a21, a22, a23, a31, a32, a33;
-				double px_rx, py_ry, pz_rz;
-				double a2233, a2133, a2132;
-				double d, n;
-				double dax, day, daz, dbx, dby, dbz, dcx, dcy, dcz;
-				double ix, iy, iz;
-				double m12, m13, m14, m23, m24, m34;
-				double m123, m124, m134, m234;
-				double det4x4_return_value;
+			w3x -= w2x;
+			w3y -= w2y;
+			w3z -= w2z;
+			w2x -= w1x;
+			w2y -= w1y;
+			w2z -= w1z;
+			double nwx = det2x2(w2y, w2z, w3y, w3z);
+			double nwy = det2x2(w3x, w3z, w2x, w2z);
+			double nwz = det2x2(w2x, w2y, w3x, w3y);
 
-				a11 = (px - qx);
-				a12 = (py - qy);
-				a13 = (pz - qz);
-				a21 = (sx - rx);
-				a22 = (sy - ry);
-				a23 = (sz - rz);
-				a31 = (tx - rx);
-				a32 = (ty - ry);
-				a33 = (tz - rz);
-				px_rx = px - rx;
-				py_ry = py - ry;
-				pz_rz = pz - rz;
-				a2233 = ((a22 * a33) - (a23 * a32));
-				a2133 = ((a21 * a33) - (a23 * a31));
-				a2132 = ((a21 * a32) - (a22 * a31));
-				d = (((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
-				n = ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
-				ix = ((d * px) + (a11 * n));
-				iy = ((d * py) + (a12 * n));
-				iz = ((d * pz) + (a13 * n));
-				dax = d * ax;
-				day = d * ay;
-				daz = d * az;
-				dbx = d * bx;
-				dby = d * by;
-				dbz = d * bz;
-				dcx = d * cx;
-				dcy = d * cy;
-				dcz = d * cz;
-				m12 = ((dax * iy) - (ix * day));
-				m13 = ((dbx * iy) - (ix * dby));
-				m14 = ((dcx * iy) - (ix * dcy));
-				m23 = ((dbx * day) - (dax * dby));
-				m24 = ((dcx * day) - (dax * dcy));
-				m34 = ((dcx * dby) - (dbx * dcy));
-				m123 = (((m23 * iz) - (m13 * daz)) + (m12 * dbz));
-				m124 = (((m24 * iz) - (m14 * daz)) + (m12 * dcz));
-				m134 = (((m34 * iz) - (m14 * dbz)) + (m13 * dcz));
-				m234 = (((m34 * daz) - (m24 * dbz)) + (m23 * dcz));
-				det4x4_return_value = (m234 - m134 + m124 - m123);
-				if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
-					return 0; // Fast reject in case of under/overflow
+			u3x -= u2x;
+			u3y -= u2y;
+			u3z -= u2z;
+			u2x -= u1x;
+			u2y -= u1y;
+			u2z -= u1z;
+			double nux = det2x2(u2y, u2z, u3y, u3z);
+			double nuy = det2x2(u3x, u3z, u2x, u2z);
+			double nuz = det2x2(u2x, u2y, u3x, u3y);
 
-
-						 // Almost static filter
-				double fa11 = fabs(a11);
-				double fa21 = fabs(a21);
-				double fa31 = fabs(a31);
-				double fa12 = fabs(a12);
-				double fa22 = fabs(a22);
-				double fa32 = fabs(a32);
-				double fa13 = fabs(a13);
-				double fa23 = fabs(a23);
-				double fa33 = fabs(a33);
-				double fax = fabs(ax);
-				double fay = fabs(ay);
-				double faz = fabs(az);
-				double fbx = fabs(bx);
-				double fby = fabs(by);
-				double fbz = fabs(bz);
-				double fcx = fabs(cx);
-				double fcy = fabs(cy);
-				double fcz = fabs(cz);
-				double fpxrx = fabs(px_rx);
-				double fpyry = fabs(py_ry);
-				double fpzrz = fabs(pz_rz);
-
-				double max1, max2, max3, max4, max5, max6, max7, max8;
-				max4 = fa11;
-				if (max4 < fa31) max4 = fa31;
-				if (max4 < fa21) max4 = fa21;
-				max5 = max4;
-				if (max5 < fpxrx)  max5 = fpxrx;
-				max1 = max5;
-				if (max1 < fbx) max1 = fbx;
-				if (max1 < fax) max1 = fax;
-				if (max1 < fcx) max1 = fcx;
-				max2 = fbz;
-				if (max2 < faz) max2 = faz;
-				if (max2 < fcz) max2 = fcz;
-				if (max2 < fa13) max2 = fa13;
-				max6 = fa12;
-				if (max6 < fa22) max6 = fa22;
-				if (max6 < fa32) max6 = fa32;
-				max3 = max6;
-				if (max3 < fay) max3 = fay;
-				if (max3 < fcy) max3 = fcy;
-				if (max3 < fby) max3 = fby;
-				if (max3 < fpyry) max3 = fpyry;
-				max7 = fa13;
-				if (max7 < fa23) max7 = fa23;
-				if (max7 < fa33) max7 = fa33;
-				max8 = max7;
-				if (max8 < fpzrz) max8 = fpzrz;
-
-				double eps = 3.5376137154540446e-011 * max6 * max7 * max4 * max1 *
-					max6 * max7 * max4 * max3 * max3 * max8 * max5 * max2;
-				if ((det4x4_return_value > eps)) return (d > 0) ? (1) : (-1);
-				if ((det4x4_return_value < -eps)) return (d > 0) ? (-1) : (1);
+			d = det3x3(nvx, nvy, nvz, nwx, nwy, nwz, nux, nuy, nuz);
+			if (d < SCALAR_ZERO_3) {// if not intersected
 				return 0;
 			}
-			// template<typename T>
-			// static T determinant(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &mat)
-			// {
-			// 	assert(mat.rows() == mat.cols());
+			double enlarge = abs(nvx);
+			//enlarge=enlarge<fabs(nvy)?
+			double dot1 = dot(nvx, nvy, nvz, v1x, v1y, v1z);
+			double dot2 = dot(nwx, nwy, nwz, w1x, w1y, w1z);
+			double dot3 = dot(nux, nuy, nuz, u1x, u1y, u1z);//B
 
-			// 	if (mat.rows() == 1)
-			// 		return mat(0);
-			// 	else if (mat.rows() == 2)
-			// 		return mat(0, 0) * mat(1, 1) - mat(0, 1) * mat(1, 0);
-			// 	else if (mat.rows() == 3)
-			// 		return mat(0, 0)*(mat(1, 1)*mat(2, 2) - mat(1, 2)*mat(2, 1)) - mat(0, 1)*(mat(1, 0)*mat(2, 2) - mat(1, 2)*mat(2, 0)) + mat(0, 2)*(mat(1, 0)*mat(2, 1) - mat(1, 1)*mat(2, 0));
+			m11 = det3x3(dot1, nvy, nvz, dot2, nwy, nwz, dot3, nuy, nuz);
+			m12 = det3x3(nvx, dot1, nvz, nwx, dot2, nwz, nux, dot3, nuz);
+			m13 = det3x3(nvx, nvy, dot1, nwx, nwy, dot2, nux, nuy, dot3);
 
-			// 	assert(false);
-			// 	return T(0);
-			// }
+			////////////////////////////////////////////////////////////////
+			// this part is to predicate if the point is in the interior of triangle v
+			double  f11, f12, f13, f21, f22, f23, f31, f32, f33,
+				at1x = nvx * v1x + nvy * v1y + nvz * v1z,
+				at1y = nwx * v1x + nwy * v1y + nwz * v1z,
+				at1z = nux * v1x + nuy * v1y + nuz * v1z,
+
+				at2x = nvx * t2x + nvy * t2y + nvz * t2z,
+				at2y = nwx * t2x + nwy * t2y + nwz * t2z,
+				at2z = nux * t2x + nuy * t2y + nuz * t2z,
+
+				at3x = nvx * t3x + nvy * t3y + nvz * t3z,
+				at3y = nwx * t3x + nwy * t3y + nwz * t3z,
+				at3z = nux * t3x + nuy * t3y + nuz * t3z;
+
+			cross(dot1 - at1x, dot2 - at1y, dot3 - at1z, at2x - at1x, at2y - at1y, at2z - at1z, f11, f12, f13);
+			cross(dot1 - at2x, dot2 - at2y, dot3 - at2z, at3x - at2x, at3y - at2y, at3z - at2z, f21, f22, f23);
+			cross(dot1 - at3x, dot2 - at3y, dot3 - at3z, at1x - at3x, at1y - at3y, at1z - at3z, f31, f32, f33);
+			double mark1 = dot(f11, f12, f13, f21, f22, f23), mark2 = dot(f11, f12, f13, f31, f32, f33);
+			///////////////////////////////////////////////////
+			if (mark1 > 0 && mark2 > 0) {
+				return 1;
+			}
+			return 0;
+		}
+
+
+
+		static inline int orient3D_TPI(
+			double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
+			double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
+			double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
+			double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z,
+			double m11, double m12, double m13, double d)
+		{
+
+
+			// If the same intersection point must be tested against several planes,
+			// code up to here can be extracted and computed only once.
+
+			double det = det4x4(
+				m11, m12, m13, 1,
+				d*q1x, d*q1y, d*q1z, 1,
+				d*q2x, d*q2y, d*q2z, 1,
+				d*q3x, d*q3y, d*q3z, 1
+			);
+			if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return 0; // Fast reject in case of under/overflow
+
+			// Almost static filter
+
+			double fv1x = fabs(v1x);
+			double fv1y = fabs(v1y);
+			double fv1z = fabs(v1z);
+			double fv2x = fabs(v2x);
+			double fv2y = fabs(v2y);
+			double fv2z = fabs(v2z);
+			double fv3x = fabs(v3x);
+			double fv3y = fabs(v3y);
+			double fv3z = fabs(v3z);
+
+			double fw2x = fabs(w2x);
+			double fw2y = fabs(w2y);
+			double fw2z = fabs(w2z);
+			double fw3x = fabs(w3x);
+			double fw3y = fabs(w3y);
+			double fw3z = fabs(w3z);
+
+			double fu1x = fabs(u1x);
+			double fu1y = fabs(u1y);
+			double fu1z = fabs(u1z);
+			double fu2x = fabs(u2x);
+			double fu2y = fabs(u2y);
+			double fu2z = fabs(u2z);
+			double fu3x = fabs(u3x);
+			double fu3y = fabs(u3y);
+			double fu3z = fabs(u3z);
+
+			double fq1x = fabs(q1x);
+			double fq1y = fabs(q1y);
+			double fq1z = fabs(q1z);
+			double fq2x = fabs(q2x);
+			double fq2y = fabs(q2y);
+			double fq2z = fabs(q2z);
+			double fq3x = fabs(q3x);
+			double fq3y = fabs(q3y);
+			double fq3z = fabs(q3z);
+
+			double max1, max2, max3, max4, max5, max6, max7, max8, max9, max10, max11, max12, max13, max14;
+
+			max10 = fq3z;
+			if (max10 < fq1z) max10 = fq1z;
+			if (max10 < fq2z) max10 = fq2z;
+			max1 = max10;
+			max4 = fu3z;
+			if (max4 < fu2z) max4 = fu2z;
+			if (max4 < fw2z) max4 = fw2z;
+			if (max4 < fw3z) max4 = fw3z;
+			if (max1 < max4) max1 = max4;
+			max11 = fu3y;
+			if (max11 < fw2y) max11 = fw2y;
+			if (max11 < fw3y) max11 = fw3y;
+			if (max11 < fu2y) max11 = fu2y;
+			max2 = max11;
+			max14 = fv2z;
+			if (max14 < fw2z) max14 = fw2z;
+			if (max14 < fv3z) max14 = fv3z;
+			if (max14 < fw3z) max14 = fw3z;
+			if (max2 < max14) max2 = max14;
+			max13 = fw2y;
+			if (max13 < fw3y) max13 = fw3y;
+			if (max13 < fv2y) max13 = fv2y;
+			if (max13 < fv3y) max13 = fv3y;
+			if (max2 < max13) max2 = max13;
+			max3 = max14;
+			if (max3 < max4) max3 = max4;
+			if (max2 < max3) max2 = max3;
+			if (max2 < max4) max2 = max4;
+			max12 = fw2x;
+			if (max12 < fw3x) max12 = fw3x;
+			if (max12 < fv3x) max12 = fv3x;
+			if (max12 < fv2x) max12 = fv2x;
+			max5 = max12;
+			if (max5 < fq1x) max5 = fq1x;
+			if (max5 < fq2x) max5 = fq2x;
+			if (max5 < fq3x) max5 = fq3x;
+			max6 = max11;
+			if (max6 < max12) max6 = max12;
+			if (max6 < max13) max6 = max13;
+			max8 = fu3x;
+			if (max8 < fw2x) max8 = fw2x;
+			if (max8 < fw3x) max8 = fw3x;
+			if (max8 < fu2x) max8 = fu2x;
+			if (max6 < max8) max6 = max8;
+			max7 = max12;
+			if (max7 < max8) max7 = max8;
+			if (max6 < max7) max6 = max7;
+			max9 = max11;
+			if (max9 < max13) max9 = max13;
+			if (max9 < fq1y) max9 = fq1y;
+			if (max9 < fq2y) max9 = fq2y;
+			if (max9 < fq3y) max9 = fq3y;
+
+			double eps = 4.5906364908640589e-008 * max13 * max14 * max12 * max4 * max8 * max11 * max5 * max13 * max14 * max12 * max4 * max8 * max11 * max9 * max9 * max3 * max7 * max1 * max6 * max2 * max10;
+
+			if (det > eps) return (d > 0) ? (1) : (-1);
+			if (det < -eps) return (d > 0) ? (-1) : (1);
+
+			return 0;
+		}
 
 
 	

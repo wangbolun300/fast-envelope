@@ -1323,7 +1323,130 @@ void test_ttt() {
 	int ori = FastEnvelope::orient_3triangles(A, AT, ATA, B, facet3);
 	std::cout << ori << std::endl;
 }
+void test_diff() {
+	Vector3 fl1;
+	std::vector<std::array<Vector3, 2>>seg;
+	std::vector<Vector3> segun, triangleun, facetun;
+	std::vector<Vector2i> segin;
+	std::ifstream infile;
+	Vector2i a;
+	infile.open("D:\\vs\\float project\\data\\output_0522\\segpoints.txt");
 
+	if (!infile.is_open())
+
+		cout << "Open file failure" << endl;
+	int k = 0;
+	while (!infile.eof())
+
+	{
+
+		infile >> fl1[0] >> fl1[1] >> fl1[2];
+
+		segun.push_back(fl1);
+	}
+	infile.close();
+	std::cout << segun.size() << std::endl;
+	std::cout << segun[2001] << std::endl;
+	//std::cout << segun.size() << std::endl;
+
+	/*infile.open("D:\\vs\\float project\\data\\output_0522\\segindex.txt");
+	if (!infile.is_open())
+		cout << "Open file failure" << endl;
+	k = 0;
+	while (!infile.eof())
+
+	{
+		std::cout << k << std::endl;
+		infile >> a[0] >> a[1];
+
+		segin.push_back(a);
+		k = k + 1;
+	}
+	infile.close();
+	std::cout <<"segin size "<< segin.size() << std::endl;*/
+
+	/*for (int i = 0; i < 1002; i++) {
+		std::cout << i << " st\n " << segin[i] << std::endl;
+	}*/
+
+	infile.open("D:\\vs\\float project\\data\\output_0522\\triangle_points.txt");
+
+	if (!infile.is_open())
+
+		cout << "Open file failure" << endl;
+	while (!infile.eof())
+
+	{
+
+		infile >> fl1[0] >> fl1[1] >> fl1[2];
+
+		triangleun.push_back(fl1);
+	}
+	infile.close();
+	cout << triangleun.size() << endl;
+
+
+
+	infile.open("D:\\vs\\float project\\data\\output_0522\\facet_points.txt");
+
+	if (!infile.is_open())
+
+		cout << "Open file failure" << endl;
+	while (!infile.eof())
+
+	{
+
+		infile >> fl1[0] >> fl1[1] >> fl1[2];
+
+		facetun.push_back(fl1);
+	}
+	infile.close();
+	cout << facetun.size() << endl;
+
+	int num = segun.size() / 2;
+	cout << num << endl;
+	/////////////////////////////////////////////////////////////////////////////
+
+	std::vector<std::array<Vector3, 2>> seglist;
+	std::vector<std::array<Vector3, 3>> triangle, facet;
+	for (int i = 0; i < num; i++) {
+		seglist.push_back({ {segun[2 * i],segun[2 * i + 1]} });
+		triangle.push_back({ {triangleun[3 * i],triangleun[3 * i + 1],triangleun[3 * i + 2]} });
+		facet.push_back({ {facetun[3 * i],facetun[3 * i + 1],facetun[3 * i + 2]} });
+	}
+	cout << seglist.size() << " " << triangle.size() << " " << facet.size() << endl;
+	//////////////////////////////////////////////////////////////////////////////////
+	Scalar a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n;
+	for (int i = 0; i < num; i++) {
+		bool inter = FastEnvelope::is_seg_facet_intersection(seglist[i][0][0], seglist[i][0][1], seglist[i][0][2],
+			seglist[i][1][0], seglist[i][1][1], seglist[i][1][2],
+			triangle[i][0][0], triangle[i][0][1], triangle[i][0][2],
+			triangle[i][1][0], triangle[i][1][1], triangle[i][1][2],
+			triangle[i][2][0], triangle[i][2][1], triangle[i][2][2],
+			a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
+		if (inter == 0) {
+			std::cout << "wrong in intersection" << endl;
+		}
+		int ori = FastEnvelope::orient3D_LPI(
+			seglist[i][0][0], seglist[i][0][1], seglist[i][0][2],
+			facet[i][0][0], facet[i][0][1], facet[i][0][2],
+			facet[i][1][0], facet[i][1][1], facet[i][1][2],
+			facet[i][2][0], facet[i][2][1], facet[i][2][2],
+			a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
+		Vector3 point = seglist[i][0] + (n / d)*(seglist[i][0] - seglist[i][1]);
+		int ori1 = -1 * Predicates::orient_3d(facet[i][0], facet[i][1], facet[i][2], point);
+		if (ori == ori1) {
+			std::cout << "out put ori wrong" << std::endl;
+		}
+		//std::cout << ori<<" "<<ori1 << endl;
+
+	}
+
+
+
+
+
+}
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
@@ -1342,13 +1465,15 @@ int main(int argc, char const *argv[])
 	//EnvelopeWithTree();
 	//comparison();
 	//unordered_map_try();
-	add_hashing();
+	//add_hashing();
 	//tri_tri_cutting_try();
 	//FastEnvelope::timerecord();
 	//calculation();
 	//test_ttt();
-	int x;
-	std::cout<<"done!"<<std::endl;
-	std::cin >> x;
+	test_diff();
+
+	std::cout << "done!" << std::endl;
+	
+
 	return 0;
 }
