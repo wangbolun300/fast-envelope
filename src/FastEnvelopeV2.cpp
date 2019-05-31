@@ -180,7 +180,7 @@ namespace fastEnvelope {
 			return 1;
 		}
 		std::vector<int> jump;
-		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
+		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle TODO didnt initialized
 		bool out;
 		int inter, inter1, record1, record2, tti;//triangle-triangle intersection
 		jump.clear();
@@ -194,10 +194,10 @@ namespace fastEnvelope {
 			for (int j = 0; j < 8; j++) {
 				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 					tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
-					if (tti == 4) {
+					if (tti == CUT_COPLANAR) {
 						break;
 					}
-					if (tti == -1) {
+					if (tti == CUT_EMPTY) {
 						continue;
 					}
 
@@ -212,8 +212,6 @@ namespace fastEnvelope {
 
 						
 						if (inter == 1) {
-							/*std::cout << "!!!!!!!!!!!!!!!!!out 2, and which edge "<<k << std::endl;
-							std::cout << "ijc " << i<<" "<<j<<" "<<c << std::endl;*/
 							return 1;
 						}
 						record1 = record1 + inter;
@@ -228,10 +226,10 @@ namespace fastEnvelope {
 						for (int f = inter_ijk_list[e][2]; f < p_triangle[inter_ijk_list[e][1]].size(); f++) {
 							tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2],
 								envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]);
-							if (tti == 4) {
+							if (tti == CUT_COPLANAR) {
 								break;
 							}
-							if (tti == -1) {
+							if (tti == CUT_EMPTY) {
 								continue;
 							}
 							jump.clear();
@@ -246,7 +244,7 @@ namespace fastEnvelope {
 							}
 						}
 					}
-					inter_ijk_list.emplace_back(Vector3i(i, j, c));
+					inter_ijk_list.emplace_back(Vector3i(i, j, c));//TODO what if this triangle is in the same facet with the list triangle. redundant
 					break;
 				}//each triangle of the facet
 			}
@@ -421,7 +419,7 @@ namespace fastEnvelope {
 
 
 
-	int FastEnvelope::tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,
+	int FastEnvelope::tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,//TODO we want the connect edge case
 		const Vector3& q1, const Vector3& q2, const Vector3& q3) {
 		std::array<Scalar, 3> p_1 = { {0, 0, 0} }, q_1 = { {0, 0, 0} }, r_1 = { {0, 0, 0} };
 		std::array<Scalar, 3> p_2 = { {0, 0, 0} }, q_2 = { {0, 0, 0} }, r_2 = { {0, 0, 0} };
@@ -581,43 +579,37 @@ namespace fastEnvelope {
 		const double& d, const double& n)
 	{
 		::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-
-
-		double dax, day, daz, dbx, dby, dbz, dcx, dcy, dcz;
-		double ix, iy, iz;
-		double m12, m13, m14, m23, m24, m34;
-		double m123, m124, m134, m234;
+	
 		double det4x4_return_value;
 
 
-		ix = ((d * px) + (a11 * n));
-		iy = ((d * py) + (a12 * n));
-		iz = ((d * pz) + (a13 * n));
-		dax = d * ax;
-		day = d * ay;
-		daz = d * az;
-		dbx = d * bx;
-		dby = d * by;
-		dbz = d * bz;
-		dcx = d * cx;
-		dcy = d * cy;
-		dcz = d * cz;
-		m12 = ((dax * iy) - (ix * day));
-		m13 = ((dbx * iy) - (ix * dby));
-		m14 = ((dcx * iy) - (ix * dcy));
-		m23 = ((dbx * day) - (dax * dby));
-		m24 = ((dcx * day) - (dax * dcy));
-		m34 = ((dcx * dby) - (dbx * dcy));
-		m123 = (((m23 * iz) - (m13 * daz)) + (m12 * dbz));
-		m124 = (((m24 * iz) - (m14 * daz)) + (m12 * dcz));
-		m134 = (((m34 * iz) - (m14 * dbz)) + (m13 * dcz));
-		m234 = (((m34 * daz) - (m24 * dbz)) + (m23 * dcz));
-		det4x4_return_value = (m234 - m134 + m124 - m123);
-		if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
-			return 0; // Fast reject in case of under/overflow
+		double px_cx = px - cx;
+		double py_cy = py - cy;
+		double pz_cz = pz - cz;
+
+		double d11 = (d * px_cx) + (a11 * n);
+		double d21 = (ax - cx);
+		double d31 = (bx - cx);
+		double d12 = (d * py_cy) + (a12 * n);
+		double d22 = (ay - cy);
+		double d32 = (by - cy);
+		double d13 = (d * pz_cz) + (a13 * n);
+		double d23 = (az - cz);
+		double d33 = (bz - cz);
+
+		double d2233 = d22 * d33;
+		double d2332 = d23 * d32;
+		double d2133 = d21 * d33;
+		double d2331 = d23 * d31;
+		double d2132 = d21 * d32;
+		double d2231 = d22 * d31;
+
+		det4x4_return_value = d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231);
+
+		if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return 0; // Fast reject in case of under/overflow
 
 
-				 // Almost static filter
+		// Almost static filter
 		double fa11 = fabs(a11);
 		double fa21 = fabs(a21);
 		double fa31 = fabs(a31);
@@ -627,52 +619,58 @@ namespace fastEnvelope {
 		double fa13 = fabs(a13);
 		double fa23 = fabs(a23);
 		double fa33 = fabs(a33);
-		double fax = fabs(ax);
-		double fay = fabs(ay);
-		double faz = fabs(az);
-		double fbx = fabs(bx);
-		double fby = fabs(by);
-		double fbz = fabs(bz);
-		double fcx = fabs(cx);
-		double fcy = fabs(cy);
-		double fcz = fabs(cz);
 		double fpxrx = fabs(px_rx);
 		double fpyry = fabs(py_ry);
 		double fpzrz = fabs(pz_rz);
+		double fd11 = fabs(d11);
+		double fd21 = fabs(d21);
+		double fd31 = fabs(d31);
+		double fd12 = fabs(d12);
+		double fd22 = fabs(d22);
+		double fd32 = fabs(d32);
+		double fd13 = fabs(d13);
+		double fd23 = fabs(d23);
+		double fd33 = fabs(d33);
+		double fpxcx = fabs(px_cx);
+		double fpycy = fabs(py_cy);
+		double fpzcz = fabs(pz_cz);
 
-		double max1, max2, max3, max4, max5, max6, max7, max8;
-		max4 = fa11;
-		if (max4 < fa31) max4 = fa31;
-		if (max4 < fa21) max4 = fa21;
-		max5 = max4;
-		if (max5 < fpxrx)  max5 = fpxrx;
-		max1 = max5;
-		if (max1 < fbx) max1 = fbx;
-		if (max1 < fax) max1 = fax;
-		if (max1 < fcx) max1 = fcx;
-		max2 = fbz;
-		if (max2 < faz) max2 = faz;
-		if (max2 < fcz) max2 = fcz;
-		if (max2 < fa13) max2 = fa13;
-		max6 = fa12;
-		if (max6 < fa22) max6 = fa22;
-		if (max6 < fa32) max6 = fa32;
-		max3 = max6;
-		if (max3 < fay) max3 = fay;
-		if (max3 < fcy) max3 = fcy;
-		if (max3 < fby) max3 = fby;
-		if (max3 < fpyry) max3 = fpyry;
-		max7 = fa13;
-		if (max7 < fa23) max7 = fa23;
-		if (max7 < fa33) max7 = fa33;
-		max8 = max7;
-		if (max8 < fpzrz) max8 = fpzrz;
+		double max1, max2, max3, max4, max5, max6;
 
-		double eps = 3.5376137154540446e-011 * max6 * max7 * max4 * max1 *
-			max6 * max7 * max4 * max3 * max3 * max8 * max5 * max2;	
+		max1 = fa23;
+		if (max1 < fa13) max1 = fa13;
+		if (max1 < fpzrz) max1 = fpzrz;
+		if (max1 < fa33) max1 = fa33;
+
+		max2 = fa12;
+		if (max2 < fa22) max2 = fa22;
+		if (max2 < fa32) max2 = fa32;
+		if (max2 < fpyry) max2 = fpyry;
+
+		max3 = fa12;
+		if (max3 < fd32) max3 = fd32;
+		if (max3 < fd22) max3 = fd22;
+		if (max3 < fpycy) max3 = fpycy;
+
+		max4 = fa13;
+		if (max4 < fpzcz) max4 = fpzcz;
+		if (max4 < fd33) max4 = fd33;
+		if (max4 < fd23) max4 = fd23;
+
+		max5 = fa11;
+		if (max5 < fa21) max5 = fa21;
+		if (max5 < fa31) max5 = fa31;
+		if (max5 < fpxrx) max5 = fpxrx;
+
+		max6 = fa11;
+		if (max6 < fd21) max6 = fd21;
+		if (max6 < fd31) max6 = fd31;
+		if (max6 < fpxcx) max6 = fpxcx;
+
+		double eps = 1.3865993466947057e-013 * max2 * max1 * max5 * max6 * max3 * max4;
+
 		if ((det4x4_return_value > eps)) return (d > 0) ? (1) : (-1);
 		if ((det4x4_return_value < -eps)) return (d > 0) ? (-1) : (1);
-
 		return 0;
 	}
 	

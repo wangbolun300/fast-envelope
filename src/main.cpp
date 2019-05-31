@@ -1005,6 +1005,7 @@ void test_ttt() {
 	int ori = FastEnvelope::orient_3triangles(A, AT, ATA, B, facet3);
 	std::cout << ori << std::endl;
 }
+/*
 void test_diff() {
 	Vector3 fl1;
 	std::vector<std::array<Vector3, 2>>seg;
@@ -1049,7 +1050,7 @@ void test_diff() {
 
 	/*for (int i = 0; i < 1002; i++) {
 		std::cout << i << " st\n " << segin[i] << std::endl;
-	}*/
+	}
 
 	infile.open("D:\\vs\\float project\\data\\output_0522\\triangle_points.txt");
 
@@ -1129,6 +1130,8 @@ void test_diff() {
 
 
 }
+*/
+
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
