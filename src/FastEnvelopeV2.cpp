@@ -6,7 +6,8 @@
 #include <igl/Timer.h>
 //#include<fastenvelope/intersections.h>
 
-
+int markhf = 0;
+int recordnumber = 0;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 		{
@@ -322,6 +323,25 @@ namespace fastEnvelope {
 					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
 					a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
 				
+				/////////////////////////////////////////
+				ori1 = -1 * Predicates::orient_3d(envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]], segpoint0 + (segpoint0 - segpoint1)*n / d);//because n is -n
+				if (ori != ori1) {
+					markhf = 0;
+					if (recordnumber < 1000) {
+						std::cout << "number " << recordnumber << std::endl;
+
+						std::cout << "ori and ori1 " << ori << " " << ori1 << std::endl;
+						ori = orient3D_LPI(
+							segpoint0[0], segpoint0[1], segpoint0[2],
+							envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
+							envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
+							envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
+							a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
+						recordnumber++;
+					}
+					markhf = 0;
+				}
+				///////////////////////////////////////////
 				if (ori == 1 || ori == 0) {
 					break;
 				}
