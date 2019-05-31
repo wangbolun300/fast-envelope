@@ -35,6 +35,7 @@ extern "C++" int tri_tri_intersection_test_3d(fastEnvelope::Scalar p1[3], fastEn
 
 namespace fastEnvelope {
 	using namespace std;
+	/*
 	bool FastEnvelope::FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
 		
@@ -95,7 +96,11 @@ namespace fastEnvelope {
 
 		return 0;
 	}
+	*/
 
+	/*
+	
+	
 	bool FastEnvelope::FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
 
@@ -167,7 +172,7 @@ namespace fastEnvelope {
 
 		return 0;
 	}
-	
+	*/
 	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
 
@@ -332,83 +337,7 @@ namespace fastEnvelope {
 		}
 		return OUT_PRISM;
 	}
-	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_Wang(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
-		Scalar d, n;
-		int jm = 0, ori;
-		bool inter = is_seg_facet_intersection_Wang(segpoint0, segpoint1, triangle, d, n);
-		if (inter == false) {
-			return 2;//not intersected
-		}
-		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
-			}
-
-			for (int j = 0; j < 8; j++) {
-				ori = Orient_LPI_Wang(segpoint0, segpoint1, d, n, { {envprism[i][p_face[j][0]],envprism[i][p_face[j][1]],envprism[i][p_face[j][2]]} });
-				//ori = -1*Predicates::orient_3d(envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]], segpoint0 + (segpoint1 - segpoint0)*n / d);
-				if (ori == 1 || ori == 0) {
-					/*if (i == 32) {
-						std::cout << "which facet is out,j " << j << std::endl;
-						std::cout << "the point is " << segpoint0 + (segpoint1 - segpoint0)*n / d << std::endl;
-						std::cout << "t is " << n / d << std::endl;
-						std::cout << "in old way, ori is " << -1 * Predicates::orient_3d(envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]], segpoint0 + (segpoint1 - segpoint0)*n / d) << std::endl;
-
-					}*/
-
-					break;
-				}
-				if (j == 7) {
-					//std::cout << "which prism include this point: " << i  << std::endl;
-					//ftime3 = ftime3 + ftimer3.getElapsedTimeInSec();
-					return 0;
-				}
-			}
-
-
-		}
-		return 1;
-	}
-	bool FastEnvelope::is_seg_facet_intersection_Wang(const Vector3& seg0, const Vector3& seg1, const std::array<Vector3, 3>& triangle, Scalar& d, Scalar&n) {
-		Eigen::Matrix<Scalar, 3, 3> dm, nm;
-		dm << (seg0 - seg1).transpose(),
-			(triangle[1] - triangle[0]).transpose(),
-			(triangle[2] - triangle[0]).transpose();
-		nm << (seg0 - triangle[0]).transpose(),
-			(triangle[1] - triangle[0]).transpose(),
-			(triangle[2] - triangle[0]).transpose();
-		d = dm.determinant();
-		n = nm.determinant();
-		if (fabs(d) < SCALAR_ZERO_3) {
-			return 0;
-		}
-		Scalar t = n / d;
-		if (t >= 0 && t <= 1) {
-			return 1;
-		}
-		return 0;
-	}
-	int FastEnvelope::Orient_LPI_Wang(const Vector3& seg0, const Vector3& seg1, Scalar& d, Scalar&n, const std::array<Vector3, 3>& facet) {
-		Eigen::Matrix<Scalar, 4, 4> M;
-		M << (d*d*seg0 + n * d*(seg1 - seg0)).transpose(), 1,
-			d*d*facet[0].transpose(), 1,
-			d*d*facet[1].transpose(), 1,
-			d*d*facet[2].transpose(), 1;
-		//std::cout << M << std::endl;
-		Scalar mv = M.determinant();
-		if (mv > 0) {
-			return 1;
-		}
-		if (mv < 0) {
-			return -1;
-		}
-
-		return 0;
-	}
+	
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		Eigen::Matrix<Scalar, 3, 3> A, AT, ATA, A1;
@@ -519,49 +448,6 @@ namespace fastEnvelope {
 
 		return CUT_FACE;
 	}
-	void FastEnvelope::Segment_facet_intersection(std::vector<std::array<Vector3, 2>>& seglist, const std::array<Vector3, 3>& facet, std::vector<Vector3>& interp, std::vector<int>& interseg)
-	{
-		interp.clear();
-		interp.reserve(seglist.size() / 2);
-		interseg.clear();
-		interseg.reserve(seglist.size() / 2);
-		Parameters params;
-		int  cutOrnot;
-		Vector3  ipoint;
-		Scalar  t;
-		int  ion, rcd = 0;
-		for (int i = 0; i < 3; i++) {
-			SLIntersection(params, facet, seglist[i][0], seglist[i][1], cutOrnot, ipoint);
-			if (cutOrnot == 1) {
-				rcd = rcd + 1;
-				interp.emplace_back(ipoint);
-				interseg.emplace_back(i);
-				if (rcd == 2) {// TODO possible that the segment is an edge,but may not need to fix because this may not slow much
-					break;
-				}
-			}
-		}
-		if (rcd == 0) {
-			interp.clear();
-			interseg.clear();
-			return;
-		}
-		if (rcd == 1) {
-			interp.clear();
-			interseg.clear();
-			std::cout << "ERROR ENVELOPE TEST" << std::endl;
-			return;
-		}
-		for (int i = 3; i < seglist.size(); i++) {
-
-			SLIntersection(params, facet, seglist[i][0], seglist[i][1], cutOrnot, ipoint);
-			if (cutOrnot == 1) {
-				interp.emplace_back(ipoint);
-				interseg.emplace_back(i);
-			}
-		}
-		seglist.emplace_back(std::array<Vector3, 2>{ {interp[0], interp[1]} });
-	}
 	
 
 	int FastEnvelope::orient_3triangles(const Eigen::Matrix<Scalar, 3, 3>& A, const Eigen::Matrix<Scalar, 3, 3>& AT,
@@ -622,40 +508,6 @@ namespace fastEnvelope {
 	}
 
 
-	void FastEnvelope::SLIntersection(const Parameters & params, const std::array<Vector3, 3>& cutface, const Vector3 & linepoints0,
-		const Vector3 & linepoints1, int & cutOrnot, Vector3 & interp)
-	{
-		Scalar t;
-		const Vector3 n = (cutface[1] - cutface[0]).cross(cutface[2] - cutface[0]);
-		const Vector3 pm = linepoints1 - linepoints0;
-		const Vector3 bm = linepoints0 - cutface[0];
-
-
-		Vector3 nn = n.normalized();
-		Vector3 npm = pm.normalized();
-		
-		if (nn.dot(npm) == 0) {//if the line is parallel to the face. TODO check this parameter
-			cutOrnot = 0;
-			return;
-		}
-		else
-		{
-			t = (-1) * nn.dot(bm) / nn.dot(pm);
-
-
-			if (t <= 1 && t >= 0) {
-				cutOrnot = 1;
-				interp = linepoints0 + t * pm;
-			}
-			else
-			{
-				cutOrnot = 0;
-				return;
-			}
-		}
-
-	}
-
 	void FastEnvelope::BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& bbd)
 	{
 		envprism.reserve(m_faces.size());
@@ -715,10 +567,7 @@ namespace fastEnvelope {
 
 	}
 
-	void FastEnvelope::timerecord()
-	{
-
-	}
+	
 
 	int FastEnvelope::orient3D_LPI(//right hand law
 		const double& px, const double& py, const double& pz,
