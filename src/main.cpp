@@ -1171,8 +1171,8 @@ int main(int argc, char const *argv[])
 	//EnvelopeWithTree();
 	//comparison();
 	//unordered_map_try();
-	//add_hashing();
-	tri_tri_cutting_try();
+	add_hashing();
+	//tri_tri_cutting_try();
 	//FastEnvelope::timerecord();
 	//calculation();
 	//test_ttt();

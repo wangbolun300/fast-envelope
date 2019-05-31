@@ -36,22 +36,22 @@
 // modified by Aaron to better detect coplanarity
 
 
-#ifdef FLOAT_TETWILD_USE_FLOAT
+#ifdef FAST_ENVELOPE_USE_FLOAT
     typedef float real;                      // float
 #else
-    typedef double real;                      // double
+    typedef double Scalar;                      // double
 #endif
 
 /* function prototype */
 
 
 
-int tri_tri_intersection_test_3d(real p1[3], real q1[3], real r1[3],
-                                 real p2[3], real q2[3], real r2[3],
+int tri_tri_intersection_test_3d(Scalar p1[3], Scalar q1[3], Scalar r1[3],
+                                 Scalar p2[3], Scalar q2[3], Scalar r2[3],
                                  int * coplanar,
-                                 real source[3],real target[3]);
+                                 Scalar source[3],Scalar target[3]);
 
-int sub_sub_cross_sub_dot(real a[3], real b[3], real c[3], real d[3]);
+int sub_sub_cross_sub_dot(Scalar a[3], Scalar b[3], Scalar c[3], Scalar d[3]);
 
 
 
@@ -201,12 +201,13 @@ int sub_sub_cross_sub_dot(real a[3], real b[3], real c[3], real d[3]);
    source and target are the endpoints of the line segment of intersection
 */
 
-extern "C" real orient3d(const real *pa, const real *pb, const real *pc, const real *pd);
+//extern "C" real orient3d(const real *pa, const real *pb, const real *pc, const real *pd);
+#include <fastenvelope/Predicates.hpp>
 
-
-inline int sub_sub_cross_sub_dot(real pa[3], real pb[3], real pc[3], real pd[3])
+inline int sub_sub_cross_sub_dot(Scalar pa[3], Scalar pb[3], Scalar pc[3], Scalar pd[3])
 {
-  const real res = orient3d(pa, pb, pc, pd);
+	const Scalar res = fastEnvelope::Predicates::orient_3d(fastEnvelope::Vector3(pa[0], pa[1], pa[2]), fastEnvelope::Vector3(pb[0], pb[1], pb[2]),
+		fastEnvelope::Vector3(pc[0], pc[1], pc[2]), fastEnvelope::Vector3(pd[0], pd[1], pd[2]));
 
   if(res > 0)
     return 1;
@@ -216,16 +217,16 @@ inline int sub_sub_cross_sub_dot(real pa[3], real pb[3], real pc[3], real pd[3])
   return 0;
 }
 
-int tri_tri_intersection_test_3d(real p1[3], real q1[3], real r1[3],
-                                 real p2[3], real q2[3], real r2[3],
+int tri_tri_intersection_test_3d(Scalar p1[3], Scalar q1[3], Scalar r1[3],
+                                 Scalar p2[3], Scalar q2[3], Scalar r2[3],
                                  int* coplanar,
-                                 real source[3], real target[3] )
+                                 Scalar source[3], Scalar target[3] )
 
 {
     int dp1, dq1, dr1, dp2, dq2, dr2;
-    real v1[3], v2[3], v[3];
-    real N1[3], N2[3], N[3];
-    real alpha;
+    Scalar v1[3], v2[3], v[3];
+    Scalar N1[3], N2[3], N[3];
+    Scalar alpha;
 
 	SUB(v1,q1,p1)
     SUB(v2,r1,p1)
