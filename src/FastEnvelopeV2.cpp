@@ -6,8 +6,8 @@
 #include <igl/Timer.h>
 //#include<fastenvelope/intersections.h>
 
-int markhf = 0;
-int recordnumber = 0;
+int markhf = 0, markhf1=0;
+int recordnumber = 0, recordnumber1 = 0;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 		{
@@ -181,7 +181,7 @@ namespace fastEnvelope {
 			return 1;
 		}
 		std::vector<int> jump;
-		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle TODO didnt initialized
+		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
 		bool out;
 		int inter, inter1, record1, record2, tti;//triangle-triangle intersection
 		jump.clear();
@@ -245,7 +245,7 @@ namespace fastEnvelope {
 							}
 						}
 					}
-					inter_ijk_list.emplace_back(Vector3i(i, j, c));//TODO what if this triangle is in the same facet with the list triangle. redundant
+					inter_ijk_list.emplace_back(Vector3i(i, j, c));
 					break;
 				}//each triangle of the facet
 			}
@@ -265,7 +265,7 @@ namespace fastEnvelope {
 		double& a21, double& a22, double& a23,
 		double& a31, double& a32, double& a33,
 		double& px_rx, double& py_ry, double& pz_rz,
-		double& d, double& n) {
+		double& d, double& n) {//TODO do we have redundant calculation between this and tri_cut_tri() ?
 
 		double a2233, a2133, a2132;
 		a11 = (px - qx);
@@ -324,6 +324,12 @@ namespace fastEnvelope {
 					a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
 				
 				/////////////////////////////////////////
+				/*recordnumber1++;
+				if (recordnumber1>8000000&&markhf1 == 0) {
+					std::cout << "report you the  ssssssssssssssssss" << std::endl;
+					markhf1 = 1;
+				}*/
+
 				ori1 = -1 * Predicates::orient_3d(envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]], segpoint0 + (segpoint0 - segpoint1)*n / d);//because n is -n
 				if (ori != ori1) {
 					markhf = 0;
@@ -439,7 +445,7 @@ namespace fastEnvelope {
 
 
 
-	int FastEnvelope::tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,//TODO we want the connect edge case
+	int FastEnvelope::tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
 		const Vector3& q1, const Vector3& q2, const Vector3& q3) {
 		std::array<Scalar, 3> p_1 = { {0, 0, 0} }, q_1 = { {0, 0, 0} }, r_1 = { {0, 0, 0} };
 		std::array<Scalar, 3> p_2 = { {0, 0, 0} }, q_2 = { {0, 0, 0} }, r_2 = { {0, 0, 0} };

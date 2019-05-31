@@ -20,7 +20,28 @@ using namespace std;
 
 
 
+void tri_tri_cutting_try() {
 
+	Vector3 p1, p2, p3, q1, q2, q3;
+
+	p1 = { 1,0,0 };
+
+	p2 = { 0,1,0 };
+
+	p3 = { 0,0,0 };
+
+
+	q1 = { 0,0,0 };
+
+	q2 = { 0,0.5,-1 };
+
+	q3 = { 0,1,1 };
+
+	int a = 
+	FastEnvelope::tri_cut_tri_simple(p1, p2, p3, q1, q3, q2);
+	std::cout << "a " << a << std::endl;
+
+}
 
 
 void unordered_map_try() {
@@ -1135,7 +1156,7 @@ void test_diff() {
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
-	//TriangleCutTriangle();
+	
 	//EnvelopPrism();
 	//PrismCutTriangle();
 	//bool b= booltest();
@@ -1150,8 +1171,8 @@ int main(int argc, char const *argv[])
 	//EnvelopeWithTree();
 	//comparison();
 	//unordered_map_try();
-	add_hashing();
-	//tri_tri_cutting_try();
+	//add_hashing();
+	tri_tri_cutting_try();
 	//FastEnvelope::timerecord();
 	//calculation();
 	//test_ttt();
