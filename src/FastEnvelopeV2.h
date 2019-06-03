@@ -1,14 +1,14 @@
-#pragma once
+﻿#pragma once
 #include <fastenvelope/Types.hpp>
 #include<vector>
-#include<fastenvelope/Parameters.h>
 #include <fenv.h>
+#include <unordered_map>
 namespace fastEnvelope {
 	
 
 	class FastEnvelope
 	{
-	public:
+	private:
 		static const int ORI_POSITIVE = 1;
 		static const int ORI_ZERO = 0;
 		static const int ORI_NEGATIVE = -1;
@@ -18,16 +18,87 @@ namespace fastEnvelope {
 		static const int CUT_COPLANAR = 4;
 		static const int CUT_EMPTY = -1;
 		static const int CUT_FACE = 3;
-		
+		//static const Scalar  BOX_SCALE = 1 / 10.0;
+	public:
+		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac);
+		bool is_inside(const std::array<Vector3, 3> &triangle) const { return FastEnvelope::FastEnvelopeTestImplicit(triangle, envprism); }
+	private:
+		std::vector<std::array<Vector3, 12>> envprism;
+		std::unordered_map<int, std::vector<int>> prismmap;
+		std::vector<std::array<Vector3, 2>> cornerlist;
+		Vector3 min, max;
+	private:
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		static bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		
-		
+		static void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {
+			min = vertices.front();
+			max = vertices.front();
+
+			for (size_t j = 0; j < vertices.size(); j++) {
+				for (int i = 0; i < 3; i++) {
+					min(i) = std::min(min(i), vertices[j](i));
+					max(i) = std::max(max(i), vertices[j](i));
+				}
+			}
+
+			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO it used to be Parameters::box_scale
+
+			for (int j = 0; j < 3; j++) {
+				min[j] -= dis;
+				max[j] += dis;
+			}
+
+			//cout << "min = " << min[0] << " " << min[1] << " " << min[2] << endl;
+			//cout << "max = " << max[0] << " " << max[1] << " " << max[2] << endl;
+			//            pausee();
+		}
+		static void  CornerList(const std::vector<std::array<Vector3, 12>>& prism,
+			std::vector<std::array<Vector3, 2>>& list) {
+			std::vector<Vector3> ver12(12);
+			Vector3 min, max;
+			list.resize(prism.size());//to be safer
+			for (int i = 0; i < prism.size(); i++) {
+				for (int j = 0; j < 12; j++) {
+					ver12[j] = prism[i][j];
+				}
+				get_bb_corners(ver12, min, max);
+				list[i] = { {min,max } };
+			}
+		}
+		static void BoxFindCells(const Vector3& min, const Vector3& max,
+			const Vector3& cellmin, const Vector3& cellmax, const int& subx, const int&suby, const int subz, std::vector<int>& intercell) {
+
+			Vector3 delta;
+			delta[0] = (cellmax - cellmin)[0] / subx;
+			delta[1] = (cellmax - cellmin)[1] / suby;
+			delta[2] = (cellmax - cellmin)[2] / subz;
+			//intercell.reserve(int((max - min)[0] / delta[0])*int((max - min)[1] / delta[1])*int((max - min)[2] / delta[2]));
+			intercell.clear();
+			int location[2][3];
+			for (int i = 0; i < 3; i++) {
+				location[0][i] = (min[i] - cellmin[i]) / delta[i];
+			}
+			for (int i = 0; i < 3; i++) {
+				location[1][i] = (max[i] - cellmin[i]) / delta[i];
+			}
+			for (int i = location[0][0]; i <= location[1][0]; i++) {
+				for (int j = location[0][1]; j <= location[1][1]; j++) {
+					for (int k = location[0][2]; k <= location[1][2]; k++) {
+						intercell.emplace_back(k*subx*suby + j * subx + i);
+					}
+				}
+			}
+
+
+		}
+
+
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		static bool point_out_prism(const Vector3& point, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 
-		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& bbd);
+		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon);
 		static int orient_3triangles(const Eigen::Matrix<Scalar, 3, 3>& A,const Eigen::Matrix<Scalar, 3, 3>& AT,
 			const Eigen::Matrix<Scalar, 3, 3>& ATA,const Eigen::Matrix<Scalar, 3, 1>& B, const std::array<Vector3, 3> & triangle3);
 		static int Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,

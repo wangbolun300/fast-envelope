@@ -4,7 +4,10 @@
 #include <fstream>
 #include <istream>
 #include <igl/Timer.h>
+
 //#include<fastenvelope/intersections.h>
+
+
 
 int markhf = 0, markhf1=0;
 int recordnumber = 0, recordnumber1 = 0;
@@ -36,6 +39,36 @@ extern "C++" int tri_tri_intersection_test_3d(fastEnvelope::Scalar p1[3], fastEn
 
 namespace fastEnvelope {
 	using namespace std;
+
+
+	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces,const Scalar& eps, const int& spac)
+	{
+
+		Scalar epsilon = 1; //TODO =eps*bounding box diagnal
+		FastEnvelope::BoxGeneration(m_ver, m_faces, envprism, epsilon);
+		//build a  hash function
+		
+		
+		get_bb_corners(m_ver, min, max);
+		Scalar bbd = (max - min).norm();
+		const Scalar boxlength = std::min(std::min(max[0] - min[0], max[1] - min[1]), max[2] - min[2]) / spac;
+		int subx = (max[0] - min[0]) / boxlength, suby = (max[1] - min[1]) / boxlength, subz = (max[2] - min[2]) / boxlength;
+	
+		
+		CornerList(envprism, cornerlist);
+		std::vector<int> intercell;
+		int ct = 0, prismsize = envprism.size();
+		
+		prismmap.reserve(spac*spac*spac / 10);
+		for (int i = 0; i < cornerlist.size(); i++) {
+			BoxFindCells(cornerlist[i][0], cornerlist[i][1], min, max, subx, suby, subz, intercell);
+			for (int j = 0; j < intercell.size(); j++) {
+				prismmap[intercell[j]].emplace_back(i);
+			}
+		}
+		std::cout << "map size " << prismmap.size() << std::endl;
+	}
+
 	/*
 	bool FastEnvelope::FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
@@ -532,7 +565,7 @@ namespace fastEnvelope {
 	}
 
 
-	void FastEnvelope::BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& bbd)
+	void FastEnvelope::BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon)
 	{
 		envprism.reserve(m_faces.size());
 		Vector3 AB, AC, BC, normal, vector1, ABn;
@@ -540,7 +573,7 @@ namespace fastEnvelope {
 		std::array<Vector3, 6> polygon;
 		std::array<Vector3, 12> polygonoff;
 		Scalar  a, b, c,
-			tolerance = bbd * pram.eps_rel / sqrt(3),
+			tolerance = epsilon/ sqrt(3),
 			
 			area;
 		

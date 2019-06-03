@@ -37,8 +37,8 @@ void tri_tri_cutting_try() {
 
 	q3 = { 0,1,1 };
 
-	int a = 
-	FastEnvelope::tri_cut_tri_simple(p1, p2, p3, q1, q3, q2);
+	int a = 0; //FIXME maybe
+	//FastEnvelope::tri_cut_tri_simple(p1, p2, p3, q1, q3, q2);
 	std::cout << "a " << a << std::endl;
 
 }
@@ -866,12 +866,13 @@ void add_hashing() {
 	time1 = time1 + timer1.getElapsedTimeInSec();
 	std::cout << "TEST ONE FINISHED  " << std::endl;
 	//////////////////////////////
-	
+	Scalar eps = 1e-3; //TODO
 	timer1.start();
 	std::vector<std::array<Vector3, 12>> envprism;
 	std::vector<std::array<Vector3, 12>> interenvprism;
 	std::vector<int> inumber;
-	FastEnvelope::BoxGeneration(env_vertices, env_faces, envprism, bbd);// generate a smaller prism list
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps);
+	//FastEnvelope::BoxGeneration(env_vertices, env_faces, envprism, bbd);// generate a smaller prism list
 	std::cout << "box generation time" << timer1.getElapsedTimeInSec() << std::endl;
 	timer1.start();
 	Vector3 delt,tmin,tmax;
@@ -923,7 +924,8 @@ void add_hashing() {
 		}
 		// find the query prisms
 		//pos2[i] = FastEnvelope::FastEnvelopeTestTemp(triangle[i], interenvprism);
-		pos2[i]=FastEnvelope::FastEnvelopeTestImplicit(triangle[i], interenvprism);
+		//pos2[i]=FastEnvelope::FastEnvelopeTestImplicit(triangle[i], interenvprism);
+		pos2[i] = fast_envelope.is_inside(triangle[i]);
 		time5 = time5 + timer4.getElapsedTimeInSec();//function time
 
 
@@ -1023,7 +1025,7 @@ void test_ttt() {
 	// if (FastEnvelope::determinant(A) == 0) { //mmnnmnmmnnnnnnnnnnnnnnnnnnnnnnmnmmmnmnmmmnmnmmmmmmnmn
 	// 	std::cout << "A singular" << std::endl;
 	// }
-	int ori = FastEnvelope::orient_3triangles(A, AT, ATA, B, facet3);
+	int ori = -1; // FastEnvelope::orient_3triangles(A, AT, ATA, B, facet3); //FIXME maybe
 	std::cout << ori << std::endl;
 }
 /*
