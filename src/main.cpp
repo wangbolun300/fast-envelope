@@ -314,8 +314,7 @@ void add_hashing() {
 	//////////////////////////////
 	
 
-	std::vector<std::array<Vector3, 12>> envprism;
-	std::vector<std::array<Vector3, 12>> interenvprism;
+
 
 	timer2.start();
 
@@ -357,7 +356,7 @@ void add_hashing() {
 	std::cout << "time1 and time2:  " << time1 << "," << time2 << std::endl;
 	std::cout << "dd:  " << dd << std::endl;
 	std::cout << "shrink size:  " << shrink << std::endl;
-	std::cout << "all the prism size:  " << envprism.size() << std::endl;
+	std::cout << "all the prism size:  " << fast_envelope.prism_size() << std::endl;
 	std::cout << "\ngetbbcorners time:  " << time3 << std::endl;
 	std::cout << "intersection element finding time:  " << time4 << std::endl;
 	std::cout << "function time:  " << time5 << std::endl;
