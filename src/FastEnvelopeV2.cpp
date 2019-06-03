@@ -68,7 +68,7 @@ namespace fastEnvelope {
 		}
 		std::cout << "map size " << prismmap.size() << std::endl;
 	}
-	bool FastEnvelope::is_inside(const std::array<Vector3, 3> &triangle) { 
+	bool FastEnvelope::is_inside(const std::array<Vector3, 3> &triangle) const { 
 		Vector3 tmin, tmax;
 		std::vector<int> inumber;
 		std::vector<int> intercell;

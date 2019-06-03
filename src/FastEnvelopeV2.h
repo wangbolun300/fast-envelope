@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <fastenvelope/Types.hpp>
-#include<vector>
+#include <vector>
+#include <array>
 #include <fenv.h>
 #include <unordered_map>
 namespace fastEnvelope {
@@ -21,7 +22,7 @@ namespace fastEnvelope {
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac);
-		bool is_inside(const std::array<Vector3, 3> &triangle);
+		bool is_inside(const std::array<Vector3, 3> &triangle) const;
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
