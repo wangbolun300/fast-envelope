@@ -43,16 +43,16 @@ namespace fastEnvelope {
 
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces,const Scalar& eps, const int& spac)
 	{
-
-		Scalar epsilon = 1; //TODO =eps*bounding box diagnal
+		get_bb_corners(m_ver, min, max);
+		Scalar bbd = (max - min).norm();
+		Scalar epsilon = bbd*eps; //TODO =eps*bounding box diagnal
 		FastEnvelope::BoxGeneration(m_ver, m_faces, envprism, epsilon);
 		//build a  hash function
 		
 		
-		get_bb_corners(m_ver, min, max);
-		Scalar bbd = (max - min).norm();
+		
 		const Scalar boxlength = std::min(std::min(max[0] - min[0], max[1] - min[1]), max[2] - min[2]) / spac;
-		int subx = (max[0] - min[0]) / boxlength, suby = (max[1] - min[1]) / boxlength, subz = (max[2] - min[2]) / boxlength;
+		subx = (max[0] - min[0]) / boxlength, suby = (max[1] - min[1]) / boxlength, subz = (max[2] - min[2]) / boxlength;
 	
 		
 		CornerList(envprism, cornerlist);
@@ -67,6 +67,28 @@ namespace fastEnvelope {
 			}
 		}
 		std::cout << "map size " << prismmap.size() << std::endl;
+	}
+	bool FastEnvelope::is_inside(const std::array<Vector3, 3> &triangle) { 
+		Vector3 tmin, tmax;
+		std::vector<int> inumber;
+		std::vector<int> intercell;
+		std::vector<std::array<Vector3, 12>> interenvprism;
+		get_triangle_corners(triangle, tmin, tmax);
+		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
+		inumber.clear();
+		for (int j = 0; j < intercell.size(); j++) {
+			auto search = prismmap.find(intercell[j]);
+			if (search != prismmap.end()) {
+				inumber.insert(inumber.end(), search->second.begin(), search->second.end());
+			}
+		}
+		sort(inumber.begin(), inumber.end());
+		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
+		interenvprism.reserve(inumber.size());
+		for (int j = 0; j < inumber.size(); j++) {
+			interenvprism.emplace_back(envprism[inumber[j]]);
+		}
+		return FastEnvelope::FastEnvelopeTestImplicit(triangle, interenvprism); 
 	}
 
 	/*

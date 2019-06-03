@@ -785,39 +785,39 @@ void add_hashing() {
 	std::vector<Vector3i> env_faces;
 	GEO::Mesh envmesh;
 	
-	//int v_id;
+	////////////////////////////////////////////////////////
+	//for aabb method
 	Vector3 min, max;
+	Parameters params;
+	Scalar dd;
+	get_bb_corners(params, env_vertices, min, max);
+	///////////////////////////////////////////////////////
 	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
-	
 	if (!ok1) {
 		std::cout<<("Unable to load mesh")<<std::endl;
 			return;
 	}
 	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
+	/////////////////////////////////////////////////////////////
+	Scalar shrink = 10;
+	Scalar eps = 1e-3; 
+	const int spac = 100;// space subdivision parameter
+	const int fn = 80000;//test face number
+	//////////////////////////////////////////////////////////////
+	eps = eps / shrink; 
+	eps=eps*sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
+	
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 
-	Parameters params;
-	get_bb_corners(params, env_vertices, min, max);
-
-	Scalar bbd, dd, shrink = 10;
-	bbd = (max - min).norm() / shrink; 
-	bbd=bbd*sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
 	dd = ((max - min).norm()) / 1000 / shrink;
-	std::cout << "envelope size " << bbd/1000 << std::endl;
 	std::vector<GEO::vec3> ps;
 	int cnt = 0;
 	double sq_distg;
 	GEO::vec3 nearest_point;
 	unsigned int ps_size;
 	AABBWrapper sf_tree(envmesh);
-	//time1 = time1 + timer1.getElapsedTimeInSec();
-	const int fn = 80000;//test face number
-	const int spac = 100;// space subdivision parameter
 
-	const Scalar boxlength = std::min(std::min(max[0] - min[0], max[1] - min[1]), max[2] - min[2])/spac;
-	int subx = (max[0] - min[0]) / boxlength,suby= (max[1] - min[1]) / boxlength, subz= (max[2] - min[2]) / boxlength;
-	//for (int i = 0; i < fn; i++) {
-	//	std::cout << "face number: " << env_faces[i][0] << " " << env_faces[i][1] << " " << env_faces[i][2] << std::endl;
-	//}
+
 	//////////////////////////generation of noised points
 	/*
 		std::ofstream fout;
@@ -838,6 +838,7 @@ void add_hashing() {
 
 
 	//////////////////////////generation of noised points finished
+
 
 	const std::string input_surface_path2 = "D:\\vs\\float project\\data\\GenerateVer.obj";
 	std::vector<Vector3> testvertices;
@@ -866,65 +867,19 @@ void add_hashing() {
 	time1 = time1 + timer1.getElapsedTimeInSec();
 	std::cout << "TEST ONE FINISHED  " << std::endl;
 	//////////////////////////////
-	Scalar eps = 1e-3; //TODO
-	timer1.start();
+	
+
 	std::vector<std::array<Vector3, 12>> envprism;
 	std::vector<std::array<Vector3, 12>> interenvprism;
-	std::vector<int> inumber;
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps);
-	//FastEnvelope::BoxGeneration(env_vertices, env_faces, envprism, bbd);// generate a smaller prism list
-	std::cout << "box generation time" << timer1.getElapsedTimeInSec() << std::endl;
-	timer1.start();
-	Vector3 delt,tmin,tmax;
-	delt = (max - min) / spac;
-	std::vector<std::array<Vector3, 2>> list;
-	CornerList(params, envprism, list);
-	std::vector<int> intercell;
-	std::cout << "cornerlist created" << std::endl;
-	int ct=0, prismsize = envprism.size();
-	std::unordered_map<int, std::vector<int>> prismmap;
-	prismmap.reserve(spac*spac*spac/10);
-	for (int i = 0; i < list.size(); i++) {
-		BoxFindCellsV1(list[i][0], list[i][1], min, max,subx,suby,subz, intercell);
-		for (int j = 0; j < intercell.size(); j++) {
-			prismmap[intercell[j]].emplace_back(i);
-		}
-	}
-	std::cout << "map size " << prismmap.size() << std::endl;
-	std::cout << "time building tree " << timer1.getElapsedTimeInSec() << std::endl;
-	//////////////////////////
+
 	timer2.start();
 
 	for (int i = 0; i < fn; i++) {
-		// find the query prisms
 
-		timer3.start();// getbbcorners time
-		get_triangle_corners({ triangle[i][0], triangle[i][1], triangle[i][2] }, tmin, tmax);
-		time3 = time3 + timer3.getElapsedTimeInSec();// getbbcorners time
 
-		// intersection element finding time
-		timer3.start();
-		BoxFindCellsV1(tmin, tmax, min, max, subx,suby,subz, intercell);
-		inumber.clear();
-		for (int j = 0; j < intercell.size(); j++) {
-			auto search = prismmap.find(intercell[j]);
-			if (search != prismmap.end()) {
-				inumber.insert(inumber.end(), search->second.begin(), search->second.end());
-			}
-		}
-		sort(inumber.begin(), inumber.end());
-		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
-		time4 = time4 + timer3.getElapsedTimeInSec();
-		// intersection element finding time
 
 		timer4.start();//function time
-		interenvprism.clear();
-		for (int j = 0; j < inumber.size(); j++) {
-			interenvprism.emplace_back(envprism[inumber[j]]);
-		}
-		// find the query prisms
-		//pos2[i] = FastEnvelope::FastEnvelopeTestTemp(triangle[i], interenvprism);
-		//pos2[i]=FastEnvelope::FastEnvelopeTestImplicit(triangle[i], interenvprism);
+
 		pos2[i] = fast_envelope.is_inside(triangle[i]);
 		time5 = time5 + timer4.getElapsedTimeInSec();//function time
 

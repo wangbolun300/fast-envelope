@@ -21,12 +21,13 @@ namespace fastEnvelope {
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac);
-		bool is_inside(const std::array<Vector3, 3> &triangle) const { return FastEnvelope::FastEnvelopeTestImplicit(triangle, envprism); }
+		bool is_inside(const std::array<Vector3, 3> &triangle);
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		Vector3 min, max;
+		int subx, suby, subz;
 	private:
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
@@ -93,7 +94,15 @@ namespace fastEnvelope {
 
 
 		}
+		static void get_triangle_corners(const std::array<Vector3, 3> &triangle, Vector3 &mint, Vector3 &maxt) {
+			mint[0] = std::min(std::min(triangle[0][0], triangle[1][0]), triangle[2][0]);
+			mint[1] = std::min(std::min(triangle[0][1], triangle[1][1]), triangle[2][1]);
+			mint[2] = std::min(std::min(triangle[0][2], triangle[1][2]), triangle[2][2]);
+			maxt[0] = std::max(std::max(triangle[0][0], triangle[1][0]), triangle[2][0]);
+			maxt[1] = std::max(std::max(triangle[0][1], triangle[1][1]), triangle[2][1]);
+			maxt[2] = std::max(std::max(triangle[0][2], triangle[1][2]), triangle[2][2]);
 
+		}
 
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		static bool point_out_prism(const Vector3& point, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
