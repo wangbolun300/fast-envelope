@@ -403,7 +403,7 @@ namespace fastEnvelope {
 					markhf = 0;
 				}
 				///////////////////////////////////////////
-				if (ori == 1 || ori == 0) {
+				if (ori == 1 || ori == 0) {// TODO add: if on facet,record;later see if they are coplanar and the direction! caution: need to be "in" the two facets
 					break;
 				}
 				if (j == 7) {
@@ -425,7 +425,7 @@ namespace fastEnvelope {
 		Eigen::Matrix<Scalar, 2, 3> Prj;
 		Vector3 p3d;
 		Vector2 t0, t1, t2, p;
-		int rcd = 0, jm = 0, ori;;
+		int rcd = 0, jm = 0, ori;
 		Scalar ad, ad1, fad, fadi;
 		AT << (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]),
 			(facet1[0] - facet1[1]).cross(facet1[0] - facet1[2]),
@@ -495,6 +495,64 @@ namespace fastEnvelope {
 		}
 		
 		return 1;
+	}
+
+	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
+	{
+		int jm = 0, ori;
+		double m11, m12, m13, d;
+		
+		bool in = is_3triangle_intersect(
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			facet1[0][0], facet1[0][1], facet1[0][2],
+			facet1[1][0], facet1[1][1], facet1[1][2],
+			facet1[2][0], facet1[2][1], facet1[2][2],
+			facet2[0][0], facet2[0][1], facet2[0][2],
+			facet2[1][0], facet2[1][1], facet2[1][2],
+			facet2[2][0], facet2[2][1], facet2[2][2],
+			m11, m12, m13, d);
+		if (in == 0) {
+			return NOT_INTERSECTD;
+		}
+
+
+		for (int i = 0; i < envprism.size(); i++) {
+			if (jump.size() > 0) {
+				if (i == jump[jm]) {//TODO jump avoid vector
+					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
+					continue;
+				}
+
+			}
+			for (int j = 0; j < 8; j++) {
+				ori = orient3D_TPI(
+					triangle[0][0], triangle[0][1], triangle[0][2],
+					triangle[1][0], triangle[1][1], triangle[1][2],
+					triangle[2][0], triangle[2][1], triangle[2][2],
+					facet1[0][0], facet1[0][1], facet1[0][2],
+					facet1[1][0], facet1[1][1], facet1[1][2],
+					facet1[2][0], facet1[2][1], facet1[2][2],
+					facet2[0][0], facet2[0][1], facet2[0][2],
+					facet2[1][0], facet2[1][1], facet2[1][2],
+					facet2[2][0], facet2[2][1], facet2[2][2],
+					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
+					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
+					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
+					 m11,  m12,  m13,  d);
+				if (ori == 1 || ori == 0) {
+
+					break;
+				}
+				if (j == 7) {
+
+					return IN_PRISM;
+				}
+			}
+		}
+
+		return OUT_PRISM;
 	}
 
 
