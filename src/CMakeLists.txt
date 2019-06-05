@@ -1,8 +1,6 @@
 set(SOURCES
         FastEnvelope.cpp
         FastEnvelope.h
-        MeshIO.hpp
-        MeshIO.cpp
         Logger.hpp
 		Parameters.h
         Types.hpp
