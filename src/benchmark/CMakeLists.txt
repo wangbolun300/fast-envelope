@@ -1,4 +1,10 @@
 set(SOURCES
+	EnvelopeTest.cpp
+	EnvelopeTest.h
+        
+	mesh_AABB.h
+	mesh_AABB.cpp
+
 	AABBWrapper.cpp
 	AABBWrapper.h
 )

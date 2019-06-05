@@ -111,9 +111,25 @@ target_link_libraries(${PROJECT_NAME} PRIVATE warnings::all)
 # Use C++14
 target_compile_features(${PROJECT_NAME} PUBLIC ${CXX14_FEATURES})
 
+
+# libigl
+fast_envelope_download_libigl()
+find_package(LIBIGL REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC igl::core)
+
+
+
+# Geogram
+fast_envelope_download_geogram()
+include(geogram)
+target_link_libraries(${PROJECT_NAME} PUBLIC geogram)
+
+
 if(FAST_ENVELOPE_WITH_SANITIZERS)
 	add_sanitizers(${PROJECT_NAME})
 endif()
+
+target_link_libraries(${PROJECT_NAME} PUBLIC Precision)
 
 ################################################################################
 # FastEnvelope binary
@@ -122,6 +138,7 @@ endif()
 # Main executable
 if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	add_executable(${PROJECT_NAME}_bin src/main.cpp)
+	# add_subdirectory(src/benchmark)
 	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
 	target_link_libraries(${PROJECT_NAME}_bin
@@ -166,16 +183,6 @@ if(${FAST_ENVELOPE_USE_FLOAT})
 	target_compile_definitions(${PROJECT_NAME} PUBLIC -DFAST_ENVELOPE_USE_FLOAT)
 endif()
 
-# libigl
-fast_envelope_download_libigl()
-find_package(LIBIGL REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC igl::core)
-
-# Geogram
-fast_envelope_download_geogram()
-include(geogram)
-target_link_libraries(${PROJECT_NAME} PUBLIC geogram)
-
 
 
 #spdlog
@@ -190,7 +197,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC CLI11::CLI11)
 
 
 # Catch2
-fast_envelope_download_catch2()
+# fast_envelope_download_catch2()
 # add_library(catch INTERFACE)
 # target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
 

@@ -554,9 +554,21 @@ void test_diff() {
 }
 */
 
+#include <fastenvelope/fprecision.h>
+
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
+
+	int n_digits = 400;
+
+	float_precision num1(1, n_digits);
+	float_precision num2(3, n_digits);
+
+	float_precision res = num1/num2*float_precision(2) - float_precision(2,n_digits)/float_precision(3,n_digits);
+
+	std::cout<<res<<std::endl;
+
 
 	//assert(false);
 	
