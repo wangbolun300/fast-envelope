@@ -1,4 +1,4 @@
-#include <fastenvelope/FastEnvelopeV2.h>
+#include <fastenvelope/FastEnvelope.h>
 #include<iostream>
 
 #include <fastenvelope/MeshIO.hpp>

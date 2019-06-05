@@ -92,6 +92,7 @@ static char _VIP_[] = "@(#)precisioncore.cpp 01.36 -- Copyright (C) Future Team 
 #include <iostream>
 #include <iomanip>
 #include <string.h>
+#include <assert.h>
 
 using namespace std;
 
