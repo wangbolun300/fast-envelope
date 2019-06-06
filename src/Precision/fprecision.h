@@ -81,11 +81,13 @@
 */
 
 
+#include <algorithm>
+#include "iprecision.h"
+
+namespace precision {
 /* define version string */
 static char _VF_[] = "@(#)fprecision.h 01.29 -- Copyright (C) Future Team Aps";
 
-#include <algorithm>
-#include "iprecision.h"
 
 
 /// The four different ronding modes
@@ -1953,4 +1955,5 @@ inline float_precision fabs( const float_precision& a )
 /// END FLOAT PRECISION FUNCTIONS
 ///
 //////////////////////////////////////////////////////////////////////////////////////
+}
 #endif

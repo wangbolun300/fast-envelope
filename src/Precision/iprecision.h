@@ -83,26 +83,34 @@
  * --------------------------------------------------------------------------
 */
 
-/* define version string */
-static char _VI_[] = "@(#)iprecision.h 01.29 -- Copyright (C) Future Team Aps";
-
-// If _INT_PRECESION_FAST_DIV_REM is defined it will use a magnitude faster div and rem integer operation.
-#define _INT_PRECISSION_FAST_DIV_REM
 
 #include <limits.h>
 #include <string>
 #include <complex>   // Need <complex> to support FFT functions for fast multiplications
+
+#include <stdlib.h> 
+#include <string.h>
 
 // For ANSI please remove comments from the next 3 line
 #include <iostream>
 #include <ostream>
 #include <istream>
 #include <cstdlib>
+
+namespace precision {
+
+/* define version string */
+static char _VI_[] = "@(#)iprecision.h 01.29 -- Copyright (C) Future Team Aps";
+
+// If _INT_PRECESION_FAST_DIV_REM is defined it will use a magnitude faster div and rem integer operation.
+#define _INT_PRECISSION_FAST_DIV_REM
+
+
+
 using std::atoi; using std::strtoul;
 // End ANSI addition 
 
-#include <stdlib.h> 
-#include <string.h>
+
 
 // RADIX can either be 2, 8, 10, 16 or 256!
 static const int BASE_2	  = 2;
@@ -961,7 +969,7 @@ inline int_precision& int_precision::operator%=( const int_precision& a )
    int sign1, sign2;
    std::string s1, s2;
 
-#ifdef _INT_PRECISSION_FAST_DIV_REM
+#ifdef NOOOOOO //_INT_PRECISSION_FAST_DIV_REM
    if(this->size()>a.size()+8 && a.size() != 2 )  // Check that lhs is 8 digit larger and that rhs is not a single digit before do the fastremdiv operation
 	   {
 	   extern int_precision _int_precision_fastrem( const int_precision&, const int_precision& );
@@ -1868,5 +1876,5 @@ template <class _Ty> inline bool operator>=( const _Ty& a, const int_precision& 
    {
    return a < b ? false: true;
    }
-  
+}
 #endif

@@ -129,7 +129,7 @@ if(FAST_ENVELOPE_WITH_SANITIZERS)
 	add_sanitizers(${PROJECT_NAME})
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC Precision)
+#target_link_libraries(${PROJECT_NAME} PUBLIC Precision)
 
 ################################################################################
 # FastEnvelope binary

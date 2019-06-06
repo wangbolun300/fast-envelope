@@ -230,7 +230,7 @@ void add_hashing() {
 	///////////////////////////////////////////////////////
 	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
 	if (!ok1) {
-		std::cout << ("Unable to load mesh") << std::endl;
+		std::cout << ("Unable to load mesh1") << std::endl;
 		return;
 	}
 	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
@@ -291,7 +291,7 @@ void add_hashing() {
 	GEO::Mesh testmesh;
 	bool ok2 = MeshIO::load_mesh(input_surface_path2, testvertices, testfaces, testmesh);
 	if (!ok2) {
-		std::cout<<("Unable to load mesh")<<std::endl;
+		std::cout<<("Unable to load mesh2")<<std::endl;
 			return;
 	}
 
@@ -554,10 +554,9 @@ void test_diff() {
 }
 */
 
-#include <fastenvelope/fprecision.h>
-
 int main(int argc, char const *argv[])
 {
+	/*using precision::float_precision;
 	GEO::initialize();
 
 	int n_digits = 400;
@@ -565,10 +564,10 @@ int main(int argc, char const *argv[])
 	float_precision num1(1, n_digits);
 	float_precision num2(3, n_digits);
 
-	float_precision res = num1/num2*float_precision(2) - float_precision(2,n_digits)/float_precision(3,n_digits);
+	float_precision res = num1/num2* float_precision(2) - float_precision(2,n_digits)/ float_precision(3,n_digits);
 
 	std::cout<<res<<std::endl;
-
+*/
 
 	//assert(false);
 	

@@ -56,11 +56,13 @@
 */
 
 
+#include <float.h>
+#include <algorithm>
+
+namespace precision {
 /* define version string */
 static char _VinterP_[] = "@(#)intervalprecision.h 01.15 -- Copyright (C) Future Team Aps";
 
-#include <float.h>
-#include <algorithm>
 
 // HARDWARE_SUPPORT controlled if IEEE754 floating point control can be used for interval arithmetic.
 // if not used interval arithmetic will be handle in software 
@@ -2771,5 +2773,5 @@ inline interval<float_precision> acos(const interval<float_precision>& x)
 /// END Interval sin(), cos(), tan(), asin(), acos(), atan()
 ///
 //////////////////////////////////////////////////////////////////////////////////////
-
+}
 #endif
