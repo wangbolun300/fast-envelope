@@ -80,20 +80,6 @@
  * --------------------------------------------------------------------------
 */
 
-#include <time.h>
-#include <cmath> 
-#include <iostream>
-#include <iomanip>
-#include <string.h>
-#include <assert.h>
-
-
-#include "iprecision.h"
-#include "fprecision.h"
-
-
-namespace precision {
-
 /* define version string */
 static char _VIP_[] = "@(#)precisioncore.cpp 01.36 -- Copyright (C) Future Team Aps";
 
@@ -101,9 +87,17 @@ static char _VIP_[] = "@(#)precisioncore.cpp 01.36 -- Copyright (C) Future Team 
 // Please create an empty file if you are not compiling under Microsoft visual studio
 //#include "stdafx.h"
 
-
+#include <time.h>
+#include <cmath> 
+#include <iostream>
+#include <iomanip>
+#include <string.h>
+#include <assert.h>
 
 using namespace std;
+
+#include "iprecision.h"
+#include "fprecision.h"
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1704,7 +1698,7 @@ std::string _float_precision_ftoa( const float_precision *a )
 
          s.append( "." );
          src = frac.get_mantissa(); 
-         for( rem = (int)( (double(log((double)F_RADIX))/double(log(10.0))*double(r256.precision())+1 ) ); rem > 0; )
+         for( rem = (int)( (log((double)F_RADIX)/log(10.0)*(r256.precision())+1 ) ); rem > 0; )
             { 
                 int digit, expo_base;
 
@@ -1910,7 +1904,7 @@ float_precision _float_precision_dtof( double d, unsigned int p, enum round_mode
 
    if( F_RADIX == BASE_10 )
       {
-      //sprintf_s( buf, "%.18g", d ); //Obsolete
+     // sprintf_s( buf, "%.18g", d ); Obsolete
         std::ostringstream sstr;
         sstr << std::setiosflags( ios::scientific ) << std::setprecision( 18 ) << d;
         fp = _float_precision_atof( sstr.str().c_str(), p, m );
@@ -3547,7 +3541,7 @@ static std::string spigot_e( const int digits)
 	// Use Newton method to find in less that 4-5 iteration
 	for (xold = 5, xnew = 0; ; xold = xnew)
 		{
-		double  f = xold*(double(log(xold)) - 1) + 0.5*log(2 * 3.141592653589793 * xold);
+		double  f = xold*(log(xold) - 1) + 0.5*log(2 * 3.141592653589793 * xold);
 		double f1 = 0.5 / xold + log(xold);
 		xnew = xold - (f - test) / f1;
 		if ((int)ceil(xnew) == (int)ceil(xold))
@@ -4774,7 +4768,7 @@ float_precision asin( const float_precision& x )
    // Find the argument reduction factor
    for( dlimit=1.0; j > 0; j-- )
        {
-       dlimit/=double(sqrt(2.0)* sqrt( 1.0 + sqrt( 1.0 - dlimit * dlimit ) ));
+       dlimit/=sqrt(2.0)* sqrt( 1.0 + sqrt( 1.0 - dlimit * dlimit ) );
        if( dlimit < zd ) break;
        }
    // j is the number of argument reduction
@@ -5476,7 +5470,6 @@ int_precision _int_precision_fastrem( const int_precision &s1, const int_precisi
 	return r2;
 	}
 
-}
 //////////////////////////////////////////////////////////////////////////////////////
 ///
 /// FLOATING POINT FUNCTIONS
