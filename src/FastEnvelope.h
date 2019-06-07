@@ -129,7 +129,7 @@ namespace fastEnvelope {
 			double& a31, double& a32, double& a33,
 			double& px_rx, double& py_ry, double& pz_rz,
 			double& d, double& n);
-		
+		static bool is_tri_tri_tri_intersect(const std::array<Vector3, 3>& t1, const std::array<Vector3, 3>& t2, const std::array<Vector3, 3>& t3);
 
 
 		static int tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,const Vector3& q1, const Vector3& q2, const Vector3& q3);
@@ -213,7 +213,7 @@ namespace fastEnvelope {
 
 
 
-		static bool is_3triangle_intersect(double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
+		static bool is_3triangle_intersect(double v1x,  double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
 			double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
 			double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
 			double m11, double m12, double m13, double d) {
@@ -268,22 +268,7 @@ namespace fastEnvelope {
 
 			////////////////////////////////////////////////////////////////
 			// this part is to predicate if the point is in the interior of triangle v
-			double  f11, f12, f13, f21, f22, f23, f31, f32, f33,
-				at1x = nvx * v1x + nvy * v1y + nvz * v1z,
-				at1y = nwx * v1x + nwy * v1y + nwz * v1z,
-				at1z = nux * v1x + nuy * v1y + nuz * v1z,
-
-				at2x = nvx * t2x + nvy * t2y + nvz * t2z,
-				at2y = nwx * t2x + nwy * t2y + nwz * t2z,
-				at2z = nux * t2x + nuy * t2y + nuz * t2z,
-
-				at3x = nvx * t3x + nvy * t3y + nvz * t3z,
-				at3y = nwx * t3x + nwy * t3y + nwz * t3z,
-				at3z = nux * t3x + nuy * t3y + nuz * t3z;
-
-			cross(dot1 - at1x, dot2 - at1y, dot3 - at1z, at2x - at1x, at2y - at1y, at2z - at1z, f11, f12, f13);
-			cross(dot1 - at2x, dot2 - at2y, dot3 - at2z, at3x - at2x, at3y - at2y, at3z - at2z, f21, f22, f23);
-			cross(dot1 - at3x, dot2 - at3y, dot3 - at3z, at1x - at3x, at1y - at3y, at1z - at3z, f31, f32, f33);
+			Vector3 pnew=
 			double mark1 = dot(f11, f12, f13, f21, f22, f23), mark2 = dot(f11, f12, f13, f31, f32, f33);
 			///////////////////////////////////////////////////
 			if (mark1 > 0 && mark2 > 0) {
