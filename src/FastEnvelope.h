@@ -174,11 +174,7 @@ namespace fastEnvelope {
 		}
 
 		static inline double dot(double v1x, double v1y, double v1z, double v2x, double v2y, double v2z) { return (((v1x * v2x) + (v1y * v2y)) + (v1z * v2z)); }
-		static inline void cross(double a1, double a2, double a3, double b1, double b2, double b3, double c1, double c2, double c3) {
-			c1 = a2 * b3 - a3 * b2;
-			c2 = b1 * a3 - a1 * b3;
-			c3 = a1 * b2 - a2 * b1;
-		}
+		
 		static inline double det2x2(double a1, double a2, double b1, double b2) { return ((a1 * b2) - (a2 * b1)); }
 
 		// Indirect 3D orientation predicate with floating point filter.
@@ -212,10 +208,10 @@ namespace fastEnvelope {
 
 
 
-		static bool is_3triangle_intersect(double v1x,  double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
-			double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
-			double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
-			double m11, double m12, double m13, double d) {
+		static bool is_3triangle_intersect(double& v1x,  double& v1y, double& v1z, double& v2x, double& v2y, double& v2z, double& v3x, double& v3y, double& v3z,
+			double& w1x, double& w1y, double& w1z, double& w2x, double& w2y, double& w2z, double& w3x, double& w3y, double& w3z,
+			double& u1x, double& u1y, double& u1z, double& u2x, double& u2y, double& u2z, double& u3x, double& u3y, double& u3z,
+			double& m11, double& m12, double& m13, double& d) {
 			::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 			double t2x = v2x, t2y = v2y, t2z = v2z, t3x = v3x, t3y = v3y, t3z = v3z;//still need these
 			double v4x = v1x - v3x;
@@ -301,11 +297,11 @@ namespace fastEnvelope {
 
 
 		static inline int orient3D_TPI(
-			const double v1x, const double v1y, const double v1z, const double v2x, const double v2y, const double v2z, const double v3x, const double v3y, const double v3z,
-			const double w1x, const double w1y, const double w1z, const double w2x, const double w2y, const double w2z, const double w3x, const double w3y, const double w3z,
-			const double u1x, const double u1y, const double u1z, const double u2x, const double u2y, const double u2z, const double u3x, const double u3y, const double u3z,
-			const double q1x, const double q1y, const double q1z, const double q2x, const double q2y, const double q2z, const double q3x, const double q3y, const double q3z,
-			const double m11, const double m12, const double m13, const double d)
+			const double& v1x, const double& v1y, const double& v1z, const double& v2x, const double& v2y, const double& v2z, const double& v3x, const double& v3y, const double& v3z,
+			const double& w1x, const double& w1y, const double& w1z, const double& w2x, const double& w2y, const double& w2z, const double& w3x, const double& w3y, const double& w3z,
+			const double& u1x, const double& u1y, const double& u1z, const double& u2x, const double& u2y, const double& u2z, const double& u3x, const double& u3y, const double& u3z,
+			const double& q1x, const double& q1y, const double& q1z, const double& q2x, const double& q2y, const double& q2z, const double& q3x, const double& q3y, const double& q3z,
+			const double& m11, const double& m12, const double& m13, const double& d)
 		{
 
 

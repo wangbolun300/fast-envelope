@@ -295,12 +295,12 @@ namespace fastEnvelope {
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							//////////////////////////////////////////////////////////////////////////////
-							/*int inter2= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
+							int inter2= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							if (inter1 != inter2) {
 								cout << "difference in 3 triangle in-prism test, " << inter1 << " " << inter2 << endl;
-							}*/
+							}
 							//////////////////////////////////////////////////////////////////////////////
 							
 							if (inter1 == 1) {
@@ -473,16 +473,21 @@ namespace fastEnvelope {
 		//////////////////////////////////////////////////////////////////////////
 
 		Scalar m11, m12, m13, d;
+		std::array<Vector3, 3>tri = triangle;//TODO really need to do this?
+		std::array<Vector3, 3>fct1 = facet1;
+		std::array<Vector3, 3>fct2 = facet2;
+
+
 		bool inter = is_3triangle_intersect(
-			triangle[0][0], triangle[0][1], triangle[0][2],
-			triangle[1][0], triangle[1][1], triangle[1][2],
-			triangle[2][0], triangle[2][1], triangle[2][2],
-			facet1[0][0], facet1[0][1], facet1[0][2],
-			facet1[1][0], facet1[1][1], facet1[1][2],
-			facet1[2][0], facet1[2][1], facet1[2][2],
-			facet2[0][0], facet2[0][1], facet2[0][2],
-			facet2[1][0], facet2[1][1], facet2[1][2],
-			facet2[2][0], facet2[2][1], facet2[2][2],
+			tri[0][0], tri[0][1], tri[0][2],
+			tri[1][0], tri[1][1], tri[1][2],
+			tri[2][0], tri[2][1], tri[2][2],
+			fct1[0][0], fct1[0][1], fct1[0][2],
+			fct1[1][0], fct1[1][1], fct1[1][2],
+			fct1[2][0], fct1[2][1], fct1[2][2],
+			fct2[0][0], fct2[0][1], fct2[0][2],
+			fct2[1][0], fct2[1][1], fct2[1][2],
+			fct2[2][0], fct2[2][1], fct2[2][2],
 			m11, m12, m13, d);
 
 		////////////////////////////////////////////////////////////////////////////
@@ -513,8 +518,23 @@ namespace fastEnvelope {
 			for (int j = 0; j < 8; j++) {
 				ori = orient_3triangles(A, AT, ATA, B, { {envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]] } });
 				////////////////////////////////////////////////////////////////////////////////
-
-
+				int ori1 = orient3D_TPI(
+					tri[0][0], tri[0][1], tri[0][2],
+					tri[1][0], tri[1][1], tri[1][2],
+					tri[2][0], tri[2][1], tri[2][2],
+					fct1[0][0], fct1[0][1], fct1[0][2],
+					fct1[1][0], fct1[1][1], fct1[1][2],
+					fct1[2][0], fct1[2][1], fct1[2][2],
+					fct2[0][0], fct2[0][1], fct2[0][2],
+					fct2[1][0], fct2[1][1], fct2[1][2],
+					fct2[2][0], fct2[2][1], fct2[2][2],
+					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
+					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
+					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
+					m11, m12, m13, d);
+				if (ori != ori1) {
+					cout << "ori in 3 triangles different, " << ori << " " << ori1 << endl;
+				}
 				////////////////////////////////////////////////////////////////////////////////
 				
 				if (ori == 1 || ori == 0) {
@@ -535,17 +555,21 @@ namespace fastEnvelope {
 	{
 		int jm = 0, ori;
 		Scalar m11, m12, m13, d;
-		
+		std::array<Vector3, 3>tri = triangle;//TODO really need to do this?
+		std::array<Vector3, 3>fct1 = facet1;
+		std::array<Vector3, 3>fct2 = facet2;
+
+
 		bool in = is_3triangle_intersect(
-			triangle[0][0], triangle[0][1], triangle[0][2],
-			triangle[1][0], triangle[1][1], triangle[1][2],
-			triangle[2][0], triangle[2][1], triangle[2][2],
-			facet1[0][0], facet1[0][1], facet1[0][2],
-			facet1[1][0], facet1[1][1], facet1[1][2],
-			facet1[2][0], facet1[2][1], facet1[2][2],
-			facet2[0][0], facet2[0][1], facet2[0][2],
-			facet2[1][0], facet2[1][1], facet2[1][2],
-			facet2[2][0], facet2[2][1], facet2[2][2],
+			tri[0][0], tri[0][1], tri[0][2],
+			tri[1][0], tri[1][1], tri[1][2],
+			tri[2][0], tri[2][1], tri[2][2],
+			fct1[0][0], fct1[0][1], fct1[0][2],
+			fct1[1][0], fct1[1][1], fct1[1][2],
+			fct1[2][0], fct1[2][1], fct1[2][2],
+			fct2[0][0], fct2[0][1], fct2[0][2],
+			fct2[1][0], fct2[1][1], fct2[1][2],
+			fct2[2][0], fct2[2][1], fct2[2][2],
 			m11, m12, m13, d);
 		if (in == 0) {
 			return NOT_INTERSECTD;
@@ -562,15 +586,15 @@ namespace fastEnvelope {
 			}
 			for (int j = 0; j < 8; j++) {
 				ori = orient3D_TPI(
-					triangle[0][0], triangle[0][1], triangle[0][2],
-					triangle[1][0], triangle[1][1], triangle[1][2],
-					triangle[2][0], triangle[2][1], triangle[2][2],
-					facet1[0][0], facet1[0][1], facet1[0][2],
-					facet1[1][0], facet1[1][1], facet1[1][2],
-					facet1[2][0], facet1[2][1], facet1[2][2],
-					facet2[0][0], facet2[0][1], facet2[0][2],
-					facet2[1][0], facet2[1][1], facet2[1][2],
-					facet2[2][0], facet2[2][1], facet2[2][2],
+					tri[0][0], tri[0][1], tri[0][2],
+					tri[1][0], tri[1][1], tri[1][2],
+					tri[2][0], tri[2][1], tri[2][2],
+					fct1[0][0], fct1[0][1], fct1[0][2],
+					fct1[1][0], fct1[1][1], fct1[1][2],
+					fct1[2][0], fct1[2][1], fct1[2][2],
+					fct2[0][0], fct2[0][1], fct2[0][2],
+					fct2[1][0], fct2[1][1], fct2[1][2],
+					fct2[2][0], fct2[2][1], fct2[2][2],
 					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
 					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
 					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
