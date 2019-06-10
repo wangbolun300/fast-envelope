@@ -348,8 +348,9 @@ namespace fastEnvelope {
 		}
 		return 0;
 	}
-	bool  FastEnvelope::is_tri_tri_tri_intersect(const std::array<Vector3, 3>& t1, const std::array<Vector3, 3>& t2, const std::array<Vector3, 3>& t3)
+	bool  FastEnvelope::is_tri_tri_tri_intersect(double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z, const std::array<Vector3, 3>& t2, const std::array<Vector3, 3>& t3)
 	{
+		
 		return false;
 	}
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
