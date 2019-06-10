@@ -291,9 +291,18 @@ namespace fastEnvelope {
 							jump.clear();
 							jump.emplace_back(inter_ijk_list[e][0]);
 							jump.emplace_back(i);
-							inter1 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
+							inter1 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism(triangle,
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
+							//////////////////////////////////////////////////////////////////////////////
+							/*int inter2= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
+								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
+								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
+							if (inter1 != inter2) {
+								cout << "difference in 3 triangle in-prism test, " << inter1 << " " << inter2 << endl;
+							}*/
+							//////////////////////////////////////////////////////////////////////////////
+							
 							if (inter1 == 1) {
 								
 								return 1;
@@ -390,9 +399,9 @@ namespace fastEnvelope {
 				if (ori != ori1) {
 					markhf = 0;
 					if (recordnumber < 1000) {
-						std::cout << "number " << recordnumber << std::endl;
+						//std::cout << "number " << recordnumber << std::endl;
 
-						std::cout << "ori and ori1 " << ori << " " << ori1 << std::endl;
+						//std::cout << "ori and ori1 " << ori << " " << ori1 << std::endl;
 						ori = orient3D_LPI(
 							segpoint0[0], segpoint0[1], segpoint0[2],
 							envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
@@ -459,9 +468,24 @@ namespace fastEnvelope {
 		B[1] = A(1, 0)*facet1[0][0] + A(1, 1)*facet1[0][1] + A(1, 2)*facet1[0][2];
 		B[2] = A(2, 0)*facet2[0][0] + A(2, 1)*facet2[0][1] + A(2, 2)*facet2[0][2];
 
+		
 
+		//////////////////////////////////////////////////////////////////////////
 
+		Scalar m11, m12, m13, d;
+		bool inter = is_3triangle_intersect(
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			facet1[0][0], facet1[0][1], facet1[0][2],
+			facet1[1][0], facet1[1][1], facet1[1][2],
+			facet1[2][0], facet1[2][1], facet1[2][2],
+			facet2[0][0], facet2[0][1], facet2[0][2],
+			facet2[1][0], facet2[1][1], facet2[1][2],
+			facet2[2][0], facet2[2][1], facet2[2][2],
+			m11, m12, m13, d);
 
+		////////////////////////////////////////////////////////////////////////////
 
 		Vector3 f1, f2, f3;
 
@@ -469,8 +493,12 @@ namespace fastEnvelope {
 		f2 = (B - A * triangle[2]).cross(A*triangle[2] - A * triangle[1]);
 		f3 = (B - A * triangle[0]).cross(A*triangle[0] - A * triangle[2]);
 
-		int in = f1.dot(f2) > 0 && f1.dot(f3) > 0 ? 1 : 0;//TODO consider the triangle degeneration
-
+		bool in = f1.dot(f2) > 0 && f1.dot(f3) > 0 ? 1 : 0;//TODO consider the triangle degeneration
+		/////////////////////////////////////////////////
+		if (inter != in) {
+			std::cout << "intersect test diff in 3 triangles " << endl;
+		}
+		//////////////////////////////////////////////////
 		if (in == 0) {
 			return 2;
 		}
@@ -484,6 +512,11 @@ namespace fastEnvelope {
 			}
 			for (int j = 0; j < 8; j++) {
 				ori = orient_3triangles(A, AT, ATA, B, { {envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]] } });
+				////////////////////////////////////////////////////////////////////////////////
+
+
+				////////////////////////////////////////////////////////////////////////////////
+				
 				if (ori == 1 || ori == 0) {
 
 					break;
@@ -501,7 +534,7 @@ namespace fastEnvelope {
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
 	{
 		int jm = 0, ori;
-		double m11, m12, m13, d;
+		Scalar m11, m12, m13, d;
 		
 		bool in = is_3triangle_intersect(
 			triangle[0][0], triangle[0][1], triangle[0][2],
