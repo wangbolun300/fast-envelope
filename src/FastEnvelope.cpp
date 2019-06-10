@@ -291,7 +291,7 @@ namespace fastEnvelope {
 							jump.clear();
 							jump.emplace_back(inter_ijk_list[e][0]);
 							jump.emplace_back(i);
-							inter1 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism(triangle,
+							inter1 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							if (inter1 == 1) {
@@ -348,11 +348,7 @@ namespace fastEnvelope {
 		}
 		return 0;
 	}
-	bool  FastEnvelope::is_tri_tri_tri_intersect(double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z, const std::array<Vector3, 3>& t2, const std::array<Vector3, 3>& t3)
-	{
-		
-		return false;
-	}
+	
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		double  a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n;
@@ -408,7 +404,7 @@ namespace fastEnvelope {
 					markhf = 0;
 				}
 				///////////////////////////////////////////
-				if (ori == 1 || ori == 0) {// TODO add: if on facet,record;later see if they are coplanar and the direction! caution: need to be "in" the two facets
+				if (ori == 1 || ori == 0) {
 					break;
 				}
 				if (j == 7) {

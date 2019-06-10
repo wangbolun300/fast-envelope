@@ -129,7 +129,6 @@ namespace fastEnvelope {
 			double& a31, double& a32, double& a33,
 			double& px_rx, double& py_ry, double& pz_rz,
 			double& d, double& n);
-		static bool is_tri_tri_tri_intersect(const std::array<Vector3, 3>& t1, const std::array<Vector3, 3>& t2, const std::array<Vector3, 3>& t3);
 
 
 		static int tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,const Vector3& q1, const Vector3& q2, const Vector3& q3);
@@ -268,8 +267,30 @@ namespace fastEnvelope {
 
 			////////////////////////////////////////////////////////////////
 			// this part is to predicate if the point is in the interior of triangle v
-			Vector3 pnew=
-			double mark1 = dot(f11, f12, f13, f21, f22, f23), mark2 = dot(f11, f12, f13, f31, f32, f33);
+			//test : (n,v1,t2),(n,t2,t3),(n,t3,v1)
+			Scalar nx, ny, nz;
+			nx = v1x + nvx; ny = v1y + nvy; nz = v1z + nvz;
+			int ori1, ori2, ori3;
+			ori1 = orient3D_TPI(
+				v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
+				w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
+				u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z,
+				nx, ny, nz, v1x, v1y, v1z, t2x, t2y, t2z,
+				m11, m12, m13, d);
+			ori2 = orient3D_TPI(
+				v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
+				w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
+				u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z,
+				nx, ny, nz, t2x, t2y, t2z, t3x, t3y, t3z,
+				m11, m12, m13, d);
+
+			ori3 = orient3D_TPI(
+				v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
+				w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
+				u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z,
+				nx, ny, nz, t3x, t3y, t3z, v1x, v1y, v1z,
+				m11, m12, m13, d);
+			int mark1 = ori1 * ori2, mark2 = ori1 * ori3;
 			///////////////////////////////////////////////////
 			if (mark1 > 0 && mark2 > 0) {
 				return 1;
@@ -280,11 +301,11 @@ namespace fastEnvelope {
 
 
 		static inline int orient3D_TPI(
-			double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
-			double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
-			double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
-			double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z,
-			double m11, double m12, double m13, double d)
+			const double v1x, const double v1y, const double v1z, const double v2x, const double v2y, const double v2z, const double v3x, const double v3y, const double v3z,
+			const double w1x, const double w1y, const double w1z, const double w2x, const double w2y, const double w2z, const double w3x, const double w3y, const double w3z,
+			const double u1x, const double u1y, const double u1z, const double u2x, const double u2y, const double u2z, const double u3x, const double u3y, const double u3z,
+			const double q1x, const double q1y, const double q1z, const double q2x, const double q2y, const double q2z, const double q3x, const double q3y, const double q3z,
+			const double m11, const double m12, const double m13, const double d)
 		{
 
 
