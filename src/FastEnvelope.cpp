@@ -5,12 +5,13 @@
 #include <istream>
 #include <igl/Timer.h>
 
+
 //#include<fastenvelope/intersections.h>
 
 
 
 int markhf = 0, markhf1=0;
-int recordnumber = 0, recordnumber1 = 0;
+int recordnumber = 0, recordnumber1 = 0,recordnumber2=0,recordnumber3=0;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 		{
@@ -51,7 +52,7 @@ namespace fastEnvelope {
 		
 		
 		
-		const Scalar boxlength = std::min(std::min(max[0] - min[0], max[1] - min[1]), max[2] - min[2]) / spac;
+		const Scalar boxlength = std::min(std::min(max[0] - min[0], max[1] - min[1]), max[2] - min[2]) / spac;//TODO a better strategy?
 		subx = (max[0] - min[0]) / boxlength, suby = (max[1] - min[1]) / boxlength, subz = (max[2] - min[2]) / boxlength;
 	
 		
@@ -299,8 +300,13 @@ namespace fastEnvelope {
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							if (inter1 != inter2) {
-								cout << "difference in 3 triangle in-prism test, " << inter1 << " " << inter2 << endl;
+
+								cout << "difference in 3 triangle in-prism test, number"<<recordnumber2<<" " << inter1 << " " << inter2 << endl;
+								recordnumber2++;
 							}
+							
+								recordnumber3++;
+							
 							//////////////////////////////////////////////////////////////////////////////
 							
 							if (inter1 == 1) {
@@ -501,7 +507,7 @@ namespace fastEnvelope {
 		bool in = f1.dot(f2) > 0 && f1.dot(f3) > 0 ? 1 : 0;//TODO consider the triangle degeneration
 		/////////////////////////////////////////////////
 		if (inter != in) {
-			std::cout << "intersect test diff in 3 triangles " << endl;
+			//std::cout << "intersect test diff in 3 triangles "<< in<<" "<<inter << endl;
 		}
 		//////////////////////////////////////////////////
 		if (in == 0) {
@@ -533,7 +539,7 @@ namespace fastEnvelope {
 					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
 					m11, m12, m13, d);
 				if (ori != ori1) {
-					cout << "ori in 3 triangles different, " << ori << " " << ori1 << endl;
+					//cout << "ori in 3 triangles different, " << ori << " " << ori1 << endl;
 				}
 				////////////////////////////////////////////////////////////////////////////////
 				
@@ -870,6 +876,7 @@ namespace fastEnvelope {
 		if ((det4x4_return_value < -eps)) return (d > 0) ? (-1) : (1);
 		return 0;
 	}
+		
 	
 	
 	

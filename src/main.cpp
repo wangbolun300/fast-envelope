@@ -13,6 +13,8 @@
 #include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
 #include<fastenvelope/AABBWrapper.h>
+#include <filesystem>
+#include <stdio.h>
 
 
 
@@ -556,6 +558,121 @@ void test_diff() {
 }
 */
 
+
+
+std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName,vector<int>& inenvelope) {
+
+	
+	std::vector<std::array<Vector3,3>> triangle;
+	
+	ifstream infile;
+	infile.open(inputFileName);
+	if (!infile.is_open())
+	{
+		cout << "Path Wrong!!!!" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	int l = 0;
+	while (infile) // there is input overload classfile
+	{
+		l++;
+		string s;
+		if (!getline(infile, s)) break;
+		if (s[0] != '#') {
+			istringstream ss(s);
+			array<double,10> record;
+			int c = 0;
+			while (ss) {
+				string line;
+				if (!getline(ss, line, ','))
+					break;
+				try {
+					record[c]=stof(line);
+					c++;
+				}
+				catch (const std::invalid_argument e) {
+					cout << "NaN found in file " << inputFileName << " line " << l
+						<< endl;
+					e.what();
+				}
+			}
+
+			triangle.push_back({ {Vector3(record[0],record[1],record[2]),Vector3(record[3],record[4],record[5]),
+				Vector3(record[6],record[7],record[8])} });
+			inenvelope.push_back(record[9]);
+		}
+	}
+	if (!infile.eof()) {
+		cerr << "Could not read file " << inputFileName << "\n";
+	}
+	cout << "triangle size " << triangle.size() << endl;
+	return triangle;
+}
+
+void test_in_wild() {
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
+	vector<int> inenvelope;
+	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, inenvelope);
+	
+	std::vector<Vector3> env_vertices;
+	std::vector<Vector3i> env_faces;
+	GEO::Mesh envmesh;
+
+	///////////////////////////////////////////////////////
+	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
+	if (!ok1) {
+		std::cout << ("Unable to load mesh") << std::endl;
+		return;
+	}
+	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
+
+
+
+	Scalar shrink = 10;
+	Scalar eps = 1e-3;
+	const int spac = 10;// space subdivision parameter
+	const int fn = triangles.size();//test face number
+	//////////////////////////////////////////////////////////////
+	eps = eps / shrink;
+	eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
+
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	vector<bool> pos2;
+	pos2.resize(fn);
+	for (int i = 0; i < fn; i++) {
+
+
+		pos2[i] = fast_envelope.is_inside(triangles[i]);
+
+	}
+	
+	int rcd = 0, eq0 = 0, eq02 = 0;
+	for (int i = 0; i < fn; i++) {
+		if (inenvelope[i] - pos2[i] != 0) {
+			//if (pos1[i]== 0) {
+			rcd = rcd + 1;
+			//std::cout << "envelope test different! different face NO. " << i << " the difference: " << inenvelope[i] - pos2[i] << std::endl;
+			//std::cout << "envelope test same! same face NO. " << i << "the in and out : " <<pos1[i] <<","<<pos2[i] << std::endl;
+		}
+		if (inenvelope[i] == 0) {
+			eq0 = eq0 + 1;
+		}
+		if (pos2[i] == 0) {
+			eq02 = eq02 + 1;
+		}
+	}
+
+	std::cout << "how many different cases:  " << rcd << std::endl;
+	std::cout << "aabb inside triangle number:  " << eq0 << std::endl;
+	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
+	
+}
+
+
+
+
 //#include <fastenvelope/fprecision.h>
 
 int main(int argc, char const *argv[])
@@ -588,13 +705,15 @@ int main(int argc, char const *argv[])
 	//EnvelopeWithTree();
 	//comparison();
 	//unordered_map_try();
-	add_hashing();
+	//add_hashing();
 	//tri_tri_cutting_try();
 	//FastEnvelope::timerecord();
 	//calculation();
 	//test_ttt();
 	//test_diff();
-
+	test_in_wild();
+	//inf();
+	
 	std::cout << "done!" << std::endl;
 	
 

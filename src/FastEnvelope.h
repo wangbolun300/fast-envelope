@@ -24,6 +24,7 @@ namespace fastEnvelope {
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac);
 		bool is_inside(const std::array<Vector3, 3> &triangle) const;
 		inline int prism_size() const { return envprism.size(); }
+		
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
@@ -417,7 +418,7 @@ namespace fastEnvelope {
 
 			return 0;
 		}
-
+		
 
 	
 	};
