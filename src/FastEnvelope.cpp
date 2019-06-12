@@ -4,7 +4,7 @@
 #include <fstream>
 #include <istream>
 #include <igl/Timer.h>
-
+#include<fastenvelope/AABBWrapper.h>
 
 //#include<fastenvelope/intersections.h>
 
@@ -69,7 +69,7 @@ namespace fastEnvelope {
 		}
 		std::cout << "map size " << prismmap.size() << std::endl;
 	}
-	bool FastEnvelope::is_inside(const std::array<Vector3, 3> &triangle) const { 
+	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const { 
 		Vector3 tmin, tmax;
 		std::vector<int> inumber;
 		std::vector<int> intercell;
@@ -90,6 +90,13 @@ namespace fastEnvelope {
 			interenvprism.emplace_back(envprism[inumber[j]]);
 		}
 		return FastEnvelope::FastEnvelopeTestImplicit(triangle, interenvprism); 
+	}
+
+	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar& sampleerror) const {
+		std::vector<GEO::vec3> ps;
+		//floatTetWild::sample_triangle(triangle, ps, sampleerror);//dd is used for sapmling
+		return 0;
+
 	}
 
 	/*
@@ -301,22 +308,23 @@ namespace fastEnvelope {
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							if (inter1 != inter2) {
 
-								cout << "difference in 3 triangle in-prism test, number"<<recordnumber2<<" " << inter1 << " " << inter2 << endl;
+								//cout << "difference in 3 triangle in-prism test, number"<<recordnumber2<<" " << inter1 << " " << inter2 << endl;
 								recordnumber2++;
+								if (inter2 == 1) {
+									recordnumber4++;
+									//cout << "test on the new facets " << recordnumber4 << endl;
+								}
 							}
-							if (inter2==2){
-								recordnumber4 ++;
-								cout << "test on the new facets " << recordnumber4 << endl;
-							}
+							
 							
 								recordnumber3++;
 								//cout << "see the total test number, number" << recordnumber3 << endl;
 
 							//////////////////////////////////////////////////////////////////////////////
 							
-							if (inter1 == 1) {
+							if (inter2 == 1) {
 								
-								return 1;
+								return 1;//out
 							}
 						}
 					}

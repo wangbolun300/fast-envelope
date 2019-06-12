@@ -22,9 +22,9 @@ namespace fastEnvelope {
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac);
-		bool is_inside(const std::array<Vector3, 3> &triangle) const;
+		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		inline int prism_size() const { return envprism.size(); }
-		
+		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar& sampleerror) const;
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
@@ -212,12 +212,12 @@ namespace fastEnvelope {
 		static bool is_3triangle_intersect(double& v1x,  double& v1y, double& v1z, double& v2x, double& v2y, double& v2z, double& v3x, double& v3y, double& v3z,
 			double& w1x, double& w1y, double& w1z, double& w2x, double& w2y, double& w2z, double& w3x, double& w3y, double& w3z,
 			double& u1x, double& u1y, double& u1z, double& u2x, double& u2y, double& u2z, double& u3x, double& u3y, double& u3z,
-			double& m11, double& m12, double& m13, double& d) {
+			double& n1, double& n2, double& n3, double& d) {
+			
 			::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
+			
 			double t2x = v2x, t2y = v2y, t2z = v2z, t3x = v3x, t3y = v3y, t3z = v3z;//still need these
-			double v4x = v1x - v3x;
-			double v4y = v1y - v3y;
-			double v4z = v1z - v3z;
+			
 			v3x -= v2x;
 			v3y -= v2y;
 			v3z -= v2z;
@@ -248,26 +248,42 @@ namespace fastEnvelope {
 			double nuy = det2x2(u3x, u3z, u2x, u2z);
 			double nuz = det2x2(u2x, u2y, u3x, u3y);
 
-			d = det3x3(nvx, nvy, nvz, nwx, nwy, nwz, nux, nuy, nuz);
+			double nwyuz = nwy * nuz - nwz * nuy;
+			double nwxuz = nwx * nuz - nwz * nux;
+			double nwxuy = nwx * nuy - nwy * nux;
+
+			double nvyuz = nvy * nuz - nvz * nuy;
+			double nvxuz = nvx * nuz - nvz * nux;
+			double nvxuy = nvx * nuy - nvy * nux;
+
+			double nvywz = nvy * nwz - nvz * nwy;
+			double nvxwz = nvx * nwz - nvz * nwx;
+			double nvxwy = nvx * nwy - nvy * nwx;
+
+			d = nvx * nwyuz - nvy * nwxuz + nvz * nwxuy;
+
+			double p1 = nvx * v1x + nvy * v1y + nvz * v1z;
+			double p2 = nwx * w1x + nwy * w1y + nwz * w1z;
+			double p3 = nux * u1x + nuy * u1y + nuz * u1z;
+
+			 n1 = p1 * nwyuz - p2 * nvyuz + p3 * nvywz;
+			 n2 = p2 * nvxuz - p3 * nvxwz - p1 * nwxuz;
+			 n3 = p3 * nvxwy - p2 * nvxuy + p1 * nwxuy;
+
+			
+
 			if (d < SCALAR_ZERO_3) {// if not intersected
 				return 0;
 			}
-			double enlarge = abs(nvx);
-			//enlarge=enlarge<fabs(nvy)?
-			double dot1 = dot(nvx, nvy, nvz, v1x, v1y, v1z);
-			double dot2 = dot(nwx, nwy, nwz, w1x, w1y, w1z);
-			double dot3 = dot(nux, nuy, nuz, u1x, u1y, u1z);//B
-
-			m11 = det3x3(dot1, nvy, nvz, dot2, nwy, nwz, dot3, nuy, nuz);
-			m12 = det3x3(nvx, dot1, nvz, nwx, dot2, nwz, nux, dot3, nuz);
-			m13 = det3x3(nvx, nvy, dot1, nwx, nwy, dot2, nux, nuy, dot3);
+		
+			
 
 			////////////////////////////////////////////////////////////////
 			// this part is to predicate if the point is in the interior of triangle v
 			//test : (n,v1,t2),(n,t2,t3),(n,t3,v1)
 			Scalar nx, ny, nz;
 			Vector3 n = Vector3(v1x + nvx, v1y + nvy, v1z + nvz);
-			n = n.normalized();//TODO maybe not needed
+			//n = n.normalized();//TODO maybe not needed, and this is wrong :)
 			nx = n(0); ny = n(1); nz = n(2);
 			int ori1, ori2, ori3;
 			ori1 = orient3D_TPI(
@@ -275,20 +291,20 @@ namespace fastEnvelope {
 				w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
 				u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z,
 				nx, ny, nz, v1x, v1y, v1z, t2x, t2y, t2z,
-				m11, m12, m13, d);
+				n1,n2,n3, d);
 			ori2 = orient3D_TPI(
 				v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
 				w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
 				u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z,
 				nx, ny, nz, t2x, t2y, t2z, t3x, t3y, t3z,
-				m11, m12, m13, d);
+				n1,n2,n3, d);
 
 			ori3 = orient3D_TPI(
 				v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
 				w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
 				u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z,
 				nx, ny, nz, t3x, t3y, t3z, v1x, v1y, v1z,
-				m11, m12, m13, d);
+				n1,n2,n3, d);
 			int mark1 = ori1 * ori2, mark2 = ori1 * ori3;
 			///////////////////////////////////////////////////
 			if (mark1 > 0 && mark2 > 0) {
@@ -304,26 +320,33 @@ namespace fastEnvelope {
 			const double& w1x, const double& w1y, const double& w1z, const double& w2x, const double& w2y, const double& w2z, const double& w3x, const double& w3y, const double& w3z,
 			const double& u1x, const double& u1y, const double& u1z, const double& u2x, const double& u2y, const double& u2z, const double& u3x, const double& u3y, const double& u3z,
 			const double& q1x, const double& q1y, const double& q1z, const double& q2x, const double& q2y, const double& q2z, const double& q3x, const double& q3y, const double& q3z,
-			const double& m11, const double& m12, const double& m13, const double& d)
+			const double& n1,const double& n2, const double& n3, const double& d)
 		{
 
 
 			// If the same intersection point must be tested against several planes,
 			// code up to here can be extracted and computed only once.
 
-			double det = det4x4(
-				m11, m12, m13, 1,
-				d*q1x, d*q1y, d*q1z, 1,
-				d*q2x, d*q2y, d*q2z, 1,
-				d*q3x, d*q3y, d*q3z, 1
-			);
+			double dq3x = d * q3x;
+			double dq3y = d * q3y;
+			double dq3z = d * q3z;
+
+			double a11 = n1 - dq3x;
+			double a12 = n2 - dq3y;
+			double a13 = n3 - dq3z;
+			double a21 = q1x - q3x;
+			double a22 = q1y - q3y;
+			double a23 = q1z - q3z;
+			double a31 = q2x - q3x;
+			double a32 = q2y - q3y;
+			double a33 = q2z - q3z;
+
+			double det = a11 * (a22*a33 - a23 * a32) - a12 * (a21*a33 - a23 * a31) + a13 * (a21*a32 - a22 * a31);
+
 			if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return 0; // Fast reject in case of under/overflow
 
 			// Almost static filter
 
-			double fv1x = fabs(v1x);
-			double fv1y = fabs(v1y);
-			double fv1z = fabs(v1z);
 			double fv2x = fabs(v2x);
 			double fv2y = fabs(v2y);
 			double fv2z = fabs(v2z);
@@ -338,9 +361,6 @@ namespace fastEnvelope {
 			double fw3y = fabs(w3y);
 			double fw3z = fabs(w3z);
 
-			double fu1x = fabs(u1x);
-			double fu1y = fabs(u1y);
-			double fu1z = fabs(u1z);
 			double fu2x = fabs(u2x);
 			double fu2y = fabs(u2y);
 			double fu2z = fabs(u2z);
@@ -348,76 +368,66 @@ namespace fastEnvelope {
 			double fu3y = fabs(u3y);
 			double fu3z = fabs(u3z);
 
-			double fq1x = fabs(q1x);
-			double fq1y = fabs(q1y);
-			double fq1z = fabs(q1z);
-			double fq2x = fabs(q2x);
-			double fq2y = fabs(q2y);
-			double fq2z = fabs(q2z);
-			double fq3x = fabs(q3x);
-			double fq3y = fabs(q3y);
-			double fq3z = fabs(q3z);
+			double fa21 = fabs(a21);
+			double fa22 = fabs(a22);
+			double fa23 = fabs(a23);
+			double fa31 = fabs(a31);
+			double fa32 = fabs(a32);
+			double fa33 = fabs(a33);
 
-			double max1, max2, max3, max4, max5, max6, max7, max8, max9, max10, max11, max12, max13, max14;
+			double max1, max2, max3, max4, max5, max6, max7, max8;
 
-			max10 = fq3z;
-			if (max10 < fq1z) max10 = fq1z;
-			if (max10 < fq2z) max10 = fq2z;
-			max1 = max10;
-			max4 = fu3z;
-			if (max4 < fu2z) max4 = fu2z;
-			if (max4 < fw2z) max4 = fw2z;
-			if (max4 < fw3z) max4 = fw3z;
-			if (max1 < max4) max1 = max4;
-			max11 = fu3y;
-			if (max11 < fw2y) max11 = fw2y;
-			if (max11 < fw3y) max11 = fw3y;
-			if (max11 < fu2y) max11 = fu2y;
-			max2 = max11;
-			max14 = fv2z;
-			if (max14 < fw2z) max14 = fw2z;
-			if (max14 < fv3z) max14 = fv3z;
-			if (max14 < fw3z) max14 = fw3z;
-			if (max2 < max14) max2 = max14;
-			max13 = fw2y;
-			if (max13 < fw3y) max13 = fw3y;
-			if (max13 < fv2y) max13 = fv2y;
-			if (max13 < fv3y) max13 = fv3y;
-			if (max2 < max13) max2 = max13;
-			max3 = max14;
+			max4 = fv2y;
+			if (max4 < fv3y) max4 = fv3y;
+			if (max4 < fw3y) max4 = fw3y;
+			if (max4 < fw2y) max4 = fw2y;
+			if (max4 < fu2y) max4 = fu2y;
+			if (max4 < fu3y) max4 = fu3y;
+			max1 = max4;
+			max2 = fv3x;
+			if (max2 < fv2x) max2 = fv2x;
+			if (max2 < fu2x) max2 = fu2x;
+			if (max2 < fu3x) max2 = fu3x;
+			if (max2 < fw2x) max2 = fw2x;
+			if (max2 < fw3x) max2 = fw3x;
+			if (max1 < max2) max1 = max2;
+			max5 = fv2z;
+			if (max5 < fu2z) max5 = fu2z;
+			if (max5 < fv3z) max5 = fv3z;
+			if (max5 < fw3z) max5 = fw3z;
+			if (max5 < fw2z) max5 = fw2z;
+			if (max5 < fu3z) max5 = fu3z;
+			max3 = max5;
 			if (max3 < max4) max3 = max4;
-			if (max2 < max3) max2 = max3;
-			if (max2 < max4) max2 = max4;
-			max12 = fw2x;
-			if (max12 < fw3x) max12 = fw3x;
-			if (max12 < fv3x) max12 = fv3x;
-			if (max12 < fv2x) max12 = fv2x;
-			max5 = max12;
-			if (max5 < fq1x) max5 = fq1x;
-			if (max5 < fq2x) max5 = fq2x;
-			if (max5 < fq3x) max5 = fq3x;
-			max6 = max11;
-			if (max6 < max12) max6 = max12;
-			if (max6 < max13) max6 = max13;
-			max8 = fu3x;
-			if (max8 < fw2x) max8 = fw2x;
-			if (max8 < fw3x) max8 = fw3x;
-			if (max8 < fu2x) max8 = fu2x;
-			if (max6 < max8) max6 = max8;
-			max7 = max12;
-			if (max7 < max8) max7 = max8;
-			if (max6 < max7) max6 = max7;
-			max9 = max11;
-			if (max9 < max13) max9 = max13;
-			if (max9 < fq1y) max9 = fq1y;
-			if (max9 < fq2y) max9 = fq2y;
-			if (max9 < fq3y) max9 = fq3y;
+			max6 = fu2x;
+			if (max6 < fu3x) max6 = fu3x;
+			if (max6 < fu2z) max6 = fu2z;
+			if (max6 < fw3y) max6 = fw3y;
+			if (max6 < fw2x) max6 = fw2x;
+			if (max6 < fw3z) max6 = fw3z;
+			if (max6 < fw2y) max6 = fw2y;
+			if (max6 < fw2z) max6 = fw2z;
+			if (max6 < fu2y) max6 = fu2y;
+			if (max6 < fu3z) max6 = fu3z;
+			if (max6 < fu3y) max6 = fu3y;
+			if (max6 < fw3x) max6 = fw3x;
+			if (max6 < fa22) max6 = fa22;
+			if (max6 < fa32) max6 = fa32;
+			max7 = fu2x;
+			if (max7 < fu3x) max7 = fu3x;
+			if (max7 < fw2x) max7 = fw2x;
+			if (max7 < fw3x) max7 = fw3x;
+			if (max7 < fa21) max7 = fa21;
+			if (max7 < fa31) max7 = fa31;
+			max8 = fa22;
+			if (max8 < fa23) max8 = fa23;
+			if (max8 < fa33) max8 = fa33;
+			if (max8 < fa32) max8 = fa32;
 
-			double eps = 4.5906364908640589e-008 * max13 * max14 * max12 * max4 * max8 * max11 * max5 * max13 * max14 * max12 * max4 * max8 * max11 * max9 * max9 * max3 * max7 * max1 * max6 * max2 * max10;
+			double eps = 3.4025182954957945e-012 * (((((((max1 * max3) * max2) * max5) * max7) * max4) * max6) * max8);
 
-			if (det > eps) return (d > 0) ? (1) : (-1);
-			if (det < -eps) return (d > 0) ? (-1) : (1);
-
+			if ((det > eps)) return (d > 0) ? (1) : (-1);
+			if ((det < -eps)) return (d > 0) ? (-1) : (1);
 			return 0;
 		}
 		

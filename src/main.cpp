@@ -328,7 +328,7 @@ void add_hashing() {
 
 		timer4.start();//function time
 
-		pos2[i] = fast_envelope.is_inside(triangle[i]);
+		pos2[i] = fast_envelope.is_outside(triangle[i]);
 		time5 = time5 + timer4.getElapsedTimeInSec();//function time
 
 
@@ -613,8 +613,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 void test_in_wild() {
 	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
 	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
-	vector<int> inenvelope;
-	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, inenvelope);
+	vector<int> outenvelope;
+	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 	
 	std::vector<Vector3> env_vertices;
 	std::vector<Vector3i> env_faces;
@@ -639,35 +639,44 @@ void test_in_wild() {
 	eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
 
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
-	vector<bool> pos2;
+	vector<bool> pos1, pos2;
+	pos1.resize(fn);
 	pos2.resize(fn);
 	for (int i = 0; i < fn; i++) {
 
-
-		pos2[i] = fast_envelope.is_inside(triangles[i]);
+		pos1[i] = outenvelope[i];
+		pos2[i] = fast_envelope.is_outside(triangles[i]);
 
 	}
 	
-	int rcd = 0, eq0 = 0, eq02 = 0;
+
+
+
+
+	int rcd = 0, eq0 = 0, eq02 = 0,rmk=0;
 	for (int i = 0; i < fn; i++) {
-		if (inenvelope[i] - pos2[i] != 0) {
+		if (pos1[i] - pos2[i] != 0) {
 			//if (pos1[i]== 0) {
 			rcd = rcd + 1;
-			//std::cout << "envelope test different! different face NO. " << i << " the difference: " << inenvelope[i] - pos2[i] << std::endl;
+			//std::cout << "envelope test different! different face NO. " << i << " the difference: " << pos1[i] - pos2[i] << std::endl;
 			//std::cout << "envelope test same! same face NO. " << i << "the in and out : " <<pos1[i] <<","<<pos2[i] << std::endl;
 		}
-		if (inenvelope[i] == 0) {
+		if (pos1[i] == 0) {
 			eq0 = eq0 + 1;
 		}
 		if (pos2[i] == 0) {
 			eq02 = eq02 + 1;
+		}
+		if (pos1[i] == 0 && pos2[i] == 1) {
+			rmk++;
 		}
 	}
 
 	std::cout << "how many different cases:  " << rcd << std::endl;
 	std::cout << "aabb inside triangle number:  " << eq0 << std::endl;
 	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
-	
+	std::cout << "0-1 cases number " << rmk << std::endl;
+
 }
 
 
