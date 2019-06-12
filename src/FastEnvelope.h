@@ -266,7 +266,9 @@ namespace fastEnvelope {
 			// this part is to predicate if the point is in the interior of triangle v
 			//test : (n,v1,t2),(n,t2,t3),(n,t3,v1)
 			Scalar nx, ny, nz;
-			nx = v1x + nvx; ny = v1y + nvy; nz = v1z + nvz;
+			Vector3 n = Vector3(v1x + nvx, v1y + nvy, v1z + nvz);
+			n = n.normalized();//TODO maybe not needed
+			nx = n(0); ny = n(1); nz = n(2);
 			int ori1, ori2, ori3;
 			ori1 = orient3D_TPI(
 				v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,

@@ -11,7 +11,7 @@
 
 
 int markhf = 0, markhf1=0;
-int recordnumber = 0, recordnumber1 = 0,recordnumber2=0,recordnumber3=0;
+int recordnumber = 0, recordnumber1 = 0,recordnumber2=0,recordnumber3=0,recordnumber4=0;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 		{
@@ -304,9 +304,14 @@ namespace fastEnvelope {
 								cout << "difference in 3 triangle in-prism test, number"<<recordnumber2<<" " << inter1 << " " << inter2 << endl;
 								recordnumber2++;
 							}
+							if (inter2==2){
+								recordnumber4 ++;
+								cout << "test on the new facets " << recordnumber4 << endl;
+							}
 							
 								recordnumber3++;
-							
+								//cout << "see the total test number, number" << recordnumber3 << endl;
+
 							//////////////////////////////////////////////////////////////////////////////
 							
 							if (inter1 == 1) {
