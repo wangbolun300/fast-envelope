@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
-#include<fastenvelope/AABBWrapper.h>
+
 #include <filesystem>
 #include <stdio.h>
 
@@ -680,7 +680,36 @@ void test_in_wild() {
 }
 
 
+void sample_triangle_test() {
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
+	vector<int> outenvelope;
+	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
+	std::array<Vector3, 3> tri = triangles[20];
+	std::vector<Vector3> ps;
+	Scalar l1 = (tri[0] - tri[1]).norm()/10;
+	FastEnvelope::triangle_sample(tri, ps, l1);
+	std::cout << ps.size() << endl;
 
+
+	std::ofstream fout;
+	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\triangle.txt");
+	for (int i = 0; i < 3; i++) {
+		
+		fout <<std::setprecision(17) << tri[i][0]<<" "<< tri[i][1]<<" "<< tri[i][2] <<endl;
+
+	}
+	fout.close();
+
+	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\points.txt");
+	for (int i = 0; i < ps.size(); i++) {
+
+		fout << std::setprecision(17)<< ps[i][0] << " " << ps[i][1] << " " << ps[i][2] << endl;
+
+	}
+	fout.close();
+
+}
 
 //#include <fastenvelope/fprecision.h>
 
@@ -720,8 +749,9 @@ int main(int argc, char const *argv[])
 	//calculation();
 	//test_ttt();
 	//test_diff();
-	test_in_wild();
+	//test_in_wild();
 	//inf();
+	sample_triangle_test();
 	
 	std::cout << "done!" << std::endl;
 	

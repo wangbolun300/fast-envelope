@@ -24,7 +24,7 @@ namespace fastEnvelope {
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac);
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		inline int prism_size() const { return envprism.size(); }
-		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar& sampleerror) const;
+		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
@@ -35,7 +35,9 @@ namespace fastEnvelope {
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		static bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
-		
+	public:
+		static void triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error);
+	private:
 		static void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {
 			min = vertices.front();
 			max = vertices.front();

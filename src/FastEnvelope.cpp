@@ -4,7 +4,7 @@
 #include <fstream>
 #include <istream>
 #include <igl/Timer.h>
-#include<fastenvelope/AABBWrapper.h>
+//#include<fastenvelope/AABBWrapper.h>
 
 //#include<fastenvelope/intersections.h>
 
@@ -92,13 +92,35 @@ namespace fastEnvelope {
 		return FastEnvelope::FastEnvelopeTestImplicit(triangle, interenvprism); 
 	}
 
-	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar& sampleerror) const {
+	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const {
 		std::vector<GEO::vec3> ps;
 		//floatTetWild::sample_triangle(triangle, ps, sampleerror);//dd is used for sapmling
 		return 0;
 
 	}
+	void FastEnvelope::triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error) {
+		ps.clear();
+		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm();//length
+		
+		if (l1 == 0 || l2 == 0) {
+			return;
+		}
+		int l1s = l1 / error + 1, l2s = l2 / error + 1, l2sn;//subdivided
 
+		Scalar e1 = l1 / l1s, e2 = l2 / l2s, e3;//length of every piece
+		Vector3 subl1 = (triangle[1] - triangle[0]) / l1s, subl2 = (triangle[2] - triangle[0]) / l2s,//vector of piece
+			temp;
+		
+		for (int i = 0; i <= l1s; i++) {
+			Scalar length = (l1s - i)*e1*l2 / l1;// length of this line
+			l2sn = length / e2 + 1;// subdivided of this line
+			Vector3 subl3 = (triangle[2] - triangle[0])*length / l2sn/l2;//vector of each piece
+			for (int j = 0; j <= l2sn; j++) {
+				temp=subl1*i+triangle[0]+subl3*j;
+				ps.push_back(temp);
+			}
+		}
+	}
 	/*
 	bool FastEnvelope::FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
