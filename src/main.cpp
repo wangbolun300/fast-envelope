@@ -685,9 +685,9 @@ void sample_triangle_test() {
 	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
-	std::array<Vector3, 3> tri = triangles[20];
+	std::array<Vector3, 3> tri = triangles[10000];
 	std::vector<Vector3> ps;
-	Scalar l1 = (tri[0] - tri[1]).norm()/10;
+	Scalar l1 = (tri[0] - tri[1]).norm()/50;
 	FastEnvelope::triangle_sample(tri, ps, l1);
 	std::cout << ps.size() << endl;
 

@@ -93,8 +93,37 @@ namespace fastEnvelope {
 	}
 
 	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const {
-		std::vector<GEO::vec3> ps;
-		//floatTetWild::sample_triangle(triangle, ps, sampleerror);//dd is used for sapmling
+		std::vector<Vector3> ps;
+		triangle_sample(triangle, ps, sampleerror);//dd is used for sapmling
+		bool out;
+		Vector3 tmin, tmax;
+		std::vector<int> inumber;
+		std::vector<int> intercell;
+		std::vector<std::array<Vector3, 12>> interenvprism;
+		get_triangle_corners(triangle, tmin, tmax);
+		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
+		inumber.clear();
+		for (int j = 0; j < intercell.size(); j++) {
+			auto search = prismmap.find(intercell[j]);
+			if (search != prismmap.end()) {
+				inumber.insert(inumber.end(), search->second.begin(), search->second.end());
+			}
+		}
+		sort(inumber.begin(), inumber.end());
+		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
+		interenvprism.reserve(inumber.size());
+		for (int j = 0; j < inumber.size(); j++) {
+			interenvprism.emplace_back(envprism[inumber[j]]);
+		}
+		std::vector<int> jump;
+		for (int i = 0; i < ps.size(); i++) {
+			out = point_out_prism(ps[i], interenvprism, jump);
+		}
+		if (out == true) {
+
+			return 1;
+
+		}
 		return 0;
 
 	}
