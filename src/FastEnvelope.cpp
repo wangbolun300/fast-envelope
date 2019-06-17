@@ -91,7 +91,40 @@ namespace fastEnvelope {
 		}
 		return FastEnvelope::FastEnvelopeTestImplicit(triangle, interenvprism); 
 	}
+	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
+		
+		Vector3 tmin, tmax;
+		std::vector<int> inumber;
+		std::vector<int> intercell;
+		std::vector<std::array<Vector3, 12>> interenvprism;
+		get_triangle_corners(triangle, tmin, tmax);
+		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
+		inumber.clear();
+		for (int j = 0; j < intercell.size(); j++) {
+			auto search = prismmap.find(intercell[j]);
+			if (search != prismmap.end()) {
+				inumber.insert(inumber.end(), search->second.begin(), search->second.end());
+			}
+		}
+		sort(inumber.begin(), inumber.end());
+		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
+		interenvprism.reserve(inumber.size());
+		for (int j = 0; j < inumber.size(); j++) {
+			interenvprism.emplace_back(envprism[inumber[j]]);
+		}
 
+		std::ofstream fout;
+		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualprism.txt");
+		for (int i = 0; i < interenvprism.size(); i++) {
+			for (int j = 0; j < 12; j++) {
+
+				fout << std::setprecision(17) << interenvprism[i][j][0] << " " << interenvprism[i][j][1] << " " << interenvprism[i][j][2] << endl;
+
+			}
+		}
+		
+		fout.close();
+	}
 	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const {
 		std::vector<Vector3> ps;
 		triangle_sample(triangle, ps, sampleerror);//dd is used for sapmling
@@ -135,6 +168,7 @@ namespace fastEnvelope {
 		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm(),l3= (triangle[2] - triangle[1]).norm();//length
 		
 		if (l1 == 0 || l2 == 0 || l3 == 0) {
+			TODO
 			return;
 		}
 		int l1s = l1 / error + 1, l2s = l2 / error + 1, l2sn;//subdivided

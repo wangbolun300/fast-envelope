@@ -702,7 +702,7 @@ void test_in_wild() {
 		if (pos2[i] - pos3[i] == 1) {
 			count1++;
 		}
-		if (pos2[i] - pos3[i] == -1) {
+		if (pos2[i] - pos3[i] == 1) {
 			trindex1.push_back(i);
 		}
 	}
@@ -725,7 +725,7 @@ void test_in_wild() {
 
 
 	////////////////////////////////////////////////////////////////////////////////////////
-	/*std::ofstream fout;
+	std::ofstream fout;
 	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
 	int idx = 2;
 	std::cout << "output NO. " <<trindex1[idx] << endl;
@@ -734,10 +734,9 @@ void test_in_wild() {
 		fout << std::setprecision(17) << triangles[trindex1[idx]][i][0] << " " << triangles[trindex1[idx]][i][1] << " " << triangles[trindex1[idx]][i][2] << endl;
 
 	}
-	fout.close();*/
+	fout.close();
 
-
-
+	fast_envelope.print_prisms(triangles[trindex1[idx]]);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 }
