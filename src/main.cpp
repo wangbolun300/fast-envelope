@@ -677,6 +677,69 @@ void test_in_wild() {
 	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
 	std::cout << "0-1 cases number " << rmk << std::endl;
 
+
+
+	 
+	
+	std::vector<bool> pos3;
+	pos3.resize(fn);
+	std::array<Vector3, 3> tri;
+	Scalar l1;
+	std::vector<std::array<Vector3, 3>> t;
+	std::vector<int> trindex1, trindex2;
+
+	for (int i = 0; i < fn; i++) {
+		tri = triangles[i];
+		l1 = (tri[0] - tri[1]).norm() / 30;
+		pos3[i]=fast_envelope.sample_triangle_outside(tri, l1);
+	}
+
+	int count = 0, count1 = 0, count2 = 0, count3 = 0;
+	for (int i = 0; i < fn; i++) {
+		if (pos2[i] - pos3[i] != 0) {
+			count++;
+		}
+		if (pos2[i] - pos3[i] == 1) {
+			count1++;
+		}
+		if (pos2[i] - pos3[i] == -1) {
+			trindex1.push_back(i);
+		}
+	}
+	std::cout << "how many different cases in comparison:  " << count << std::endl;
+	std::cout << "1-0 cases in comparison:  " << count1 << std::endl;
+	std::cout << "0-1 cases in comparison:  " << count-count1 << std::endl;
+	std::cout << "0-1 case size:  " << trindex1.size() << std::endl;
+
+	for (int i = 0; i < fn; i++) {
+		if (pos1[i] - pos3[i] != 0) {
+			count2++;
+		}
+		if (pos1[i] - pos3[i] == 1) {
+			count3++;
+		}
+	}
+	std::cout << "how many different cases in comparison 1:  " << count2 << std::endl;
+	std::cout << "1-0 cases in comparison 1:  " << count3 << std::endl;
+	std::cout << "0-1 cases in comparison 1:  " << count2 - count3 << std::endl;
+
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	/*std::ofstream fout;
+	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
+	int idx = 2;
+	std::cout << "output NO. " <<trindex1[idx] << endl;
+	for (int i = 0; i < 3; i++) {
+
+		fout << std::setprecision(17) << triangles[trindex1[idx]][i][0] << " " << triangles[trindex1[idx]][i][1] << " " << triangles[trindex1[idx]][i][2] << endl;
+
+	}
+	fout.close();*/
+
+
+
+
+	////////////////////////////////////////////////////////////////////////////////////////
 }
 
 
@@ -749,9 +812,9 @@ int main(int argc, char const *argv[])
 	//calculation();
 	//test_ttt();
 	//test_diff();
-	//test_in_wild();
+	test_in_wild();
 	//inf();
-	sample_triangle_test();
+	//sample_triangle_test();
 	
 	std::cout << "done!" << std::endl;
 	

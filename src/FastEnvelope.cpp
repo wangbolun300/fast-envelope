@@ -118,20 +118,23 @@ namespace fastEnvelope {
 		std::vector<int> jump;
 		for (int i = 0; i < ps.size(); i++) {
 			out = point_out_prism(ps[i], interenvprism, jump);
-		}
-		if (out == true) {
+			
+			if (out == true) {
 
-			return 1;
+				return 1;
 
+			}
+		
 		}
+		
 		return 0;
 
 	}
 	void FastEnvelope::triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error) {
 		ps.clear();
-		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm();//length
+		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm(),l3= (triangle[2] - triangle[1]).norm();//length
 		
-		if (l1 == 0 || l2 == 0) {
+		if (l1 == 0 || l2 == 0 || l3 == 0) {
 			return;
 		}
 		int l1s = l1 / error + 1, l2s = l2 / error + 1, l2sn;//subdivided
