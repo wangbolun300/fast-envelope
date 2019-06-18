@@ -26,6 +26,7 @@ namespace fastEnvelope {
 		inline int prism_size() const { return envprism.size(); }
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
+		static void test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const Vector3&p3, const Vector3 &q1, const Vector3 &q2, const Vector3&q3);
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
@@ -39,6 +40,7 @@ namespace fastEnvelope {
 	public:
 		static void triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error);
 	private:
+		//static void seg_tri_cut_on_tir()()
 		static void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {
 			min = vertices.front();
 			max = vertices.front();

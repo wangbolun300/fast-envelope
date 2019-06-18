@@ -35,15 +35,15 @@ void tri_tri_cutting_try() {
 	p3 = { 0,0,0 };
 
 
-	q1 = { 0,0,0 };
+	q1 = { 0,0,1 };
 
-	q2 = { 0,0.5,-1 };
+	q2 = { -0.5,-0.5,-0.5 };
 
-	q3 = { 0,1,1 };
+	q3 = { -0.5,-0.5,-0.5 };
 
-	int a = 0; //FIXME maybe
-	//FastEnvelope::tri_cut_tri_simple(p1, p2, p3, q1, q3, q2);
-	std::cout << "a " << a << std::endl;
+	
+	FastEnvelope::test_tri_tri_cut( q1, q2, q3,p1, p2, p3);
+	FastEnvelope::test_tri_tri_cut( p1, p2, p3, q1, q2, q3 );
 
 }
 
@@ -690,7 +690,8 @@ void test_in_wild() {
 
 	for (int i = 0; i < fn; i++) {
 		tri = triangles[i];
-		l1 = (tri[0] - tri[1]).norm() / 30;
+		l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 30;
+		//l1 = (tri[0] - tri[1]).norm() / 30;
 		pos3[i]=fast_envelope.sample_triangle_outside(tri, l1);
 	}
 
@@ -702,7 +703,7 @@ void test_in_wild() {
 		if (pos2[i] - pos3[i] == 1) {
 			count1++;
 		}
-		if (pos2[i] - pos3[i] == 1) {
+		if (pos2[i] - pos3[i] == -1) {
 			trindex1.push_back(i);
 		}
 	}
@@ -727,7 +728,7 @@ void test_in_wild() {
 	////////////////////////////////////////////////////////////////////////////////////////
 	std::ofstream fout;
 	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-	int idx = 2;
+	int idx = 10;
 	std::cout << "output NO. " <<trindex1[idx] << endl;
 	for (int i = 0; i < 3; i++) {
 
@@ -806,12 +807,12 @@ int main(int argc, char const *argv[])
 	//comparison();
 	//unordered_map_try();
 	//add_hashing();
-	//tri_tri_cutting_try();
+	tri_tri_cutting_try();
 	//FastEnvelope::timerecord();
 	//calculation();
 	//test_ttt();
 	//test_diff();
-	test_in_wild();
+	//test_in_wild();
 	//inf();
 	//sample_triangle_test();
 	

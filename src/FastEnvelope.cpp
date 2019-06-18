@@ -167,10 +167,44 @@ namespace fastEnvelope {
 		ps.clear();
 		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm(),l3= (triangle[2] - triangle[1]).norm();//length
 		
-		if (l1 == 0 || l2 == 0 || l3 == 0) {
-			TODO
+		if (l1 == 0 && l2 == 0 && l3 == 0) {
+			ps.push_back(triangle[0]);
 			return;
 		}
+		if (l1 == 0) {
+			
+			int t=l2/error+1;
+			Vector3 vct = (triangle[2] - triangle[0]) / t;
+			for (int i = 0; i <= t; i++) {
+				ps.push_back(triangle[0] + vct * i);
+			}
+			return;
+		}
+		if (l2 == 0) {
+			
+			int t = l1 / error + 1;
+			Vector3 vct = (triangle[1] - triangle[0]) / t;
+			for (int i = 0; i <= t; i++) {
+				ps.push_back(triangle[0] + vct * i);
+			}
+			return;
+		}
+		if (l3 == 0) {
+			
+			int t = l1 / error + 1;
+			Vector3 vct = (triangle[1] - triangle[0]) / t;
+			for (int i = 0; i <= t; i++) {
+				ps.push_back(triangle[0] + vct * i);
+			}
+			return;
+		}
+		/*if (l1 == 0 || l2 == 0 || l3 == 0) {
+
+			
+
+				return;
+
+		}*/
 		int l1s = l1 / error + 1, l2s = l2 / error + 1, l2sn;//subdivided
 
 		Scalar e1 = l1 / l1s, e2 = l2 / l2s, e3;//length of every piece
@@ -325,6 +359,9 @@ namespace fastEnvelope {
 		return 0;
 	}
 	*/
+void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const Vector3&p3, const Vector3 &q1, const Vector3 &q2, const Vector3&q3) {
+	cout<<tri_cut_tri_simple(p1, p2, p3, q1, q2, q3)<<endl;
+}
 	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
 
@@ -334,8 +371,32 @@ namespace fastEnvelope {
 		std::vector<int> jump;
 		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
 		bool out;
-		int inter, inter1, record1, record2, tti;//triangle-triangle intersection
+		int inter, inter1, record1, record2, de[3],
+			tti;//triangle-triangle intersection
 		jump.clear();
+		////////////////////degeneration fix
+		for (int i = 0; i < 3; i++) {
+			de[i] = (triangle[triseg[i][0]] - triangle[triseg[i][1]]).norm();
+
+			
+		}
+		if (de[0] == 0 && de[1] == 0 && de[2] == 0) {
+			return out = point_out_prism(triangle[0], envprism, jump);
+			
+		}
+		for (int i = 0; i < 3; i++) {
+			if (de[i] == 0) {
+				int j = (i + 1) % 3;
+				for (int i = 0; i < envprism.size(); i++) {
+					for (int j = 0; j < 8; j++) {
+						//Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[j][0]], triangle[triseg[j][1]], )//TODO
+					}
+				}
+			}
+		}
+
+
+		////////////////////////////////
 		for (int i = 0; i < 3; i++) {
 			out = point_out_prism(triangle[i], envprism, jump);
 			if (out == true) {
