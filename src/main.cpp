@@ -712,6 +712,19 @@ void test_in_wild() {
 	std::cout << "0-1 cases in comparison:  " << count-count1 << std::endl;
 	std::cout << "0-1 case size:  " << trindex1.size() << std::endl;
 
+	int nbr = 0;
+	for (int i = 0; i < trindex1.size(); i++) {
+		Scalar a = (triangles[trindex1[i]][0] - triangles[trindex1[i]][1]).norm(), b = (triangles[trindex1[i]][2] - triangles[trindex1[i]][1]).norm(),
+			c = (triangles[trindex1[i]][0] - triangles[trindex1[i]][2]).norm();
+		Scalar area = 0.25*sqrt((a + b + c)*(a + b - c)*(a + c - b)*(b + c - a));
+		if (area < SCALAR_ZERO) {
+			nbr++;
+		}
+
+	}
+	cout << "\ndegeneration counting: " << nbr << endl;
+
+
 	for (int i = 0; i < fn; i++) {
 		if (pos1[i] - pos3[i] != 0) {
 			count2++;
@@ -807,12 +820,12 @@ int main(int argc, char const *argv[])
 	//comparison();
 	//unordered_map_try();
 	//add_hashing();
-	tri_tri_cutting_try();
+	//tri_tri_cutting_try();
 	//FastEnvelope::timerecord();
 	//calculation();
 	//test_ttt();
 	//test_diff();
-	//test_in_wild();
+	test_in_wild();
 	//inf();
 	//sample_triangle_test();
 	
