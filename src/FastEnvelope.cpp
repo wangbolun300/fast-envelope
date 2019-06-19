@@ -378,23 +378,56 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		for (int i = 0; i < 3; i++) {
 			de[i] = (triangle[triseg[i][0]] - triangle[triseg[i][1]]).norm();
 
-			
 		}
-		if (de[0] == 0 && de[1] == 0 && de[2] == 0) {
-			return out = point_out_prism(triangle[0], envprism, jump);
-			
-		}
-		for (int i = 0; i < 3; i++) {
-			if (de[i] == 0) {
-				int j = (i + 1) % 3;
-				for (int i = 0; i < envprism.size(); i++) {
-					for (int j = 0; j < 8; j++) {
-						//Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[j][0]], triangle[triseg[j][1]], )//TODO
+		if ( 0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]))<SCALAR_ZERO) {
+			if (de[0] == 0 && de[1] == 0 && de[2] == 0) {
+				return out = point_out_prism(triangle[0], envprism, jump);
+			}
+
+			for (int we = 0; we < 3; we++) {
+				if (de[we] == 0) {
+					int  wt = (we + 1) % 3;// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
+					for (int i = 0; i < envprism.size(); i++) {
+						for (int j = 0; j < 8; j++) {
+							//Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[j][0]], triangle[triseg[j][1]], )//TODO
+							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
+								tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
+								if (tti == CUT_PARALLEL) {
+									break;
+								}
+								if (tti == CUT_EMPTY) {
+									continue;
+								}
+								jump.clear();
+								jump.emplace_back(i);
+								for (int k = 0; k < 3; k++) {
+
+									inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+										{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
+
+
+									if (inter == 1) {
+										return 1;
+									}
+
+
+								}
+
+
+							}
+						}
 					}
 				}
-			}
-		}
 
+				//////////////////////////////////////////////////////////
+
+
+
+
+
+			}
+		
+		
 
 		////////////////////////////////
 		for (int i = 0; i < 3; i++) {
