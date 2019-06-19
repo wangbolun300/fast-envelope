@@ -37,6 +37,7 @@ namespace fastEnvelope {
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		static bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
+		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
 	public:
 		static void triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error);
 	private:
@@ -275,9 +276,10 @@ namespace fastEnvelope {
 			 n2 = p2 * nvxuz - p3 * nvxwz - p1 * nwxuz;
 			 n3 = p3 * nvxwy - p2 * nvxuy + p1 * nwxuy;
 
-			
+			if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return 0; // Fast reject in case of under/overflow
 
-			if (d < SCALAR_ZERO_3) {// if not intersected
+
+			if (d ==0) {// TODO no truncation error? if not intersected
 				return 0;
 			}
 		
@@ -328,7 +330,7 @@ namespace fastEnvelope {
 			const double& n1,const double& n2, const double& n3, const double& d)
 		{
 
-
+			::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 			// If the same intersection point must be tested against several planes,
 			// code up to here can be extracted and computed only once.
 

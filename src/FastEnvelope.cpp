@@ -374,25 +374,35 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		int inter, inter1, record1, record2, de[3],
 			tti;//triangle-triangle intersection
 		jump.clear();
+
+		for (int i = 0; i < 3; i++) {
+			out = point_out_prism(triangle[i], envprism, jump);
+			if (out == true) {
+				return 1;
+			}
+		}
+
+
 		////////////////////degeneration fix
 		for (int i = 0; i < 3; i++) {
 			de[i] = (triangle[triseg[i][0]] - triangle[triseg[i][1]]).norm();
 
 		}
-		if ( 0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]))<SCALAR_ZERO) {
-			if (de[0] == 0 && de[1] == 0 && de[2] == 0) {
+		//if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) < SCALAR_ZERO) {
+		if ((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]) ==0) {
+			if (de[0] == 0 && de[1] == 0) {//case 1 degenerate to a point
 				return out = point_out_prism(triangle[0], envprism, jump);
-			}
+			}//case 1 degenerate to a point
 
-			for (int we = 0; we < 3; we++) {
+			for (int we = 0; we < 3; we++) {//case 2 two points are the same point
 				if (de[we] == 0) {
 					int  wt = (we + 1) % 3;// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
 					for (int i = 0; i < envprism.size(); i++) {
 						for (int j = 0; j < 8; j++) {
-							//Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[j][0]], triangle[triseg[j][1]], )//TODO
+							
 							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 								tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
-								if (tti == CUT_PARALLEL) {
+								if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
 									break;
 								}
 								if (tti == CUT_EMPTY) {
@@ -400,42 +410,74 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 								}
 								jump.clear();
 								jump.emplace_back(i);
-								for (int k = 0; k < 3; k++) {
-
-									inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
-										{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 
-									if (inter == 1) {
-										return 1;
-									}
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+									{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 
+								if (inter == 1) {
+									return 1;
 								}
 
+								break;
 
 							}
 						}
 					}
+					return 0;
 				}
+			}//case 2 two points are the same point
 
-				//////////////////////////////////////////////////////////
-
-
-
-
-
+			//TODO maybe we can delete case 2, but maybe having case 2 can be faster
+			//case 3 three points on one line
+			Scalar maxi = de[0];
+			int wt = 0;
+			for (int i = 1; i < 3; i++) {
+				if (de[i] > maxi) {
+					maxi = de[i];
+					wt = i;
+				}
 			}
-		
-		
+			
+			// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
+			for (int i = 0; i < envprism.size(); i++) {
+				for (int j = 0; j < 8; j++) {
+					
+					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
+						tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
+						if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
+							break;
+						}
+						if (tti == CUT_EMPTY) {
+							continue;
+						}
+						jump.clear();
+						jump.emplace_back(i);
 
-		////////////////////////////////
-		for (int i = 0; i < 3; i++) {
-			out = point_out_prism(triangle[i], envprism, jump);
-			if (out == true) {
-				return 1;
+
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
+
+
+						if (inter == 1) {
+							return 1;
+						}
+
+						break;
+
+					}
+				}
 			}
+			return 0;
+		
+			//case 3 three points on one line
+		
 		}
+		////////////////////////////////degeneration fix over
+
+
+		
 		for (int i = 0; i < envprism.size(); i++) {
 			for (int j = 0; j < 8; j++) {
 				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
@@ -531,7 +573,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		double& a31, double& a32, double& a33,
 		double& px_rx, double& py_ry, double& pz_rz,
 		double& d, double& n) {//TODO do we have redundant calculation between this and tri_cut_tri() ?
-
+		::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 		double a2233, a2133, a2132;
 		a11 = (px - qx);
 		a12 = (py - qy);
@@ -550,7 +592,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		a2132 = ((a21 * a32) - (a22 * a31));
 		d = (((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
 		n = ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
-
+		if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return 0; // Fast reject in case of under/overflow
 		if (d != 0) {
 			if (-1 * n / d >= 0 && -1 * n / d <= 1) {
 				return 1;
@@ -843,6 +885,25 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 			return CUT_EMPTY;
 
 		return CUT_FACE;
+	}
+	
+	int FastEnvelope::seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2) {
+		int o1, o2, o3, o4, o5;
+		o1 = Predicates::orient_3d(seg0, t0, t1, t2);
+		o2 = Predicates::orient_3d(seg1, t0, t1, t2);
+		int op = o1 * o2;
+		if (op == 0 || op > 0) {
+			return CUT_COPLANAR;
+		}
+
+		//s0,t0,t1; s0,t1,t2;s0,t2,t0;
+		o3 = Predicates::orient_3d(seg1, seg0, t0, t1);
+		o4 = Predicates::orient_3d(seg1, seg0, t1, t2);
+		o5 = Predicates::orient_3d(seg1, seg0, t2, t0);
+		if (o3*o4 == 1 && o3*o5 == 1) {
+			return CUT_FACE;
+		}
+		return CUT_EMPTY;
 	}
 	
 
