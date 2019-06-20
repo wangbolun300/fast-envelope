@@ -1228,6 +1228,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 			c = AB.norm();
 			area = 0.25*sqrt((a + b + c)*(a + b - c)*(a + c - b)*(b + c - a));
 			if (area < SCALAR_ZERO) {
+				std::cout << "Envelope Triangle Degeneration" << std::endl;
 				continue;
 			}
 			normal = AB.cross(AC).normalized();
