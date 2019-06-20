@@ -91,6 +91,29 @@ namespace fastEnvelope {
 		}
 		return FastEnvelope::FastEnvelopeTestImplicit(triangle, interenvprism); 
 	}
+
+	bool FastEnvelope::is_outside_signal(const std::array<Vector3, 3> &triangle,int &signal) const {
+		Vector3 tmin, tmax;
+		std::vector<int> inumber;
+		std::vector<int> intercell;
+		std::vector<std::array<Vector3, 12>> interenvprism;
+		get_triangle_corners(triangle, tmin, tmax);
+		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
+		inumber.clear();
+		for (int j = 0; j < intercell.size(); j++) {
+			auto search = prismmap.find(intercell[j]);
+			if (search != prismmap.end()) {
+				inumber.insert(inumber.end(), search->second.begin(), search->second.end());
+			}
+		}
+		sort(inumber.begin(), inumber.end());
+		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
+		interenvprism.reserve(inumber.size());
+		for (int j = 0; j < inumber.size(); j++) {
+			interenvprism.emplace_back(envprism[inumber[j]]);
+		}
+		return FastEnvelope::FastEnvelopeTestImplicit_signal(triangle, interenvprism,signal);
+	}
 	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
 		
 		Vector3 tmin, tmax;
@@ -371,10 +394,10 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		std::vector<int> jump;
 		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
 		bool out;
-		int inter, inter1, record1, record2, de[3],
+		int inter, inter1, record1, record2, 
 			tti;//triangle-triangle intersection
 		jump.clear();
-
+		Scalar de[3];
 		for (int i = 0; i < 3; i++) {
 			out = point_out_prism(triangle[i], envprism, jump);
 			if (out == true) {
@@ -388,8 +411,8 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 			de[i] = (triangle[triseg[i][0]] - triangle[triseg[i][1]]).norm();
 
 		}
-		//if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) < SCALAR_ZERO) {
-		if ((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]) ==0) {
+		if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) ==0) {//TODO degeneration detection may have prob
+		
 			if (de[0] == 0 && de[1] == 0) {//case 1 degenerate to a point
 				return out = point_out_prism(triangle[0], envprism, jump);
 			}//case 1 degenerate to a point
@@ -414,7 +437,6 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 
 								inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
 									{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
-
 
 								if (inter == 1) {
 									return 1;
@@ -561,6 +583,226 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		return 0;
 	}
 
+		bool FastEnvelope::FastEnvelopeTestImplicit_signal(const std::array<Vector3, 3> &triangle, 
+			const std::vector<std::array<Vector3, 12>>& envprism,int &signal)
+	{
+
+		if (envprism.size() == 0) {
+			return 1;
+		}
+		if (signal == 1) {
+			std::cout << "1111111111111111111111111111111" << endl;
+		}
+		std::vector<int> jump;
+		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
+		bool out;
+		int inter, inter1, record1, record2, 
+			tti;//triangle-triangle intersection
+		Scalar de[3];
+		jump.clear();
+
+		for (int i = 0; i < 3; i++) {
+			out = point_out_prism(triangle[i], envprism, jump);
+			if (out == true) {
+				return 1;
+			}
+		}
+		if (signal == 1) {
+			std::cout << "222222222222222222222222222" << endl;
+		}
+
+		////////////////////degeneration fix
+		for (int i = 0; i < 3; i++) {
+			de[i] = (triangle[triseg[i][0]] - triangle[triseg[i][1]]).norm();
+
+		}
+		//if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) < SCALAR_ZERO) {
+		if ((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]) ==0) {
+			if (signal == 1) {
+				std::cout << "de"<<de[0]<<" "<<de[1]<<" "<<de[2] << endl;
+
+				std::cout << "44444444444444444444444444444444444444" << endl;
+			}
+			if (de[0] == 0 && de[1] == 0) {//case 1 degenerate to a point
+				return out = point_out_prism(triangle[0], envprism, jump);
+			}//case 1 degenerate to a point
+
+			for (int we = 0; we < 3; we++) {//case 2 two points are the same point
+				if (de[we] == 0) {
+					int  wt = (we + 1) % 3;// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
+					for (int i = 0; i < envprism.size(); i++) {
+						for (int j = 0; j < 8; j++) {
+							
+							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
+								tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
+								if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
+									break;
+								}
+								if (tti == CUT_EMPTY) {
+									continue;
+								}
+								jump.clear();
+								jump.emplace_back(i);
+
+
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+									{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
+
+								if (signal == 1) {
+									std::ofstream fout;
+									fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\seg.txt");
+									fout << std::setprecision(17) << triangle[triseg[wt][0]][0] << " " << triangle[triseg[wt][0]][1] << " " << triangle[triseg[wt][0]][2]
+										<< " " << triangle[triseg[wt][1]][0] << " " << triangle[triseg[wt][1]][1]
+										<< " " << triangle[triseg[wt][1]][2] << " " << i << " " << j << " " << c << endl;
+									fout.close();
+								}
+
+								if (inter == 1) {
+									return 1;
+								}
+
+								break;
+
+							}
+						}
+					}
+					return 0;
+				}
+			}//case 2 two points are the same point
+
+			//TODO maybe we can delete case 2, but maybe having case 2 can be faster
+			//case 3 three points on one line
+			Scalar maxi = de[0];
+			int wt = 0;
+			for (int i = 1; i < 3; i++) {
+				if (de[i] > maxi) {
+					maxi = de[i];
+					wt = i;
+				}
+			}
+			
+			// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
+			for (int i = 0; i < envprism.size(); i++) {
+				for (int j = 0; j < 8; j++) {
+					
+					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
+						tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
+						if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
+							break;
+						}
+						if (tti == CUT_EMPTY) {
+							continue;
+						}
+						jump.clear();
+						jump.emplace_back(i);
+
+
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
+
+
+						if (inter == 1) {
+							return 1;
+						}
+
+						break;
+
+					}
+				}
+			}
+			return 0;
+		
+			//case 3 three points on one line
+		
+		}
+		////////////////////////////////degeneration fix over
+
+
+		if (signal == 1) {
+			std::cout << "33333333333333333333333333333" << endl;
+		}
+		for (int i = 0; i < envprism.size(); i++) {
+			for (int j = 0; j < 8; j++) {
+				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
+					tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
+					if (tti == CUT_COPLANAR) {
+						break;
+					}
+					if (tti == CUT_EMPTY) {
+						continue;
+					}
+
+					record1 = 0;
+
+					jump.clear();
+					jump.emplace_back(i);
+					for (int k = 0; k < 3; k++) {
+
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[k][0]], triangle[triseg[k][1]],
+							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
+
+						
+						if (inter == 1) {
+							return 1;
+						}
+						record1 = record1 + inter;
+					}
+					if (record1 >= 4) {
+						std::cout << "intersection predicate wrong, record " << record1 << std::endl;
+
+					}
+
+
+					for (int e = 0; e < inter_ijk_list.size(); e++) {
+						for (int f = inter_ijk_list[e][2]; f < p_triangle[inter_ijk_list[e][1]].size(); f++) {
+							tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2],
+								envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]);
+							if (tti == CUT_COPLANAR) {
+								break;
+							}
+							if (tti == CUT_EMPTY) {
+								continue;
+							}
+							jump.clear();
+							jump.emplace_back(inter_ijk_list[e][0]);
+							jump.emplace_back(i);
+							inter1 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism(triangle,
+								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
+								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
+							//////////////////////////////////////////////////////////////////////////////
+							int inter2= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
+								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
+								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
+							if (inter1 != inter2) {
+
+								//cout << "difference in 3 triangle in-prism test, number"<<recordnumber2<<" " << inter1 << " " << inter2 << endl;
+								recordnumber2++;
+								if (inter2 == 1) {
+									recordnumber4++;
+									//cout << "test on the new facets " << recordnumber4 << endl;
+								}
+							}
+							
+							
+								recordnumber3++;
+								//cout << "see the total test number, number" << recordnumber3 << endl;
+
+							//////////////////////////////////////////////////////////////////////////////
+							
+							if (inter2 == 1) {
+								
+								return 1;//out
+							}
+						}
+					}
+					inter_ijk_list.emplace_back(Vector3i(i, j, c));
+					break;
+				}//each triangle of the facet
+			}
+		}
+
+		return 0;
+	}
 
 
 	bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py, const double& pz,

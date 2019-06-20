@@ -739,18 +739,24 @@ void test_in_wild() {
 
 
 	////////////////////////////////////////////////////////////////////////////////////////
-	std::ofstream fout;
-	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-	int idx = 10;
-	std::cout << "output NO. " <<trindex1[idx] << endl;
-	for (int i = 0; i < 3; i++) {
+	if (trindex1.size() > 0) {
+		std::ofstream fout;
+		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
+		int idx = 0;
+		std::cout << "output NO. " << trindex1[idx] << endl;
+		for (int i = 0; i < 3; i++) {
 
-		fout << std::setprecision(17) << triangles[trindex1[idx]][i][0] << " " << triangles[trindex1[idx]][i][1] << " " << triangles[trindex1[idx]][i][2] << endl;
+			fout << std::setprecision(17) << triangles[trindex1[idx]][i][0] << " " << triangles[trindex1[idx]][i][1] << " " << triangles[trindex1[idx]][i][2] << endl;
 
+		}
+		fout.close();
+
+		fast_envelope.print_prisms(triangles[trindex1[idx]]);
+		int signal = 1;
+		fast_envelope.is_outside_signal(triangles[trindex1[idx]], signal);
 	}
-	fout.close();
-
-	fast_envelope.print_prisms(triangles[trindex1[idx]]);
+	
+	
 
 	////////////////////////////////////////////////////////////////////////////////////////
 }

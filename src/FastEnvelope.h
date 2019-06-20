@@ -27,6 +27,7 @@ namespace fastEnvelope {
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
 		static void test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const Vector3&p3, const Vector3 &q1, const Vector3 &q2, const Vector3&q3);
+		bool is_outside_signal(const std::array<Vector3, 3> &triangle, int &signal) const;
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
@@ -37,6 +38,8 @@ namespace fastEnvelope {
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		static bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
+		static bool FastEnvelopeTestImplicit_signal(const std::array<Vector3, 3> &triangle, 
+			const std::vector<std::array<Vector3, 12>>& envprism, int &signal);
 		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
 	public:
 		static void triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error);
@@ -279,7 +282,7 @@ namespace fastEnvelope {
 			if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return 0; // Fast reject in case of under/overflow
 
 
-			if (d ==0) {// TODO no truncation error? if not intersected
+			if (d < SCALAR_ZERO_3) {// TODO no truncation error? if not intersected
 				return 0;
 			}
 		
