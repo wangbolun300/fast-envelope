@@ -142,7 +142,9 @@ namespace fastEnvelope {
 
 
 		static int tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,const Vector3& q1, const Vector3& q2, const Vector3& q3);
-	// Indirect 3D orientation predicate with floating point filter.
+		static int tri_cut_tri_Wang(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& q1, const Vector3& q2, const Vector3& q3);
+
+		// Indirect 3D orientation predicate with floating point filter.
 	//
 	// Input: eight points p, q, r, s, t, a, b, c
 	// where:

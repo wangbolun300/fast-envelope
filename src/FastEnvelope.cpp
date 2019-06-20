@@ -42,24 +42,24 @@ namespace fastEnvelope {
 	using namespace std;
 
 
-	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces,const Scalar& eps, const int& spac)
+	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac)
 	{
 		get_bb_corners(m_ver, min, max);
 		Scalar bbd = (max - min).norm();
-		Scalar epsilon = bbd*eps; //TODO =eps*bounding box diagnal
+		Scalar epsilon = bbd * eps; //TODO =eps*bounding box diagnal
 		FastEnvelope::BoxGeneration(m_ver, m_faces, envprism, epsilon);
 		//build a  hash function
-		
-		
-		
+
+
+
 		const Scalar boxlength = std::min(std::min(max[0] - min[0], max[1] - min[1]), max[2] - min[2]) / spac;//TODO a better strategy?
 		subx = (max[0] - min[0]) / boxlength, suby = (max[1] - min[1]) / boxlength, subz = (max[2] - min[2]) / boxlength;
-	
-		
+
+
 		CornerList(envprism, cornerlist);
 		std::vector<int> intercell;
 		int ct = 0, prismsize = envprism.size();
-		
+
 		prismmap.reserve(spac*spac*spac / 10);
 		for (int i = 0; i < cornerlist.size(); i++) {
 			BoxFindCells(cornerlist[i][0], cornerlist[i][1], min, max, subx, suby, subz, intercell);
@@ -69,7 +69,7 @@ namespace fastEnvelope {
 		}
 		std::cout << "map size " << prismmap.size() << std::endl;
 	}
-	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const { 
+	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const {
 		Vector3 tmin, tmax;
 		std::vector<int> inumber;
 		std::vector<int> intercell;
@@ -89,10 +89,10 @@ namespace fastEnvelope {
 		for (int j = 0; j < inumber.size(); j++) {
 			interenvprism.emplace_back(envprism[inumber[j]]);
 		}
-		return FastEnvelope::FastEnvelopeTestImplicit(triangle, interenvprism); 
+		return FastEnvelope::FastEnvelopeTestImplicit(triangle, interenvprism);
 	}
 
-	bool FastEnvelope::is_outside_signal(const std::array<Vector3, 3> &triangle,int &signal) const {
+	bool FastEnvelope::is_outside_signal(const std::array<Vector3, 3> &triangle, int &signal) const {
 		Vector3 tmin, tmax;
 		std::vector<int> inumber;
 		std::vector<int> intercell;
@@ -112,10 +112,10 @@ namespace fastEnvelope {
 		for (int j = 0; j < inumber.size(); j++) {
 			interenvprism.emplace_back(envprism[inumber[j]]);
 		}
-		return FastEnvelope::FastEnvelopeTestImplicit_signal(triangle, interenvprism,signal);
+		return FastEnvelope::FastEnvelopeTestImplicit_signal(triangle, interenvprism, signal);
 	}
 	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
-		
+
 		Vector3 tmin, tmax;
 		std::vector<int> inumber;
 		std::vector<int> intercell;
@@ -145,7 +145,7 @@ namespace fastEnvelope {
 
 			}
 		}
-		
+
 		fout.close();
 	}
 	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const {
@@ -174,29 +174,29 @@ namespace fastEnvelope {
 		std::vector<int> jump;
 		for (int i = 0; i < ps.size(); i++) {
 			out = point_out_prism(ps[i], interenvprism, jump);
-			
+
 			if (out == true) {
 
 				return 1;
 
 			}
-		
+
 		}
-		
+
 		return 0;
 
 	}
 	void FastEnvelope::triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error) {
 		ps.clear();
-		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm(),l3= (triangle[2] - triangle[1]).norm();//length
-		
+		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm(), l3 = (triangle[2] - triangle[1]).norm();//length
+
 		if (l1 == 0 && l2 == 0 && l3 == 0) {
 			ps.push_back(triangle[0]);
 			return;
 		}
 		if (l1 == 0) {
-			
-			int t=l2/error+1;
+
+			int t = l2 / error + 1;
 			Vector3 vct = (triangle[2] - triangle[0]) / t;
 			for (int i = 0; i <= t; i++) {
 				ps.push_back(triangle[0] + vct * i);
@@ -204,7 +204,7 @@ namespace fastEnvelope {
 			return;
 		}
 		if (l2 == 0) {
-			
+
 			int t = l1 / error + 1;
 			Vector3 vct = (triangle[1] - triangle[0]) / t;
 			for (int i = 0; i <= t; i++) {
@@ -213,7 +213,7 @@ namespace fastEnvelope {
 			return;
 		}
 		if (l3 == 0) {
-			
+
 			int t = l1 / error + 1;
 			Vector3 vct = (triangle[1] - triangle[0]) / t;
 			for (int i = 0; i <= t; i++) {
@@ -223,7 +223,7 @@ namespace fastEnvelope {
 		}
 		/*if (l1 == 0 || l2 == 0 || l3 == 0) {
 
-			
+
 
 				return;
 
@@ -233,13 +233,13 @@ namespace fastEnvelope {
 		Scalar e1 = l1 / l1s, e2 = l2 / l2s, e3;//length of every piece
 		Vector3 subl1 = (triangle[1] - triangle[0]) / l1s, subl2 = (triangle[2] - triangle[0]) / l2s,//vector of piece
 			temp;
-		
+
 		for (int i = 0; i <= l1s; i++) {
 			Scalar length = (l1s - i)*e1*l2 / l1;// length of this line
 			l2sn = length / e2 + 1;// subdivided of this line
-			Vector3 subl3 = (triangle[2] - triangle[0])*length / l2sn/l2;//vector of each piece
+			Vector3 subl3 = (triangle[2] - triangle[0])*length / l2sn / l2;//vector of each piece
 			for (int j = 0; j <= l2sn; j++) {
-				temp=subl1*i+triangle[0]+subl3*j;
+				temp = subl1 * i + triangle[0] + subl3 * j;
 				ps.push_back(temp);
 			}
 		}
@@ -247,13 +247,13 @@ namespace fastEnvelope {
 	/*
 	bool FastEnvelope::FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
-		
+
 		if (envprism.size() == 0) {
 			return 1;
 		}
 
 		std::vector<std::array<Vector3, 2>> seglist;
-		
+
 		std::vector<std::array<int, 2>> segtoprism;//segment belongs to which prism,always 3 element shorter than seglist
 
 		std::vector<Vector3> interp;
@@ -277,14 +277,14 @@ namespace fastEnvelope {
 			for (int j = 0; j < 8; j++) {
 				Segment_facet_intersection(seglist, {{envprism[i][p_face[j][0]],envprism[i][p_face[j][1]], envprism[i][p_face[j][2]] }}, interp, interseg);
 				if (interp.size() > 0) {
-					
+
 					segtoprism.emplace_back(std::array<int, 2>{ { i,j } });
 					jump.clear();
 					jump.emplace_back(i);
-					
-				
+
+
 					for (int k = 0; k < 2; k++) {
-		
+
 						out = point_out_prism(interp[k], envprism, jump);
 						if (out == true) {
 							return 1;
@@ -308,8 +308,8 @@ namespace fastEnvelope {
 	*/
 
 	/*
-	
-	
+
+
 	bool FastEnvelope::FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
 
@@ -320,7 +320,7 @@ namespace fastEnvelope {
 		std::vector<std::array<Vector3, 2>> seglist;
 		std::vector<std::array<int, 2>> segtoprism;//segment belongs to which prism,always 3 element shorter than seglist
 		std::vector<Vector3> interp;
-		
+
 		std::vector<int> interseg, jump;
 
 		bool out;
@@ -345,7 +345,7 @@ namespace fastEnvelope {
 						continue;
 					}
 					Segment_facet_intersection(seglist, {{ envprism[i][p_face[j][0]],envprism[i][p_face[j][1]], envprism[i][p_face[j][2]] }}, interp, interseg);
-				
+
 					if (interp.size() > 0) {
 
 						segtoprism.emplace_back(std::array<int, 2>{ { i, j } });
@@ -354,9 +354,9 @@ namespace fastEnvelope {
 
 
 						for (int k = 0; k < 2; k++) {
-							
+
 							out = point_out_prism(interp[k], envprism, jump);
-						
+
 							if (out == true) {
 								return 1;
 							}
@@ -375,16 +375,16 @@ namespace fastEnvelope {
 					break;
 				}//each triangle of the facet
 
-				
+
 			}
 		}
 
 		return 0;
 	}
 	*/
-void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const Vector3&p3, const Vector3 &q1, const Vector3 &q2, const Vector3&q3) {
-	cout<<tri_cut_tri_simple(p1, p2, p3, q1, q2, q3)<<endl;
-}
+	void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const Vector3&p3, const Vector3 &q1, const Vector3 &q2, const Vector3&q3) {
+		cout << tri_cut_tri_simple(p1, p2, p3, q1, q2, q3) << endl;
+	}
 	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
 
@@ -394,7 +394,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		std::vector<int> jump;
 		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
 		bool out;
-		int inter, inter1, record1, record2, 
+		int inter, inter1, record1, record2,
 			tti;//triangle-triangle intersection
 		jump.clear();
 		Scalar de[3];
@@ -411,8 +411,8 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 			de[i] = (triangle[triseg[i][0]] - triangle[triseg[i][1]]).norm();
 
 		}
-		if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) ==0) {//TODO degeneration detection may have prob
-		
+		if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) == 0) {//TODO degeneration detection may have prob
+
 			if (de[0] == 0 && de[1] == 0) {//case 1 degenerate to a point
 				return out = point_out_prism(triangle[0], envprism, jump);
 			}//case 1 degenerate to a point
@@ -422,7 +422,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 					int  wt = (we + 1) % 3;// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
 					for (int i = 0; i < envprism.size(); i++) {
 						for (int j = 0; j < 8; j++) {
-							
+
 							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 								tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
 								if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
@@ -461,11 +461,11 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 					wt = i;
 				}
 			}
-			
+
 			// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
 			for (int i = 0; i < envprism.size(); i++) {
 				for (int j = 0; j < 8; j++) {
-					
+
 					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 						tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
 						if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
@@ -492,14 +492,14 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 				}
 			}
 			return 0;
-		
+
 			//case 3 three points on one line
-		
+
 		}
 		////////////////////////////////degeneration fix over
 
 
-		
+
 		for (int i = 0; i < envprism.size(); i++) {
 			for (int j = 0; j < 8; j++) {
 				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
@@ -520,7 +520,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
-						
+
 						if (inter == 1) {
 							return 1;
 						}
@@ -549,7 +549,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							//////////////////////////////////////////////////////////////////////////////
-							int inter2= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
+							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							if (inter1 != inter2) {
@@ -561,15 +561,15 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 									//cout << "test on the new facets " << recordnumber4 << endl;
 								}
 							}
-							
-							
-								recordnumber3++;
-								//cout << "see the total test number, number" << recordnumber3 << endl;
 
-							//////////////////////////////////////////////////////////////////////////////
-							
+
+							recordnumber3++;
+							//cout << "see the total test number, number" << recordnumber3 << endl;
+
+						//////////////////////////////////////////////////////////////////////////////
+
 							if (inter2 == 1) {
-								
+
 								return 1;//out
 							}
 						}
@@ -583,8 +583,8 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		return 0;
 	}
 
-		bool FastEnvelope::FastEnvelopeTestImplicit_signal(const std::array<Vector3, 3> &triangle, 
-			const std::vector<std::array<Vector3, 12>>& envprism,int &signal)
+	bool FastEnvelope::FastEnvelopeTestImplicit_signal(const std::array<Vector3, 3> &triangle,
+		const std::vector<std::array<Vector3, 12>>& envprism, int &signal)
 	{
 
 		if (envprism.size() == 0) {
@@ -596,7 +596,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		std::vector<int> jump;
 		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
 		bool out;
-		int inter, inter1, record1, record2, 
+		int inter, inter1, record1, record2,
 			tti;//triangle-triangle intersection
 		Scalar de[3];
 		jump.clear();
@@ -617,9 +617,9 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 
 		}
 		//if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) < SCALAR_ZERO) {
-		if ((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]) ==0) {
+		if ((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]) == 0) {
 			if (signal == 1) {
-				std::cout << "de"<<de[0]<<" "<<de[1]<<" "<<de[2] << endl;
+				std::cout << "de" << de[0] << " " << de[1] << " " << de[2] << endl;
 
 				std::cout << "44444444444444444444444444444444444444" << endl;
 			}
@@ -632,7 +632,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 					int  wt = (we + 1) % 3;// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
 					for (int i = 0; i < envprism.size(); i++) {
 						for (int j = 0; j < 8; j++) {
-							
+
 							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 								tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
 								if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
@@ -680,11 +680,11 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 					wt = i;
 				}
 			}
-			
+
 			// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
 			for (int i = 0; i < envprism.size(); i++) {
 				for (int j = 0; j < 8; j++) {
-					
+
 					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 						tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
 						if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
@@ -711,9 +711,9 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 				}
 			}
 			return 0;
-		
+
 			//case 3 three points on one line
-		
+
 		}
 		////////////////////////////////degeneration fix over
 
@@ -741,7 +741,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
-						
+
 						if (inter == 1) {
 							return 1;
 						}
@@ -770,7 +770,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							//////////////////////////////////////////////////////////////////////////////
-							int inter2= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
+							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							if (inter1 != inter2) {
@@ -782,15 +782,15 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 									//cout << "test on the new facets " << recordnumber4 << endl;
 								}
 							}
-							
-							
-								recordnumber3++;
-								//cout << "see the total test number, number" << recordnumber3 << endl;
 
-							//////////////////////////////////////////////////////////////////////////////
-							
+
+							recordnumber3++;
+							//cout << "see the total test number, number" << recordnumber3 << endl;
+
+						//////////////////////////////////////////////////////////////////////////////
+
 							if (inter2 == 1) {
-								
+
 								return 1;//out
 							}
 						}
@@ -842,7 +842,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		}
 		return 0;
 	}
-	
+
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		double  a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n;
@@ -872,7 +872,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
 					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
 					a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
-				
+
 				/////////////////////////////////////////
 				/*recordnumber1++;
 				if (recordnumber1>8000000&&markhf1 == 0) {
@@ -911,7 +911,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		}
 		return OUT_PRISM;
 	}
-	
+
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		Eigen::Matrix<Scalar, 3, 3> A, AT, ATA, A1;
@@ -953,7 +953,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 		B[1] = A(1, 0)*facet1[0][0] + A(1, 1)*facet1[0][1] + A(1, 2)*facet1[0][2];
 		B[2] = A(2, 0)*facet2[0][0] + A(2, 1)*facet2[0][1] + A(2, 2)*facet2[0][2];
 
-		
+
 
 		//////////////////////////////////////////////////////////////////////////
 
@@ -1021,7 +1021,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 					//cout << "ori in 3 triangles different, " << ori << " " << ori1 << endl;
 				}
 				////////////////////////////////////////////////////////////////////////////////
-				
+
 				if (ori == 1 || ori == 0) {
 
 					break;
@@ -1032,7 +1032,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 				}
 			}
 		}
-		
+
 		return 1;
 	}
 
@@ -1083,7 +1083,7 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
 					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
 					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
-					 m11,  m12,  m13,  d);
+					m11, m12, m13, d);
 				if (ori == 1 || ori == 0) {
 
 					break;
@@ -1128,21 +1128,46 @@ void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const 
 
 		return CUT_FACE;
 	}
-	
+	int FastEnvelope::tri_cut_tri_simple_Wang(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
+		const Vector3& q1, const Vector3& q2, const Vector3& q3) {
+		int o1, o2, o3, o4, o5, o6;
+		o1 = Predicates::orient_3d(p1, q1, q2, q3);
+		o2 = Predicates::orient_3d(p2, q1, q2, q3);
+		o3 = Predicates::orient_3d(p3, q1, q2, q3);
+		if (o1 == o2 && o2 == o3 && o3 == 0) {
+			return CUT_COPLANAR;
+
+		}
+		o4 = Predicates::orient_3d(q1, p1, p2, p3);
+		o5 = Predicates::orient_3d(q2, p1, p2, p3);
+		o6 = Predicates::orient_3d(q3, p1, p2, p3);
+		if (o1*o2 == 1 && o1*o3 == 1) {
+			return CUT_EMPTY;
+		}
+		if (o3*o4 == 1 && o3*o5 == 1) {
+			return CUT_EMPTY;
+		}
+
+		Not_Finished
+
+	}
 	int FastEnvelope::seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2) {
 		int o1, o2, o3, o4, o5;
 		o1 = Predicates::orient_3d(seg0, t0, t1, t2);
 		o2 = Predicates::orient_3d(seg1, t0, t1, t2);
 		int op = o1 * o2;
-		if (op == 0 || op > 0) {
-			return CUT_COPLANAR;
+		if (op >= 0) {
+			return CUT_COPLANAR;//infact, coplanar and not on this plane
 		}
 
 		//s0,t0,t1; s0,t1,t2;s0,t2,t0;
 		o3 = Predicates::orient_3d(seg1, seg0, t0, t1);
 		o4 = Predicates::orient_3d(seg1, seg0, t1, t2);
 		o5 = Predicates::orient_3d(seg1, seg0, t2, t0);
-		if (o3*o4 == 1 && o3*o5 == 1) {
+		/*if (o3*o4 == 1 && o3*o5 == 1) {
+			return CUT_FACE;
+		}*/
+		if (o3+o4+o5 >= 2 || o3+o4+o5 <= -2) {// in fact, cut through triangle or segment cut triangle edge
 			return CUT_FACE;
 		}
 		return CUT_EMPTY;
