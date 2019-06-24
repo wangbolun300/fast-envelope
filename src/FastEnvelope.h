@@ -126,6 +126,9 @@ namespace fastEnvelope {
 			const Eigen::Matrix<Scalar, 3, 3>& ATA,const Eigen::Matrix<Scalar, 3, 1>& B, const std::array<Vector3, 3> & triangle3);
 		static int Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 			const std::vector<std::array<Vector3, 12>>& envprism,const std::vector<int>& jump);
+
+		static int Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
+			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 	
 		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism( const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);

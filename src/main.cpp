@@ -764,7 +764,7 @@ void test_in_wild() {
 
 		fast_envelope.print_prisms(triangles[trindex1[idx]]);
 		int signal = 1;
-		fast_envelope.is_outside_signal(triangles[trindex1[idx]], signal);
+		//fast_envelope.is_outside_signal(triangles[trindex1[idx]], signal);
 	}
 	
 	

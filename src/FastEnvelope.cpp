@@ -4,6 +4,7 @@
 #include <fstream>
 #include <istream>
 #include <igl/Timer.h>
+#include <fastenvelope/ip_filtered.h>
 //#include<fastenvelope/AABBWrapper.h>
 
 //#include<fastenvelope/intersections.h>
@@ -435,7 +436,7 @@ namespace fastEnvelope {
 								jump.emplace_back(i);
 
 
-								inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
 									{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 								if (inter == 1) {
@@ -478,7 +479,7 @@ namespace fastEnvelope {
 						jump.emplace_back(i);
 
 
-						inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 
@@ -517,7 +518,7 @@ namespace fastEnvelope {
 					jump.emplace_back(i);
 					for (int k = 0; k < 3; k++) {
 
-						inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[k][0]], triangle[triseg[k][1]],
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 
@@ -641,7 +642,7 @@ namespace fastEnvelope {
 								jump.emplace_back(i);
 
 
-								inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
 									{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 								if (signal == 1) {
@@ -693,7 +694,7 @@ namespace fastEnvelope {
 						jump.emplace_back(i);
 
 
-						inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 
@@ -732,7 +733,7 @@ namespace fastEnvelope {
 					jump.emplace_back(i);
 					for (int k = 0; k < 3; k++) {
 
-						inter = Implicit_Seg_Facet_interpoint_Out_Prism(triangle[triseg[k][0]], triangle[triseg[k][1]],
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 
@@ -908,6 +909,73 @@ namespace fastEnvelope {
 		}
 		return OUT_PRISM;
 	}
+
+	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
+		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
+		int jm = 0, ori, ori1;
+		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
+			
+		if (inter == CUT_COPLANAR) {
+			return NOT_INTERSECTD;//not intersected
+		}
+		for (int i = 0; i < envprism.size(); i++) {
+			if (jump.size() > 0) {
+				if (i == jump[jm]) {//TODO jump avoid vector
+					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
+					continue;
+				}
+			}
+
+			for (int j = 0; j < 8; j++) {
+				//ftimer2.start();
+				ori = ip_filtered::
+					orient3D_LPI_filtered(
+						segpoint0[0], segpoint0[1], segpoint0[2], segpoint1[0], segpoint1[1], segpoint1[2],
+						triangle[0][0], triangle[0][1], triangle[0][2], triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
+						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2], envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2], envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
+
+				/////////////////////////////////////////
+				/*recordnumber1++;
+				if (recordnumber1>8000000&&markhf1 == 0) {
+					std::cout << "report you the  ssssssssssssssssss" << std::endl;
+					markhf1 = 1;
+				}*/
+
+				//ori1 = -1 * Predicates::orient_3d(envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]], segpoint0 + (segpoint0 - segpoint1)*n / d);//because n is -n
+				/*if (ori != ori1) {
+					markhf = 0;
+					if (recordnumber < 1000) {
+						//std::cout << "number " << recordnumber << std::endl;
+
+						//std::cout << "ori and ori1 " << ori << " " << ori1 << std::endl;
+						ori = orient3D_LPI(
+							segpoint0[0], segpoint0[1], segpoint0[2],
+							envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
+							envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
+							envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
+							a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
+						recordnumber++;
+					}
+					markhf = 0;
+				}
+				*/
+				///////////////////////////////////////////
+				if (ori == 1 || ori == 0) {
+					break;
+				}
+				if (j == 7) {
+
+					return IN_PRISM;
+				}
+			}
+
+
+		}
+		return OUT_PRISM;
+	}
+
+
+
 
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
