@@ -1163,8 +1163,106 @@ namespace fastEnvelope {
 		return OUT_PRISM;
 	}
 
+	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
+	{
+		int jm = 0, ori;
+		Scalar m11, m12, m13, d;
+		std::array<Vector3, 3>tri = triangle;//TODO really need to do this?
+		std::array<Vector3, 3>fct1 = facet1;
+		std::array<Vector3, 3>fct2 = facet2;
 
 
+		bool in = is_3triangle_intersect(
+			tri[0][0], tri[0][1], tri[0][2],
+			tri[1][0], tri[1][1], tri[1][2],
+			tri[2][0], tri[2][1], tri[2][2],
+			fct1[0][0], fct1[0][1], fct1[0][2],
+			fct1[1][0], fct1[1][1], fct1[1][2],
+			fct1[2][0], fct1[2][1], fct1[2][2],
+			fct2[0][0], fct2[0][1], fct2[0][2],
+			fct2[1][0], fct2[1][1], fct2[1][2],
+			fct2[2][0], fct2[2][1], fct2[2][2],
+			m11, m12, m13, d);
+		if (in == 0) {
+			return NOT_INTERSECTD;
+		}
+
+
+		for (int i = 0; i < envprism.size(); i++) {
+			if (jump.size() > 0) {
+				if (i == jump[jm]) {//TODO jump avoid vector
+					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
+					continue;
+				}
+
+			}
+			for (int j = 0; j < 8; j++) {
+				ori = orient3D_TPI(
+					tri[0][0], tri[0][1], tri[0][2],
+					tri[1][0], tri[1][1], tri[1][2],
+					tri[2][0], tri[2][1], tri[2][2],
+					fct1[0][0], fct1[0][1], fct1[0][2],
+					fct1[1][0], fct1[1][1], fct1[1][2],
+					fct1[2][0], fct1[2][1], fct1[2][2],
+					fct2[0][0], fct2[0][1], fct2[0][2],
+					fct2[1][0], fct2[1][1], fct2[1][2],
+					fct2[2][0], fct2[2][1], fct2[2][2],
+					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
+					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
+					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
+					m11, m12, m13, d);
+				if (ori == 1 || ori == 0) {
+
+					break;
+				}
+				if (j == 7) {
+
+					return IN_PRISM;
+				}
+			}
+		}
+
+		return OUT_PRISM;
+	}
+
+	bool FastEnvelope::triangle_3_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2) {
+		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
+		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0) {
+			std::cout << "Degeneration happens" << std::endl;
+		}
+		int o1 = ip_filtered::orient3D_TPI_filtered(
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			f1[0][0], f1[0][1], f1[0][2], f1[1][0], f1[1][1], f1[1][2], f1[2][0], f1[2][1], f1[2][2],
+			f2[0][0], f2[0][1], f2[0][2], f2[1][0], f2[1][1], f2[1][2], f2[2][0], f2[2][1], f2[2][2],
+			n[0], n[1], n[2],
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2]);
+
+		int o2 = ip_filtered::orient3D_TPI_filtered(
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			f1[0][0], f1[0][1], f1[0][2], f1[1][0], f1[1][1], f1[1][2], f1[2][0], f1[2][1], f1[2][2],
+			f2[0][0], f2[0][1], f2[0][2], f2[1][0], f2[1][1], f2[1][2], f2[2][0], f2[2][1], f2[2][2],
+			n[0], n[1], n[2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2]);
+
+		int o3 = ip_filtered::orient3D_TPI_filtered(
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			f1[0][0], f1[0][1], f1[0][2], f1[1][0], f1[1][1], f1[1][2], f1[2][0], f1[2][1], f1[2][2],
+			f2[0][0], f2[0][1], f2[0][2], f2[1][0], f2[1][1], f2[1][2], f2[2][0], f2[2][1], f2[2][2],
+			n[0], n[1], n[2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			triangle[0][0], triangle[0][1], triangle[0][2]);
+
+
+		return 0;
+	}
 
 	int FastEnvelope::tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
 		const Vector3& q1, const Vector3& q2, const Vector3& q3) {

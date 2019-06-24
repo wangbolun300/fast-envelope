@@ -134,6 +134,8 @@ namespace fastEnvelope {
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
+		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
+			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 		static bool is_seg_facet_intersection(const double& px, const double& py, const double& pz,
 			const double& qx, const double& qy, const double& qz,
 			const double& rx, const double& ry, const double& rz,
@@ -331,7 +333,7 @@ namespace fastEnvelope {
 			return 0;
 		}
 
-
+		static bool triangle_3_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2);
 
 		static inline int orient3D_TPI(
 			const double& v1x, const double& v1y, const double& v1z, const double& v2x, const double& v2y, const double& v2z, const double& v3x, const double& v3y, const double& v3z,
