@@ -4,6 +4,7 @@
 #include <array>
 #include <fenv.h>
 #include <unordered_map>
+#include<iostream>
 namespace fastEnvelope {
 	
 
@@ -17,6 +18,7 @@ namespace fastEnvelope {
 		static const int OUT_PRISM = 1;
 		static const int IN_PRISM = 0;
 		static const int CUT_COPLANAR = 4;
+		static const int CUT_COPLANAR_OR_ABOVE = 4;
 		static const int CUT_EMPTY = -1;
 		static const int CUT_FACE = 3;
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
@@ -322,6 +324,7 @@ namespace fastEnvelope {
 			if (mark1 > 0 && mark2 > 0) {
 				return 1;
 			}
+			std::cout << "mark here, o1, o2 and o3"<<ori1<<" "<<ori2<<" "<<ori3 << std::endl;
 			return 0;
 		}
 

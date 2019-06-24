@@ -611,8 +611,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\101249.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 	
@@ -679,7 +679,7 @@ void test_in_wild() {
 
 
 
-	 
+	 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	std::vector<bool> pos3;
 	pos3.resize(fn);
@@ -687,6 +687,7 @@ void test_in_wild() {
 	Scalar l1;
 	std::vector<std::array<Vector3, 3>> t;
 	std::vector<int> trindex1, trindex2;
+	int insiden_o = 0, insiden_s = 0;
 
 	for (int i = 0; i < fn; i++) {
 		tri = triangles[i];
@@ -706,18 +707,28 @@ void test_in_wild() {
 		if (pos2[i] - pos3[i] == -1) {
 			trindex1.push_back(i);
 		}
+		if (pos2[i] == 0) {
+			insiden_o++;
+		}
+		if (pos3[i] == 0) {
+			insiden_s++;
+		}
+
 	}
+	
 	std::cout << "how many different cases in comparison:  " << count << std::endl;
 	std::cout << "1-0 cases in comparison:  " << count1 << std::endl;
-	std::cout << "0-1 cases in comparison:  " << count-count1 << std::endl;
-	std::cout << "0-1 case size:  " << trindex1.size() << std::endl;
+	std::cout << "**0-1 cases in comparison:  " << count-count1 << std::endl;
+	std::cout << "1-0 case size:  " << trindex1.size() << std::endl;
+	std::cout << "our inside size:  " << insiden_o << std::endl;
+	std::cout << "sap inside size:  " << insiden_s << std::endl;
 
 	int nbr = 0;
 	for (int i = 0; i < trindex1.size(); i++) {
 		Scalar a = (triangles[trindex1[i]][0] - triangles[trindex1[i]][1]).norm(), b = (triangles[trindex1[i]][2] - triangles[trindex1[i]][1]).norm(),
 			c = (triangles[trindex1[i]][0] - triangles[trindex1[i]][2]).norm();
-		Scalar area = 0.25*sqrt((a + b + c)*(a + b - c)*(a + c - b)*(b + c - a));
-		if (area < SCALAR_ZERO) {
+		Scalar area = (a + b + c)*(a + b - c)*(a + c - b)*(b + c - a);
+		if (area < SCALAR_ZERO_3) {
 			nbr++;
 		}
 
@@ -733,7 +744,7 @@ void test_in_wild() {
 			count3++;
 		}
 	}
-	std::cout << "how many different cases in comparison 1:  " << count2 << std::endl;
+	std::cout << "how many different cases in comparison aabb with sampling:  " << count2 << std::endl;
 	std::cout << "1-0 cases in comparison 1:  " << count3 << std::endl;
 	std::cout << "0-1 cases in comparison 1:  " << count2 - count3 << std::endl;
 

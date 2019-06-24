@@ -411,7 +411,7 @@ namespace fastEnvelope {
 			de[i] = (triangle[triseg[i][0]] - triangle[triseg[i][1]]).norm();
 
 		}
-		if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) == 0) {//TODO degeneration detection may have prob
+		if ((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]) < SCALAR_ZERO_3) {//TODO degeneration detection may have prob
 
 			if (de[0] == 0 && de[1] == 0) {//case 1 degenerate to a point
 				return out = point_out_prism(triangle[0], envprism, jump);
@@ -590,9 +590,7 @@ namespace fastEnvelope {
 		if (envprism.size() == 0) {
 			return 1;
 		}
-		if (signal == 1) {
-			std::cout << "1111111111111111111111111111111" << endl;
-		}
+		
 		std::vector<int> jump;
 		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
 		bool out;
@@ -607,9 +605,7 @@ namespace fastEnvelope {
 				return 1;
 			}
 		}
-		if (signal == 1) {
-			std::cout << "222222222222222222222222222" << endl;
-		}
+	
 
 		////////////////////degeneration fix
 		for (int i = 0; i < 3; i++) {
@@ -619,9 +615,9 @@ namespace fastEnvelope {
 		//if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) < SCALAR_ZERO) {
 		if ((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]) == 0) {
 			if (signal == 1) {
-				std::cout << "de" << de[0] << " " << de[1] << " " << de[2] << endl;
+				std::cout << "de " << de[0] << " " << de[1] << " " << de[2] << endl;
 
-				std::cout << "44444444444444444444444444444444444444" << endl;
+				std::cout << "degeneration happens" << endl;
 			}
 			if (de[0] == 0 && de[1] == 0) {//case 1 degenerate to a point
 				return out = point_out_prism(triangle[0], envprism, jump);
@@ -718,9 +714,7 @@ namespace fastEnvelope {
 		////////////////////////////////degeneration fix over
 
 
-		if (signal == 1) {
-			std::cout << "33333333333333333333333333333" << endl;
-		}
+		
 		for (int i = 0; i < envprism.size(); i++) {
 			for (int j = 0; j < 8; j++) {
 				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
@@ -788,7 +782,10 @@ namespace fastEnvelope {
 							//cout << "see the total test number, number" << recordnumber3 << endl;
 
 						//////////////////////////////////////////////////////////////////////////////
-
+							if (signal == 1) {
+								std::cout << "here in 3 triangle intersection, in or not "<< inter2<< endl;
+								
+							}
 							if (inter2 == 1) {
 
 								return 1;//out
@@ -1128,7 +1125,7 @@ namespace fastEnvelope {
 
 		return CUT_FACE;
 	}
-	int FastEnvelope::tri_cut_tri_simple_Wang(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
+	int FastEnvelope::tri_cut_tri_Wang(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
 		const Vector3& q1, const Vector3& q2, const Vector3& q3) {
 		int o1, o2, o3, o4, o5, o6;
 		o1 = Predicates::orient_3d(p1, q1, q2, q3);
@@ -1148,7 +1145,7 @@ namespace fastEnvelope {
 			return CUT_EMPTY;
 		}
 
-		Not_Finished
+		//Not_Finished
 
 	}
 	int FastEnvelope::seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2) {
