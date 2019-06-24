@@ -550,7 +550,7 @@ namespace fastEnvelope {
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							//////////////////////////////////////////////////////////////////////////////
-							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(triangle,
+							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(triangle,
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 							if (inter1 != inter2) {
@@ -1172,7 +1172,8 @@ namespace fastEnvelope {
 		std::array<Vector3, 3>fct2 = facet2;
 
 
-		bool in = is_3triangle_intersect(
+		bool in = triangle_3_cut(triangle, facet1, facet2);
+		is_3triangle_intersect(
 			tri[0][0], tri[0][1], tri[0][2],
 			tri[1][0], tri[1][1], tri[1][2],
 			tri[2][0], tri[2][1], tri[2][2],
@@ -1182,7 +1183,7 @@ namespace fastEnvelope {
 			fct2[0][0], fct2[0][1], fct2[0][2],
 			fct2[1][0], fct2[1][1], fct2[1][2],
 			fct2[2][0], fct2[2][1], fct2[2][2],
-			m11, m12, m13, d);
+			m11, m12, m13, d);*/
 		if (in == 0) {
 			return NOT_INTERSECTD;
 		}
@@ -1197,8 +1198,7 @@ namespace fastEnvelope {
 
 			}
 			for (int j = 0; j < 8; j++) {
-				ori = orient3D_TPI(
-					tri[0][0], tri[0][1], tri[0][2],
+				ori = ip_filtered::orient3D_TPI_filtered(tri[0][0], tri[0][1], tri[0][2],
 					tri[1][0], tri[1][1], tri[1][2],
 					tri[2][0], tri[2][1], tri[2][2],
 					fct1[0][0], fct1[0][1], fct1[0][2],
@@ -1209,8 +1209,7 @@ namespace fastEnvelope {
 					fct2[2][0], fct2[2][1], fct2[2][2],
 					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
 					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
-					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
-					m11, m12, m13, d);
+					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
 				if (ori == 1 || ori == 0) {
 
 					break;
@@ -1259,7 +1258,10 @@ namespace fastEnvelope {
 			n[0], n[1], n[2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			triangle[0][0], triangle[0][1], triangle[0][2]);
-
+		int o = o1 + o2 + o3;
+		if (o == 3 || o == -3) {
+			return 1;
+		}
 
 		return 0;
 	}
