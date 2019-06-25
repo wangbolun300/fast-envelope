@@ -12,8 +12,9 @@
 #include <cstdlib>
 #include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
+#include <arbitraryprecision/fprecision.h>
 
-#include <filesystem>
+// #include <filesystem>
 #include <stdio.h>
 
 
@@ -41,7 +42,7 @@ void tri_tri_cutting_try() {
 
 	q3 = { -0.5,-0.5,-0.5 };
 
-	
+
 	//FastEnvelope::test_tri_tri_cut( q1, q2, q3,p1, p2, p3);
 	//FastEnvelope::test_tri_tri_cut( p1, p2, p3, q1, q2, q3 );
 
@@ -136,7 +137,7 @@ void BondingBoxIntersectionFinding(Parameters& params, const std::array<Vector3,
 
 //void BoxFindCells(const Vector3& min,const Vector3& max,
 //	const Vector3& cellmin, const Vector3& cellmax, const int& sub, std::vector<int>& intercell) {
-//	
+//
 //	Vector3 delta= (cellmax - cellmin) / sub;
 //	//intercell.reserve(int((max - min)[0] / delta[0])*int((max - min)[1] / delta[1])*int((max - min)[2] / delta[2]));
 //	intercell.clear();
@@ -155,7 +156,7 @@ void BondingBoxIntersectionFinding(Parameters& params, const std::array<Vector3,
 //		}
 //	}
 //
-//	
+//
 //}
 void BoxFindCellsV1(const Vector3& min, const Vector3& max,
 	const Vector3& cellmin, const Vector3& cellmax, const int& subx,const int&suby, const int subz, std::vector<int>& intercell) {
@@ -230,7 +231,7 @@ void add_hashing() {
 	std::vector<Vector3> env_vertices;
 	std::vector<Vector3i> env_faces;
 	GEO::Mesh envmesh;
-	
+
 	///////////////////////////////////////////////////////
 	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
 	if (!ok1) {
@@ -249,13 +250,13 @@ void add_hashing() {
 	///////////////////////////////////////////////////////
 
 	Scalar shrink = 10;
-	Scalar eps = 1e-3; 
+	Scalar eps = 1e-3;
 	const int spac = 100;// space subdivision parameter
 	const int fn = 80000;//test face number
 	//////////////////////////////////////////////////////////////
-	eps = eps / shrink; 
+	eps = eps / shrink;
 	eps=eps*sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-	
+
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 
 	dd = ((max - min).norm()) / 1000 / shrink;
@@ -310,13 +311,13 @@ void add_hashing() {
 	/////////////////////////////////////////
 	timer1.start();
 	for (int i = 0; i < fn; i++) {
-		
+
 		pos1[i] = is_out_function(triangle[i], dd, sf_tree);	;
 	}
 	time1 = time1 + timer1.getElapsedTimeInSec();
 	std::cout << "TEST ONE FINISHED  " << std::endl;
 	//////////////////////////////
-	
+
 
 
 
@@ -365,7 +366,7 @@ void add_hashing() {
 	std::cout << "intersection element finding time:  " << time4 << std::endl;
 	std::cout << "function time:  " << time5 << std::endl;
 	//FastEnvelope::timerecord();
-	
+
 	//13962,shrink 10
 
 	///////////////
@@ -380,8 +381,8 @@ void calculation() {
 	a << 1, 2, 3,
 		4, 5, 6,
 		7, 8, 9;
-	c0 << 0, 
-		0, 
+	c0 << 0,
+		0,
 		0;
 	r0 << 0, 0, 0;
 	biga << a, c0,
@@ -393,7 +394,7 @@ void calculation() {
 		1, 1, 1, 1;
 	//std::cout << biga*bigb<<"\n" << std::endl;
 	//std::cout << a*b<< "\n" << std::endl;
-	
+
 	a.setZero();
 	std::array<Vector3, 3> triangle0;
 	triangle0[0] = { {Vector3(0,0,1)} };
@@ -562,9 +563,9 @@ void test_diff() {
 
 std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName,vector<int>& inenvelope) {
 
-	
+
 	std::vector<std::array<Vector3,3>> triangle;
-	
+
 	ifstream infile;
 	infile.open(inputFileName);
 	if (!infile.is_open())
@@ -615,7 +616,7 @@ void test_in_wild() {
 	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
-	
+
 	std::vector<Vector3> env_vertices;
 	std::vector<Vector3i> env_faces;
 	GEO::Mesh envmesh;
@@ -648,7 +649,7 @@ void test_in_wild() {
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
 
 	}
-	
+
 
 
 
@@ -680,7 +681,7 @@ void test_in_wild() {
 
 
 	 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	std::vector<bool> pos3;
 	pos3.resize(fn);
 	std::array<Vector3, 3> tri;
@@ -715,7 +716,7 @@ void test_in_wild() {
 		}
 
 	}
-	
+
 	std::cout << "how many different cases in comparison:  " << count << std::endl;
 	std::cout << "1-0 cases in comparison:  " << count1 << std::endl;
 	std::cout << "**0-1 cases in comparison:  " << count-count1 << std::endl;
@@ -766,8 +767,8 @@ void test_in_wild() {
 		int signal = 1;
 		//fast_envelope.is_outside_signal(triangles[trindex1[idx]], signal);
 	}
-	
-	
+
+
 
 	////////////////////////////////////////////////////////////////////////////////////////
 }
@@ -788,7 +789,7 @@ void sample_triangle_test() {
 	std::ofstream fout;
 	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\triangle.txt");
 	for (int i = 0; i < 3; i++) {
-		
+
 		fout <<std::setprecision(17) << tri[i][0]<<" "<< tri[i][1]<<" "<< tri[i][2] <<endl;
 
 	}
@@ -810,18 +811,20 @@ int main(int argc, char const *argv[])
 {
 	GEO::initialize();
 
-	/*int n_digits = 400;
+	int n_digits = 40;
+
+	using namespace arbitrary_precision;
 
 	float_precision num1(1, n_digits);
 	float_precision num2(3, n_digits);
 
 	float_precision res = num1/num2*float_precision(2) - float_precision(2,n_digits)/float_precision(3,n_digits);
 
-	std::cout<<res<<std::endl;*/
+	std::cout<<res<<std::endl;
 
 
 	//assert(false);
-	
+
 	//EnvelopPrism();
 	//PrismCutTriangle();
 	//bool b= booltest();
@@ -845,9 +848,9 @@ int main(int argc, char const *argv[])
 	test_in_wild();
 	//inf();
 	//sample_triangle_test();
-	
+
 	std::cout << "done!" << std::endl;
-	
+
 
 	return 0;
 }

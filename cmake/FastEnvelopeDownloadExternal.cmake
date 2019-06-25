@@ -48,6 +48,14 @@ function(fast_envelope_download_catch2)
     )
 endfunction()
 
+## Multi precision
+function(fast_envelope_download_arbitrary_precision)
+    fast_envelope_download_project(arbitrary_precision
+        GIT_REPOSITORY      https://github.com/teseoch/arbitrary_precision.git
+        GIT_TAG             f7b744ad07e131ef65cfde10f086b6f6682a0205
+    )
+endfunction()
+
 ## CLI11
 function(fast_envelope_download_cli11)
     fast_envelope_download_project(cli11

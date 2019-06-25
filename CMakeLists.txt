@@ -129,7 +129,9 @@ if(FAST_ENVELOPE_WITH_SANITIZERS)
 	add_sanitizers(${PROJECT_NAME})
 endif()
 
-#target_link_libraries(${PROJECT_NAME} PUBLIC Precision)
+fast_envelope_download_arbitrary_precision()
+add_subdirectory(${THIRD_PARTY_DIR}/arbitrary_precision)
+target_link_libraries(${PROJECT_NAME} PUBLIC ArbitraryPrecision)
 
 ################################################################################
 # FastEnvelope binary

@@ -27,7 +27,7 @@ static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 };
 
 static const std::array<std::array<int, 2>, 3> triseg = {
-	
+
 	{{{0,1}},{{0,2}},{{1,2}}}
 
 };
@@ -243,10 +243,10 @@ namespace fastEnvelope {
 			}
 		}
 	}
-	
 
 
-	
+
+
 	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
 
@@ -407,7 +407,7 @@ namespace fastEnvelope {
 							jump.clear();
 							jump.emplace_back(inter_ijk_list[e][0]);
 							jump.emplace_back(i);
-							
+
 							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(triangle,
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
@@ -434,7 +434,7 @@ namespace fastEnvelope {
 		if (envprism.size() == 0) {
 			return 1;
 		}
-		
+
 		std::vector<int> jump;
 		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
 		bool out;
@@ -449,7 +449,7 @@ namespace fastEnvelope {
 				return 1;
 			}
 		}
-	
+
 
 		////////////////////degeneration fix
 		for (int i = 0; i < 3; i++) {
@@ -475,7 +475,7 @@ namespace fastEnvelope {
 
 							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 								tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
-								if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
+								if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because
 									break;
 								}
 								if (tti == CUT_EMPTY) {
@@ -527,7 +527,7 @@ namespace fastEnvelope {
 
 					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 						tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
-						if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
+						if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because
 							break;
 						}
 						if (tti == CUT_EMPTY) {
@@ -558,7 +558,7 @@ namespace fastEnvelope {
 		////////////////////////////////degeneration fix over
 
 
-		
+
 		for (int i = 0; i < envprism.size(); i++) {
 			for (int j = 0; j < 8; j++) {
 				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
@@ -628,7 +628,7 @@ namespace fastEnvelope {
 						//////////////////////////////////////////////////////////////////////////////
 							if (signal == 1) {
 								std::cout << "here in 3 triangle intersection, in or not "<< inter2<< std::endl;
-								
+
 							}
 							if (inter2 == 1) {
 
@@ -684,7 +684,7 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 		return 0;
 	}
 */
-	
+
 /*
 int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
@@ -750,13 +750,13 @@ int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoin
 		return OUT_PRISM;
 	}
 */
-	
+
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		int jm = 0, ori;
 		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
-			
+
 		if (inter == CUT_COPLANAR) {
 			return NOT_INTERSECTD;//not intersected
 		}
@@ -1009,7 +1009,7 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 	}
 
 */
-	
+
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
 	{
 		int jm = 0, ori;
@@ -1156,7 +1156,8 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 		}
 
 		//Not_Finished
-
+		assert(false);
+		return 0;
 	}
 	int FastEnvelope::seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2) {
 		int o1, o2, o3, o4, o5;
@@ -1179,9 +1180,9 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 		}
 		return CUT_EMPTY;
 	}
-	
 
-	
+
+
 
 
 	bool FastEnvelope::point_out_prism(const Vector3 & point, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
@@ -1198,13 +1199,13 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 			}
 
 			for (int j = 0; j < 8; j++) {
-				
+
 				ori = Predicates::orient_3d(envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]], point);
 				if (ori == -1 || ori == 0) {
 					break;
 				}
 				if (j == 7) {
-			
+
 					return false;
 				}
 			}
@@ -1224,9 +1225,9 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 		std::array<Vector3, 12> polygonoff;
 		Scalar  a, b, c,
 			tolerance = epsilon/ sqrt(3),
-			
+
 			area;
-		
+
 		for (int i = 0; i < m_faces.size(); i++) {
 			AB = m_ver[m_faces[i][1]] - m_ver[m_faces[i][0]];
 			AC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][0]];
@@ -1261,7 +1262,7 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 				polygon[4] = m_ver[m_faces[i][2]] + (-vector1 - ABn) * tolerance;
 				polygon[5] = m_ver[m_faces[i][0]] + (-vector1 - ABn) * tolerance;
 			}
-			
+
 			for (int j = 0; j < 6; j++) {
 				polygonoff[j] = polygon[j] + normal * tolerance;
 			}
@@ -1275,23 +1276,22 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 
 	}
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 }
 
 
 
-	
-	
-
-	
-		
-	
 
 
 
-	
+
+
+
+
+
+
