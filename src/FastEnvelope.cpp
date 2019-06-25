@@ -5,9 +5,7 @@
 #include <istream>
 #include <igl/Timer.h>
 #include <fastenvelope/ip_filtered.h>
-//#include<fastenvelope/AABBWrapper.h>
 
-//#include<fastenvelope/intersections.h>
 
 
 
@@ -1173,7 +1171,7 @@ namespace fastEnvelope {
 
 
 		bool in = triangle_3_cut(triangle, facet1, facet2);
-		is_3triangle_intersect(
+		/*is_3triangle_intersect(
 			tri[0][0], tri[0][1], tri[0][2],
 			tri[1][0], tri[1][1], tri[1][2],
 			tri[2][0], tri[2][1], tri[2][2],
