@@ -42,8 +42,8 @@ void tri_tri_cutting_try() {
 	q3 = { -0.5,-0.5,-0.5 };
 
 	
-	FastEnvelope::test_tri_tri_cut( q1, q2, q3,p1, p2, p3);
-	FastEnvelope::test_tri_tri_cut( p1, p2, p3, q1, q2, q3 );
+	//FastEnvelope::test_tri_tri_cut( q1, q2, q3,p1, p2, p3);
+	//FastEnvelope::test_tri_tri_cut( p1, p2, p3, q1, q2, q3 );
 
 }
 

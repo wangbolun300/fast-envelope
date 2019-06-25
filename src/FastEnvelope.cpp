@@ -10,7 +10,7 @@
 
 
 int markhf = 0, markhf1=0;
-int recordnumber = 0, recordnumber1 = 0,recordnumber2=0,recordnumber3=0,recordnumber4=0;
+int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 		{
@@ -38,7 +38,7 @@ extern "C++" int tri_tri_intersection_test_3d(fastEnvelope::Scalar p1[3], fastEn
 	fastEnvelope::Scalar source[3], fastEnvelope::Scalar target[3]);
 
 namespace fastEnvelope {
-	using namespace std;
+	//using namespace std;
 
 
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac)
@@ -91,7 +91,7 @@ namespace fastEnvelope {
 		return FastEnvelope::FastEnvelopeTestImplicit(triangle, interenvprism);
 	}
 
-	bool FastEnvelope::is_outside_signal(const std::array<Vector3, 3> &triangle, int &signal) const {
+	/*bool FastEnvelope::is_outside_signal(const std::array<Vector3, 3> &triangle, int &signal) const {
 		Vector3 tmin, tmax;
 		std::vector<int> inumber;
 		std::vector<int> intercell;
@@ -112,7 +112,7 @@ namespace fastEnvelope {
 			interenvprism.emplace_back(envprism[inumber[j]]);
 		}
 		return FastEnvelope::FastEnvelopeTestImplicit_signal(triangle, interenvprism, signal);
-	}
+	}*/
 	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
 
 		Vector3 tmin, tmax;
@@ -140,7 +140,7 @@ namespace fastEnvelope {
 		for (int i = 0; i < interenvprism.size(); i++) {
 			for (int j = 0; j < 12; j++) {
 
-				fout << std::setprecision(17) << interenvprism[i][j][0] << " " << interenvprism[i][j][1] << " " << interenvprism[i][j][2] << endl;
+				fout << std::setprecision(17) << interenvprism[i][j][0] << " " << interenvprism[i][j][1] << " " << interenvprism[i][j][2] <<std:: endl;
 
 			}
 		}
@@ -243,147 +243,10 @@ namespace fastEnvelope {
 			}
 		}
 	}
-	/*
-	bool FastEnvelope::FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
-	{
-
-		if (envprism.size() == 0) {
-			return 1;
-		}
-
-		std::vector<std::array<Vector3, 2>> seglist;
-
-		std::vector<std::array<int, 2>> segtoprism;//segment belongs to which prism,always 3 element shorter than seglist
-
-		std::vector<Vector3> interp;
-
-		std::vector<int> interseg, jump;
-
-		bool out;
-
-		seglist.emplace_back(std::array<Vector3, 2>{ {Vector3(triangle[0]), Vector3(triangle[1])}});
-		seglist.emplace_back(std::array<Vector3, 2>{{Vector3(triangle[0]), Vector3(triangle[2])}});
-		seglist.emplace_back(std::array<Vector3, 2>{ {Vector3(triangle[1]), Vector3(triangle[2])}});
-
-		for (int i = 0; i < 3; i++) {
-
-			out = point_out_prism(triangle[i], envprism, jump);
-			if (out == true) {
-				return 1;
-			}
-		}
-		for (int i = 0; i < envprism.size(); i++) {
-			for (int j = 0; j < 8; j++) {
-				Segment_facet_intersection(seglist, {{envprism[i][p_face[j][0]],envprism[i][p_face[j][1]], envprism[i][p_face[j][2]] }}, interp, interseg);
-				if (interp.size() > 0) {
-
-					segtoprism.emplace_back(std::array<int, 2>{ { i,j } });
-					jump.clear();
-					jump.emplace_back(i);
+	
 
 
-					for (int k = 0; k < 2; k++) {
-
-						out = point_out_prism(interp[k], envprism, jump);
-						if (out == true) {
-							return 1;
-						}
-					}
-					for (int k = 2; k < interp.size(); k++) {
-						jump.clear();
-						jump.emplace_back(segtoprism[interseg[k] - 3][0]);
-						jump.emplace_back(i);
-						out = point_out_prism(interp[k], envprism, jump);
-						if (out == true) {
-							return 1;
-						}
-					}
-				}
-			}
-		}
-
-		return 0;
-	}
-	*/
-
-	/*
-
-
-	bool FastEnvelope::FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
-	{
-
-		if (envprism.size() == 0) {
-			return 1;
-		}
-
-		std::vector<std::array<Vector3, 2>> seglist;
-		std::vector<std::array<int, 2>> segtoprism;//segment belongs to which prism,always 3 element shorter than seglist
-		std::vector<Vector3> interp;
-
-		std::vector<int> interseg, jump;
-
-		bool out;
-		int tti;//triangle-triangle intersection
-		seglist.emplace_back(std::array<Vector3, 2>{ {Vector3(triangle[0]), Vector3(triangle[1])}});
-		seglist.emplace_back(std::array<Vector3, 2>{ {Vector3(triangle[0]), Vector3(triangle[2])}});
-		seglist.emplace_back(std::array<Vector3, 2>{ {Vector3(triangle[1]), Vector3(triangle[2])}});
-		for (int i = 0; i < 3; i++) {
-			out = point_out_prism(triangle[i], envprism, jump);
-			if (out == true) {
-				return 1;
-			}
-		}
-		for (int i = 0; i < envprism.size(); i++) {
-			for (int j = 0; j < 8; j++) {
-				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
-					tti = tri_cut_tri_simple(triangle[0], triangle[1],triangle[2], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
-					if (tti == 4 ) {
-						break;
-					}
-					if (tti == -1) {
-						continue;
-					}
-					Segment_facet_intersection(seglist, {{ envprism[i][p_face[j][0]],envprism[i][p_face[j][1]], envprism[i][p_face[j][2]] }}, interp, interseg);
-
-					if (interp.size() > 0) {
-
-						segtoprism.emplace_back(std::array<int, 2>{ { i, j } });
-						jump.clear();
-						jump.emplace_back(i);
-
-
-						for (int k = 0; k < 2; k++) {
-
-							out = point_out_prism(interp[k], envprism, jump);
-
-							if (out == true) {
-								return 1;
-							}
-						}
-						for (int k = 2; k < interp.size(); k++) {
-							jump.clear();
-							jump.emplace_back(segtoprism[interseg[k] - 3][0]);
-							jump.emplace_back(i);
-							out = point_out_prism(interp[k], envprism, jump);
-							if (out == true) {
-								return 1;
-							}
-						}
-
-					}
-					break;
-				}//each triangle of the facet
-
-
-			}
-		}
-
-		return 0;
-	}
-	*/
-	void FastEnvelope::test_tri_tri_cut(const Vector3 &p1, const Vector3 &p2, const Vector3&p3, const Vector3 &q1, const Vector3 &q2, const Vector3&q3) {
-		cout << tri_cut_tri_simple(p1, p2, p3, q1, q2, q3) << endl;
-	}
+	
 	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
 	{
 
@@ -544,28 +407,10 @@ namespace fastEnvelope {
 							jump.clear();
 							jump.emplace_back(inter_ijk_list[e][0]);
 							jump.emplace_back(i);
-							inter1 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism(triangle,
-								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
-								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
-							//////////////////////////////////////////////////////////////////////////////
+							
 							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(triangle,
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
-							if (inter1 != inter2) {
-
-								//cout << "difference in 3 triangle in-prism test, number"<<recordnumber2<<" " << inter1 << " " << inter2 << endl;
-								recordnumber2++;
-								if (inter2 == 1) {
-									recordnumber4++;
-									//cout << "test on the new facets " << recordnumber4 << endl;
-								}
-							}
-
-
-							recordnumber3++;
-							//cout << "see the total test number, number" << recordnumber3 << endl;
-
-						//////////////////////////////////////////////////////////////////////////////
 
 							if (inter2 == 1) {
 
@@ -581,7 +426,7 @@ namespace fastEnvelope {
 
 		return 0;
 	}
-
+	/*
 	bool FastEnvelope::FastEnvelopeTestImplicit_signal(const std::array<Vector3, 3> &triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, int &signal)
 	{
@@ -614,9 +459,9 @@ namespace fastEnvelope {
 		//if (0.25*sqrt((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0])) < SCALAR_ZERO) {
 		if ((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]) == 0) {
 			if (signal == 1) {
-				std::cout << "de " << de[0] << " " << de[1] << " " << de[2] << endl;
+				std::cout << "de " << de[0] << " " << de[1] << " " << de[2] << std::endl;
 
-				std::cout << "degeneration happens" << endl;
+				std::cout << "degeneration happens" << std::endl;
 			}
 			if (de[0] == 0 && de[1] == 0) {//case 1 degenerate to a point
 				return out = point_out_prism(triangle[0], envprism, jump);
@@ -648,7 +493,7 @@ namespace fastEnvelope {
 									fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\seg.txt");
 									fout << std::setprecision(17) << triangle[triseg[wt][0]][0] << " " << triangle[triseg[wt][0]][1] << " " << triangle[triseg[wt][0]][2]
 										<< " " << triangle[triseg[wt][1]][0] << " " << triangle[triseg[wt][1]][1]
-										<< " " << triangle[triseg[wt][1]][2] << " " << i << " " << j << " " << c << endl;
+										<< " " << triangle[triseg[wt][1]][2] << " " << i << " " << j << " " << c << std::endl;
 									fout.close();
 								}
 
@@ -782,7 +627,7 @@ namespace fastEnvelope {
 
 						//////////////////////////////////////////////////////////////////////////////
 							if (signal == 1) {
-								std::cout << "here in 3 triangle intersection, in or not "<< inter2<< endl;
+								std::cout << "here in 3 triangle intersection, in or not "<< inter2<< std::endl;
 								
 							}
 							if (inter2 == 1) {
@@ -799,9 +644,9 @@ namespace fastEnvelope {
 
 		return 0;
 	}
-
-
-	bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py, const double& pz,
+	*/
+/*
+bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py, const double& pz,
 		const double& qx, const double& qy, const double& qz,
 		const double& rx, const double& ry, const double& rz,
 		const double& sx, const double& sy, const double& sz,
@@ -838,8 +683,10 @@ namespace fastEnvelope {
 		}
 		return 0;
 	}
-
-	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
+*/
+	
+/*
+int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		double  a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n;
 		int jm = 0, ori, ori1;
@@ -870,11 +717,6 @@ namespace fastEnvelope {
 					a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
 
 				/////////////////////////////////////////
-				/*recordnumber1++;
-				if (recordnumber1>8000000&&markhf1 == 0) {
-					std::cout << "report you the  ssssssssssssssssss" << std::endl;
-					markhf1 = 1;
-				}*/
 
 				ori1 = -1 * Predicates::orient_3d(envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]], segpoint0 + (segpoint0 - segpoint1)*n / d);//because n is -n
 				if (ori != ori1) {
@@ -907,6 +749,8 @@ namespace fastEnvelope {
 		}
 		return OUT_PRISM;
 	}
+*/
+	
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
@@ -975,6 +819,7 @@ namespace fastEnvelope {
 
 
 
+	/*
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		Eigen::Matrix<Scalar, 3, 3> A, AT, ATA, A1;
@@ -1098,8 +943,10 @@ namespace fastEnvelope {
 
 		return 1;
 	}
+	*/
 
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
+/*
+int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
 	{
 		int jm = 0, ori;
 		Scalar m11, m12, m13, d;
@@ -1161,6 +1008,8 @@ namespace fastEnvelope {
 		return OUT_PRISM;
 	}
 
+*/
+	
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
 	{
 		int jm = 0, ori;
@@ -1337,31 +1186,7 @@ namespace fastEnvelope {
 	}
 	
 
-	int FastEnvelope::orient_3triangles(const Eigen::Matrix<Scalar, 3, 3>& A, const Eigen::Matrix<Scalar, 3, 3>& AT,
-		const Eigen::Matrix<Scalar, 3, 3>& ATA, const Eigen::Matrix<Scalar, 3, 1>& B, const std::array<Vector3, 3> & triangle3) {//right hand law
-
-		Eigen::Matrix<Scalar, 4, 4> C;
-		Scalar  ad = det3x3(A(0, 0), A(0, 1), A(0, 2),
-			A(1, 0), A(1, 1), A(1, 2),
-			A(2, 0), A(2, 1), A(2, 2)), ad1 = 1 / ad, cd;
-		
-		Eigen::Matrix<Scalar, 3, 3> A1;
-		
-		C << B, A*triangle3[0], A*triangle3[1], A*triangle3[2],
-			1, 1, 1, 1;
-		cd = det4x4(C(0, 0), C(0, 1), C(0, 2), C(0, 3),
-			C(1, 0), C(1, 1), C(1, 2), C(1, 3),
-			C(2, 0), C(2, 1), C(2, 2), C(2, 3),
-			C(3, 0), C(3, 1), C(3, 2), C(3, 3));
-		if (ad*cd > 0) {
-			return 1;
-		}
-		if (ad*cd < 0) {
-			return -1;
-		}
-		return 0;
-		
-	}
+	
 
 
 	bool FastEnvelope::point_out_prism(const Vector3 & point, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
@@ -1457,113 +1282,7 @@ namespace fastEnvelope {
 
 	
 
-	int FastEnvelope::orient3D_LPI(//right hand law
-		const double& px, const double& py, const double& pz,
-		const double& ax, const double& ay, const double& az,
-		const double& bx, const double& by, const double& bz,
-		const double& cx, const double& cy, const double& cz,
-		const double& a11, const double& a12, const double& a13,
-		const double& a21, const double& a22, const double& a23,
-		const double& a31, const double& a32, const double& a33,
-		const double& px_rx, const double& py_ry, const double& pz_rz,
-		const double& d, const double& n)
-	{
-		::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 	
-		double det4x4_return_value;
-
-
-		double px_cx = px - cx;
-		double py_cy = py - cy;
-		double pz_cz = pz - cz;
-
-		double d11 = (d * px_cx) + (a11 * n);
-		double d21 = (ax - cx);
-		double d31 = (bx - cx);
-		double d12 = (d * py_cy) + (a12 * n);
-		double d22 = (ay - cy);
-		double d32 = (by - cy);
-		double d13 = (d * pz_cz) + (a13 * n);
-		double d23 = (az - cz);
-		double d33 = (bz - cz);
-
-		double d2233 = d22 * d33;
-		double d2332 = d23 * d32;
-		double d2133 = d21 * d33;
-		double d2331 = d23 * d31;
-		double d2132 = d21 * d32;
-		double d2231 = d22 * d31;
-
-		det4x4_return_value = d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231);
-
-		if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return 0; // Fast reject in case of under/overflow
-
-
-		// Almost static filter
-		double fa11 = fabs(a11);
-		double fa21 = fabs(a21);
-		double fa31 = fabs(a31);
-		double fa12 = fabs(a12);
-		double fa22 = fabs(a22);
-		double fa32 = fabs(a32);
-		double fa13 = fabs(a13);
-		double fa23 = fabs(a23);
-		double fa33 = fabs(a33);
-		double fpxrx = fabs(px_rx);
-		double fpyry = fabs(py_ry);
-		double fpzrz = fabs(pz_rz);
-		double fd11 = fabs(d11);
-		double fd21 = fabs(d21);
-		double fd31 = fabs(d31);
-		double fd12 = fabs(d12);
-		double fd22 = fabs(d22);
-		double fd32 = fabs(d32);
-		double fd13 = fabs(d13);
-		double fd23 = fabs(d23);
-		double fd33 = fabs(d33);
-		double fpxcx = fabs(px_cx);
-		double fpycy = fabs(py_cy);
-		double fpzcz = fabs(pz_cz);
-
-		double max1, max2, max3, max4, max5, max6;
-
-		max1 = fa23;
-		if (max1 < fa13) max1 = fa13;
-		if (max1 < fpzrz) max1 = fpzrz;
-		if (max1 < fa33) max1 = fa33;
-
-		max2 = fa12;
-		if (max2 < fa22) max2 = fa22;
-		if (max2 < fa32) max2 = fa32;
-		if (max2 < fpyry) max2 = fpyry;
-
-		max3 = fa12;
-		if (max3 < fd32) max3 = fd32;
-		if (max3 < fd22) max3 = fd22;
-		if (max3 < fpycy) max3 = fpycy;
-
-		max4 = fa13;
-		if (max4 < fpzcz) max4 = fpzcz;
-		if (max4 < fd33) max4 = fd33;
-		if (max4 < fd23) max4 = fd23;
-
-		max5 = fa11;
-		if (max5 < fa21) max5 = fa21;
-		if (max5 < fa31) max5 = fa31;
-		if (max5 < fpxrx) max5 = fpxrx;
-
-		max6 = fa11;
-		if (max6 < fd21) max6 = fd21;
-		if (max6 < fd31) max6 = fd31;
-		if (max6 < fpxcx) max6 = fpxcx;
-
-		double eps = 1.3865993466947057e-013 * max2 * max1 * max5 * max6 * max3 * max4;
-
-		if ((det4x4_return_value > eps)) return (d > 0) ? (1) : (-1);
-		if ((det4x4_return_value < -eps)) return (d > 0) ? (-1) : (1);
-		return 0;
-	}
-		
 	
 	
 	
