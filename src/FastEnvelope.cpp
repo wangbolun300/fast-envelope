@@ -45,7 +45,7 @@ namespace fastEnvelope {
 	{
 		get_bb_corners(m_ver, min, max);
 		Scalar bbd = (max - min).norm();
-		Scalar epsilon = bbd * eps; //TODO =eps*bounding box diagnal
+		Scalar epsilon = bbd * eps; //eps*bounding box diagnal
 		FastEnvelope::BoxGeneration(m_ver, m_faces, envprism, epsilon);
 		//build a  hash function
 
@@ -287,7 +287,7 @@ namespace fastEnvelope {
 
 							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 								tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
-								if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
+								if (tti == CUT_COPLANAR) {
 									break;
 								}
 								if (tti == CUT_EMPTY) {
@@ -330,7 +330,7 @@ namespace fastEnvelope {
 
 					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 						tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
-						if (tti == CUT_COPLANAR) {//TODO better add a parallel detection. for now not need because 
+						if (tti == CUT_COPLANAR) {
 							break;
 						}
 						if (tti == CUT_EMPTY) {
@@ -754,7 +754,7 @@ int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoin
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
-		int jm = 0, ori, ori1;
+		int jm = 0, ori;
 		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
 			
 		if (inter == CUT_COPLANAR) {
@@ -1013,11 +1013,6 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
 	{
 		int jm = 0, ori;
-		Scalar m11, m12, m13, d;
-		std::array<Vector3, 3>tri = triangle;//TODO really need to do this?
-		std::array<Vector3, 3>fct1 = facet1;
-		std::array<Vector3, 3>fct2 = facet2;
-
 
 		bool in = triangle_3_cut(triangle, facet1, facet2);
 		/*is_3triangle_intersect(
@@ -1045,15 +1040,15 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 
 			}
 			for (int j = 0; j < 8; j++) {
-				ori = ip_filtered::orient3D_TPI_filtered(tri[0][0], tri[0][1], tri[0][2],
-					tri[1][0], tri[1][1], tri[1][2],
-					tri[2][0], tri[2][1], tri[2][2],
-					fct1[0][0], fct1[0][1], fct1[0][2],
-					fct1[1][0], fct1[1][1], fct1[1][2],
-					fct1[2][0], fct1[2][1], fct1[2][2],
-					fct2[0][0], fct2[0][1], fct2[0][2],
-					fct2[1][0], fct2[1][1], fct2[1][2],
-					fct2[2][0], fct2[2][1], fct2[2][2],
+				ori = ip_filtered::orient3D_TPI_filtered(triangle[0][0], triangle[0][1], triangle[0][2],
+					triangle[1][0], triangle[1][1], triangle[1][2],
+					triangle[2][0], triangle[2][1], triangle[2][2],
+					facet1[0][0], facet1[0][1], facet1[0][2],
+					facet1[1][0], facet1[1][1], facet1[1][2],
+					facet1[2][0], facet1[2][1], facet1[2][2],
+					facet2[0][0], facet2[0][1], facet2[0][2],
+					facet2[1][0], facet2[1][1], facet2[1][2],
+					facet2[2][0], facet2[2][1], facet2[2][2],
 					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
 					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
 					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
