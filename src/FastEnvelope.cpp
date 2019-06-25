@@ -1014,7 +1014,7 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 	{
 		int jm = 0, ori;
 
-		bool in = triangle_3_cut(triangle, facet1, facet2);
+		bool in = is_3_triangle_cut(triangle, facet1, facet2);
 		/*is_3triangle_intersect(
 			tri[0][0], tri[0][1], tri[0][2],
 			tri[1][0], tri[1][1], tri[1][2],
@@ -1066,7 +1066,7 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 		return OUT_PRISM;
 	}
 
-	bool FastEnvelope::triangle_3_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2) {
+	bool FastEnvelope::is_3_triangle_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2) {
 		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
 		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0) {
 			std::cout << "Degeneration happens" << std::endl;
@@ -1215,7 +1215,10 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 		return true;
 	}
 
-
+	int FastEnvelope::is_triangle_degenerated(const std::array<Vector3, 3>& triangle) {
+		return 1;
+		//TODO not finished
+	}
 	void FastEnvelope::BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon)
 	{
 		envprism.reserve(m_faces.size());

@@ -13,8 +13,6 @@
 #include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
 #include <arbitraryprecision/fprecision.h>
-
-// #include <filesystem>
 #include <stdio.h>
 
 
@@ -805,7 +803,7 @@ void sample_triangle_test() {
 
 }
 
-//#include <fastenvelope/fprecision.h>
+
 
 int main(int argc, char const *argv[])
 {
@@ -845,7 +843,7 @@ int main(int argc, char const *argv[])
 	//calculation();
 	//test_ttt();
 	//test_diff();
-	test_in_wild();
+	//test_in_wild();
 	//inf();
 	//sample_triangle_test();
 
