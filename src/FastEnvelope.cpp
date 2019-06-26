@@ -5,7 +5,7 @@
 #include <istream>
 #include <igl/Timer.h>
 #include <fastenvelope/ip_filtered.h>
-
+#include <arbitraryprecision/fprecision.h>
 
 
 
@@ -1280,7 +1280,17 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 	}
 
 
+	Vector3 FastEnvelope::accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit) {
+		using namespace arbitrary_precision;
+		float_precision ax = float_precision(triangle[0][0] - triangle[1][0], digit), ay = float_precision(triangle[0][1] - triangle[1][1], digit), az = float_precision(triangle[0][2] - triangle[1][2], digit),
+			bx = float_precision(triangle[0][0] - triangle[2][0], digit), by = float_precision(triangle[0][1] - triangle[2][1], digit), bz = float_precision(triangle[0][2] - triangle[2][2], digit);
+		float_precision x = ay * bz - az * by, y = az * bx - ax * bz, z = ax * by - ay * bx;
+		float_precision length = sqrt(x * x + y * y + z * z);
+		x = x / length; y = y / length; z = z / length;
+		Scalar fx = x, fy = y, fz = z;
+		return Vector3(fx, fy, fz);
 
+	}
 
 
 

@@ -815,9 +815,14 @@ void multyprecision() {
 	std::cout << num1 / num2 * float_precision(2) << "," << float_precision(2, n_digits) / float_precision(3, n_digits) << "," << res << std::endl;
 	Scalar a = 5.3;
 	float_precision t = float_precision(a, n_digits);// float convert to multy
-	std::cout << float_precision(a, n_digits) << endl;
+	//std::cout << float_precision(a, n_digits) << endl;
 	Scalar t1 = t;// multy convert to float
-	std::cout << t1 << endl;
+	//std::cout << t1 << endl;
+	float_precision x(1,100), y(3,3);
+	float_precision z = x / y;
+	std::cout << z <<endl;
+	z = z * z;
+	std::cout << z <<" "<<x<<" "<<y<< endl;
 }
 
 
