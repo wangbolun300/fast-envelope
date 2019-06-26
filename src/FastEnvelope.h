@@ -21,6 +21,11 @@ namespace fastEnvelope {
 		static const int CUT_COPLANAR_OR_ABOVE = 4;
 		static const int CUT_EMPTY = -1;
 		static const int CUT_FACE = 3;
+
+		static const int NOT_DEGENERATED = 0;
+		static const int NERLY_DEGENERATED = 1;
+		static const int DEGENERATED_SEGMENT = 2;
+		static const int DEGENERATED_POINT = 3;
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac);
@@ -143,6 +148,12 @@ namespace fastEnvelope {
 
 		static int  FastEnvelope::is_triangle_degenerated(const std::array<Vector3, 3>& triangle);
 		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit);
+		static Vector2 to_2d(const Vector3 &p, int t) {
+			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
+		}
+		
+
+			
 	
 	};
 }

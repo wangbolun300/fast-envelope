@@ -1215,8 +1215,33 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 		return true;
 	}
 
-	int FastEnvelope::is_triangle_degenerated(const std::array<Vector3, 3>& triangle) {
-		return 1;
+	int FastEnvelope::is_triangle_degenerated(const std::array<Vector3, 3>& triangle) {//TODO temporary version of degeneration detection
+		
+		Vector3 a = triangle[0] - triangle[1], b = triangle[0] - triangle[2];
+		Vector3 normal = a.cross(b);
+		Scalar nbr = normal.norm();
+		int ori;
+		if (nbr > SCALAR_ZERO) {
+			return NOT_DEGENERATED;
+		}
+		std::array < Vector2, 3> p;
+		for (int j = 0; j < 3; j++) {
+			for (int i = 0; i < 3; i++) {
+				p[i] = to_2d(triangle[i], j);
+			}
+			ori = Predicates::orient_2d(p[0], p[1], p[2]);
+			if (ori != 0) {
+				return NERLY_DEGENERATED;
+			}
+		}
+		
+		for (int i = 0; i < 3; i++) {
+			if (triangle[i][0] - triangle[(i+1)%3][0] != 0 || triangle[i][1] - triangle[(i + 1) % 3][1] != 0) {
+				NOTFINISHED
+			}
+		}
+
+		return TOTALLY_DEGENERATED;
 		//TODO not finished
 	}
 	void FastEnvelope::BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon)

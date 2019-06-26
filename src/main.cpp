@@ -185,9 +185,9 @@ void BoxFindCellsV1(const Vector3& min, const Vector3& max,
 
 
 void testOrientation() {
-	std::array<Vector3, 3> tri = {{ Vector3(0,0,0),Vector3(1,0,0),Vector3(0,1,0) }};// right hand law
+	std::array<Vector2, 3> tri = {{ Vector2(0,0),Vector2(0,0),Vector2(0,0) }};// right hand law
 	Vector3 p = { 0.4,0.4,-1 };
-	int ori = Predicates::orient_3d(tri[0], tri[1], tri[2], p);
+	int ori = Predicates::orient_2d(tri[0], tri[1], tri[2]);
 	std::cout << "orientation test : " << ori << std::endl;
 }
 
@@ -829,7 +829,7 @@ void multyprecision() {
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
-
+	
 	
 	//assert(false);
 
@@ -839,7 +839,7 @@ int main(int argc, char const *argv[])
 	//std::cout << "bool test :" << b << std::endl;
 	//TriangleInEnvelope();
 	//RealModelEnvelopeTest();
-	//testOrientation();
+	testOrientation();
 	//bunnytest();
 	//change_model();
 	//orient3D_LPITest();
@@ -853,10 +853,11 @@ int main(int argc, char const *argv[])
 	//calculation();
 	//test_ttt();
 	//test_diff();
+	
 	//test_in_wild();
 	//inf();
 	//sample_triangle_test();
-	multyprecision();
+	//multyprecision();
 	std::cout << "done!" << std::endl;
 
 
