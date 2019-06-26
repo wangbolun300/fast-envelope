@@ -802,13 +802,7 @@ void sample_triangle_test() {
 	fout.close();
 
 }
-
-
-
-int main(int argc, char const *argv[])
-{
-	GEO::initialize();
-
+void multyprecision() {
 	int n_digits = 40;
 
 	using namespace arbitrary_precision;
@@ -816,11 +810,22 @@ int main(int argc, char const *argv[])
 	float_precision num1(1, n_digits);
 	float_precision num2(3, n_digits);
 
-	float_precision res = num1/num2*float_precision(2) - float_precision(2,n_digits)/float_precision(3,n_digits);
+	float_precision res = num1 / num2 * float_precision(2) - float_precision(2, n_digits) / float_precision(3, n_digits);
 
-	std::cout<<res<<std::endl;
+	std::cout << num1 / num2 * float_precision(2) << "," << float_precision(2, n_digits) / float_precision(3, n_digits) << "," << res << std::endl;
+	Scalar a = 5.3;
+	float_precision t = float_precision(a, n_digits);// float convert to multy
+	std::cout << float_precision(a, n_digits) << endl;
+	Scalar t1 = t;// multy convert to float
+	std::cout << t1 << endl;
+}
 
 
+int main(int argc, char const *argv[])
+{
+	GEO::initialize();
+
+	
 	//assert(false);
 
 	//EnvelopPrism();
@@ -846,7 +851,7 @@ int main(int argc, char const *argv[])
 	//test_in_wild();
 	//inf();
 	//sample_triangle_test();
-
+	multyprecision();
 	std::cout << "done!" << std::endl;
 
 
