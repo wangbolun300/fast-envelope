@@ -36,6 +36,7 @@ namespace fastEnvelope {
 		static int test_dege(const std::array<Vector3, 3>& triangle)  {
 			return is_triangle_degenerated(triangle);
 		}
+		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit);
 
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;
@@ -141,7 +142,6 @@ namespace fastEnvelope {
 
 
 		static int tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,const Vector3& q1, const Vector3& q2, const Vector3& q3);
-		static int tri_cut_tri_Wang(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& q1, const Vector3& q2, const Vector3& q3);
 
 
 
@@ -150,12 +150,13 @@ namespace fastEnvelope {
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2);
 
 		static int is_triangle_degenerated(const std::array<Vector3, 3>& triangle);
-		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit);
+		
 		static Vector2 to_2d(const Vector3 &p, int t) {
 			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
 		}
 
-
+		
+		
 
 
 	};

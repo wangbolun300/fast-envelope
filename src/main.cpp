@@ -855,12 +855,18 @@ void degen_test() {
 	Vector3 t1 = { {Vector3(0,1,0)} }, t2 = { {Vector3(0,0,0)} }, t3 = { {Vector3(0,1,0)} };
 	cout<<FastEnvelope::test_dege({ {t1,t2,t3} });
 }
-
+void accurate_vector() {
+	Vector3 t1 = { {Vector3(7.6,1.3,1)} }, t2 = { {Vector3(5,1,1.3)} }, t3 = { {Vector3(1.7,15.3,0.372)} };
+	
+	cout<<FastEnvelope::accurate_normal_vector({ {t1,t2,t3} },30)<<endl;
+}
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
 	
-	
+#include<ctime>
+	srand(int(time(0)));
+	cout << rand()<<"," << rand() <<","<< rand() << endl;
 	//assert(false);
 
 	//EnvelopPrism();
@@ -884,11 +890,12 @@ int main(int argc, char const *argv[])
 	//test_ttt();
 	//test_diff();
 	
-	test_in_wild();
+	//test_in_wild();
 	//inf();
 	//sample_triangle_test();
 	//multyprecision();
 	//degen_test();
+	//accurate_vector();
 	std::cout << "done!" << std::endl;
 
 

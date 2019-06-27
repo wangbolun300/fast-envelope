@@ -1012,11 +1012,14 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 
 		return OUT_PRISM;
 	}
-
+#include<ctime>
 	bool FastEnvelope::is_3_triangle_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2) {
 		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
+		//Vector3 n = max;
 		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0) {
 			std::cout << "Degeneration happens" << std::endl;
+			srand(int(time(0)));
+			n = { {Vector3(rand(),rand(),rand()) } };
 		}
 		int o1 = ip_filtered::orient3D_TPI_filtered(
 			triangle[0][0], triangle[0][1], triangle[0][2],
@@ -1082,30 +1085,7 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 
 		return CUT_FACE;
 	}
-	int FastEnvelope::tri_cut_tri_Wang(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
-		const Vector3& q1, const Vector3& q2, const Vector3& q3) {
-		int o1, o2, o3, o4, o5, o6;
-		o1 = Predicates::orient_3d(p1, q1, q2, q3);
-		o2 = Predicates::orient_3d(p2, q1, q2, q3);
-		o3 = Predicates::orient_3d(p3, q1, q2, q3);
-		if (o1 == o2 && o2 == o3 && o3 == 0) {
-			return CUT_COPLANAR;
-
-		}
-		o4 = Predicates::orient_3d(q1, p1, p2, p3);
-		o5 = Predicates::orient_3d(q2, p1, p2, p3);
-		o6 = Predicates::orient_3d(q3, p1, p2, p3);
-		if (o1*o2 == 1 && o1*o3 == 1) {
-			return CUT_EMPTY;
-		}
-		if (o3*o4 == 1 && o3*o5 == 1) {
-			return CUT_EMPTY;
-		}
-
-		//Not_Finished
-		assert(false);
-		return 0;
-	}
+	
 	int FastEnvelope::seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2) {
 		int o1, o2, o3, o4, o5;
 		o1 = Predicates::orient_3d(seg0, t0, t1, t2);
@@ -1266,11 +1246,12 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 		float_precision x = ay * bz - az * by;
 		float_precision y = az * bx - ax * bz;
 		float_precision z = ax * by - ay * bx;
-
+		std::cout << "precision " << x.precision() << " vs " << ax.precision() << " vs " << digit << std::endl;
 		const float_precision length = sqrt(x * x + y * y + z * z);
 		x = x / length; y = y / length; z = z / length;
 
-		std::cout << "precision " << x.precision() << " vs " << ax.precision() << " vs " << digit << std::endl;
+		
+		std::cout << "value " << x << " vs " << ax << " vs " << digit << std::endl;
 		Scalar fx = x, fy = y, fz = z;
 		return Vector3(fx, fy, fz);
 
