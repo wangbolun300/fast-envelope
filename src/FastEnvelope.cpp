@@ -277,7 +277,6 @@ namespace fastEnvelope {
 											// the segment is {triangle[triseg[we][0]], triangle[triseg[we][1]]}
 					for (int i = 0; i < envprism.size(); i++) {
 						for (int j = 0; j < 8; j++) {
-
 							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 								tti = seg_cut_tri(triangle[triseg[we][0]], triangle[triseg[we][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
 								if (tti == CUT_COPLANAR) {
@@ -296,7 +295,6 @@ namespace fastEnvelope {
 								if (inter == 1) {
 									return 1;
 								}
-
 								break;
 
 							}

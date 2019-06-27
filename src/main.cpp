@@ -702,6 +702,7 @@ void test_in_wild() {
 		}
 		if (pos2[i] - pos3[i] == 1) {
 			count1++;
+			trindex2.push_back(i);
 		}
 		if (pos2[i] - pos3[i] == -1) {
 			trindex1.push_back(i);
@@ -718,7 +719,7 @@ void test_in_wild() {
 	std::cout << "how many different cases in comparison:  " << count << std::endl;
 	std::cout << "1-0 cases in comparison:  " << count1 << std::endl;
 	std::cout << "**0-1 cases in comparison:  " << count-count1 << std::endl;
-	std::cout << "1-0 case size:  " << trindex1.size() << std::endl;
+	std::cout << "1-0 case size:  " << trindex2.size() << std::endl;
 	std::cout << "our inside size:  " << insiden_o << std::endl;
 	std::cout << "sap inside size:  " << insiden_s << std::endl;
 
@@ -734,21 +735,45 @@ void test_in_wild() {
 	}
 	cout << "\ndegeneration counting: " << nbr << endl;
 
-
-	for (int i = 0; i < fn; i++) {
-		if (pos1[i] - pos3[i] != 0) {
-			count2++;
-		}
-		if (pos1[i] - pos3[i] == 1) {
-			count3++;
-		}
-	}
-	std::cout << "how many different cases in comparison aabb with sampling:  " << count2 << std::endl;
-	std::cout << "1-0 cases in comparison 1:  " << count3 << std::endl;
-	std::cout << "0-1 cases in comparison 1:  " << count2 - count3 << std::endl;
-
-
 	////////////////////////////////////////////////////////////////////////////////////////
+	std::vector<bool> pos4;
+	pos4.resize(trindex2.size());
+	//script for automatically iterating resampling
+	for (int i = 0; i < trindex2.size(); i++) {
+		tri = triangles[trindex2[i]];
+		l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 60;
+		
+		pos4[i] = fast_envelope.sample_triangle_outside(tri, l1);
+	}
+	count = 0; count1 = 0;
+	for (int i = 0; i < trindex2.size(); i++) {
+		if (pos2[trindex2[i]] - pos4[i] != 0) {
+			count++;
+		}
+		if (pos2[trindex2[i]] - pos4[i] == 1) {
+			count1++;
+		}
+		
+
+	}
+	std::cout << "\niterating comparision--differences number: " << count << std::endl;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
 	if (trindex1.size() > 0) {
 		std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
@@ -765,6 +790,8 @@ void test_in_wild() {
 		int signal = 1;
 		//fast_envelope.is_outside_signal(triangles[trindex1[idx]], signal);
 	}
+	*/
+	
 
 
 
