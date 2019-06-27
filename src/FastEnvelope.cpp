@@ -299,12 +299,12 @@ namespace fastEnvelope {
 
 							}
 						}
-					}		
+					}
 			}//case 2 case 2 degenerated as a segment
 			return 0;
 		}
-		
-		
+
+
 		////////////////////////////////degeneration fix over
 
 
@@ -1163,11 +1163,11 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 	}
 
 	int FastEnvelope::is_triangle_degenerated(const std::array<Vector3, 3>& triangle) {//TODO temporary version of degeneration detection
-		
+
 		Vector3 a = triangle[0] - triangle[1], b = triangle[0] - triangle[2];
 		Vector3 normal = a.cross(b);
 		Scalar nbr = normal.norm();
-		
+
 		if (nbr > SCALAR_ZERO) {
 			return NOT_DEGENERATED;
 		}
@@ -1182,7 +1182,7 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 				return NERLY_DEGENERATED;
 			}
 		}
-		
+
 		if (triangle[0][0] != triangle[1][0] || triangle[0][1] != triangle[1][1] || triangle[0][2] != triangle[1][2]) {
 			return DEGENERATED_SEGMENT;
 		}
@@ -1255,11 +1255,22 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 
 	Vector3 FastEnvelope::accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit) {
 		using namespace arbitrary_precision;
-		float_precision ax = float_precision(triangle[0][0] - triangle[1][0], digit), ay = float_precision(triangle[0][1] - triangle[1][1], digit), az = float_precision(triangle[0][2] - triangle[1][2], digit),
-			bx = float_precision(triangle[0][0] - triangle[2][0], digit), by = float_precision(triangle[0][1] - triangle[2][1], digit), bz = float_precision(triangle[0][2] - triangle[2][2], digit);
-		float_precision x = ay * bz - az * by, y = az * bx - ax * bz, z = ax * by - ay * bx;
-		float_precision length = sqrt(x * x + y * y + z * z);
+		const float_precision ax = float_precision(triangle[0][0], digit) - float_precision(triangle[1][0], digit);
+		const float_precision ay = float_precision(triangle[0][1], digit) - float_precision(triangle[1][1], digit);
+		const float_precision az = float_precision(triangle[0][2], digit) - float_precision(triangle[1][2], digit);
+
+		const float_precision bx = float_precision(triangle[0][0], digit) - float_precision(triangle[2][0], digit);
+		const float_precision by = float_precision(triangle[0][1], digit) - float_precision(triangle[2][1], digit);
+		const float_precision bz = float_precision(triangle[0][2], digit) - float_precision(triangle[2][2], digit);
+
+		float_precision x = ay * bz - az * by;
+		float_precision y = az * bx - ax * bz;
+		float_precision z = ax * by - ay * bx;
+
+		const float_precision length = sqrt(x * x + y * y + z * z);
 		x = x / length; y = y / length; z = z / length;
+
+		std::cout << "precision " << x.precision() << " vs " << ax.precision() << " vs " << digit << std::endl;
 		Scalar fx = x, fy = y, fz = z;
 		return Vector3(fx, fy, fz);
 
