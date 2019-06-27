@@ -1220,10 +1220,11 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 		Vector3 a = triangle[0] - triangle[1], b = triangle[0] - triangle[2];
 		Vector3 normal = a.cross(b);
 		Scalar nbr = normal.norm();
-		int ori;
+		
 		if (nbr > SCALAR_ZERO) {
 			return NOT_DEGENERATED;
 		}
+		int ori;
 		std::array < Vector2, 3> p;
 		for (int j = 0; j < 3; j++) {
 			for (int i = 0; i < 3; i++) {
@@ -1235,13 +1236,13 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 			}
 		}
 		
-		for (int i = 0; i < 3; i++) {
-			if (triangle[i][0] - triangle[(i+1)%3][0] != 0 || triangle[i][1] - triangle[(i + 1) % 3][1] != 0) {
-				NOTFINISHED
-			}
+		if (triangle[0][0] != triangle[1][0] || triangle[0][1] != triangle[1][1] || triangle[0][2] != triangle[1][2]) {
+			return DEGENERATED_SEGMENT;
 		}
-
-		return TOTALLY_DEGENERATED;
+		if (triangle[0][0] != triangle[2][0] || triangle[0][1] != triangle[2][1] || triangle[0][2] != triangle[2][2]) {
+			return DEGENERATED_SEGMENT;
+		}
+		return DEGENERATED_POINT;
 		//TODO not finished
 	}
 	void FastEnvelope::BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon)
