@@ -33,6 +33,9 @@ namespace fastEnvelope {
 		inline int prism_size() const { return envprism.size(); }
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
+		static int test_dege(const std::array<Vector3, 3>& triangle)  {
+			return is_triangle_degenerated(triangle);
+		}
 		
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;

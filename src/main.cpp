@@ -824,7 +824,10 @@ void multyprecision() {
 	z = z * z;
 	std::cout << z <<" "<<x<<" "<<y<< endl;
 }
-
+void degen_test() {
+	Vector3 t1 = { {Vector3(0,1,0)} }, t2 = { {Vector3(0,0,0)} }, t3 = { {Vector3(0,1,0)} };
+	cout<<FastEnvelope::test_dege({ {t1,t2,t3} });
+}
 
 int main(int argc, char const *argv[])
 {
@@ -839,7 +842,7 @@ int main(int argc, char const *argv[])
 	//std::cout << "bool test :" << b << std::endl;
 	//TriangleInEnvelope();
 	//RealModelEnvelopeTest();
-	testOrientation();
+	//testOrientation();
 	//bunnytest();
 	//change_model();
 	//orient3D_LPITest();
@@ -854,10 +857,11 @@ int main(int argc, char const *argv[])
 	//test_ttt();
 	//test_diff();
 	
-	//test_in_wild();
+	test_in_wild();
 	//inf();
 	//sample_triangle_test();
 	//multyprecision();
+	//degen_test();
 	std::cout << "done!" << std::endl;
 
 

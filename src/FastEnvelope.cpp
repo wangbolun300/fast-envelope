@@ -259,7 +259,6 @@ namespace fastEnvelope {
 		int inter, inter1, record1, record2,
 			tti;//triangle-triangle intersection
 		jump.clear();
-		Scalar de[3];
 		for (int i = 0; i < 3; i++) {
 			out = point_out_prism(triangle[i], envprism, jump);
 			if (out == true) {
@@ -269,24 +268,18 @@ namespace fastEnvelope {
 
 
 		////////////////////degeneration fix
-		for (int i = 0; i < 3; i++) {
-			de[i] = (triangle[triseg[i][0]] - triangle[triseg[i][1]]).norm();
-
-		}
-		if ((de[0] + de[1] + de[2])*(de[0] + de[1] - de[2])*(de[0] + de[2] - de[1])*(de[1] + de[2] - de[0]) < SCALAR_ZERO_3) {//TODO degeneration detection may have prob
-
-			if (de[0] == 0 && de[1] == 0) {//case 1 degenerate to a point
-				return out = point_out_prism(triangle[0], envprism, jump);
-			}//case 1 degenerate to a point
-
-			for (int we = 0; we < 3; we++) {//case 2 two points are the same point
-				if (de[we] == 0) {
-					int  wt = (we + 1) % 3;// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
+		int degeneration= is_triangle_degenerated(triangle);
+		if (degeneration== DEGENERATED_POINT) {//case 1 degenerate to a point
+			return 0;
+		}//case 1 degenerate to a point
+		if (degeneration == DEGENERATED_SEGMENT) {
+			for (int we = 0; we < 2; we++) {//case 2 degenerated as a segment, at most test 2 segments
+											// the segment is {triangle[triseg[we][0]], triangle[triseg[we][1]]}
 					for (int i = 0; i < envprism.size(); i++) {
 						for (int j = 0; j < 8; j++) {
 
 							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
-								tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
+								tti = seg_cut_tri(triangle[triseg[we][0]], triangle[triseg[we][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
 								if (tti == CUT_COPLANAR) {
 									break;
 								}
@@ -297,7 +290,7 @@ namespace fastEnvelope {
 								jump.emplace_back(i);
 
 
-								inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[we][0]], triangle[triseg[we][1]],
 									{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 								if (inter == 1) {
@@ -308,56 +301,12 @@ namespace fastEnvelope {
 
 							}
 						}
-					}
-					return 0;
-				}
-			}//case 2 two points are the same point
-
-			//TODO maybe we can delete case 2, but maybe having case 2 can be faster
-			//case 3 three points on one line
-			Scalar maxi = de[0];
-			int wt = 0;
-			for (int i = 1; i < 3; i++) {
-				if (de[i] > maxi) {
-					maxi = de[i];
-					wt = i;
-				}
-			}
-
-			// the segment is triangle[triseg[wt][0]], triangle[triseg[wt][1]]
-			for (int i = 0; i < envprism.size(); i++) {
-				for (int j = 0; j < 8; j++) {
-
-					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
-						tti = seg_cut_tri(triangle[triseg[wt][0]], triangle[triseg[wt][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
-						if (tti == CUT_COPLANAR) {
-							break;
-						}
-						if (tti == CUT_EMPTY) {
-							continue;
-						}
-						jump.clear();
-						jump.emplace_back(i);
-
-
-						inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[wt][0]], triangle[triseg[wt][1]],
-							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
-
-
-						if (inter == 1) {
-							return 1;
-						}
-
-						break;
-
-					}
-				}
-			}
+					}		
+			}//case 2 case 2 degenerated as a segment
 			return 0;
-
-			//case 3 three points on one line
-
 		}
+		
+		
 		////////////////////////////////degeneration fix over
 
 
