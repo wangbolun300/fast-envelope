@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include<iostream>
 namespace fastEnvelope {
-	
+
 
 	class FastEnvelope
 	{
@@ -36,7 +36,7 @@ namespace fastEnvelope {
 		static int test_dege(const std::array<Vector3, 3>& triangle)  {
 			return is_triangle_degenerated(triangle);
 		}
-		
+
 	private:
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
@@ -47,7 +47,7 @@ namespace fastEnvelope {
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		static bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
-		
+
 		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
 	public:
 		static void triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error);
@@ -128,35 +128,35 @@ namespace fastEnvelope {
 		static bool point_out_prism(const Vector3& point, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 
 		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon);
-		
+
 
 		static int Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
-	
 
-		
+
+
 		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
-		
+
 
 
 		static int tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,const Vector3& q1, const Vector3& q2, const Vector3& q3);
 		static int tri_cut_tri_Wang(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& q1, const Vector3& q2, const Vector3& q3);
 
-	
-		
+
+
 
 
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2);
 
-		static int  FastEnvelope::is_triangle_degenerated(const std::array<Vector3, 3>& triangle);
+		static int is_triangle_degenerated(const std::array<Vector3, 3>& triangle);
 		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit);
 		static Vector2 to_2d(const Vector3 &p, int t) {
 			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
 		}
-		
 
-			
-	
+
+
+
 	};
 }
