@@ -13,6 +13,7 @@
 #include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
 #include <arbitraryprecision/fprecision.h>
+//#include <arbitraryprecision/intervalprecision.h>
 #include <stdio.h>
 
 
@@ -829,29 +830,31 @@ void sample_triangle_test() {
 	fout.close();
 
 }
-void multyprecision() {
-	int n_digits = 40;
+template<typename T>
+void multyprecision(const T &num1, const T &num2) {
+	//int n_digits = 40;
 
-	using namespace arbitrary_precision;
+	//using namespace arbitrary_precision;
 
-	float_precision num1(1, n_digits);
-	float_precision num2(3, n_digits);
+	//float_precision num1(1, n_digits);
+	//float_precision num2(3, n_digits);
 
-	float_precision res = num1 / num2 * float_precision(2) - float_precision(2, n_digits) / float_precision(3, n_digits);
+	T res = num1 / num2 * T(2) - T(2) / T(3);
+	
 
-	std::cout << num1 / num2 * float_precision(2) << "," << float_precision(2, n_digits) / float_precision(3, n_digits) << "," << res << std::endl;
-	Scalar a = 5.3;
-	float_precision t = float_precision(a, n_digits);// float convert to multy
-	//std::cout << float_precision(a, n_digits) << endl;
-	Scalar t1 = t;// multy convert to float
-	//std::cout << t1 << endl;
-	float_precision x(1,100), y(3,3);
-	float_precision z = x / y;
-	std::cout << z <<endl;
-	z = z * z;
-	std::cout << z <<" "<<x<<" "<<y<< endl;
+//#include<arbitraryprecision/intervalprecision.h>
+	
 }
 void degen_test() {
+
+	using namespace arbitrary_precision;
+	
+	multyprecision(2, 3);
+	multyprecision(2., 3.);
+	multyprecision(float_precision(2), float_precision(3.));
+
+	//interval_precision<float_precision> itfp;
+
 	Vector3 t1 = { {Vector3(0,1,0)} }, t2 = { {Vector3(0,0,0)} }, t3 = { {Vector3(0,1,0)} };
 	cout<<FastEnvelope::test_dege({ {t1,t2,t3} });
 }
@@ -864,7 +867,8 @@ int main(int argc, char const *argv[])
 {
 	GEO::initialize();
 	
-#include<ctime>
+	
+
 	/*srand(int(time(0)));
 	cout << rand()<<"," << rand() <<","<< rand() << endl;*/
 	//assert(false);
@@ -890,7 +894,7 @@ int main(int argc, char const *argv[])
 	//test_ttt();
 	//test_diff();
 	
-	test_in_wild();
+	//test_in_wild();
 	//inf();
 	//sample_triangle_test();
 	//multyprecision();

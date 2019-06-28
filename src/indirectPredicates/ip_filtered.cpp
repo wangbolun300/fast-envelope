@@ -378,7 +378,7 @@ namespace fastEnvelope
 
 	//using multiple precision
 
-#include<arbitraryprecision/fprecision.h>
+//#include<arbitraryprecision/intervalprecision.h>
 	int ip_filtered::orient3D_LPI_filtered_multiprecision(
 		double px, double py, double pz,
 		double qx, double qy, double qz,
