@@ -52,7 +52,7 @@ endfunction()
 function(fast_envelope_download_arbitrary_precision)
     fast_envelope_download_project(arbitrary_precision
         GIT_REPOSITORY      https://github.com/teseoch/arbitrary_precision.git
-        GIT_TAG             f7b744ad07e131ef65cfde10f086b6f6682a0205
+        GIT_TAG             2dc2deca151f7f682728b2bb985a03eb578ad379
     )
 endfunction()
 
