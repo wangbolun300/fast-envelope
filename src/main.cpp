@@ -865,8 +865,8 @@ int main(int argc, char const *argv[])
 	GEO::initialize();
 	
 #include<ctime>
-	srand(int(time(0)));
-	cout << rand()<<"," << rand() <<","<< rand() << endl;
+	/*srand(int(time(0)));
+	cout << rand()<<"," << rand() <<","<< rand() << endl;*/
 	//assert(false);
 
 	//EnvelopPrism();
@@ -890,7 +890,7 @@ int main(int argc, char const *argv[])
 	//test_ttt();
 	//test_diff();
 	
-	//test_in_wild();
+	test_in_wild();
 	//inf();
 	//sample_triangle_test();
 	//multyprecision();

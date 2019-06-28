@@ -686,9 +686,13 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 				}
 				*/
 				///////////////////////////////////////////
+				if (ori == -2) {
+					return NOT_INTERSECTD;
+				}
 				if (ori == 1 || ori == 0) {
 					break;
 				}
+				
 				if (j == 7) {
 
 					return IN_PRISM;
@@ -739,6 +743,9 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 
 					break;
 				}
+				if (ori == -2) {
+					return NOT_INTERSECTD;
+				}
 				if (j == 7) {
 
 					return IN_PRISM;
@@ -786,11 +793,13 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 			n[0], n[1], n[2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			triangle[0][0], triangle[0][1], triangle[0][2]);
-		int o = o1 + o2 + o3;
-		if (o == 3 || o == -3) {//TODO may not work because we have -2 output now
+		
+		if (o1 == 1 && o2 == 1 && o3 == 1) {// interpoint in the interior of triangle
 			return 1;
 		}
-
+		if (o1 == -1 && o2 == -1 && o3 == -1) {// interpoint in the interior of triangle
+			return 1;
+		}
 		return 0;
 	}
 
