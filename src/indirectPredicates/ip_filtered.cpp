@@ -2,6 +2,7 @@
 #include <fenv.h>
 #include <stdio.h>
 #include <FastEnvelope/ip_filtered.h>
+#include<arbitraryprecision/fprecision.h>
 
 // Uncomment the following to activate a second filter on the determinants 'd' in both the following functions.
 // If uncommented, the two functions may return -2 if 'd' is too close to zero, meaning that

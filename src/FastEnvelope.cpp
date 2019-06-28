@@ -273,7 +273,8 @@ namespace fastEnvelope {
 			return 0;
 		}//case 1 degenerate to a point
 		if (degeneration == DEGENERATED_SEGMENT) {
-			for (int we = 0; we < 2; we++) {//case 2 degenerated as a segment, at most test 2 segments
+			for (int we = 0; we < 3; we++) {//case 2 degenerated as a segment, at most test 2 segments,but still we need to test 3, because
+											// of the endpoint-triangle intersection will be ignored
 											// the segment is {triangle[triseg[we][0]], triangle[triseg[we][1]]}
 					for (int i = 0; i < envprism.size(); i++) {
 						for (int j = 0; j < 8; j++) {
@@ -282,7 +283,7 @@ namespace fastEnvelope {
 								if (tti == CUT_COPLANAR) {
 									break;
 								}
-								if (tti == CUT_EMPTY) {
+								if (tti == CUT_EMPTY) {//this is not redundant
 									continue;
 								}
 								jump.clear();
@@ -316,7 +317,7 @@ namespace fastEnvelope {
 					if (tti == CUT_COPLANAR) {
 						break;
 					}
-					if (tti == CUT_EMPTY) {
+					if (tti == CUT_EMPTY) {//TODO maybe redundant because we want "float above" case leading to break
 						continue;
 					}
 
@@ -632,71 +633,6 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 	}
 */
 
-/*
-int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
-		double  a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n;
-		int jm = 0, ori, ori1;
-		bool inter = is_seg_facet_intersection(segpoint0[0], segpoint0[1], segpoint0[2],
-			segpoint1[0], segpoint1[1], segpoint1[2],
-			triangle[0][0], triangle[0][1], triangle[0][2],
-			triangle[1][0], triangle[1][1], triangle[1][2],
-			triangle[2][0], triangle[2][1], triangle[2][2],
-			a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
-		if (inter == 0) {
-			return NOT_INTERSECTD;//not intersected
-		}
-		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {//TODO jump avoid vector
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
-			}
-
-			for (int j = 0; j < 8; j++) {
-				//ftimer2.start();
-				ori = orient3D_LPI(
-					segpoint0[0], segpoint0[1], segpoint0[2],
-					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
-					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
-					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
-					a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
-
-				/////////////////////////////////////////
-
-				ori1 = -1 * Predicates::orient_3d(envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]], segpoint0 + (segpoint0 - segpoint1)*n / d);//because n is -n
-				if (ori != ori1) {
-					markhf = 0;
-					if (recordnumber < 1000) {
-						//std::cout << "number " << recordnumber << std::endl;
-
-						//std::cout << "ori and ori1 " << ori << " " << ori1 << std::endl;
-						ori = orient3D_LPI(
-							segpoint0[0], segpoint0[1], segpoint0[2],
-							envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
-							envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
-							envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
-							a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
-						recordnumber++;
-					}
-					markhf = 0;
-				}
-				///////////////////////////////////////////
-				if (ori == 1 || ori == 0) {
-					break;
-				}
-				if (j == 7) {
-
-					return IN_PRISM;
-				}
-			}
-
-
-		}
-		return OUT_PRISM;
-	}
-*/
 
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
@@ -704,7 +640,8 @@ int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoin
 		int jm = 0, ori;
 		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
 
-		if (inter == CUT_COPLANAR) {
+		if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
+									//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
 			return NOT_INTERSECTD;//not intersected
 		}
 		for (int i = 0; i < envprism.size(); i++) {
@@ -766,213 +703,12 @@ int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism(const Vector3& segpoin
 
 
 
-	/*
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
-		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
-		Eigen::Matrix<Scalar, 3, 3> A, AT, ATA, A1;
-		Eigen::Matrix<Scalar, 3, 1> B;
-		Eigen::Matrix<Scalar, 4, 4> C;
-		Eigen::Matrix<Scalar, 2, 3> Prj;
-		Vector3 p3d;
-		Vector2 t0, t1, t2, p;
-		int rcd = 0, jm = 0, ori;
-		Scalar ad, ad1, fad, fadi;
-		AT << (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]),
-			(facet1[0] - facet1[1]).cross(facet1[0] - facet1[2]),
-			(facet2[0] - facet2[1]).cross(facet2[0] - facet2[2]);
-		Scalar mv = fabs(AT(0, 0));
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				mv = mv == 0 ? fabs(AT(i, j)) : fabs(AT(i, j)) == 0 ? mv : std::min(mv, fabs(AT(i, j)));
-			}
-		}
-		mv = mv < 1 ? 1 / mv : 1;
-
-		A = AT.transpose();
-
-		A(0) = A(0)*mv;
-		A(1) = A(1)*mv;
-		A(2) = A(2)*mv;
-		ad = det3x3(A(0, 0), A(0, 1), A(0, 2),
-			A(1, 0), A(1, 1), A(1, 2),
-			A(2, 0), A(2, 1), A(2, 2));
-		fad = fabs(ad);
-		if (fad < SCALAR_ZERO_3) {
-			return 2;
-		}
-		fadi = fad < 1 ? 1 / fad : 1;
-		A(0) = A(0)*fadi;
-		A(1) = A(1)*fadi;
-		A(2) = A(2)*fadi;
-		B[0] = A(0, 0)*triangle[0][0] + A(0, 1)*triangle[0][1] + A(0, 2)*triangle[0][2];
-		B[1] = A(1, 0)*facet1[0][0] + A(1, 1)*facet1[0][1] + A(1, 2)*facet1[0][2];
-		B[2] = A(2, 0)*facet2[0][0] + A(2, 1)*facet2[0][1] + A(2, 2)*facet2[0][2];
-
-
-
-		//////////////////////////////////////////////////////////////////////////
-
-		Scalar m11, m12, m13, d;
-		std::array<Vector3, 3>tri = triangle;//TODO really need to do this?
-		std::array<Vector3, 3>fct1 = facet1;
-		std::array<Vector3, 3>fct2 = facet2;
-
-
-		bool inter = is_3triangle_intersect(
-			tri[0][0], tri[0][1], tri[0][2],
-			tri[1][0], tri[1][1], tri[1][2],
-			tri[2][0], tri[2][1], tri[2][2],
-			fct1[0][0], fct1[0][1], fct1[0][2],
-			fct1[1][0], fct1[1][1], fct1[1][2],
-			fct1[2][0], fct1[2][1], fct1[2][2],
-			fct2[0][0], fct2[0][1], fct2[0][2],
-			fct2[1][0], fct2[1][1], fct2[1][2],
-			fct2[2][0], fct2[2][1], fct2[2][2],
-			m11, m12, m13, d);
-
-		////////////////////////////////////////////////////////////////////////////
-
-		Vector3 f1, f2, f3;
-
-		f1 = (B - A * triangle[1]).cross(A*triangle[1] - A * triangle[0]);
-		f2 = (B - A * triangle[2]).cross(A*triangle[2] - A * triangle[1]);
-		f3 = (B - A * triangle[0]).cross(A*triangle[0] - A * triangle[2]);
-
-		bool in = f1.dot(f2) > 0 && f1.dot(f3) > 0 ? 1 : 0;//TODO consider the triangle degeneration
-		/////////////////////////////////////////////////
-		if (inter != in) {
-			//std::cout << "intersect test diff in 3 triangles "<< in<<" "<<inter << endl;
-		}
-		//////////////////////////////////////////////////
-		if (in == 0) {
-			return 2;
-		}
-		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {//TODO jump avoid vector
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
-
-			}
-			for (int j = 0; j < 8; j++) {
-				ori = orient_3triangles(A, AT, ATA, B, { {envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]] } });
-				////////////////////////////////////////////////////////////////////////////////
-				int ori1 = orient3D_TPI(
-					tri[0][0], tri[0][1], tri[0][2],
-					tri[1][0], tri[1][1], tri[1][2],
-					tri[2][0], tri[2][1], tri[2][2],
-					fct1[0][0], fct1[0][1], fct1[0][2],
-					fct1[1][0], fct1[1][1], fct1[1][2],
-					fct1[2][0], fct1[2][1], fct1[2][2],
-					fct2[0][0], fct2[0][1], fct2[0][2],
-					fct2[1][0], fct2[1][1], fct2[1][2],
-					fct2[2][0], fct2[2][1], fct2[2][2],
-					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
-					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
-					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
-					m11, m12, m13, d);
-				if (ori != ori1) {
-					//cout << "ori in 3 triangles different, " << ori << " " << ori1 << endl;
-				}
-				////////////////////////////////////////////////////////////////////////////////
-
-				if (ori == 1 || ori == 0) {
-
-					break;
-				}
-				if (j == 7) {
-
-					return 0;
-				}
-			}
-		}
-
-		return 1;
-	}
-	*/
-
-/*
-int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
-	{
-		int jm = 0, ori;
-		Scalar m11, m12, m13, d;
-		std::array<Vector3, 3>tri = triangle;//TODO really need to do this?
-		std::array<Vector3, 3>fct1 = facet1;
-		std::array<Vector3, 3>fct2 = facet2;
-
-
-		bool in = is_3triangle_intersect(
-			tri[0][0], tri[0][1], tri[0][2],
-			tri[1][0], tri[1][1], tri[1][2],
-			tri[2][0], tri[2][1], tri[2][2],
-			fct1[0][0], fct1[0][1], fct1[0][2],
-			fct1[1][0], fct1[1][1], fct1[1][2],
-			fct1[2][0], fct1[2][1], fct1[2][2],
-			fct2[0][0], fct2[0][1], fct2[0][2],
-			fct2[1][0], fct2[1][1], fct2[1][2],
-			fct2[2][0], fct2[2][1], fct2[2][2],
-			m11, m12, m13, d);
-		if (in == 0) {
-			return NOT_INTERSECTD;
-		}
-
-
-		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {//TODO jump avoid vector
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
-
-			}
-			for (int j = 0; j < 8; j++) {
-				ori = orient3D_TPI(
-					tri[0][0], tri[0][1], tri[0][2],
-					tri[1][0], tri[1][1], tri[1][2],
-					tri[2][0], tri[2][1], tri[2][2],
-					fct1[0][0], fct1[0][1], fct1[0][2],
-					fct1[1][0], fct1[1][1], fct1[1][2],
-					fct1[2][0], fct1[2][1], fct1[2][2],
-					fct2[0][0], fct2[0][1], fct2[0][2],
-					fct2[1][0], fct2[1][1], fct2[1][2],
-					fct2[2][0], fct2[2][1], fct2[2][2],
-					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
-					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
-					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
-					m11, m12, m13, d);
-				if (ori == 1 || ori == 0) {
-
-					break;
-				}
-				if (j == 7) {
-
-					return IN_PRISM;
-				}
-			}
-		}
-
-		return OUT_PRISM;
-	}
-
-*/
-
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
 	{
 		int jm = 0, ori;
 
 		bool in = is_3_triangle_cut(triangle, facet1, facet2);
-		/*is_3triangle_intersect(
-			tri[0][0], tri[0][1], tri[0][2],
-			tri[1][0], tri[1][1], tri[1][2],
-			tri[2][0], tri[2][1], tri[2][2],
-			fct1[0][0], fct1[0][1], fct1[0][2],
-			fct1[1][0], fct1[1][1], fct1[1][2],
-			fct1[2][0], fct1[2][1], fct1[2][2],
-			fct2[0][0], fct2[0][1], fct2[0][2],
-			fct2[1][0], fct2[1][1], fct2[1][2],
-			fct2[2][0], fct2[2][1], fct2[2][2],
-			m11, m12, m13, d);*/
+		
 		if (in == 0) {
 			return NOT_INTERSECTD;
 		}
@@ -1051,7 +787,7 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			triangle[0][0], triangle[0][1], triangle[0][2]);
 		int o = o1 + o2 + o3;
-		if (o == 3 || o == -3) {
+		if (o == 3 || o == -3) {//TODO may not work because we have -2 output now
 			return 1;
 		}
 
@@ -1092,7 +828,7 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 		o2 = Predicates::orient_3d(seg1, t0, t1, t2);
 		int op = o1 * o2;
 		if (op >= 0) {
-			return CUT_COPLANAR;//infact, coplanar and not on this plane
+			return CUT_COPLANAR;//in fact, coplanar and not on this plane
 		}
 
 		//s0,t0,t1; s0,t1,t2;s0,t2,t0;
@@ -1192,7 +928,7 @@ int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_M(const std::arr
 			b = AC.norm();
 			c = AB.norm();
 			area = 0.25*sqrt((a + b + c)*(a + b - c)*(a + c - b)*(b + c - a));
-			if (area < SCALAR_ZERO) {
+			if (area < SCALAR_ZERO) {//TODO fix this with degeneration detection function
 				std::cout << "Envelope Triangle Degeneration" << std::endl;
 				continue;
 			}

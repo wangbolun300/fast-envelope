@@ -54,6 +54,17 @@ namespace fastEnvelope
 			double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
 			double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z);
 
+
+		static int orient3D_LPI_filtered_multiprecision(
+			double px, double py, double pz, double qx, double qy, double qz,
+			double rx, double ry, double rz, double sx, double sy, double sz, double tx, double ty, double tz,
+			double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz);
+
+		static int orient3D_TPI_filtered_multiprecision(
+			double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
+			double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
+			double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
+			double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z);
 	};
 	
 
