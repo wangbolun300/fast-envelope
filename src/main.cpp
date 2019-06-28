@@ -13,7 +13,7 @@
 #include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
 #include <arbitraryprecision/fprecision.h>
-//#include <arbitraryprecision/intervalprecision.h>
+#include <arbitraryprecision/intervalprecision.h>
 #include <stdio.h>
 
 
@@ -831,7 +831,7 @@ void sample_triangle_test() {
 
 }
 template<typename T>
-void multyprecision(const T &num1, const T &num2) {
+T multyprecision(const T &num1, const T &num2) {
 	//int n_digits = 40;
 
 	//using namespace arbitrary_precision;
@@ -841,7 +841,7 @@ void multyprecision(const T &num1, const T &num2) {
 
 	T res = num1 / num2 * T(2) - T(2) / T(3);
 	
-
+	return res;
 //#include<arbitraryprecision/intervalprecision.h>
 	
 }
@@ -852,9 +852,10 @@ void degen_test() {
 	multyprecision(2, 3);
 	multyprecision(2., 3.);
 	multyprecision(float_precision(2), float_precision(3.));
-
-	//interval_precision<float_precision> itfp;
-
+	Scalar a = 1.75;
+	interval<float_precision> itfp = a;
+	itfp = 5;
+	itfp.is_class();
 	Vector3 t1 = { {Vector3(0,1,0)} }, t2 = { {Vector3(0,0,0)} }, t3 = { {Vector3(0,1,0)} };
 	cout<<FastEnvelope::test_dege({ {t1,t2,t3} });
 }
@@ -866,8 +867,11 @@ void accurate_vector() {
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
-	
-	
+	using namespace arbitrary_precision;
+	Scalar a = 1.732;
+	interval<float_precision> b = a * a;
+	interval<float_precision> itfp = b-3;
+	cout << itfp.is_class() << endl;
 
 	/*srand(int(time(0)));
 	cout << rand()<<"," << rand() <<","<< rand() << endl;*/
