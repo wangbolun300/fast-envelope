@@ -864,15 +864,26 @@ void accurate_vector() {
 	
 	cout<<FastEnvelope::accurate_normal_vector({ {t1,t2,t3} },30)<<endl;
 }
+
+void interval_try() {
+	
+	using namespace arbitrary_precision;
+	int digit = 20;
+	float_precision a(1.3,digit);
+	float_precision b (2.6,digit);
+	interval<float_precision> itfp = a*2-b;
+	cout << itfp<<" "<<itfp.is_class() << endl;
+
+	interval<float_precision> ii;
+	float_precision *fp;
+	fp = ii.ref_upper();
+	(*fp).precision(30);
+
+}
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
-	using namespace arbitrary_precision;
-	Scalar a = 1.732;
-	interval<float_precision> b = a * a;
-	interval<float_precision> itfp = b-3;
-	cout << itfp.is_class() << endl;
-
+	interval_try();
 	/*srand(int(time(0)));
 	cout << rand()<<"," << rand() <<","<< rand() << endl;*/
 	//assert(false);
