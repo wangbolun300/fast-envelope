@@ -869,22 +869,35 @@ void interval_try() {
 	
 	using namespace arbitrary_precision;
 	int digit = 100;
-	//interval<float_precision> a(float_precision("1.3", digit));
+	//interval<float_precision> a(float_precision("1.3", digit ));
 	//interval<float_precision> b(float_precision("2.6", digit));
 
 
 	interval<float_precision> itfp(float_precision(0, digit));
 	auto xxx = (float_precision(0, digit) + float_precision(1.3, 16));
 	std::cout << xxx.precision() << std::endl;
+	std::cout <<"666 "<< xxx << std::endl;
 	interval<float_precision> a( xxx);
 	interval<float_precision> b(float_precision(2.6, 16) + float_precision(0, digit));
 
 	itfp = (a*2-b)*(a * 2 - b);
-	cout << a<<"\n "<< b <<"\n"<< itfp<<"\n "<<itfp.is_class() << "\n"<<a.ref_lower()->precision() << endl;
+	cout << a<<"b\n "<< b <<"\n"<< itfp<<"\n "<<itfp.is_class() << "\n"<<a.ref_lower()->precision() << endl;
 	double m1 = 7.2;
-	interval<float_precision> m2 = float_precision(m1, digit);
-	cout << m2 << endl;
-	
+	interval<float_precision> tmp;
+	tmp.ref_lower()->precision(digit);
+	tmp.ref_upper()->precision(digit);
+	tmp = float_precision(m1, 16);
+	cout << tmp << endl;
+	cout << "pre "<<tmp.operator arbitrary_precision::float_precision() << endl;
+
+
+	cout << "lambda try" << endl;
+	auto check= [=]()->int { 
+
+		return 00; };
+
+}
+void test1(int a, int b, [=]() ->{a + b; }) {
 
 }
 int main(int argc, char const *argv[])
