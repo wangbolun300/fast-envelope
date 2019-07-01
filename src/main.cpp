@@ -868,16 +868,23 @@ void accurate_vector() {
 void interval_try() {
 	
 	using namespace arbitrary_precision;
-	int digit = 20;
-	float_precision a(1.3,digit);
-	float_precision b (2.6,digit);
-	interval<float_precision> itfp = a*2-b;
-	cout << itfp<<" "<<itfp.is_class() << endl;
+	int digit = 100;
+	//interval<float_precision> a(float_precision("1.3", digit));
+	//interval<float_precision> b(float_precision("2.6", digit));
 
-	interval<float_precision> ii;
-	float_precision *fp;
-	fp = ii.ref_upper();
-	(*fp).precision(30);
+
+	interval<float_precision> itfp(float_precision(0, digit));
+	auto xxx = (float_precision(0, digit) + float_precision(1.3, 16));
+	std::cout << xxx.precision() << std::endl;
+	interval<float_precision> a( xxx);
+	interval<float_precision> b(float_precision(2.6, 16) + float_precision(0, digit));
+
+	itfp = (a*2-b)*(a * 2 - b);
+	cout << a<<"\n "<< b <<"\n"<< itfp<<"\n "<<itfp.is_class() << "\n"<<a.ref_lower()->precision() << endl;
+	double m1 = 7.2;
+	interval<float_precision> m2 = float_precision(m1, digit);
+	cout << m2 << endl;
+	
 
 }
 int main(int argc, char const *argv[])
