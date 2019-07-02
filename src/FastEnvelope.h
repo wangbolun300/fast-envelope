@@ -157,7 +157,7 @@ namespace fastEnvelope {
 			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
 		}
 
-		
+		static arbitrary_precision::interval<arbitrary_precision::float_precision> converting_Scalar_to_arbitary(const Scalar &a,const int &i);
 		template<typename T>
 		static int orient3D_LPI_filtered_multiprecision(
 			T px, T py, T pz, T qx, T qy, T qz,
@@ -242,38 +242,6 @@ namespace fastEnvelope {
 				}
 			}
 			return 0;
-
-			//if (d.is_class() == ZERO) {
-			//	return -2;//not exist
-			//}
-
-			//if (d.is_class() == MIXED) {
-			//	return 100;//failed in precision
-			//}
-			//if (det.is_class() == MIXED) {
-			//	return 100;//failed in precision
-			//}
-
-			//if ((det.is_class() == POSITIVE)) {
-			//	if (d.is_class() == POSITIVE) {
-			//		return 1;
-			//	}
-			//	if (d.is_class() == NEGATIVE) {
-			//		return -1;
-			//	}
-			//}
-			//if ((det.is_class() == NEGATIVE)) {
-			//	if (d.is_class() == POSITIVE) {
-			//		return -1;
-			//	}
-			//	if (d.is_class() == NEGATIVE) {
-			//		return 1;
-			//	}
-			//}
-
-			//return 0;
-
-
 
 		}
 

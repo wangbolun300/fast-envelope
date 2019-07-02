@@ -845,25 +845,7 @@ T multyprecision(const T &num1, const T &num2) {
 //#include<arbitraryprecision/intervalprecision.h>
 	
 }
-void degen_test() {
 
-	using namespace arbitrary_precision;
-	
-	multyprecision(2, 3);
-	multyprecision(2., 3.);
-	multyprecision(float_precision(2), float_precision(3.));
-	Scalar a = 1.75;
-	interval<float_precision> itfp = a;
-	itfp = 5;
-	itfp.is_class();
-	Vector3 t1 = { {Vector3(0,1,0)} }, t2 = { {Vector3(0,0,0)} }, t3 = { {Vector3(0,1,0)} };
-	cout<<FastEnvelope::test_dege({ {t1,t2,t3} });
-}
-void accurate_vector() {
-	Vector3 t1 = { {Vector3(7.6,1.3,1)} }, t2 = { {Vector3(5,1,1.3)} }, t3 = { {Vector3(1.7,15.3,0.372)} };
-	
-	cout<<FastEnvelope::accurate_normal_vector({ {t1,t2,t3} },30)<<endl;
-}
 
 void interval_try() {
 	

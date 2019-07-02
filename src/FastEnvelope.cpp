@@ -1002,7 +1002,10 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 
 	}
 
-
+	arbitrary_precision::interval<arbitrary_precision::float_precision> FastEnvelope::converting_Scalar_to_arbitary(const Scalar &a, const int &i) {
+		arbitrary_precision::interval<arbitrary_precision::float_precision> b(arbitrary_precision::float_precision(a, 16) + arbitrary_precision::float_precision(0, i));
+		return b;
+	}
 
 
 }
