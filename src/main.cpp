@@ -897,12 +897,57 @@ void interval_try() {
 		return 00; };
 
 }
-void test1(int a, int b, [=]() ->{a + b; }) {
+template<typename T>
+int test1(T a, T b, const std::function<int(T)> &checker) {
+	int flag = checker(a);
 
+	T c(a*b);
+
+	if (flag == 0)
+		std::cout << "same!" << std::endl;
+	std::cout << b << std::endl;
+
+	return 0;
 }
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
+
+	const std::function<int(double)> check_double = [](double v) {
+		if (fabs(v) < 1e-10)
+			return -2;
+
+		if (v > 0)
+			return 1;
+
+		if (v < 0)
+			return -1;
+
+		return 0;
+	};
+
+	using namespace arbitrary_precision;
+	const std::function<int(interval<float_precision>)> check_interval = [](interval<float_precision> v) {
+		const auto clazz = v.is_class();
+		if (clazz == MIXED || clazz == NO_CLASS)
+			return -2;
+
+		if (clazz == POSITIVE)
+			return 1;
+
+		if (clazz == NEGATIVE)
+			return -1;
+
+		assert(clazz == ZERO);
+		return 0;
+	};
+
+	//test1(2, 2, check_double);
+
+	interval<float_precision> a = 2, b = 2;
+	test1(a, b, check_interval);
+
+
 	interval_try();
 	/*srand(int(time(0)));
 	cout << rand()<<"," << rand() <<","<< rand() << endl;*/
