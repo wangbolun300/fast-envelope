@@ -35,7 +35,7 @@ namespace fastEnvelope {
 		inline int prism_size() const { return envprism.size(); }
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
-		static int test_dege(const std::array<Vector3, 3>& triangle)  {
+		static int test_dege(const std::array<Vector3, 3>& triangle) {
 			return is_triangle_degenerated(triangle);
 		}
 		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit);
@@ -149,7 +149,7 @@ namespace fastEnvelope {
 
 
 
-		static int tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,const Vector3& q1, const Vector3& q2, const Vector3& q3);
+		static int tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& q1, const Vector3& q2, const Vector3& q3);
 
 
 
@@ -158,38 +158,34 @@ namespace fastEnvelope {
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2);
 
 		static int is_triangle_degenerated(const std::array<Vector3, 3>& triangle);
-		
+
 		static Vector2 to_2d(const Vector3 &p, int t) {
 			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
 		}
 
-		static arbitrary_precision::interval<arbitrary_precision::float_precision> converting_Scalar_to_arbitary(const Scalar &a,const int &i);
+		static arbitrary_precision::interval<arbitrary_precision::float_precision> converting_Scalar_to_arbitary(const Scalar &a, const int &i);
 		template<typename T>
 		static int orient3D_LPI_filtered_multiprecision(
 			T px, T py, T pz, T qx, T qy, T qz,
 			T rx, T ry, T rz, T sx, T sy, T sz, T tx, T ty, T tz,
 			T ax, T ay, T az, T bx, T by, T bz, T cx, T cy, T cz, const std::function<int(T)> &checker) {
-			T a11, a12, a13, a21, a22, a23, a31, a32, a33, d21, d31, d22, d32, d23, d33;
-			T px_rx, py_ry, pz_rz, px_cx, py_cy, pz_cz;
-			T a2233, a2133, a2132;
-			T d, n;
-			T d11, d12, d13;
-			T d2233, d2332, d2133, d2331, d2132, d2231;
-			T det;
 
-			a11 = (px - qx);
-			a12 = (py - qy);
-			a13 = (pz - qz);
-			a21 = (sx - rx);
-			a22 = (sy - ry);
-			a23 = (sz - rz);
-			a31 = (tx - rx);
-			a32 = (ty - ry);
-			a33 = (tz - rz);
-			a2233 = ((a22 * a33) - (a23 * a32));
-			a2133 = ((a21 * a33) - (a23 * a31));
-			a2132 = ((a21 * a32) - (a22 * a31));
-			d = (((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
+
+			T a11(px - qx);
+			T a12(py - qy);
+			T a13(pz - qz);
+			T a21(sx - rx);
+			T a22(sy - ry);
+			T a23(sz - rz);
+			T a31(tx - rx);
+			T a32(ty - ry);
+			T a33(tz - rz);
+			T a2233((a22 * a33) - (a23 * a32));
+			T a2133((a21 * a33) - (a23 * a31));
+			T a2132((a21 * a32) - (a22 * a31));
+			T d(((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
+			//std::cout << "d digits " << d.ref_lower()->precision() << std::endl;
+			//std::cout << "d  " << d << std::endl;
 			int flag1 = checker(d);
 			if (flag1 == -2) {
 				return 100;// not enough precision
@@ -199,33 +195,33 @@ namespace fastEnvelope {
 			}
 			// The almost static filter for 'd' might be moved here
 
-			px_rx = px - rx;
-			py_ry = py - ry;
-			pz_rz = pz - rz;
-			n = ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
+			T px_rx(px - rx);
+			T py_ry(py - ry);
+			T pz_rz(pz - rz);
+			T n((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
 
-			px_cx = px - cx;
-			py_cy = py - cy;
-			pz_cz = pz - cz;
+			T px_cx(px - cx);
+			T py_cy(py - cy);
+			T pz_cz(pz - cz);
 
-			d11 = (d * px_cx) + (a11 * n);
-			d21 = (ax - cx);
-			d31 = (bx - cx);
-			d12 = (d * py_cy) + (a12 * n);
-			d22 = (ay - cy);
-			d32 = (by - cy);
-			d13 = (d * pz_cz) + (a13 * n);
-			d23 = (az - cz);
-			d33 = (bz - cz);
+			T d11((d * px_cx) + (a11 * n));
+			T d21(ax - cx);
+			T d31(bx - cx);
+			T d12((d * py_cy) + (a12 * n));
+			T d22(ay - cy);
+			T d32(by - cy);
+			T d13((d * pz_cz) + (a13 * n));
+			T d23(az - cz);
+			T d33(bz - cz);
 
-			d2233 = d22 * d33;
-			d2332 = d23 * d32;
-			d2133 = d21 * d33;
-			d2331 = d23 * d31;
-			d2132 = d21 * d32;
-			d2231 = d22 * d31;
+			T d2233(d22 * d33);
+			T d2332(d23 * d32);
+			T d2133(d21 * d33);
+			T d2331(d23 * d31);
+			T d2132(d21 * d32);
+			T d2231(d22 * d31);
 
-			det = d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231);
+			T det(d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231));
 
 			int flag2 = checker(det);
 			if (flag2 == -2) {
@@ -304,7 +300,7 @@ namespace fastEnvelope {
 			T  nvxwy = nvx * nwy - nvy * nwx;
 
 			T  d = nvx * nwyuz - nvy * nwxuz + nvz * nwxuy;
-			
+
 			int flag1 = checker(d);
 			if (flag1 == -2) {
 				return 100;// not enough precision
@@ -363,7 +359,7 @@ namespace fastEnvelope {
 
 		}
 
-		
+
 
 	};
 }

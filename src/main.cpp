@@ -1,4 +1,4 @@
-#include <fastenvelope/FastEnvelope.h>
+﻿#include <fastenvelope/FastEnvelope.h>
 #include<iostream>
 #include<array>
 #include <fastenvelope/MeshIO.hpp>
@@ -15,7 +15,7 @@
 #include <arbitraryprecision/fprecision.h>
 #include <arbitraryprecision/intervalprecision.h>
 #include <stdio.h>
-
+#include<assert.h>
 
 
 using namespace floatTetWild;
@@ -857,13 +857,13 @@ void interval_try() {
 
 	interval<float_precision> itfp(float_precision(0, digit));
 	auto xxx = (float_precision(0, digit) + float_precision(1.3, 16));
-	std::cout << xxx.precision() << std::endl;
+	std::cout <<"xxx pre "<< xxx.precision() << std::endl;
 	std::cout <<"666 "<< xxx << std::endl;
 	interval<float_precision> a( xxx);
 	interval<float_precision> b(float_precision(2.6, 16) + float_precision(0, digit));
 
-	itfp = (a*2-b)*(a * 2 - b);
-	cout << a<<"b\n "<< b <<"\n"<< itfp<<"\n "<<itfp.is_class() << "\n"<<a.ref_lower()->precision() << endl;
+	itfp = (a * 2 - b)*(a * 2 - b);
+	cout << "a "<<a<<"\nb "<< b <<" \nmultiply "<< itfp<<"\n is class "<<itfp.is_class() << "\nprecision "<<b.ref_lower()->precision() << endl;
 	double m1 = 7.2;
 	interval<float_precision> tmp;
 	tmp.ref_lower()->precision(digit);
@@ -885,6 +885,7 @@ int test1(T a, T b, const std::function<int(T)> &checker) {
 
 	T c(a*b);
 
+	cout <<"precision "<< c.ref_lower()->precision() << endl;
 	if (flag == 0)
 		std::cout << "same!" << std::endl;
 	std::cout << b << std::endl;
@@ -892,9 +893,9 @@ int test1(T a, T b, const std::function<int(T)> &checker) {
 	return 0;
 }
 void try2() {
-	int a = 0;
-	assert(a == 1);
-	cout << "here" << endl;
+	int axxy= 0;
+	assert(axxy == 1);
+	cout << "here ！@！！！！！！！！！！" << endl;
 }
 
 
@@ -914,7 +915,7 @@ int main(int argc, char const *argv[])
 
 		return 0;
 	};
-
+	
 	using namespace arbitrary_precision;
 	const std::function<int(interval<float_precision>)> check_interval = [](interval<float_precision> v) {
 		const auto clazz = v.is_class();
@@ -930,10 +931,16 @@ int main(int argc, char const *argv[])
 		assert(clazz == ZERO);
 		return 0;
 	};
-	//test1(2, 2, check_double);
 
-	interval<float_precision> a = 2, b = 2;
-	//test1(a, b, check_interval);
+	interval<float_precision> a;
+	a.ref_lower()->precision(40);
+	a.ref_upper()->precision(40);
+	a = float_precision(1.3, 16);
+	interval<float_precision> b = 2;
+	cout << "a  " << a<<"\na pre "<<a.ref_lower()->precision()<< endl;
+	test1(a, b, check_interval);
+	
+	
 	*/
 	
 
@@ -964,13 +971,13 @@ int main(int argc, char const *argv[])
 	//test_ttt();
 	//test_diff();
 	
-	//test_in_wild();
+	test_in_wild();
 	//inf();
 	//sample_triangle_test();
 	//multyprecision();
 	//degen_test();
 	//accurate_vector();
-	try2();
+	//try2();
 	std::cout << "done!" << std::endl;
 
 
