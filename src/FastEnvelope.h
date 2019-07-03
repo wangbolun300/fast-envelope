@@ -363,38 +363,7 @@ namespace fastEnvelope {
 
 		}
 
-		const std::function<int(double)> check_double = [](double v) {
-			if (fabs(v) < 1e-10)
-				return -2;
-
-			if (v > 0)
-				return 1;
-
-			if (v < 0)
-				return -1;
-
-			return 0;
-		};
-
-
 		
-		const std::function<int(arbitrary_precision::interval<arbitrary_precision::float_precision>)> check_interval =
-			[](arbitrary_precision::interval<arbitrary_precision::float_precision> v) {
-			const auto clazz = v.is_class();
-			if (clazz == arbitrary_precision::MIXED || clazz == arbitrary_precision::NO_CLASS)
-				return -2;
-
-			if (clazz == arbitrary_precision::POSITIVE)
-				return 1;
-
-			if (clazz == arbitrary_precision::NEGATIVE)
-				return -1;
-
-			assert(clazz == arbitrary_precision::ZERO);
-			return 0;
-		};
-
-
 
 	};
 }

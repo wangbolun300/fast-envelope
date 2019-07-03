@@ -891,10 +891,17 @@ int test1(T a, T b, const std::function<int(T)> &checker) {
 
 	return 0;
 }
+void try2() {
+	int a = 0;
+	assert(a == 1);
+	cout << "here" << endl;
+}
+
+
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
-
+	/*
 	const std::function<int(double)> check_double = [](double v) {
 		if (fabs(v) < 1e-10)
 			return -2;
@@ -923,14 +930,15 @@ int main(int argc, char const *argv[])
 		assert(clazz == ZERO);
 		return 0;
 	};
-
 	//test1(2, 2, check_double);
 
 	interval<float_precision> a = 2, b = 2;
-	test1(a, b, check_interval);
+	//test1(a, b, check_interval);
+	*/
+	
 
 
-	interval_try();
+	//interval_try();
 	/*srand(int(time(0)));
 	cout << rand()<<"," << rand() <<","<< rand() << endl;*/
 	//assert(false);
@@ -962,6 +970,7 @@ int main(int argc, char const *argv[])
 	//multyprecision();
 	//degen_test();
 	//accurate_vector();
+	try2();
 	std::cout << "done!" << std::endl;
 
 

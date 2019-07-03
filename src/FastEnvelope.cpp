@@ -9,7 +9,7 @@
 
 
 
-int markhf = 0, markhf1=0;
+int markhf = 0, markhf1=0, i_time=10;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
@@ -25,6 +25,39 @@ static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 
 		}
 };
+static const   std::function<int(double)> check_double = [](double v) {
+	if (fabs(v) < 1e-10)
+		return -2;
+
+	if (v > 0)
+		return 1;
+
+	if (v < 0)
+		return -1;
+
+	return 0;
+};
+
+
+
+static const std::function<int(arbitrary_precision::interval<arbitrary_precision::float_precision>)> check_interval =
+[](arbitrary_precision::interval<arbitrary_precision::float_precision> v) {
+	const auto clazz = v.is_class();
+	if (clazz == arbitrary_precision::MIXED || clazz == arbitrary_precision::NO_CLASS)
+		return -2;
+
+	if (clazz == arbitrary_precision::POSITIVE)
+		return 1;
+
+	if (clazz == arbitrary_precision::NEGATIVE)
+		return -1;
+
+	assert(clazz == arbitrary_precision::ZERO);
+	return 0;
+};
+
+
+
 
 static const std::array<std::array<int, 2>, 3> triseg = {
 
@@ -661,30 +694,54 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2], envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2], envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
 
 				/////////////////////////////////////////
-				/*recordnumber1++;
-				if (recordnumber1>8000000&&markhf1 == 0) {
-					std::cout << "report you the  ssssssssssssssssss" << std::endl;
-					markhf1 = 1;
-				}*/
+				if (ori == 0) {
+					if (markhf == 0) {
+						arbitrary_precision::interval<arbitrary_precision::float_precision> s00, s01, s02, s10, s11, s12, t00, t01, t02, t10, t11, t12, t20, t21, t22,
+							e00, e01, e02, e10, e11, e12, e20, e21, e22;
+						for (int rr = 0; rr < i_time; rr++) {
+							int digit = 18 + 2 * rr;
+							s00 = converting_Scalar_to_arbitary(segpoint0[0], digit);
+							s01 = converting_Scalar_to_arbitary(segpoint0[1], digit);
+							s02 = converting_Scalar_to_arbitary(segpoint0[2], digit);
+							s10 = converting_Scalar_to_arbitary(segpoint1[0], digit);
+							s11 = converting_Scalar_to_arbitary(segpoint1[1], digit);
+							s12 = converting_Scalar_to_arbitary(segpoint1[2], digit);
+							t00 = converting_Scalar_to_arbitary(triangle[0][0], digit);
+							t01 = converting_Scalar_to_arbitary(triangle[0][1], digit);
+							t02 = converting_Scalar_to_arbitary(triangle[0][2], digit);
+							t10 = converting_Scalar_to_arbitary(triangle[1][0], digit);
+							t11 = converting_Scalar_to_arbitary(triangle[1][1], digit);
+							t12 = converting_Scalar_to_arbitary(triangle[1][2], digit);
+							t20 = converting_Scalar_to_arbitary(triangle[2][0], digit);
+							t21 = converting_Scalar_to_arbitary(triangle[2][1], digit);
+							t22 = converting_Scalar_to_arbitary(triangle[2][2], digit);
+							e00 = converting_Scalar_to_arbitary(envprism[i][p_face[j][0]][0], digit);
+							e01 = converting_Scalar_to_arbitary(envprism[i][p_face[j][0]][1], digit);
+							e02 = converting_Scalar_to_arbitary(envprism[i][p_face[j][0]][2], digit);
+							e10 = converting_Scalar_to_arbitary(envprism[i][p_face[j][1]][0], digit);
+							e11 = converting_Scalar_to_arbitary(envprism[i][p_face[j][1]][1], digit);
+							e12 = converting_Scalar_to_arbitary(envprism[i][p_face[j][1]][2], digit);
+							e20 = converting_Scalar_to_arbitary(envprism[i][p_face[j][2]][0], digit);
+							e21 = converting_Scalar_to_arbitary(envprism[i][p_face[j][2]][1], digit);
+							e22 = converting_Scalar_to_arbitary(envprism[i][p_face[j][2]][2], digit);
+							ori = orient3D_LPI_filtered_multiprecision(
+								s00, s01, s02, s10, s11, s12,
+								t00, t01, t02, t10, t11, t12, t20, t21, t22,
+								e00, e01, e02, e10, e11, e12, e20, e21, e22, check_interval);
+							if (ori != 100) {
+								break;
+							}
 
-				//ori1 = -1 * Predicates::orient_3d(envprism[i][p_face[j][0]], envprism[i][p_face[j][1]], envprism[i][p_face[j][2]], segpoint0 + (segpoint0 - segpoint1)*n / d);//because n is -n
-				/*if (ori != ori1) {
-					markhf = 0;
-					if (recordnumber < 1000) {
-						//std::cout << "number " << recordnumber << std::endl;
+							if (rr == i_time - 1) {
+								std::cout << "need higher precision" << std::endl;
+								assert(-1);
+							}
+						}
+						
+						
 
-						//std::cout << "ori and ori1 " << ori << " " << ori1 << std::endl;
-						ori = orient3D_LPI(
-							segpoint0[0], segpoint0[1], segpoint0[2],
-							envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
-							envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
-							envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2],
-							a11, a12, a13, a21, a22, a23, a31, a32, a33, px_rx, py_ry, pz_rz, d, n);
-						recordnumber++;
 					}
-					markhf = 0;
 				}
-				*/
 				///////////////////////////////////////////
 				if (ori == -2) {
 					return NOT_INTERSECTD;
