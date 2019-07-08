@@ -903,7 +903,7 @@ int main(int argc, char const *argv[])
 {
 	GEO::initialize();
 	
-	/*const std::function<int(double)> check_double = [](double v) {
+	const std::function<int(double)> check_double = [](double v) {
 		if (fabs(v) < 1e-10)
 			return -2;
 
@@ -941,10 +941,16 @@ int main(int argc, char const *argv[])
 	test1(a, b, check_interval);
 	float f = 1e-15;
 	interval<float_precision> h(f);
-	std::cout << "triansfer "<<h.ref_lower()->precision() << endl;*/
+	std::cout << "triansfer "<<h.ref_lower()->precision()<<"\n" << endl;
 	
+	float_precision fp(0.3333333333333337, 16);
+	float_precision fpp(3.333333333333339, 16);
+	float_precision fppp(fp/fpp);
 	
-	
+	//fppp = fp * fpp;
+	std::cout << "fp " << fp << " fp digits " << fp.precision() << endl;
+	std::cout << "fpp " << fpp << " fp digits " << fpp.precision() << endl;
+	std::cout << "fppp " << fppp << " fp digits " << fppp.precision() << endl;
 
 
 	//interval_try();
@@ -973,7 +979,7 @@ int main(int argc, char const *argv[])
 	//test_ttt();
 	//test_diff();
 	
-	test_in_wild();
+	//test_in_wild();
 	//inf();
 	//sample_triangle_test();
 	//multyprecision();
