@@ -694,62 +694,66 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2], envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2], envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
 
 				/////////////////////////////////////////
+				
+				
+				
+				
 				if (ori == 0) {
 					if (markhf == 0) {
 						arbitrary_precision::interval<arbitrary_precision::float_precision> s00, s01, s02, s10, s11, s12, t00, t01, t02, t10, t11, t12, t20, t21, t22,
 							e00, e01, e02, e10, e11, e12, e20, e21, e22;
 						for (int rr = 0; rr < i_time; rr++) {
-							int digit = 18 + 12 * rr;
-							s00.ref_lower()->precision(i);
-							s00.ref_upper()->precision(i); s00 = arbitrary_precision::float_precision(segpoint0[0], 16);
-							s01.ref_lower()->precision(i);
-							s01.ref_upper()->precision(i); s01 = arbitrary_precision::float_precision(segpoint0[1], 16);
-							s02.ref_lower()->precision(i);
-							s02.ref_upper()->precision(i); s02 = arbitrary_precision::float_precision(segpoint0[2], 16);
-							s10.ref_lower()->precision(i);
-							s10.ref_upper()->precision(i); s10 = arbitrary_precision::float_precision(segpoint1[0], 16);
-							s11.ref_lower()->precision(i);
-							s11.ref_upper()->precision(i); s11 = arbitrary_precision::float_precision(segpoint1[1], 16);
-							s12.ref_lower()->precision(i);
-							s12.ref_upper()->precision(i); s12 = arbitrary_precision::float_precision(segpoint1[2], 16);
+							int digit = 18 + 18 * rr;
+							s00.ref_lower()->precision(digit);
+							s00.ref_upper()->precision(digit); s00 = arbitrary_precision::float_precision(segpoint0[0], 16);
+							s01.ref_lower()->precision(digit);
+							s01.ref_upper()->precision(digit); s01 = arbitrary_precision::float_precision(segpoint0[1], 16);
+							s02.ref_lower()->precision(digit);
+							s02.ref_upper()->precision(digit); s02 = arbitrary_precision::float_precision(segpoint0[2], 16);
+							s10.ref_lower()->precision(digit);
+							s10.ref_upper()->precision(digit); s10 = arbitrary_precision::float_precision(segpoint1[0], 16);
+							s11.ref_lower()->precision(digit);
+							s11.ref_upper()->precision(digit); s11 = arbitrary_precision::float_precision(segpoint1[1], 16);
+							s12.ref_lower()->precision(digit);
+							s12.ref_upper()->precision(digit); s12 = arbitrary_precision::float_precision(segpoint1[2], 16);
 
-							t00.ref_lower()->precision(i);
-							t00.ref_upper()->precision(i); t00 = arbitrary_precision::float_precision(triangle[0][0], 16);
-							t01.ref_lower()->precision(i);
-							t01.ref_upper()->precision(i); t01 = arbitrary_precision::float_precision(triangle[0][1], 16);
-							t02.ref_lower()->precision(i);
-							t02.ref_upper()->precision(i); t02 = arbitrary_precision::float_precision(triangle[0][2], 16);
-							t10.ref_lower()->precision(i);
-							t10.ref_upper()->precision(i); t10 = arbitrary_precision::float_precision(triangle[1][0], 16);
-							t11.ref_lower()->precision(i);
-							t11.ref_upper()->precision(i); t11 = arbitrary_precision::float_precision(triangle[1][1], 16);
-							t12.ref_lower()->precision(i);
-							t12.ref_upper()->precision(i); t12 = arbitrary_precision::float_precision(triangle[1][2], 16);
-							t20.ref_lower()->precision(i);
-							t20.ref_upper()->precision(i); t20 = arbitrary_precision::float_precision(triangle[2][0], 16);
-							t21.ref_lower()->precision(i);
-							t21.ref_upper()->precision(i); t21 = arbitrary_precision::float_precision(triangle[2][1], 16);
-							t22.ref_lower()->precision(i);
-							t22.ref_upper()->precision(i); t22 = arbitrary_precision::float_precision(triangle[2][2], 16);
+							t00.ref_lower()->precision(digit);
+							t00.ref_upper()->precision(digit); t00 = arbitrary_precision::float_precision(triangle[0][0], 16);
+							t01.ref_lower()->precision(digit);
+							t01.ref_upper()->precision(digit); t01 = arbitrary_precision::float_precision(triangle[0][1], 16);
+							t02.ref_lower()->precision(digit);
+							t02.ref_upper()->precision(digit); t02 = arbitrary_precision::float_precision(triangle[0][2], 16);
+							t10.ref_lower()->precision(digit);
+							t10.ref_upper()->precision(digit); t10 = arbitrary_precision::float_precision(triangle[1][0], 16);
+							t11.ref_lower()->precision(digit);
+							t11.ref_upper()->precision(digit); t11 = arbitrary_precision::float_precision(triangle[1][1], 16);
+							t12.ref_lower()->precision(digit);
+							t12.ref_upper()->precision(digit); t12 = arbitrary_precision::float_precision(triangle[1][2], 16);
+							t20.ref_lower()->precision(digit);
+							t20.ref_upper()->precision(digit); t20 = arbitrary_precision::float_precision(triangle[2][0], 16);
+							t21.ref_lower()->precision(digit);
+							t21.ref_upper()->precision(digit); t21 = arbitrary_precision::float_precision(triangle[2][1], 16);
+							t22.ref_lower()->precision(digit);
+							t22.ref_upper()->precision(digit); t22 = arbitrary_precision::float_precision(triangle[2][2], 16);
 
-							e00.ref_lower()->precision(i);
-							e00.ref_upper()->precision(i); e00 = arbitrary_precision::float_precision(envprism[i][p_face[j][0]][0], 16);
-							e01.ref_lower()->precision(i);
-							e01.ref_upper()->precision(i); e01 = arbitrary_precision::float_precision(envprism[i][p_face[j][0]][1], 16);
-							e02.ref_lower()->precision(i);
-							e02.ref_upper()->precision(i); e02 = arbitrary_precision::float_precision(envprism[i][p_face[j][0]][2], 16);
-							e10.ref_lower()->precision(i);
-							e10.ref_upper()->precision(i); e10 = arbitrary_precision::float_precision(envprism[i][p_face[j][1]][0], 16);
-							e11.ref_lower()->precision(i);
-							e11.ref_upper()->precision(i); e11 = arbitrary_precision::float_precision(envprism[i][p_face[j][1]][1], 16);
-							e12.ref_lower()->precision(i);
-							e12.ref_upper()->precision(i); e12 = arbitrary_precision::float_precision(envprism[i][p_face[j][1]][2], 16);
-							e20.ref_lower()->precision(i);
-							e20.ref_upper()->precision(i); e20 = arbitrary_precision::float_precision(envprism[i][p_face[j][2]][0], 16);
-							e21.ref_lower()->precision(i);
-							e21.ref_upper()->precision(i); e21 = arbitrary_precision::float_precision(envprism[i][p_face[j][2]][1], 16);
-							e22.ref_lower()->precision(i);
-							e22.ref_upper()->precision(i); e22 = arbitrary_precision::float_precision(envprism[i][p_face[j][2]][2], 16);
+							e00.ref_lower()->precision(digit);
+							e00.ref_upper()->precision(digit); e00 = arbitrary_precision::float_precision(envprism[i][p_face[j][0]][0], 16);
+							e01.ref_lower()->precision(digit);
+							e01.ref_upper()->precision(digit); e01 = arbitrary_precision::float_precision(envprism[i][p_face[j][0]][1], 16);
+							e02.ref_lower()->precision(digit);
+							e02.ref_upper()->precision(digit); e02 = arbitrary_precision::float_precision(envprism[i][p_face[j][0]][2], 16);
+							e10.ref_lower()->precision(digit);
+							e10.ref_upper()->precision(digit); e10 = arbitrary_precision::float_precision(envprism[i][p_face[j][1]][0], 16);
+							e11.ref_lower()->precision(digit);
+							e11.ref_upper()->precision(digit); e11 = arbitrary_precision::float_precision(envprism[i][p_face[j][1]][1], 16);
+							e12.ref_lower()->precision(digit);
+							e12.ref_upper()->precision(digit); e12 = arbitrary_precision::float_precision(envprism[i][p_face[j][1]][2], 16);
+							e20.ref_lower()->precision(digit);
+							e20.ref_upper()->precision(digit); e20 = arbitrary_precision::float_precision(envprism[i][p_face[j][2]][0], 16);
+							e21.ref_lower()->precision(digit);
+							e21.ref_upper()->precision(digit); e21 = arbitrary_precision::float_precision(envprism[i][p_face[j][2]][1], 16);
+							e22.ref_lower()->precision(digit);
+							e22.ref_upper()->precision(digit); e22 = arbitrary_precision::float_precision(envprism[i][p_face[j][2]][2], 16);
 
 
 							ori = orient3D_LPI_filtered_multiprecision(
@@ -772,6 +776,7 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 
 					}
 				}
+				
 				///////////////////////////////////////////
 				if (ori == -2) {
 					return NOT_INTERSECTD;
