@@ -911,7 +911,9 @@ int main(int argc, char const *argv[])
 	Rational rrr = r3 * rr*r3;
 
 	std::cout << rrr << std::endl;
-	
+	Scalar p = 1.3;
+	Rational pr(p);
+	std::cout << pr << std::endl;
 	/*const std::function<int(double)> check_double = [](double v) {
 
 		if (fabs(v) < 1e-10)
@@ -994,7 +996,7 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 	
-	//test_in_wild();
+	test_in_wild();
 
 
 	

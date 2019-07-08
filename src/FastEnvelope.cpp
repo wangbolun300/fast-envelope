@@ -6,7 +6,7 @@
 #include <igl/Timer.h>
 #include <fastenvelope/ip_filtered.h>
 #include <arbitraryprecision/fprecision.h>
-
+#include <fastenvelope/Rational.hpp>
 
 
 int markhf = 0, markhf1=0, i_time=10;
@@ -38,7 +38,16 @@ static const   std::function<int(double)> check_double = [](double v) {
 	return 0;
 };
 
+static const   std::function<int(fastEnvelope::Rational)> check_rational = [](fastEnvelope::Rational v) {
+	
+	if (v > 0)
+		return 1;
 
+	if (v < 0)
+		return -1;
+
+	return 0;
+};
 
 static const std::function<int(arbitrary_precision::interval<arbitrary_precision::float_precision>)> check_interval =
 [](arbitrary_precision::interval<arbitrary_precision::float_precision> v) {
@@ -700,79 +709,22 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 				
 				if (ori == 0) {
 					if (markhf == 0) {
-						arbitrary_precision::interval<arbitrary_precision::float_precision> s00, s01, s02, s10, s11, s12, t00, t01, t02, t10, t11, t12, t20, t21, t22,
-							e00, e01, e02, e10, e11, e12, e20, e21, e22;
-						for (int rr = 0; rr < i_time; rr++) {
-							int digit = 18 + 18 * rr;
-							s00.ref_lower()->precision(digit);
-							s00.ref_upper()->precision(digit); s00 = arbitrary_precision::float_precision(segpoint0[0], 16);
-							s01.ref_lower()->precision(digit);
-							s01.ref_upper()->precision(digit); s01 = arbitrary_precision::float_precision(segpoint0[1], 16);
-							s02.ref_lower()->precision(digit);
-							s02.ref_upper()->precision(digit); s02 = arbitrary_precision::float_precision(segpoint0[2], 16);
-							s10.ref_lower()->precision(digit);
-							s10.ref_upper()->precision(digit); s10 = arbitrary_precision::float_precision(segpoint1[0], 16);
-							s11.ref_lower()->precision(digit);
-							s11.ref_upper()->precision(digit); s11 = arbitrary_precision::float_precision(segpoint1[1], 16);
-							s12.ref_lower()->precision(digit);
-							s12.ref_upper()->precision(digit); s12 = arbitrary_precision::float_precision(segpoint1[2], 16);
+						Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
+							t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]), 
+							t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]), 
+							t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+							e00(envprism[i][p_face[j][0]][0]), e01(envprism[i][p_face[j][0]][1]), e02(envprism[i][p_face[j][0]][2]), 
+							e10(envprism[i][p_face[j][1]][0]), e11(envprism[i][p_face[j][1]][1]), e12(envprism[i][p_face[j][1]][2]),
+							e20(envprism[i][p_face[j][2]][0]), e21(envprism[i][p_face[j][2]][1]), e22(envprism[i][p_face[j][2]][2]);
 
-							t00.ref_lower()->precision(digit);
-							t00.ref_upper()->precision(digit); t00 = arbitrary_precision::float_precision(triangle[0][0], 16);
-							t01.ref_lower()->precision(digit);
-							t01.ref_upper()->precision(digit); t01 = arbitrary_precision::float_precision(triangle[0][1], 16);
-							t02.ref_lower()->precision(digit);
-							t02.ref_upper()->precision(digit); t02 = arbitrary_precision::float_precision(triangle[0][2], 16);
-							t10.ref_lower()->precision(digit);
-							t10.ref_upper()->precision(digit); t10 = arbitrary_precision::float_precision(triangle[1][0], 16);
-							t11.ref_lower()->precision(digit);
-							t11.ref_upper()->precision(digit); t11 = arbitrary_precision::float_precision(triangle[1][1], 16);
-							t12.ref_lower()->precision(digit);
-							t12.ref_upper()->precision(digit); t12 = arbitrary_precision::float_precision(triangle[1][2], 16);
-							t20.ref_lower()->precision(digit);
-							t20.ref_upper()->precision(digit); t20 = arbitrary_precision::float_precision(triangle[2][0], 16);
-							t21.ref_lower()->precision(digit);
-							t21.ref_upper()->precision(digit); t21 = arbitrary_precision::float_precision(triangle[2][1], 16);
-							t22.ref_lower()->precision(digit);
-							t22.ref_upper()->precision(digit); t22 = arbitrary_precision::float_precision(triangle[2][2], 16);
+						ori = orient3D_LPI_filtered_multiprecision(
+							s00, s01, s02, s10, s11, s12,
+							t00, t01, t02, t10, t11, t12, t20, t21, t22,
+							e00, e01, e02, e10, e11, e12, e20, e21, e22, check_rational);
 
-							e00.ref_lower()->precision(digit);
-							e00.ref_upper()->precision(digit); e00 = arbitrary_precision::float_precision(envprism[i][p_face[j][0]][0], 16);
-							e01.ref_lower()->precision(digit);
-							e01.ref_upper()->precision(digit); e01 = arbitrary_precision::float_precision(envprism[i][p_face[j][0]][1], 16);
-							e02.ref_lower()->precision(digit);
-							e02.ref_upper()->precision(digit); e02 = arbitrary_precision::float_precision(envprism[i][p_face[j][0]][2], 16);
-							e10.ref_lower()->precision(digit);
-							e10.ref_upper()->precision(digit); e10 = arbitrary_precision::float_precision(envprism[i][p_face[j][1]][0], 16);
-							e11.ref_lower()->precision(digit);
-							e11.ref_upper()->precision(digit); e11 = arbitrary_precision::float_precision(envprism[i][p_face[j][1]][1], 16);
-							e12.ref_lower()->precision(digit);
-							e12.ref_upper()->precision(digit); e12 = arbitrary_precision::float_precision(envprism[i][p_face[j][1]][2], 16);
-							e20.ref_lower()->precision(digit);
-							e20.ref_upper()->precision(digit); e20 = arbitrary_precision::float_precision(envprism[i][p_face[j][2]][0], 16);
-							e21.ref_lower()->precision(digit);
-							e21.ref_upper()->precision(digit); e21 = arbitrary_precision::float_precision(envprism[i][p_face[j][2]][1], 16);
-							e22.ref_lower()->precision(digit);
-							e22.ref_upper()->precision(digit); e22 = arbitrary_precision::float_precision(envprism[i][p_face[j][2]][2], 16);
-
-
-							ori = orient3D_LPI_filtered_multiprecision(
-								s00, s01, s02, s10, s11, s12,
-								t00, t01, t02, t10, t11, t12, t20, t21, t22,
-								e00, e01, e02, e10, e11, e12, e20, e21, e22, check_interval);
-							if (ori != 100) {
-								break;
-							}
-
-							if (rr == i_time - 1) {
-								ori = 0;
-								//std::cout << "precision " << e22.ref_lower()->precision() << std::endl;
-								//std::cout << "need higher precision" << std::endl;
-								//assert(-1);
-							}
-						}
 						
-						
+
+
 
 					}
 				}
