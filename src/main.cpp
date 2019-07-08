@@ -904,18 +904,14 @@ int main(int argc, char const *argv[])
 {
 	GEO::initialize();
 
-	
-	const std::function<int(double)> check_double = [](double v) {
-
-
 	Rational r1(1);
 	Rational r3(3);
 
-	Rational rr = r1/r3/r3;
-	Rational rrr = r3*rr*r3;
+	Rational rr = r1 / r3 / r3;
+	Rational rrr = r3 * rr*r3;
 
-	std::cout<<rrr<<std::endl;
-
+	std::cout << rrr << std::endl;
+	
 	/*const std::function<int(double)> check_double = [](double v) {
 
 		if (fabs(v) < 1e-10)
