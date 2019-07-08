@@ -7,6 +7,7 @@
 #include<fastenvelope/Predicates.hpp>
 #include<fastenvelope/Types.hpp>
 #include <fastenvelope/AABBWrapper.h>
+#include <fastenvelope/Rational.hpp>
 #include <igl/Timer.h>
 #include <ctime>
 #include <cstdlib>
@@ -743,7 +744,7 @@ void test_in_wild() {
 	for (int i = 0; i < trindex2.size(); i++) {
 		tri = triangles[trindex2[i]];
 		l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 60;
-		
+
 		pos4[i] = fast_envelope.sample_triangle_outside(tri, l1);
 	}
 	count = 0; count1 = 0;
@@ -754,26 +755,26 @@ void test_in_wild() {
 		if (pos2[trindex2[i]] - pos4[i] == 1) {
 			count1++;
 		}
-		
+
 
 	}
 	std::cout << "\niterating comparision--differences number: " << count << std::endl;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/*
 	if (trindex1.size() > 0) {
 		std::ofstream fout;
@@ -792,7 +793,7 @@ void test_in_wild() {
 		//fast_envelope.is_outside_signal(triangles[trindex1[idx]], signal);
 	}
 	*/
-	
+
 
 
 
@@ -840,15 +841,15 @@ T multyprecision(const T &num1, const T &num2) {
 	//float_precision num2(3, n_digits);
 
 	T res = num1 / num2 * T(2) - T(2) / T(3);
-	
+
 	return res;
 //#include<arbitraryprecision/intervalprecision.h>
-	
+
 }
 
 
 void interval_try() {
-	
+
 	using namespace arbitrary_precision;
 	int digit = 100;
 	//interval<float_precision> a(float_precision("1.3", digit ));
@@ -874,7 +875,7 @@ void interval_try() {
 
 
 	cout << "lambda try" << endl;
-	auto check= [=]()->int { 
+	auto check= [=]()->int {
 
 		return 00; };
 
@@ -902,7 +903,15 @@ void try2() {
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
-	
+
+	Rational r1(1);
+	Rational r3(3);
+
+	Rational rr = r1/r3/r3;
+	Rational rrr = r3*rr*r3;
+
+	std::cout<<rrr<<std::endl;
+
 	/*const std::function<int(double)> check_double = [](double v) {
 		if (fabs(v) < 1e-10)
 			return -2;
@@ -915,7 +924,7 @@ int main(int argc, char const *argv[])
 
 		return 0;
 	};
-	
+
 	using namespace arbitrary_precision;
 	const std::function<int(interval<float_precision>)> check_interval = [](interval<float_precision> v) {
 		const auto clazz = v.is_class();
@@ -942,10 +951,6 @@ int main(int argc, char const *argv[])
 	float f = 1e-15;
 	interval<float_precision> h(f);
 	std::cout << "triansfer "<<h.ref_lower()->precision() << endl;*/
-	
-	
-	
-
 
 	//interval_try();
 	/*srand(int(time(0)));
@@ -972,7 +977,7 @@ int main(int argc, char const *argv[])
 	//calculation();
 	//test_ttt();
 	//test_diff();
-	
+
 	test_in_wild();
 	//inf();
 	//sample_triangle_test();

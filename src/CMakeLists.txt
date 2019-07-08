@@ -2,7 +2,8 @@ set(SOURCES
         FastEnvelope.cpp
         FastEnvelope.h
         Logger.hpp
-		Parameters.h
+        Parameters.h
+        Rational.hpp
         Types.hpp
 )
 

@@ -180,6 +180,12 @@ if(FAST_ENVELOPE_ENABLE_TBB)
 	target_link_libraries(${PROJECT_NAME} PUBLIC tbb_static)
 endif()
 
+find_package(GMP)
+
+IF(NOT ${GMP_FOUND})
+        MESSAGE(FATAL_ERROR "Cannot find GMP")
+ENDIF()
+
 
 if(${FAST_ENVELOPE_USE_FLOAT})
 	target_compile_definitions(${PROJECT_NAME} PUBLIC -DFAST_ENVELOPE_USE_FLOAT)
@@ -190,6 +196,9 @@ endif()
 #spdlog
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PUBLIC CLI11::CLI11)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${GMP_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GMP_LIBRARIES})
 
 # Json
 # FAST_ENVELOPE_json()
