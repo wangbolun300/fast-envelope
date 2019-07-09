@@ -738,31 +738,38 @@ void test_in_wild() {
 	cout << "\ndegeneration counting: " << nbr << endl;
 
 	////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+
+	const int irt = 101;
 	std::vector<bool> pos4;
-	pos4.resize(trindex2.size());
-	//script for automatically iterating resampling
-	for (int i = 0; i < trindex2.size(); i++) {
-		tri = triangles[trindex2[i]];
-		l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 60;
+	vector<int> ti,ti1;//triangle index
+	ti = trindex2;
+	int lth[irt] = { 60,100,200,400,600,800,1000,2000,2500,5000,10000 };
+	for (int j = 0; j < irt; j++) {
+		int howmany = 0;
+		ti1.resize(0);
+		pos4.resize(ti.size());
+		for (int i = 0; i < ti.size(); i++) {
+			tri = triangles[ti[i]];
+			l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / lth[j];
 
-		pos4[i] = fast_envelope.sample_triangle_outside(tri, l1);
-	}
-	count = 0; count1 = 0;
-	for (int i = 0; i < trindex2.size(); i++) {
-		if (pos2[trindex2[i]] - pos4[i] != 0) {
-			count++;
+			pos4[i] = fast_envelope.sample_triangle_outside(tri, l1);
+			if (pos4[i] == 0) {
+				howmany++;
+				ti1.push_back(ti[i]);
+			}
+
 		}
-		if (pos2[trindex2[i]] - pos4[i] == 1) {
-			count1++;
+		if (ti1.size() != 0) {
+			cout << "the ith iteration " << j << endl;
+			cout << "how many differences " << howmany << endl;
+			ti = ti1;
 		}
-
-
+		else {
+			cout << "kill all the different cases";
+			break; };
 	}
-	std::cout << "\niterating comparision--differences number: " << count << std::endl;
-
-
-
-
 
 
 

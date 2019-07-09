@@ -783,6 +783,26 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
 					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
 					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
+				////////////////////////////////////////////////////////////////////////
+				if (ori == 0) {
+					ori = orient3D_TPI_filtered_multiprecision(
+						Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
+						Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
+						Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
+						Rational(facet1[0][0]), Rational(facet1[0][1]), Rational(facet1[0][2]),
+						Rational(facet1[1][0]), Rational(facet1[1][1]), Rational(facet1[1][2]),
+						Rational(facet1[2][0]), Rational(facet1[2][1]), Rational(facet1[2][2]),
+						Rational(facet2[0][0]), Rational(facet2[0][1]), Rational(facet2[0][2]),
+						Rational(facet2[1][0]), Rational(facet2[1][1]), Rational(facet2[1][2]),
+						Rational(facet2[2][0]), Rational(facet2[2][1]), Rational(facet2[2][2]),
+						Rational(envprism[i][p_face[j][0]][0]), Rational(envprism[i][p_face[j][0]][1]), Rational(envprism[i][p_face[j][0]][2]),
+						Rational(envprism[i][p_face[j][1]][0]), Rational(envprism[i][p_face[j][1]][1]), Rational(envprism[i][p_face[j][1]][2]),
+						Rational(envprism[i][p_face[j][2]][0]), Rational(envprism[i][p_face[j][2]][1]), Rational(envprism[i][p_face[j][2]][2]), check_rational);
+				}
+
+
+				////////////////////////////////////////////////////////////////////////
+
 				if (ori == 1 || ori == 0) {
 
 					break;
