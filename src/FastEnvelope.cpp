@@ -837,7 +837,42 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 			n[0], n[1], n[2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			triangle[0][0], triangle[0][1], triangle[0][2]);
-		
+		////////////////////////////////////////////////////////////////////////////
+		if (o1 == 0) {
+			o1 = orient3D_TPI_filtered_multiprecision(Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
+				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
+				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
+				Rational(f1[0][0]), Rational(f1[0][1]), Rational(f1[0][2]), Rational(f1[1][0]), Rational(f1[1][1]), Rational(f1[1][2]), Rational(f1[2][0]), Rational(f1[2][1]), Rational(f1[2][2]),
+				Rational(f2[0][0]), Rational(f2[0][1]), Rational(f2[0][2]), Rational(f2[1][0]), Rational(f2[1][1]), Rational(f2[1][2]), Rational(f2[2][0]), Rational(f2[2][1]), Rational(f2[2][2]),
+				Rational(n[0]), Rational(n[1]), Rational(n[2]),
+				Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
+				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]), check_rational);
+		}
+		if (o2 == 0) {
+			o2= orient3D_TPI_filtered_multiprecision(Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
+				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
+				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
+				Rational(f1[0][0]), Rational(f1[0][1]), Rational(f1[0][2]), Rational(f1[1][0]), Rational(f1[1][1]), Rational(f1[1][2]), Rational(f1[2][0]), Rational(f1[2][1]), Rational(f1[2][2]),
+				Rational(f2[0][0]), Rational(f2[0][1]), Rational(f2[0][2]), Rational(f2[1][0]), Rational(f2[1][1]), Rational(f2[1][2]), Rational(f2[2][0]), Rational(f2[2][1]), Rational(f2[2][2]),
+				Rational(n[0]), Rational(n[1]), Rational(n[2]),
+				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
+				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]), check_rational);
+		}
+		if (o3 == 0) {
+			o3 = orient3D_TPI_filtered_multiprecision(Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
+				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
+				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
+				Rational(f1[0][0]), Rational(f1[0][1]), Rational(f1[0][2]), Rational(f1[1][0]), Rational(f1[1][1]), Rational(f1[1][2]), Rational(f1[2][0]), Rational(f1[2][1]), Rational(f1[2][2]),
+				Rational(f2[0][0]), Rational(f2[0][1]), Rational(f2[0][2]), Rational(f2[1][0]), Rational(f2[1][1]), Rational(f2[1][2]), Rational(f2[2][0]), Rational(f2[2][1]), Rational(f2[2][2]),
+				Rational(n[0]), Rational(n[1]), Rational(n[2]),
+				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
+				Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]), check_rational);
+		}
+
+		//////////////////////////////////////////////////////////////////////////////
+
+
+
 		if (o1 == 1 && o2 == 1 && o3 == 1) {// interpoint in the interior of triangle
 			return 1;
 		}

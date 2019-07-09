@@ -898,7 +898,10 @@ void try2() {
 	assert(axxy == 1);
 	cout << "here ！@！！！！！！！！！！" << endl;
 }
-
+void rational_try(Rational &r) {
+	Rational c = Rational(1) / r;
+	cout << Rational(c*r) << endl;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -914,6 +917,7 @@ int main(int argc, char const *argv[])
 	Scalar p = 1.3;
 	Rational pr(p);
 	std::cout << pr << std::endl;
+	rational_try(Rational(0.7));
 	/*const std::function<int(double)> check_double = [](double v) {
 
 		if (fabs(v) < 1e-10)
