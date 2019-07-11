@@ -9,7 +9,8 @@
 #include <fastenvelope/Rational.hpp>
 
 
-int markhf = 0, markhf1=0, i_time=10;
+int markhf = 0, markhf1 = 0, i_time = 10, filternumberlpi = 0, totalnumberlpi = 0, filternumbertpi = 0, totalnumbertpi = 0,
+filternumber1 = 0, totalnumber1 = 0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
@@ -82,7 +83,11 @@ extern "C++" int tri_tri_intersection_test_3d(fastEnvelope::Scalar p1[3], fastEn
 namespace fastEnvelope {
 	//using namespace std;
 
-
+	void FastEnvelope::print_number() {
+		std::cout << "lpi filter number " << filternumberlpi << " lpi total number " << totalnumberlpi << " percentage " << float(filternumberlpi )/ float(totalnumberlpi) << std::endl;
+		std::cout << "tpi filter number " << filternumbertpi << " tpi total number " << totalnumbertpi << " percentage " << float(filternumbertpi) / float(totalnumbertpi) << std::endl;
+		std::cout << "triangle_intersection filter number " << filternumber1 << " tpi total number " << totalnumber1 << " percentage " << float(filternumber1) / float(totalnumber1) << std::endl;
+	}
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac)
 	{
 		get_bb_corners(m_ver, min, max);
@@ -334,6 +339,7 @@ namespace fastEnvelope {
 
 								inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[we][0]], triangle[triseg[we][1]],
 									{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
+								
 
 								if (inter == 1) {
 									return 1;
@@ -701,13 +707,15 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 						segpoint0[0], segpoint0[1], segpoint0[2], segpoint1[0], segpoint1[1], segpoint1[2],
 						triangle[0][0], triangle[0][1], triangle[0][2], triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
 						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2], envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2], envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
-
+				totalnumberlpi++;
+				if (ori == 0) {
+					filternumberlpi++;
+				}
 				/////////////////////////////////////////
 				
 				
 				
-				
-				if (ori == 0) {
+				/*if (ori == 0) {
 					if (markhf == 0) {
 						Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
 							t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]), 
@@ -727,7 +735,7 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 
 
 					}
-				}
+				}*/
 				
 				///////////////////////////////////////////
 				if (ori == -2) {
@@ -783,8 +791,12 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
 					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
 					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
-				////////////////////////////////////////////////////////////////////////
+				totalnumbertpi++;
 				if (ori == 0) {
+					filternumbertpi++;
+				}
+				////////////////////////////////////////////////////////////////////////
+				/*if (ori == 0) {
 					ori = orient3D_TPI_filtered_multiprecision(
 						Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
 						Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
@@ -798,7 +810,7 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 						Rational(envprism[i][p_face[j][0]][0]), Rational(envprism[i][p_face[j][0]][1]), Rational(envprism[i][p_face[j][0]][2]),
 						Rational(envprism[i][p_face[j][1]][0]), Rational(envprism[i][p_face[j][1]][1]), Rational(envprism[i][p_face[j][1]][2]),
 						Rational(envprism[i][p_face[j][2]][0]), Rational(envprism[i][p_face[j][2]][1]), Rational(envprism[i][p_face[j][2]][2]), check_rational);
-				}
+				}*/
 
 
 				////////////////////////////////////////////////////////////////////////
@@ -857,8 +869,19 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 			n[0], n[1], n[2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			triangle[0][0], triangle[0][1], triangle[0][2]);
-		////////////////////////////////////////////////////////////////////////////
+		totalnumber1 = totalnumber1 + 3;
 		if (o1 == 0) {
+			filternumber1++;
+		}
+		if (o2 == 0) {
+			filternumber1++;
+		}
+		if (o3 == 0) {
+			filternumber1++;
+		}
+
+		////////////////////////////////////////////////////////////////////////////
+		/*if (o1 == 0) {
 			o1 = orient3D_TPI_filtered_multiprecision(Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
 				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
 				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
@@ -888,7 +911,7 @@ bool FastEnvelope::is_seg_facet_intersection(const double& px, const double& py,
 				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
 				Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]), check_rational);
 		}
-
+*/
 		//////////////////////////////////////////////////////////////////////////////
 
 

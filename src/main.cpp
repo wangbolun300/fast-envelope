@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\101249.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101089\\101089.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101089\\01kVase.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -677,8 +677,8 @@ void test_in_wild() {
 	std::cout << "aabb inside triangle number:  " << eq0 << std::endl;
 	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
 	std::cout << "0-1 cases number " << rmk << std::endl;
-
-
+	cout << endl;
+	FastEnvelope::print_number();
 
 	 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -739,9 +739,9 @@ void test_in_wild() {
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	
-	
+	cout << "\nstarting iteration: " << nbr << endl;
 
-	const int irt = 101;
+	const int irt = 11;
 	std::vector<bool> pos4;
 	vector<int> ti,ti1;//triangle index
 	ti = trindex2;
