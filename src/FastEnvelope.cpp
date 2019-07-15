@@ -9,9 +9,7 @@
 #include <fastenvelope/Rational.hpp>
 
 
-int markhf = 0, markhf1 = 0, i_time = 10, filternumberlpi = 0, totalnumberlpi = 0, filternumbertpi = 0, totalnumbertpi = 0, filternumberlpi2 = 0, filternumbertpi2 = 0,
-totalnumberlpi2 = 0, totalnumbertpi2 = 0,
-filternumber1 = 0, totalnumber1 = 0;
+int markhf = 0, markhf1 = 0, i_time = 10;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
@@ -85,11 +83,11 @@ namespace fastEnvelope {
 	//using namespace std;
 
 	void FastEnvelope::print_number() {
-		std::cout << "lpi filter number " << filternumberlpi << " lpi total number " << totalnumberlpi << " percentage " << float(filternumberlpi )/ float(totalnumberlpi) << std::endl;
-		std::cout << "tpi filter number " << filternumbertpi << " tpi total number " << totalnumbertpi << " percentage " << float(filternumbertpi) / float(totalnumbertpi) << std::endl;
-		std::cout << "triangle_intersection filter number " << filternumber1 << " tpi total number " << totalnumber1 << " percentage " << float(filternumber1) / float(totalnumber1) << std::endl;
-		std::cout << "triangle_intersection filter number lpi -2 " << filternumberlpi2 << " percentage " << float(filternumberlpi2) / float(totalnumberlpi) << std::endl;
-		std::cout << "triangle_intersection filter number tpi -2 " << filternumbertpi2 << " percentage " << float(filternumbertpi2) / float(totalnumbertpi+ totalnumber1) << std::endl;
+		//std::cout << "lpi filter number " << filternumberlpi << " lpi total number " << totalnumberlpi << " percentage " << float(filternumberlpi )/ float(totalnumberlpi) << std::endl;
+		//std::cout << "tpi filter number " << filternumbertpi << " tpi total number " << totalnumbertpi << " percentage " << float(filternumbertpi) / float(totalnumbertpi) << std::endl;
+		//std::cout << "triangle_intersection filter number " << filternumber1 << " tpi total number " << totalnumber1 << " percentage " << float(filternumber1) / float(totalnumber1) << std::endl;
+		//std::cout << "triangle_intersection filter number lpi -2 " << filternumberlpi2 << " percentage " << float(filternumberlpi2) / float(totalnumberlpi) << std::endl;
+		//std::cout << "triangle_intersection filter number tpi -2 " << filternumbertpi2 << " percentage " << float(filternumbertpi2) / float(totalnumbertpi+ totalnumber1) << std::endl;
 
 	}
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac)
@@ -341,7 +339,7 @@ namespace fastEnvelope {
 								jump.emplace_back(i);
 
 
-								inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[we][0]], triangle[triseg[we][1]],
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
 									{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 								
 
@@ -379,7 +377,7 @@ namespace fastEnvelope {
 					jump.emplace_back(i);
 					for (int k = 0; k < 3; k++) {
 
-						inter = Implicit_Seg_Facet_interpoint_Out_Prism_redundant(triangle[triseg[k][0]], triangle[triseg[k][1]],
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 
@@ -437,7 +435,8 @@ namespace fastEnvelope {
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		int jm = 0, ori;
 		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
-
+		std::vector<int> INDEX;
+		int tot;
 		if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
 									//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
 			return NOT_INTERSECTD;//not intersected
@@ -449,7 +448,8 @@ namespace fastEnvelope {
 					continue;
 				}
 			}
-
+			INDEX.clear();
+			tot = 0;
 			for (int j = 0; j < 8; j++) {
 				//ftimer2.start();
 				ori = ip_filtered::
@@ -457,10 +457,7 @@ namespace fastEnvelope {
 						segpoint0[0], segpoint0[1], segpoint0[2], segpoint1[0], segpoint1[1], segpoint1[2],
 						triangle[0][0], triangle[0][1], triangle[0][2], triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
 						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2], envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2], envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
-				totalnumberlpi++;
-				if (ori == 0) {
-					filternumberlpi++;
-				}
+				
 				/////////////////////////////////////////
 				
 				
@@ -488,19 +485,39 @@ namespace fastEnvelope {
 				}*/
 				
 				///////////////////////////////////////////
-				if (ori == -2) {
-					return NOT_INTERSECTD;
-				}
-				if (ori == 1 || ori == 0) {
+				if (ori == 1) {
 					break;
 				}
+				if (ori == -2 || ori == 0) {
+					INDEX.push_back(j);
+				}
 				
-				if (j == 7) {
+				if (ori == -1) {
+					tot++;
+				}
+				if (tot == 8) {
 
 					return IN_PRISM;
 				}
 			}
+			if (ori != 1) {
+				for (int k = 0; k < INDEX.size(); k++) {
+					Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
+						t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+						t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+						t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+						e00(envprism[i][p_face[INDEX[k]][0]][0]), e01(envprism[i][p_face[INDEX[k]][0]][1]), e02(envprism[i][p_face[INDEX[k]][0]][2]),
+						e10(envprism[i][p_face[INDEX[k]][1]][0]), e11(envprism[i][p_face[INDEX[k]][1]][1]), e12(envprism[i][p_face[INDEX[k]][1]][2]),
+						e20(envprism[i][p_face[INDEX[k]][2]][0]), e21(envprism[i][p_face[INDEX[k]][2]][1]), e22(envprism[i][p_face[INDEX[k]][2]][2]);
 
+					ori = orient3D_LPI_filtered_multiprecision(
+						s00, s01, s02, s10, s11, s12,
+						t00, t01, t02, t10, t11, t12, t20, t21, t22,
+						e00, e01, e02, e10, e11, e12, e20, e21, e22, check_rational);
+					if (ori == 1 || ori == 0) break;
+				}
+				if (ori == -1) return IN_PRISM;
+			}
 
 		}
 		return OUT_PRISM;
@@ -531,13 +548,7 @@ namespace fastEnvelope {
 						segpoint0[0], segpoint0[1], segpoint0[2], segpoint1[0], segpoint1[1], segpoint1[2],
 						triangle[0][0], triangle[0][1], triangle[0][2], triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
 						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2], envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2], envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
-				totalnumberlpi++;
-				if (ori == 0) {
-					filternumberlpi++;
-				}
-				if (ori == -2) {
-					filternumberlpi2++;
-				}
+				
 				/////////////////////////////////////////
 
 
@@ -617,13 +628,7 @@ namespace fastEnvelope {
 					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
 					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
 					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
-				totalnumbertpi++;
-				if (ori == 0) {
-					filternumbertpi++;
-				}
-				if (ori == -2) {
-					filternumbertpi2++;
-				}
+				
 				////////////////////////////////////////////////////////////////////////
 				/*if (ori == 0) {
 					ori = orient3D_TPI_filtered_multiprecision(
@@ -698,25 +703,7 @@ namespace fastEnvelope {
 			n[0], n[1], n[2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			triangle[0][0], triangle[0][1], triangle[0][2]);
-		totalnumber1 = totalnumber1 + 3;
-		if (o1 == 0) {
-			filternumber1++;
-		}
-		if (o2 == 0) {
-			filternumber1++;
-		}
-		if (o3 == 0) {
-			filternumber1++;
-		}
-		if (o1 == -2) {
-			filternumbertpi2++;
-		}
-		if (o2 == 0) {
-			filternumbertpi2++;
-		}
-		if (o3 == 0) {
-			filternumbertpi2++;
-		}
+		
 
 		////////////////////////////////////////////////////////////////////////////
 		/*if (o1 == 0) {
