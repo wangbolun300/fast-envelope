@@ -258,32 +258,32 @@ namespace fastEnvelope {
 
 			::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 
-			v3x -= v2x;
-			v3y -= v2y;
-			v3z -= v2z;
-			v2x -= v1x;
-			v2y -= v1y;
-			v2z -= v1z;
+			v3x = v3x - v2x;
+			v3y = v3y - v2y;
+			v3z = v3z - v2z;
+			v2x = v2x - v1x;
+			v2y = v2y - v1y;
+			v2z = v2z - v1z;
 			T  nvx(v2y * v3z - v2z * v3y);
 			T  nvy(v3x * v2z - v3z * v2x);
 			T  nvz(v2x * v3y - v2y * v3x);
 
-			w3x -= w2x;
-			w3y -= w2y;
-			w3z -= w2z;
-			w2x -= w1x;
-			w2y -= w1y;
-			w2z -= w1z;
+			w3x = w3x - w2x;
+			w3y = w3y - w2y;
+			w3z = w3z - w2z;
+			w2x = w2x - w1x;
+			w2y = w2y - w1y;
+			w2z = w2z - w1z;
 			T  nwx ( w2y * w3z - w2z * w3y);
 			T  nwy ( w3x * w2z - w3z * w2x);
 			T  nwz ( w2x * w3y - w2y * w3x);
 
-			u3x -= u2x;
-			u3y -= u2y;
-			u3z -= u2z;
-			u2x -= u1x;
-			u2y -= u1y;
-			u2z -= u1z;
+			u3x = u3x - u2x;
+			u3y = u3y - u2y;
+			u3z = u3z - u2z;
+			u2x = u2x - u1x;
+			u2y = u2y - u1y;
+			u2z = u2z - u1z;
 			T  nux ( u2y * u3z - u2z * u3y);
 			T  nuy ( u3x * u2z - u3z * u2x);
 			T  nuz ( u2x * u3y - u2y * u3x);
@@ -314,7 +314,7 @@ namespace fastEnvelope {
 			T  p2 ( nwx * w1x + nwy * w1y + nwz * w1z);
 			T  p3 ( nux * u1x + nuy * u1y + nuz * u1z);
 
-			T  n1 ( p1 * nwyuz - p2 * nvyuz + p3 * nvyw);
+			T  n1 ( p1 * nwyuz - p2 * nvyuz + p3 * nvywz);
 			T  n2 ( p2 * nvxuz - p3 * nvxwz - p1 * nwxuz);
 			T  n3 ( p3 * nvxwy - p2 * nvxuy + p1 * nwxuy);
 

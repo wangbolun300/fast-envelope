@@ -406,7 +406,7 @@ namespace fastEnvelope {
 							jump.emplace_back(inter_ijk_list[e][0]);
 							jump.emplace_back(i);
 
-							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(triangle,
+							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
 								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 
@@ -523,7 +523,100 @@ namespace fastEnvelope {
 		return OUT_PRISM;
 	}
 
+	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
+		int jm = 0, ori;
+		std::vector<int> INDEX;
+		int tot;
+		bool in = is_3_triangle_cut(triangle, facet1, facet2);
 
+		if (in == 0) {
+			return NOT_INTERSECTD;
+		}
+
+
+		for (int i = 0; i < envprism.size(); i++) {
+			if (jump.size() > 0) {
+				if (i == jump[jm]) {//TODO jump avoid vector
+					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
+					continue;
+				}
+
+			}
+			INDEX.clear();
+			tot = 0;
+			for (int j = 0; j < 8; j++) {
+				ori = ip_filtered::orient3D_TPI_filtered(triangle[0][0], triangle[0][1], triangle[0][2],
+					triangle[1][0], triangle[1][1], triangle[1][2],
+					triangle[2][0], triangle[2][1], triangle[2][2],
+					facet1[0][0], facet1[0][1], facet1[0][2],
+					facet1[1][0], facet1[1][1], facet1[1][2],
+					facet1[2][0], facet1[2][1], facet1[2][2],
+					facet2[0][0], facet2[0][1], facet2[0][2],
+					facet2[1][0], facet2[1][1], facet2[1][2],
+					facet2[2][0], facet2[2][1], facet2[2][2],
+					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
+					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
+					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
+
+				////////////////////////////////////////////////////////////////////////
+				/*if (ori == 0) {
+					ori = orient3D_TPI_filtered_multiprecision(
+						Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
+						Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
+						Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
+						Rational(facet1[0][0]), Rational(facet1[0][1]), Rational(facet1[0][2]),
+						Rational(facet1[1][0]), Rational(facet1[1][1]), Rational(facet1[1][2]),
+						Rational(facet1[2][0]), Rational(facet1[2][1]), Rational(facet1[2][2]),
+						Rational(facet2[0][0]), Rational(facet2[0][1]), Rational(facet2[0][2]),
+						Rational(facet2[1][0]), Rational(facet2[1][1]), Rational(facet2[1][2]),
+						Rational(facet2[2][0]), Rational(facet2[2][1]), Rational(facet2[2][2]),
+						Rational(envprism[i][p_face[j][0]][0]), Rational(envprism[i][p_face[j][0]][1]), Rational(envprism[i][p_face[j][0]][2]),
+						Rational(envprism[i][p_face[j][1]][0]), Rational(envprism[i][p_face[j][1]][1]), Rational(envprism[i][p_face[j][1]][2]),
+						Rational(envprism[i][p_face[j][2]][0]), Rational(envprism[i][p_face[j][2]][1]), Rational(envprism[i][p_face[j][2]][2]), check_rational);
+				}*/
+
+
+				////////////////////////////////////////////////////////////////////////
+
+				if (ori == 1) {
+					break;
+				}
+				if (ori == -2 || ori == 0) {
+					INDEX.push_back(j);
+				}
+
+				if (ori == -1) {
+					tot++;
+				}
+				if (tot == 8) {
+
+					return IN_PRISM;
+				}
+			}
+			if (ori != 1) {
+				for (int k = 0; k < INDEX.size(); k++) {
+					ori = orient3D_TPI_filtered_multiprecision(
+						Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
+						Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
+						Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
+						Rational(facet1[0][0]), Rational(facet1[0][1]), Rational(facet1[0][2]),
+						Rational(facet1[1][0]), Rational(facet1[1][1]), Rational(facet1[1][2]),
+						Rational(facet1[2][0]), Rational(facet1[2][1]), Rational(facet1[2][2]),
+						Rational(facet2[0][0]), Rational(facet2[0][1]), Rational(facet2[0][2]),
+						Rational(facet2[1][0]), Rational(facet2[1][1]), Rational(facet2[1][2]),
+						Rational(facet2[2][0]), Rational(facet2[2][1]), Rational(facet2[2][2]),
+						Rational(envprism[i][p_face[INDEX[k]][0]][0]), Rational(envprism[i][p_face[INDEX[k]][0]][1]), Rational(envprism[i][p_face[INDEX[k]][0]][2]),
+						Rational(envprism[i][p_face[INDEX[k]][1]][0]), Rational(envprism[i][p_face[INDEX[k]][1]][1]), Rational(envprism[i][p_face[INDEX[k]][1]][2]),
+						Rational(envprism[i][p_face[INDEX[k]][2]][0]), Rational(envprism[i][p_face[INDEX[k]][2]][1]), Rational(envprism[i][p_face[INDEX[k]][2]][2]), check_rational);
+					if (ori == 1 || ori == 0) break;
+				}
+				if (ori == -1) return IN_PRISM;
+			}
+
+		}
+
+		return OUT_PRISM;
+	}
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		int jm = 0, ori;
