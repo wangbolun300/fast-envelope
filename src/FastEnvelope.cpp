@@ -799,7 +799,7 @@ namespace fastEnvelope {
 		
 
 		////////////////////////////////////////////////////////////////////////////
-		/*if (o1 == 0) {
+		if (o1 == 0) {
 			o1 = orient3D_TPI_filtered_multiprecision(Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
 				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
 				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
@@ -829,7 +829,7 @@ namespace fastEnvelope {
 				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
 				Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]), check_rational);
 		}
-*/
+
 		//////////////////////////////////////////////////////////////////////////////
 
 
