@@ -157,9 +157,9 @@ namespace fastEnvelope {
 
 
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2);
-
+		public:
 		static int is_triangle_degenerated(const std::array<Vector3, 3>& triangle);
-
+		private:
 		static Vector2 to_2d(const Vector3 &p, int t) {
 			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
 		}

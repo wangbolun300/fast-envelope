@@ -8,7 +8,7 @@
 // If uncommented, the two functions may return -2 if 'd' is too close to zero, meaning that
 // the intersection point is close to infinity.
 #define USE_FILTER_FOR_DEGENERATE_CONFIGS
-bool trigger = 1;
+bool trigger = 0;
 int shrinksize = 2;
 namespace fastEnvelope
 

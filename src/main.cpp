@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\101249.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100349\\100349.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100349\\menouFinal5.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -727,11 +727,9 @@ void test_in_wild() {
 	std::cout << "sap inside size:  " << insiden_s << std::endl;
 
 	int nbr = 0;
-	for (int i = 0; i < trindex1.size(); i++) {
-		Scalar a = (triangles[trindex1[i]][0] - triangles[trindex1[i]][1]).norm(), b = (triangles[trindex1[i]][2] - triangles[trindex1[i]][1]).norm(),
-			c = (triangles[trindex1[i]][0] - triangles[trindex1[i]][2]).norm();
-		Scalar area = (a + b + c)*(a + b - c)*(a + c - b)*(b + c - a);
-		if (area < SCALAR_ZERO_3) {
+	for (int i = 0; i < trindex2.size(); i++) {
+		
+		if (FastEnvelope::is_triangle_degenerated(triangles[trindex2[i]])!= 0) {
 			nbr++;
 		}
 
@@ -746,7 +744,7 @@ void test_in_wild() {
 	std::vector<bool> pos4;
 	vector<int> ti,ti1;//triangle index
 	ti = trindex2;
-	int lth[irt] = { 60,100,200,400,600,800,1000,2000,2500,5000,10000 };
+	int lth[irt] = { 60,100,200,400,600,800,1000,2000,2500,5000,10000};
 	for (int j = 0; j < irt; j++) {
 		int howmany = 0;
 		ti1.resize(0);
@@ -783,24 +781,24 @@ void test_in_wild() {
 
 
 
-	/*
-	if (trindex1.size() > 0) {
+	
+	if (ti.size() > 0) {
 		std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-		int idx = 0;
-		std::cout << "output NO. " << trindex1[idx] << endl;
+		int idx = 2;
+		std::cout << "output NO. " << ti[idx] << endl;
 		for (int i = 0; i < 3; i++) {
 
-			fout << std::setprecision(17) << triangles[trindex1[idx]][i][0] << " " << triangles[trindex1[idx]][i][1] << " " << triangles[trindex1[idx]][i][2] << endl;
+			fout << std::setprecision(17) << triangles[ti[idx]][i][0] << " " << triangles[ti[idx]][i][1] << " " << triangles[ti[idx]][i][2] << endl;
 
 		}
 		fout.close();
 
-		fast_envelope.print_prisms(triangles[trindex1[idx]]);
+		fast_envelope.print_prisms(triangles[ti[idx]]);
 		int signal = 1;
 		//fast_envelope.is_outside_signal(triangles[trindex1[idx]], signal);
 	}
-	*/
+	
 
 
 
@@ -814,11 +812,12 @@ void sample_triangle_test() {
 	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
-	std::array<Vector3, 3> tri = triangles[10000];
+	std::array<Vector3, 3> tri = triangles[20000];
 	std::vector<Vector3> ps;
-	Scalar l1 = (tri[0] - tri[1]).norm()/50;
+	Scalar l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) /50;
+	cout << "l1 " << l1 << endl;
 	FastEnvelope::triangle_sample(tri, ps, l1);
-	std::cout << ps.size() << endl;
+	std::cout <<"ps size "<< ps.size() << endl;
 
 
 	std::ofstream fout;

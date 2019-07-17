@@ -238,38 +238,41 @@ namespace fastEnvelope {
 	void FastEnvelope::triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error) {
 		ps.clear();
 		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm(), l3 = (triangle[2] - triangle[1]).norm();//length
-
-		if (l1 == 0 && l2 == 0 && l3 == 0) {
+		int de = is_triangle_degenerated(triangle);
+		if (de==DEGENERATED_POINT) {
 			ps.push_back(triangle[0]);
 			return;
 		}
-		if (l1 == 0) {
+		if (de == DEGENERATED_SEGMENT) {
+			if (triangle[1] - triangle[0] == Vector3(0, 0, 0)) {
+				//std::cout << "here1 " << std::endl;
+				int t = l2 / error + 1;
 
-			int t = l2 / error + 1;
-			Vector3 vct = (triangle[2] - triangle[0]) / t;
-			for (int i = 0; i <= t; i++) {
-				ps.push_back(triangle[0] + vct * i);
+				for (int i = 0; i <= t; i++) {
+					ps.push_back(triangle[0] + (triangle[2] - triangle[0])*i / t);
+				}
+				return;
 			}
-			return;
-		}
-		if (l2 == 0) {
+			if (triangle[2] - triangle[0] == Vector3(0, 0, 0)) {
+				//std::cout << "here2 " << std::endl;
+				int t = l1 / error + 1;
 
-			int t = l1 / error + 1;
-			Vector3 vct = (triangle[1] - triangle[0]) / t;
-			for (int i = 0; i <= t; i++) {
-				ps.push_back(triangle[0] + vct * i);
+				for (int i = 0; i <= t; i++) {
+					ps.push_back(triangle[0] + (triangle[1] - triangle[0])*i / t);
+				}
+				return;
 			}
-			return;
-		}
-		if (l3 == 0) {
+			if (triangle[2] - triangle[1] == Vector3(0, 0, 0)) {
+				//std::cout << "here3 " << std::endl;
+				int t = l1 / error + 1;
 
-			int t = l1 / error + 1;
-			Vector3 vct = (triangle[1] - triangle[0]) / t;
-			for (int i = 0; i <= t; i++) {
-				ps.push_back(triangle[0] + vct * i);
+				for (int i = 0; i <= t; i++) {
+					ps.push_back(triangle[0] + (triangle[1] - triangle[0])*i / t);
+				}
+				return;
 			}
-			return;
 		}
+		//std::cout << "here " << std::endl;
 		/*if (l1 == 0 || l2 == 0 || l3 == 0) {
 
 
@@ -284,14 +287,27 @@ namespace fastEnvelope {
 			temp;
 
 		for (int i = 0; i <= l1s; i++) {
-			Scalar length = (l1s - i)*e1*l2 / l1;// length of this line
-			l2sn = length / e2 + 1;// subdivided of this line
-			Vector3 subl3 = (triangle[2] - triangle[0])*length / l2sn / l2;//vector of each piece
+			//Scalar length = (l1s - i)*e1*l2 / l1;// length of this line
+			//l2sn = length / e2 + 1;// subdivided of this line
+			//Vector3 subl3 = (triangle[2] - triangle[0])*length / l2sn / l2;//vector of each piece
+			//for (int j = 0; j <= l2sn; j++) {
+			//	temp = subl1 * i + triangle[0] + subl3 * j;
+			//	ps.push_back(temp);
+			//}
+
+
+			//segment 0-1 is subdivided into l1s sub-pieces, so is segment 1-2
+			Vector3 p1 = triangle[0] + (triangle[1] - triangle[0])*i / l1s, p2 = triangle[0]+(triangle[2]-triangle[0])*i/l1s;
+			ps.push_back(p1 );
+			ps.push_back(p2);
+			Scalar length = (p1 - p2).norm();
+			l2sn = length / e2 + 1;
 			for (int j = 0; j <= l2sn; j++) {
-				temp = subl1 * i + triangle[0] + subl3 * j;
-				ps.push_back(temp);
+				ps.push_back(p1 + (p2 - p1)* j / l2sn);
 			}
+			
 		}
+		return;
 	}
 
 
