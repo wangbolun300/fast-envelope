@@ -8,6 +8,8 @@
 // If uncommented, the two functions may return -2 if 'd' is too close to zero, meaning that
 // the intersection point is close to infinity.
 #define USE_FILTER_FOR_DEGENERATE_CONFIGS
+bool trigger = 1;
+int shrinksize = 2;
 namespace fastEnvelope
 
 {
@@ -124,6 +126,9 @@ namespace fastEnvelope
 
 #ifdef USE_FILTER_FOR_DEGENERATE_CONFIGS
 		double deps = 5.1107127829973299e-015 * max1 * max2 * max5;
+		////////////////////////
+		if (trigger == 1) deps = deps / shrinksize;
+		////////////////////////
 		if (d <= deps && d >= -deps) return -2;
 #endif
 
@@ -165,7 +170,9 @@ namespace fastEnvelope
 		if (max6 < fpxcx) max6 = fpxcx;
 
 		double eps = 1.3865993466947057e-013 * max2 * max1 * max5 * max6 * max3 * max4;
-
+		////////////////////
+		if (trigger==1) eps=eps/shrinksize;
+		////////////////////
 		if ((det > eps)) return (d > 0) ? (1) : (-1);
 		if ((det < -eps)) return (d > 0) ? (-1) : (1);
 		return 0;
@@ -323,6 +330,9 @@ namespace fastEnvelope
 		if (max10 < fw3z) max10 = fw3z;
 
 		double deps = 8.8881169117764924e-014 * (((((max4 * max5) * max2) * max10) * max7) * max9);
+		////////////////////////
+		if (trigger == 1) deps = deps / shrinksize;
+		////////////////////////
 		if (d <= deps && d >= -deps) return -2;
 #endif
 
@@ -368,7 +378,9 @@ namespace fastEnvelope
 		if (max8 < fa32) max8 = fa32;
 
 		double eps = 3.4025182954957945e-012 * (((((((max1 * max3) * max2) * max5) * max7) * max4) * max6) * max8);
-
+		////////////////////
+		if (trigger == 1) eps = eps / shrinksize;
+		////////////////////
 		if ((det > eps)) return (d > 0) ? (1) : (-1);
 		if ((det < -eps)) return (d > 0) ? (-1) : (1);
 		return 0;

@@ -9,7 +9,7 @@
 #include <fastenvelope/Rational.hpp>
 
 
-int markhf = 0, markhf1 = 0, i_time = 10;
+int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
@@ -88,7 +88,8 @@ namespace fastEnvelope {
 		//std::cout << "triangle_intersection filter number " << filternumber1 << " tpi total number " << totalnumber1 << " percentage " << float(filternumber1) / float(totalnumber1) << std::endl;
 		//std::cout << "triangle_intersection filter number lpi -2 " << filternumberlpi2 << " percentage " << float(filternumberlpi2) / float(totalnumberlpi) << std::endl;
 		//std::cout << "triangle_intersection filter number tpi -2 " << filternumbertpi2 << " percentage " << float(filternumbertpi2) / float(totalnumbertpi+ totalnumber1) << std::endl;
-
+		std::cout << "lpi 1 " << float(after11)/float(after11+ after12+ after10) << " lpi -1 " << after12 / float(after11 + after12 + after10) << " lpi 0 " << after10 / float(after11 + after12 + after10) << " tot  " << after11 + after12 + after10 << std::endl;
+		std::cout << "tpi 1 " << after21 / float(after21 + after22 + after20) << " tpi -1 " << after22 / float(after21 + after22 + after20) << " tpi 0 " << after20 / float(after21 + after22 + after20) << " tot  " << after21 + after22 + after20<< std::endl;
 	}
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac)
 	{
@@ -514,6 +515,10 @@ namespace fastEnvelope {
 						s00, s01, s02, s10, s11, s12,
 						t00, t01, t02, t10, t11, t12, t20, t21, t22,
 						e00, e01, e02, e10, e11, e12, e20, e21, e22, check_rational);
+					if (ori == 1) after11++;
+					if (ori == -1) after12++;
+					if (ori == 0) after10++;
+					if (ori == -2) std::cout << "impossible thing happens in lpi" << std::endl;
 					if (ori == 1 || ori == 0) break;
 				}
 				if (ori == -1) return IN_PRISM;
@@ -608,7 +613,11 @@ namespace fastEnvelope {
 						Rational(envprism[i][p_face[INDEX[k]][0]][0]), Rational(envprism[i][p_face[INDEX[k]][0]][1]), Rational(envprism[i][p_face[INDEX[k]][0]][2]),
 						Rational(envprism[i][p_face[INDEX[k]][1]][0]), Rational(envprism[i][p_face[INDEX[k]][1]][1]), Rational(envprism[i][p_face[INDEX[k]][1]][2]),
 						Rational(envprism[i][p_face[INDEX[k]][2]][0]), Rational(envprism[i][p_face[INDEX[k]][2]][1]), Rational(envprism[i][p_face[INDEX[k]][2]][2]), check_rational);
+					if (ori == 1) after21++;
+					if (ori == -1) after22++;
+					if (ori == 0) after20++;
 					if (ori == 1 || ori == 0) break;
+					if (ori == -2) std::cout << "impossible thing happens in tpi" << std::endl;
 				}
 				if (ori == -1) return IN_PRISM;
 			}

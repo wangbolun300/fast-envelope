@@ -638,7 +638,8 @@ void test_in_wild() {
 	//////////////////////////////////////////////////////////////
 	eps = eps / shrink;
 	eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-
+	igl::Timer timer;
+	timer.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
@@ -649,7 +650,7 @@ void test_in_wild() {
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
 
 	}
-
+	std::cout << "time " << timer.getElapsedTimeInSec() << endl;
 
 
 
