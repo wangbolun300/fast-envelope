@@ -782,7 +782,7 @@ void test_in_wild() {
 
 
 	
-	if (ti.size() > 0) {
+	if (ti1.size() > 0) {
 		std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
 		int idx = 2;
