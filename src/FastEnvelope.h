@@ -41,6 +41,8 @@ namespace fastEnvelope {
 		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit);
 
 	private:
+		
+
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
 		std::vector<std::array<Vector3, 2>> cornerlist;
@@ -166,15 +168,14 @@ namespace fastEnvelope {
 
 		static arbitrary_precision::interval<arbitrary_precision::float_precision> converting_Scalar_to_arbitary(const Scalar &a, const int &i);
 		template<typename T>
-		static int orient3D_LPI_filtered_multiprecision(
-			T px, T py, T pz, T qx, T qy, T qz,
-			T rx, T ry, T rz, T sx, T sy, T sz, T tx, T ty, T tz,
-			T ax, T ay, T az, T bx, T by, T bz, T cx, T cy, T cz, const std::function<int(T)> &checker) {
-
-
-			T a11(px - qx);
-			T a12(py - qy);
-			T a13(pz - qz);
+		static bool orient3D_LPI_prefilter_multiprecision(
+			const T& px, const T& py, const T& pz, const T& qx, const T& qy, const T& qz,
+			const T& rx, const T& ry, const T& rz, const T& sx, const T& sy, const T& sz, const T& tx, const T& ty, const T& tz,
+			T& a11, T& a12, T& a13, T& d, const std::function<int(T)> &checker) {
+			
+			a11 = (px - qx);// TODO is that ok?
+			a12 = (py - qy);
+			a13 = (pz - qz);
 			T a21(sx - rx);
 			T a22(sy - ry);
 			T a23(sz - rz);
@@ -184,34 +185,33 @@ namespace fastEnvelope {
 			T a2233((a22 * a33) - (a23 * a32));
 			T a2133((a21 * a33) - (a23 * a31));
 			T a2132((a21 * a32) - (a22 * a31));
-			T d(((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
-			//std::cout << "d digits " << d.ref_lower()->precision() << std::endl;
-			//std::cout << "d  " << d << std::endl;
+			d = (((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
 			int flag1 = checker(d);
-			if (flag1 == -2) {
-				return 100;// not enough precision
+			if (flag1 == -2 || flag1 == 0) {
+				return false;// not enough precision
 			}
-			if (flag1 == 0) {
-				return -2;// not exist
-			}
-			// The almost static filter for 'd' might be moved here
-
-			T px_rx(px - rx);
-			T py_ry(py - ry);
-			T pz_rz(pz - rz);
-			T n((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
-
+		
+			return true;
+		}
+		template<typename T>
+		static int orient3D_LPI_postfilter(
+			const T& a11, const T& a12, const T& a13, const T& d,
+			const T& px, const T& py, const T& pz,
+			const T& ax, const T& ay, const T& az,
+			const T& bx, const T& by, const T& bz,
+			const T& cx, const T& cy, const T& cz, const std::function<int(T)> &checker) {
+			
 			T px_cx(px - cx);
 			T py_cy(py - cy);
 			T pz_cz(pz - cz);
 
-			T d11((d * px_cx) + (a11 * n));
+			T d11((d * px_cx) + (a11));
 			T d21(ax - cx);
 			T d31(bx - cx);
-			T d12((d * py_cy) + (a12 * n));
+			T d12((d * py_cy) + (a12));
 			T d22(ay - cy);
 			T d32(by - cy);
-			T d13((d * pz_cz) + (a13 * n));
+			T d13((d * pz_cz) + (a13));
 			T d23(az - cz);
 			T d33(bz - cz);
 
@@ -221,7 +221,7 @@ namespace fastEnvelope {
 			T d2331(d23 * d31);
 			T d2132(d21 * d32);
 			T d2231(d22 * d31);
-
+ 
 			T det(d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231));
 
 			int flag2 = checker(det);
@@ -229,23 +229,22 @@ namespace fastEnvelope {
 				return 100;// not enough precision
 			}
 			if (flag2 == 1) {
-				if (flag1 == 1) {
+				if (d > 0) {
 					return 1;
 				}
-				if (flag1 == -1) {
+				if (d < 0) {
 					return -1;
 				}
 			}
 			if (flag2 == -1) {
-				if (flag1 == 1) {
+				if (d > 0) {
 					return -1;
 				}
-				if (flag1 == -1) {
+				if (d < 0) {
 					return 1;
 				}
 			}
 			return 0;
-
 		}
 
 		template<typename T>

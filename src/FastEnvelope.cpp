@@ -442,22 +442,32 @@ namespace fastEnvelope {
 		return 0;
 	}
 
-
-	
-
-
-
+	struct INDEX {
+		int Pi;
+		std::vector<int> FACES;
+	};
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		int jm = 0, ori;
 		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
-		std::vector<int> INDEX;
-		int tot;
+		
 		if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
 									//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
 			return NOT_INTERSECTD;//not intersected
 		}
+		
+		int tot;
+		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
+			segpoint0[0], segpoint0[1], segpoint0[2],
+			segpoint1[0], segpoint1[1], segpoint1[2],
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+		INDEX index;
+		std::vector<INDEX> recompute;
 		for (int i = 0; i < envprism.size(); i++) {
 			if (jump.size() > 0) {
 				if (i == jump[jm]) {//TODO jump avoid vector
@@ -465,58 +475,46 @@ namespace fastEnvelope {
 					continue;
 				}
 			}
-			INDEX.clear();
+
+			index.FACES.clear();
 			tot = 0;
 			for (int j = 0; j < 8; j++) {
 				//ftimer2.start();
 				ori = ip_filtered::
-					orient3D_LPI_filtered(
-						segpoint0[0], segpoint0[1], segpoint0[2], segpoint1[0], segpoint1[1], segpoint1[2],
-						triangle[0][0], triangle[0][1], triangle[0][2], triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
-						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2], envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2], envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
-				
-				/////////////////////////////////////////
-				
-				
-				
-				/*if (ori == 0) {
-					if (markhf == 0) {
-						Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
-							t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]), 
-							t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]), 
-							t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
-							e00(envprism[i][p_face[j][0]][0]), e01(envprism[i][p_face[j][0]][1]), e02(envprism[i][p_face[j][0]][2]), 
-							e10(envprism[i][p_face[j][1]][0]), e11(envprism[i][p_face[j][1]][1]), e12(envprism[i][p_face[j][1]][2]),
-							e20(envprism[i][p_face[j][2]][0]), e21(envprism[i][p_face[j][2]][1]), e22(envprism[i][p_face[j][2]][2]);
-
-						ori = orient3D_LPI_filtered_multiprecision(
-							s00, s01, s02, s10, s11, s12,
-							t00, t01, t02, t10, t11, t12, t20, t21, t22,
-							e00, e01, e02, e10, e11, e12, e20, e21, e22, check_rational);
-
-						
+					orient3D_LPI_postfilter(
+						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						segpoint0[0], segpoint0[1], segpoint0[2],
+						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
+						envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
+						envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
 
 
-
-					}
-				}*/
-				
-				///////////////////////////////////////////
 				if (ori == 1) {
 					break;
 				}
 				if (ori == -2 || ori == 0) {
-					INDEX.push_back(j);
+					index.FACES.push_back(j);
 				}
-				
-				if (ori == -1) {
+
+				else if (ori == -1) {
 					tot++;
 				}
-				if (tot == 8) {
 
-					return IN_PRISM;
-				}
 			}
+			if (tot == 8) {
+
+				return IN_PRISM;
+			}
+
+			if (ori != 1) {
+				index.Pi = i;
+				recompute.push_back(index);
+			}
+		}
+
+		caution: no longer return -2, instead in pre
+
+
 			if (ori != 1) {
 				for (int k = 0; k < INDEX.size(); k++) {
 					Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
