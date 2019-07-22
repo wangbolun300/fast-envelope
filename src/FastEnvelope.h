@@ -167,6 +167,7 @@ namespace fastEnvelope {
 		}
 
 		static arbitrary_precision::interval<arbitrary_precision::float_precision> converting_Scalar_to_arbitary(const Scalar &a, const int &i);
+		public:
 		template<typename T>
 		static bool orient3D_LPI_prefilter_multiprecision(
 			const T& px, const T& py, const T& pz, const T& qx, const T& qy, const T& qz,
@@ -194,7 +195,7 @@ namespace fastEnvelope {
 			return true;
 		}
 		template<typename T>
-		static int orient3D_LPI_postfilter(
+		static int orient3D_LPI_postfilter_multiprecision(
 			const T& a11, const T& a12, const T& a13, const T& d,
 			const T& px, const T& py, const T& pz,
 			const T& ax, const T& ay, const T& az,
@@ -246,7 +247,7 @@ namespace fastEnvelope {
 			}
 			return 0;
 		}
-
+		public:
 		template<typename T>
 
 		static int orient3D_TPI_filtered_multiprecision(

@@ -459,13 +459,59 @@ namespace fastEnvelope {
 		
 		int tot;
 		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
-		ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
+		bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 			segpoint0[0], segpoint0[1], segpoint0[2],
 			segpoint1[0], segpoint1[1], segpoint1[2],
 			triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+
+		if (precom == false) {
+			Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
+				t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+				a11r, a12r, a13r, dr;
+			bool premulti = FastEnvelope::orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
+				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
+			for (int i = 0; i < envprism.size(); i++) {
+				if (jump.size() > 0) {
+					if (i == jump[jm]) {//TODO jump avoid vector
+						jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
+						continue;
+					}
+				}
+				tot = 0;
+				for (int j = 0; j < 8; j++) {
+					//ftimer2.start();
+					Rational 
+						e00(envprism[i][p_face[j][0]][0]), e01(envprism[i][p_face[j][0]][1]), e02(envprism[i][p_face[j][0]][2]),
+						e10(envprism[i][p_face[j][1]][0]), e11(envprism[i][p_face[j][1]][1]), e12(envprism[i][p_face[j][1]][2]),
+						e20(envprism[i][p_face[j][2]][0]), e21(envprism[i][p_face[j][2]][1]), e22(envprism[i][p_face[j][2]][2]);
+					ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
+						e00, e01, e02, e10, e11, e12,
+						e20, e21, e22, check_rational);
+
+					if (ori == 1 || ori == 0) {
+						break;
+					}
+
+					if (ori == -1) {
+						tot++;
+					}
+
+				}
+				if (tot == 8) {
+
+					return IN_PRISM;
+				}
+
+			}
+			return OUT_PRISM;
+		}
+
+
 		INDEX index;
 		std::vector<INDEX> recompute;
 		for (int i = 0; i < envprism.size(); i++) {
@@ -492,7 +538,7 @@ namespace fastEnvelope {
 				if (ori == 1) {
 					break;
 				}
-				if (ori == -2 || ori == 0) {
+				if (ori == 0) {
 					index.FACES.push_back(j);
 				}
 
@@ -512,33 +558,35 @@ namespace fastEnvelope {
 			}
 		}
 
-		caution: no longer return -2, instead in pre
+		Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
+			t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+			t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+			t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+			a11r, a12r, a13r, dr;
+		bool premulti = FastEnvelope::orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
+			t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
 
 
-			if (ori != 1) {
-				for (int k = 0; k < INDEX.size(); k++) {
-					Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
-						t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
-						t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
-						t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
-						e00(envprism[i][p_face[INDEX[k]][0]][0]), e01(envprism[i][p_face[INDEX[k]][0]][1]), e02(envprism[i][p_face[INDEX[k]][0]][2]),
-						e10(envprism[i][p_face[INDEX[k]][1]][0]), e11(envprism[i][p_face[INDEX[k]][1]][1]), e12(envprism[i][p_face[INDEX[k]][1]][2]),
-						e20(envprism[i][p_face[INDEX[k]][2]][0]), e21(envprism[i][p_face[INDEX[k]][2]][1]), e22(envprism[i][p_face[INDEX[k]][2]][2]);
-
-					ori = orient3D_LPI_filtered_multiprecision(
-						s00, s01, s02, s10, s11, s12,
-						t00, t01, t02, t10, t11, t12, t20, t21, t22,
-						e00, e01, e02, e10, e11, e12, e20, e21, e22, check_rational);
-					if (ori == 1) after11++;
-					if (ori == -1) after12++;
-					if (ori == 0) after10++;
-					if (ori == -2) std::cout << "impossible thing happens in lpi" << std::endl;
-					if (ori == 1 || ori == 0) break;
-				}
-				if (ori == -1) return IN_PRISM;
+		for (int k = 0; k < recompute.size(); k++) {
+			for (int j = 0; j < recompute[k].FACES.size(); j++) {
+				int in1 = recompute[k].Pi, in2 = recompute[k].FACES[j];
+				Rational
+					e00(envprism[in1][p_face[in2][0]][0]), e01(envprism[in1][p_face[in2][0]][1]), e02(envprism[in1][p_face[in2][0]][2]),
+					e10(envprism[in1][p_face[in2][1]][0]), e11(envprism[in1][p_face[in2][1]][1]), e12(envprism[in1][p_face[in2][1]][2]),
+					e20(envprism[in1][p_face[in2][2]][0]), e21(envprism[in1][p_face[in2][2]][1]), e22(envprism[in1][p_face[in2][2]][2]);
+				ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
+					e00, e01, e02, e10, e11, e12,
+					e20, e21, e22, check_rational);
+				if (ori == 1) after11++;
+				if (ori == -1) after12++;
+				if (ori == 0) after10++;
+				//if (ori == -2) std::cout << "impossible thing happens in lpi" << std::endl;
+				if (ori == 1 || ori == 0) break;
 			}
 
+			if (ori == -1) return IN_PRISM;
 		}
+
 		return OUT_PRISM;
 	}
 
