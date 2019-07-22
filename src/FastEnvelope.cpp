@@ -473,7 +473,7 @@ namespace fastEnvelope {
 				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
 				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
 				a11r, a12r, a13r, dr;
-			bool premulti = FastEnvelope::orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
+			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
 				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
 			for (int i = 0; i < envprism.size(); i++) {
 				if (jump.size() > 0) {
@@ -563,7 +563,7 @@ namespace fastEnvelope {
 			t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
 			t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
 			a11r, a12r, a13r, dr;
-		bool premulti = FastEnvelope::orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
+		bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
 			t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
 
 
