@@ -592,7 +592,6 @@ namespace fastEnvelope {
 
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
 		int jm = 0, ori;
-		std::vector<int> INDEX;
 		int tot;
 		bool in = is_3_triangle_cut(triangle, facet1, facet2);
 
@@ -600,90 +599,153 @@ namespace fastEnvelope {
 			return NOT_INTERSECTD;
 		}
 
+		Scalar n1, n2, n3, d, max1, max2, max3, max4, max5, max6, max7;
+		bool precom = ip_filtered::orient3D_TPI_prefilter(
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			facet1[0][0], facet1[0][1], facet1[0][2],
+			facet1[1][0], facet1[1][1], facet1[1][2],
+			facet1[2][0], facet1[2][1], facet1[2][2],
+			facet2[0][0], facet2[0][1], facet2[0][2],
+			facet2[1][0], facet2[1][1], facet2[1][2],
+			facet2[2][0], facet2[2][1], facet2[2][2], d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
 
+		if (precom == false) {
+			Rational 
+				t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+				
+				f100(facet1[0][0]), f101(facet1[0][1]), f102(facet1[0][2]),
+				f110(facet1[1][0]), f111(facet1[1][1]), f112(facet1[1][2]),
+				f120(facet1[2][0]), f121(facet1[2][1]), f122(facet1[2][2]),
+
+				f200(facet2[0][0]), f201(facet2[0][1]), f202(facet2[0][2]),
+				f210(facet2[1][0]), f211(facet2[1][1]), f212(facet2[1][2]),
+				f220(facet2[2][0]), f221(facet2[2][1]), f222(facet2[2][2]),
+				dr, n1r, n2r, n3r;
+			bool premulti = orient3D_TPI_prefilter_multiprecision(t00, t01, t02, t10, t11, t12, t20, t21, t22,
+				f100, f101, f102, f110, f111, f112, f120, f121, f122,
+				f200, f201, f202, f210, f211, f212, f220, f221, f222,
+				dr, n1r, n2r, n3r, check_rational);
+			for (int i = 0; i < envprism.size(); i++) {
+				if (jump.size() > 0) {
+					if (i == jump[jm]) {//TODO jump avoid vector
+						jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
+						continue;
+					}
+				}
+				tot = 0;
+				for (int j = 0; j < 8; j++) {
+					//ftimer2.start();
+					Rational
+						e00(envprism[i][p_face[j][0]][0]), e01(envprism[i][p_face[j][0]][1]), e02(envprism[i][p_face[j][0]][2]),
+						e10(envprism[i][p_face[j][1]][0]), e11(envprism[i][p_face[j][1]][1]), e12(envprism[i][p_face[j][1]][2]),
+						e20(envprism[i][p_face[j][2]][0]), e21(envprism[i][p_face[j][2]][1]), e22(envprism[i][p_face[j][2]][2]);
+					ori = orient3D_TPI_postfilter_multiprecision(dr, n1r, n2r, n3r, e00, e01, e02, e10, e11, e12, e20, e21, e22,check_rational);
+
+					if (ori == 1 || ori == 0) {
+						break;
+					}
+
+					if (ori == -1) {
+						tot++;
+					}
+
+				}
+				if (tot == 8) {
+
+					return IN_PRISM;
+				}
+
+			}
+			return OUT_PRISM;
+		}
+
+		INDEX index;
+		std::vector<INDEX> recompute;
 		for (int i = 0; i < envprism.size(); i++) {
 			if (jump.size() > 0) {
 				if (i == jump[jm]) {//TODO jump avoid vector
 					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
 					continue;
 				}
-
 			}
-			INDEX.clear();
+
+			index.FACES.clear();
 			tot = 0;
 			for (int j = 0; j < 8; j++) {
-				ori = ip_filtered::orient3D_TPI_filtered(triangle[0][0], triangle[0][1], triangle[0][2],
-					triangle[1][0], triangle[1][1], triangle[1][2],
-					triangle[2][0], triangle[2][1], triangle[2][2],
-					facet1[0][0], facet1[0][1], facet1[0][2],
-					facet1[1][0], facet1[1][1], facet1[1][2],
-					facet1[2][0], facet1[2][1], facet1[2][2],
-					facet2[0][0], facet2[0][1], facet2[0][2],
-					facet2[1][0], facet2[1][1], facet2[1][2],
-					facet2[2][0], facet2[2][1], facet2[2][2],
-					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
-					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
-					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
+				//ftimer2.start();
+				ori = ip_filtered::
+					orient3D_TPI_postfilter(
+						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
+						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
+						envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
+						envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
 
-				////////////////////////////////////////////////////////////////////////
-				/*if (ori == 0) {
-					ori = orient3D_TPI_filtered_multiprecision(
-						Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
-						Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
-						Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
-						Rational(facet1[0][0]), Rational(facet1[0][1]), Rational(facet1[0][2]),
-						Rational(facet1[1][0]), Rational(facet1[1][1]), Rational(facet1[1][2]),
-						Rational(facet1[2][0]), Rational(facet1[2][1]), Rational(facet1[2][2]),
-						Rational(facet2[0][0]), Rational(facet2[0][1]), Rational(facet2[0][2]),
-						Rational(facet2[1][0]), Rational(facet2[1][1]), Rational(facet2[1][2]),
-						Rational(facet2[2][0]), Rational(facet2[2][1]), Rational(facet2[2][2]),
-						Rational(envprism[i][p_face[j][0]][0]), Rational(envprism[i][p_face[j][0]][1]), Rational(envprism[i][p_face[j][0]][2]),
-						Rational(envprism[i][p_face[j][1]][0]), Rational(envprism[i][p_face[j][1]][1]), Rational(envprism[i][p_face[j][1]][2]),
-						Rational(envprism[i][p_face[j][2]][0]), Rational(envprism[i][p_face[j][2]][1]), Rational(envprism[i][p_face[j][2]][2]), check_rational);
-				}*/
-
-
-				////////////////////////////////////////////////////////////////////////
 
 				if (ori == 1) {
 					break;
 				}
-				if (ori == -2 || ori == 0) {
-					INDEX.push_back(j);
+				if (ori == 0) {
+					index.FACES.push_back(j);
 				}
 
-				if (ori == -1) {
+				else if (ori == -1) {
 					tot++;
 				}
-				if (tot == 8) {
 
-					return IN_PRISM;
-				}
 			}
+			if (tot == 8) {
+
+				return IN_PRISM;
+			}
+
 			if (ori != 1) {
-				for (int k = 0; k < INDEX.size(); k++) {
-					ori = orient3D_TPI_filtered_multiprecision(
-						Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
-						Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
-						Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
-						Rational(facet1[0][0]), Rational(facet1[0][1]), Rational(facet1[0][2]),
-						Rational(facet1[1][0]), Rational(facet1[1][1]), Rational(facet1[1][2]),
-						Rational(facet1[2][0]), Rational(facet1[2][1]), Rational(facet1[2][2]),
-						Rational(facet2[0][0]), Rational(facet2[0][1]), Rational(facet2[0][2]),
-						Rational(facet2[1][0]), Rational(facet2[1][1]), Rational(facet2[1][2]),
-						Rational(facet2[2][0]), Rational(facet2[2][1]), Rational(facet2[2][2]),
-						Rational(envprism[i][p_face[INDEX[k]][0]][0]), Rational(envprism[i][p_face[INDEX[k]][0]][1]), Rational(envprism[i][p_face[INDEX[k]][0]][2]),
-						Rational(envprism[i][p_face[INDEX[k]][1]][0]), Rational(envprism[i][p_face[INDEX[k]][1]][1]), Rational(envprism[i][p_face[INDEX[k]][1]][2]),
-						Rational(envprism[i][p_face[INDEX[k]][2]][0]), Rational(envprism[i][p_face[INDEX[k]][2]][1]), Rational(envprism[i][p_face[INDEX[k]][2]][2]), check_rational);
-					if (ori == 1) after21++;
-					if (ori == -1) after22++;
-					if (ori == 0) after20++;
-					if (ori == 1 || ori == 0) break;
-					if (ori == -2) std::cout << "impossible thing happens in tpi" << std::endl;
-				}
-				if (ori == -1) return IN_PRISM;
+				index.Pi = i;
+				recompute.push_back(index);
+			}
+		}
+
+
+		Rational
+			t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+			t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+			t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+
+			f100(facet1[0][0]), f101(facet1[0][1]), f102(facet1[0][2]),
+			f110(facet1[1][0]), f111(facet1[1][1]), f112(facet1[1][2]),
+			f120(facet1[2][0]), f121(facet1[2][1]), f122(facet1[2][2]),
+
+			f200(facet2[0][0]), f201(facet2[0][1]), f202(facet2[0][2]),
+			f210(facet2[1][0]), f211(facet2[1][1]), f212(facet2[1][2]),
+			f220(facet2[2][0]), f221(facet2[2][1]), f222(facet2[2][2]),
+			dr, n1r, n2r, n3r;
+		bool premulti = orient3D_TPI_prefilter_multiprecision(t00, t01, t02, t10, t11, t12, t20, t21, t22,
+			f100, f101, f102, f110, f111, f112, f120, f121, f122,
+			f200, f201, f202, f210, f211, f212, f220, f221, f222,
+			dr, n1r, n2r, n3r, check_rational);
+
+
+		for (int k = 0; k < recompute.size(); k++) {
+			for (int j = 0; j < recompute[k].FACES.size(); j++) {
+				int in1 = recompute[k].Pi, in2 = recompute[k].FACES[j];
+				Rational
+					e00(envprism[in1][p_face[in2][0]][0]), e01(envprism[in1][p_face[in2][0]][1]), e02(envprism[in1][p_face[in2][0]][2]),
+					e10(envprism[in1][p_face[in2][1]][0]), e11(envprism[in1][p_face[in2][1]][1]), e12(envprism[in1][p_face[in2][1]][2]),
+					e20(envprism[in1][p_face[in2][2]][0]), e21(envprism[in1][p_face[in2][2]][1]), e22(envprism[in1][p_face[in2][2]][2]);
+				ori = orient3D_TPI_postfilter_multiprecision(dr, n1r, n2r, n3r,
+					e00, e01, e02, e10, e11, e12,
+					e20, e21, e22, check_rational);
+				if (ori == 1) after11++;
+				if (ori == -1) after12++;
+				if (ori == 0) after10++;
+				//if (ori == -2) std::cout << "impossible thing happens in lpi" << std::endl;
+				if (ori == 1 || ori == 0) break;
 			}
 
+			if (ori == -1) return IN_PRISM;
 		}
 
 		return OUT_PRISM;
@@ -838,80 +900,169 @@ namespace fastEnvelope {
 			srand(int(time(0)));
 			n = { {Vector3(rand(),rand(),rand()) } };
 		}
-		int o1 = ip_filtered::orient3D_TPI_filtered(
+		Scalar d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7;
+		bool pre = ip_filtered::
+			orient3D_TPI_prefilter(
 			triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			f1[0][0], f1[0][1], f1[0][2], f1[1][0], f1[1][1], f1[1][2], f1[2][0], f1[2][1], f1[2][2],
 			f2[0][0], f2[0][1], f2[0][2], f2[1][0], f2[1][1], f2[1][2], f2[2][0], f2[2][1], f2[2][2],
-			n[0], n[1], n[2],
+				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
+
+		if (pre == false) {
+			Rational
+				t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+
+				f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
+				f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
+				f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
+
+				f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
+				f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
+				f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
+
+				nr0(n[0]), nr1(n[1]), nr2(n[2]),
+
+				dr, n1r, n2r, n3r;
+			bool premulti = orient3D_TPI_prefilter_multiprecision(
+				t00, t01, t02, t10, t11, t12, t20, t21, t22,
+				f100, f101, f102, f110, f111, f112, f120, f121, f122,
+				f200, f201, f202, f210, f211, f212, f220, f221, f222,
+				dr, n1r, n2r, n3r,check_rational);
+			if (premulti == false) return false;
+			
+			int o1 = orient3D_TPI_postfilter_multiprecision(
+				dr, n1r, n2r, n3r,
+				nr0, nr1, nr2,
+				t00, t01, t02,
+				t10, t11, t12, check_rational);
+			if (o1 == 0) return false;
+
+			int o2= orient3D_TPI_postfilter_multiprecision(
+				dr, n1r, n2r, n3r,
+				nr0, nr1, nr2,
+				t10, t11, t12,
+				t20, t21, t22, check_rational);
+			if (o2 == 0 || o1 + o2 == 0) return false;
+
+			int o3 = orient3D_TPI_postfilter_multiprecision(
+				dr, n1r, n2r, n3r,
+				nr0, nr1, nr2,
+				t20, t21, t22,
+				t00, t01, t02, check_rational);
+			if (o3 == 0 || o1 + o3 == 0) return false;
+
+			return true;
+		}
+
+		bool premulti = false;
+		int o1 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
 			triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2]);
+		if (o1 == 0) {
+			Rational
+				t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
 
-		int o2 = ip_filtered::orient3D_TPI_filtered(
-			triangle[0][0], triangle[0][1], triangle[0][2],
-			triangle[1][0], triangle[1][1], triangle[1][2],
-			triangle[2][0], triangle[2][1], triangle[2][2],
-			f1[0][0], f1[0][1], f1[0][2], f1[1][0], f1[1][1], f1[1][2], f1[2][0], f1[2][1], f1[2][2],
-			f2[0][0], f2[0][1], f2[0][2], f2[1][0], f2[1][1], f2[1][2], f2[2][0], f2[2][1], f2[2][2],
-			n[0], n[1], n[2],
+				f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
+				f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
+				f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
+
+				f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
+				f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
+				f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
+
+				nr0(n[0]), nr1(n[1]), nr2(n[2]),
+
+				dr, n1r, n2r, n3r;
+			premulti = orient3D_TPI_prefilter_multiprecision(
+				t00, t01, t02, t10, t11, t12, t20, t21, t22,
+				f100, f101, f102, f110, f111, f112, f120, f121, f122,
+				f200, f201, f202, f210, f211, f212, f220, f221, f222,
+				dr, n1r, n2r, n3r, check_rational);
+			o1 = orient3D_TPI_postfilter_multiprecision(
+				dr, n1r, n2r, n3r,
+				nr0, nr1, nr2,
+				t00, t01, t02,
+				t10, t11, t12, check_rational);
+		}
+		if (o1 == 0) return false;
+
+		int o2 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
 			triangle[1][0], triangle[1][1], triangle[1][2],
 			triangle[2][0], triangle[2][1], triangle[2][2]);
+		if (o2 == 0) {
+			if (premulti == false) {
+				Rational
+					t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+					t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+					t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
 
-		int o3 = ip_filtered::orient3D_TPI_filtered(
-			triangle[0][0], triangle[0][1], triangle[0][2],
-			triangle[1][0], triangle[1][1], triangle[1][2],
-			triangle[2][0], triangle[2][1], triangle[2][2],
-			f1[0][0], f1[0][1], f1[0][2], f1[1][0], f1[1][1], f1[1][2], f1[2][0], f1[2][1], f1[2][2],
-			f2[0][0], f2[0][1], f2[0][2], f2[1][0], f2[1][1], f2[1][2], f2[2][0], f2[2][1], f2[2][2],
-			n[0], n[1], n[2],
+					f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
+					f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
+					f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
+
+					f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
+					f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
+					f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
+
+					nr0(n[0]), nr1(n[1]), nr2(n[2]),
+
+					dr, n1r, n2r, n3r;
+				premulti = orient3D_TPI_prefilter_multiprecision(
+					t00, t01, t02, t10, t11, t12, t20, t21, t22,
+					f100, f101, f102, f110, f111, f112, f120, f121, f122,
+					f200, f201, f202, f210, f211, f212, f220, f221, f222,
+					dr, n1r, n2r, n3r, check_rational);
+			}
+			o2 = orient3D_TPI_postfilter_multiprecision(
+				dr, n1r, n2r, n3r,
+				nr0, nr1, nr2,
+				t10, t11, t12,
+				t20, t21, t22, check_rational);
+		}
+		if (o2 == 0 || o1 + o2 == 0) return false;
+
+		int o3 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			triangle[0][0], triangle[0][1], triangle[0][2]);
-		
-
-		////////////////////////////////////////////////////////////////////////////
-		if (o1 == 0) {
-			o1 = orient3D_TPI_filtered_multiprecision(Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
-				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
-				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
-				Rational(f1[0][0]), Rational(f1[0][1]), Rational(f1[0][2]), Rational(f1[1][0]), Rational(f1[1][1]), Rational(f1[1][2]), Rational(f1[2][0]), Rational(f1[2][1]), Rational(f1[2][2]),
-				Rational(f2[0][0]), Rational(f2[0][1]), Rational(f2[0][2]), Rational(f2[1][0]), Rational(f2[1][1]), Rational(f2[1][2]), Rational(f2[2][0]), Rational(f2[2][1]), Rational(f2[2][2]),
-				Rational(n[0]), Rational(n[1]), Rational(n[2]),
-				Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
-				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]), check_rational);
-		}
-		if (o2 == 0) {
-			o2= orient3D_TPI_filtered_multiprecision(Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
-				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
-				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
-				Rational(f1[0][0]), Rational(f1[0][1]), Rational(f1[0][2]), Rational(f1[1][0]), Rational(f1[1][1]), Rational(f1[1][2]), Rational(f1[2][0]), Rational(f1[2][1]), Rational(f1[2][2]),
-				Rational(f2[0][0]), Rational(f2[0][1]), Rational(f2[0][2]), Rational(f2[1][0]), Rational(f2[1][1]), Rational(f2[1][2]), Rational(f2[2][0]), Rational(f2[2][1]), Rational(f2[2][2]),
-				Rational(n[0]), Rational(n[1]), Rational(n[2]),
-				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
-				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]), check_rational);
-		}
 		if (o3 == 0) {
-			o3 = orient3D_TPI_filtered_multiprecision(Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
-				Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
-				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
-				Rational(f1[0][0]), Rational(f1[0][1]), Rational(f1[0][2]), Rational(f1[1][0]), Rational(f1[1][1]), Rational(f1[1][2]), Rational(f1[2][0]), Rational(f1[2][1]), Rational(f1[2][2]),
-				Rational(f2[0][0]), Rational(f2[0][1]), Rational(f2[0][2]), Rational(f2[1][0]), Rational(f2[1][1]), Rational(f2[1][2]), Rational(f2[2][0]), Rational(f2[2][1]), Rational(f2[2][2]),
-				Rational(n[0]), Rational(n[1]), Rational(n[2]),
-				Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
-				Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]), check_rational);
+			if (premulti == false) {
+				Rational
+					t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+					t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+					t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+
+					f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
+					f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
+					f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
+
+					f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
+					f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
+					f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
+
+					nr0(n[0]), nr1(n[1]), nr2(n[2]),
+
+					dr, n1r, n2r, n3r;
+				premulti = orient3D_TPI_prefilter_multiprecision(
+					t00, t01, t02, t10, t11, t12, t20, t21, t22,
+					f100, f101, f102, f110, f111, f112, f120, f121, f122,
+					f200, f201, f202, f210, f211, f212, f220, f221, f222,
+					dr, n1r, n2r, n3r, check_rational);
+			}
+			o3 = orient3D_TPI_postfilter_multiprecision(
+				dr, n1r, n2r, n3r,
+				nr0, nr1, nr2,
+				t20, t21, t22,
+				t00, t01, t02, check_rational);
 		}
-
-		//////////////////////////////////////////////////////////////////////////////
-
-
-
-		if (o1 == 1 && o2 == 1 && o3 == 1) {// interpoint in the interior of triangle
-			return 1;
-		}
-		if (o1 == -1 && o2 == -1 && o3 == -1) {// interpoint in the interior of triangle
-			return 1;
-		}
-		return 0;
+		if (o3 == 0 || o1 + o3 == 0) return false;
+		
+		return true;
 	}
 
 	int FastEnvelope::tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
