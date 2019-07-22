@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100349\\100349.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100349\\menouFinal5.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100894\\100894.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100894\\Light.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -633,7 +633,7 @@ void test_in_wild() {
 
 	Scalar shrink = 10;
 	Scalar eps = 1e-3;
-	const int spac = 10;// space subdivision parameter
+	const int spac = 30;// space subdivision parameter
 	const int fn = triangles.size();//test face number
 	//////////////////////////////////////////////////////////////
 	eps = eps / shrink;

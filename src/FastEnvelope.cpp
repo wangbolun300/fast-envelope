@@ -958,27 +958,30 @@ namespace fastEnvelope {
 			return true;
 		}
 
+		Rational
+			t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+			t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+			t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+
+			f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
+			f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
+			f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
+
+			f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
+			f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
+			f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
+
+			nr0(n[0]), nr1(n[1]), nr2(n[2]),
+
+			dr, n1r, n2r, n3r;
+
+
 		bool premulti = false;
 		int o1 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
 			triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2]);
 		if (o1 == 0) {
-			Rational
-				t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
-				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
-				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
-
-				f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
-				f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
-				f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
-
-				f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
-				f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
-				f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
-
-				nr0(n[0]), nr1(n[1]), nr2(n[2]),
-
-				dr, n1r, n2r, n3r;
+			
 			premulti = orient3D_TPI_prefilter_multiprecision(
 				t00, t01, t02, t10, t11, t12, t20, t21, t22,
 				f100, f101, f102, f110, f111, f112, f120, f121, f122,
@@ -997,22 +1000,7 @@ namespace fastEnvelope {
 			triangle[2][0], triangle[2][1], triangle[2][2]);
 		if (o2 == 0) {
 			if (premulti == false) {
-				Rational
-					t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
-					t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
-					t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
-
-					f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
-					f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
-					f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
-
-					f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
-					f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
-					f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
-
-					nr0(n[0]), nr1(n[1]), nr2(n[2]),
-
-					dr, n1r, n2r, n3r;
+			
 				premulti = orient3D_TPI_prefilter_multiprecision(
 					t00, t01, t02, t10, t11, t12, t20, t21, t22,
 					f100, f101, f102, f110, f111, f112, f120, f121, f122,
@@ -1032,22 +1020,7 @@ namespace fastEnvelope {
 			triangle[0][0], triangle[0][1], triangle[0][2]);
 		if (o3 == 0) {
 			if (premulti == false) {
-				Rational
-					t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
-					t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
-					t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
-
-					f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
-					f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
-					f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
-
-					f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
-					f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
-					f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
-
-					nr0(n[0]), nr1(n[1]), nr2(n[2]),
-
-					dr, n1r, n2r, n3r;
+				
 				premulti = orient3D_TPI_prefilter_multiprecision(
 					t00, t01, t02, t10, t11, t12, t20, t21, t22,
 					f100, f101, f102, f110, f111, f112, f120, f121, f122,
