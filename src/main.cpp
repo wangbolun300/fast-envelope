@@ -693,7 +693,7 @@ void test_in_wild() {
 
 	for (int i = 0; i < fn; i++) {
 		tri = triangles[i];
-		l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 30;
+		l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
 		//l1 = (tri[0] - tri[1]).norm() / 30;
 		pos3[i]=fast_envelope.sample_triangle_outside(tri, l1);
 	}
@@ -771,6 +771,33 @@ void test_in_wild() {
 	}
 
 
+	for (int j = 0; j < irt; j++) {
+		int howmany = 0;
+		ti1.resize(0);
+		pos4.resize(ti.size());
+		for (int i = 0; i < ti.size(); i++) {
+			tri[0] = triangles[ti[i]][2];
+			tri[1] = triangles[ti[i]][1];
+			tri[2] = triangles[ti[i]][0];
+			l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / lth[j];
+
+			pos4[i] = fast_envelope.sample_triangle_outside(tri, l1);
+			if (pos4[i] == 0) {
+				howmany++;
+				ti1.push_back(ti[i]);
+			}
+
+		}
+		if (ti1.size() != 0) {
+			cout << "the ith iteration " << j << endl;
+			cout << "how many differences " << howmany << endl;
+			ti = ti1;
+		}
+		else {
+			cout << "kill all the different cases";
+			break;
+		};
+	}
 
 
 
@@ -785,7 +812,7 @@ void test_in_wild() {
 	if (ti1.size() > 0) {
 		std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-		int idx = 2;
+		int idx = 1;
 		std::cout << "output NO. " << ti[idx] << endl;
 		for (int i = 0; i < 3; i++) {
 
