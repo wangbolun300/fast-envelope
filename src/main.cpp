@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100894\\100894.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100894\\Light.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100339\\100339.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100339\\Stonehenge_Piece1_X1.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -740,11 +740,11 @@ void test_in_wild() {
 	
 	cout << "\nstarting iteration: " << nbr << endl;
 
-	const int irt = 11;
+	const int irt = 12;
 	std::vector<bool> pos4;
 	vector<int> ti,ti1;//triangle index
 	ti = trindex2;
-	int lth[irt] = { 60,100,200,400,600,800,1000,2000,2500,5000,10000};
+	int lth[irt] = { 60,100,200,400,600,800,1000,2000,2500,5000,10000,20000};
 	for (int j = 0; j < irt; j++) {
 		int howmany = 0;
 		ti1.resize(0);
