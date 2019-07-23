@@ -7,7 +7,7 @@
 #include <fastenvelope/ip_filtered.h>
 #include <arbitraryprecision/fprecision.h>
 #include <fastenvelope/Rational.hpp>
-
+#include<map>
 
 int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
@@ -26,20 +26,35 @@ static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 		}
 };
 
-static const std::array<std::vector<int>, 8> pface_not_related = {
-	{
-		{2},
-	{1},
-	{5,6,7},
-	{6,7,8},
-	{3,7,8},
-	{3,4,8},
-	{3,4,5},
-	{4,5,6}
 
-		}
+static const std::map<std::array<int, 2>, std::array<int, 2>>prism_map = {
+		{
+			{{0,2},{0,1}},
+	{{0,3},{1,2}},
+	{{0,4},{2,3}},
+	{{0,5},{3,4}},
+	{{0,6},{4,5}},
+	{{0,7},{0,5}},
+	{{1,2},{6,7}},
+	{{1,3},{7,8}},
+	{{1,4},{8,9}},
+	{{1,5},{9,10}},
+	{{1,6},{10,11}},
+	{{1,7},{6,11}},
+	{{2,3},{1,7}},
+	{{2,7},{0,6}},
+	{{3,4},{2,8}},
+	{{4,5},{3,9}},
+	{{5,6},{4,10}},
+	{{6,7},{5,11}}
 
+
+	}
 };
+
+
+
+
 
 static const   std::function<int(double)> check_double = [](double v) {
 	if (fabs(v) < 1e-10)
@@ -434,44 +449,40 @@ namespace fastEnvelope {
 			for (int j = i + 1; j < listsize; j++) {
 				//check triangle{ { envprism[list[i][0]][p_triangle[list[i][1]][list[i][2]][0]], ...[1],...[2] } } and triangle{ { envprism[list[j][0]][p_triangle[list[j][1]][list[j][2]][0]], ...[1],...[2] } }
 				//and T
+				if (inter_ijk_list[i][0] != inter_ijk_list[j][0]) {//belong to two different prisms
+					jump.clear();
+					jump.emplace_back(inter_ijk_list[i][0]);
+					jump.emplace_back(inter_ijk_list[j][0]);
 
+					int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
+						{ { envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][0]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][1]],envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][2]] } },
+						{ { envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][0]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][1]],envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][2]] } },
+						 envprism, jump);
 
-			}
-		}
+					if (inter2 == 1) {
 
+						return 1;//out
+					}
+				}
+				else {//belong to one same prism
+					std::map<std::array<int, 2>, std::array<int, 2>>::iterator iter = prism_map.find({ inter_ijk_list[i][1],inter_ijk_list[j][1] });
+					if (iter->second[1] != 0) {//find map
+						jump.clear();
+						jump.emplace_back(inter_ijk_list[i][0]);
+						//the segment is envprism[inter_ijk_list[i][0]][iter->second[0]],envprism[inter_ijk_list[i][0]][iter->second[1]]
+						int inter2 = Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(envprism[inter_ijk_list[i][0]][iter->second[0]], envprism[inter_ijk_list[i][0]][iter->second[1]], triangle, envprism, jump);
+						if (inter2 == 1) {
 
-
-
-
-					for (int e = 0; e < inter_ijk_list.size(); e++) {
-						for (int f = inter_ijk_list[e][2]; f < p_triangle[inter_ijk_list[e][1]].size(); f++) {
-							tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2],
-								envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]);
-							if (tti == CUT_COPLANAR) {
-								break;
-							}
-							if (tti == CUT_EMPTY) {
-								continue;
-							}
-							jump.clear();
-							jump.emplace_back(inter_ijk_list[e][0]);
-							jump.emplace_back(i);
-
-							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
-								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
-								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
-
-							if (inter2 == 1) {
-
-								return 1;//out
-							}
+							return 1;//out
 						}
 					}
-					inter_ijk_list.emplace_back(Vector3i(i, j, c));
-					break;
-				}//each triangle of the facet
+
+				}
+
+
 			}
 		}
+
 
 		return 0;
 	}
@@ -520,6 +531,148 @@ namespace fastEnvelope {
 				for (int j = 0; j < 8; j++) {
 					//ftimer2.start();
 					Rational 
+						e00(envprism[i][p_face[j][0]][0]), e01(envprism[i][p_face[j][0]][1]), e02(envprism[i][p_face[j][0]][2]),
+						e10(envprism[i][p_face[j][1]][0]), e11(envprism[i][p_face[j][1]][1]), e12(envprism[i][p_face[j][1]][2]),
+						e20(envprism[i][p_face[j][2]][0]), e21(envprism[i][p_face[j][2]][1]), e22(envprism[i][p_face[j][2]][2]);
+					ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
+						e00, e01, e02, e10, e11, e12,
+						e20, e21, e22, check_rational);
+
+					if (ori == 1 || ori == 0) {
+						break;
+					}
+
+					if (ori == -1) {
+						tot++;
+					}
+
+				}
+				if (tot == 8) {
+
+					return IN_PRISM;
+				}
+
+			}
+			return OUT_PRISM;
+		}
+
+
+		INDEX index;
+		std::vector<INDEX> recompute;
+		for (int i = 0; i < envprism.size(); i++) {
+			if (jump.size() > 0) {
+				if (i == jump[jm]) {//TODO jump avoid vector
+					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
+					continue;
+				}
+			}
+
+			index.FACES.clear();
+			tot = 0;
+			for (int j = 0; j < 8; j++) {
+				//ftimer2.start();
+				ori = ip_filtered::
+					orient3D_LPI_postfilter(
+						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						segpoint0[0], segpoint0[1], segpoint0[2],
+						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
+						envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
+						envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
+
+
+				if (ori == 1) {
+					break;
+				}
+				if (ori == 0) {
+					index.FACES.push_back(j);
+				}
+
+				else if (ori == -1) {
+					tot++;
+				}
+
+			}
+			if (tot == 8) {
+
+				return IN_PRISM;
+			}
+
+			if (ori != 1) {
+				index.Pi = i;
+				recompute.push_back(index);
+			}
+		}
+
+		Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
+			t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+			t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+			t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+			a11r, a12r, a13r, dr;
+		bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
+			t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
+
+
+		for (int k = 0; k < recompute.size(); k++) {
+			for (int j = 0; j < recompute[k].FACES.size(); j++) {
+				int in1 = recompute[k].Pi, in2 = recompute[k].FACES[j];
+				Rational
+					e00(envprism[in1][p_face[in2][0]][0]), e01(envprism[in1][p_face[in2][0]][1]), e02(envprism[in1][p_face[in2][0]][2]),
+					e10(envprism[in1][p_face[in2][1]][0]), e11(envprism[in1][p_face[in2][1]][1]), e12(envprism[in1][p_face[in2][1]][2]),
+					e20(envprism[in1][p_face[in2][2]][0]), e21(envprism[in1][p_face[in2][2]][1]), e22(envprism[in1][p_face[in2][2]][2]);
+				ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
+					e00, e01, e02, e10, e11, e12,
+					e20, e21, e22, check_rational);
+				if (ori == 1) after11++;
+				if (ori == -1) after12++;
+				if (ori == 0) after10++;
+				//if (ori == -2) std::cout << "impossible thing happens in lpi" << std::endl;
+				if (ori == 1 || ori == 0) break;
+			}
+
+			if (ori == -1) return IN_PRISM;
+		}
+
+		return OUT_PRISM;
+	}
+	int FastEnvelope::Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
+		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
+		int jm = 0, ori;
+		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
+
+		if (inter == CUT_COPLANAR || inter == CUT_EMPTY) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
+									//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
+			return NOT_INTERSECTD;//not intersected
+		}
+
+		int tot;
+		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
+			segpoint0[0], segpoint0[1], segpoint0[2],
+			segpoint1[0], segpoint1[1], segpoint1[2],
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+
+		if (precom == false) {
+			Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
+				t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
+				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
+				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+				a11r, a12r, a13r, dr;
+			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
+				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
+			for (int i = 0; i < envprism.size(); i++) {
+				if (jump.size() > 0) {
+					if (i == jump[jm]) {//TODO jump avoid vector
+						jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
+						continue;
+					}
+				}
+				tot = 0;
+				for (int j = 0; j < 8; j++) {
+					//ftimer2.start();
+					Rational
 						e00(envprism[i][p_face[j][0]][0]), e01(envprism[i][p_face[j][0]][1]), e02(envprism[i][p_face[j][0]][2]),
 						e10(envprism[i][p_face[j][1]][0]), e11(envprism[i][p_face[j][1]][1]), e12(envprism[i][p_face[j][1]][2]),
 						e20(envprism[i][p_face[j][2]][0]), e21(envprism[i][p_face[j][2]][1]), e22(envprism[i][p_face[j][2]][2]);

@@ -142,6 +142,8 @@ namespace fastEnvelope {
 		static int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 
+		static int Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
+			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 
 
 		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
