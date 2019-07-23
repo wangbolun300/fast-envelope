@@ -25,6 +25,22 @@ static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 
 		}
 };
+
+static const std::array<std::vector<int>, 8> pface_not_related = {
+	{
+		{2},
+	{1},
+	{5,6,7},
+	{6,7,8},
+	{3,7,8},
+	{3,4,8},
+	{3,4,5},
+	{4,5,6}
+
+		}
+
+};
+
 static const   std::function<int(double)> check_double = [](double v) {
 	if (fabs(v) < 1e-10)
 		return -2;
