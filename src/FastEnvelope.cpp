@@ -407,6 +407,24 @@ namespace fastEnvelope {
 						std::cout << "intersection predicate wrong1, record " << record1 << std::endl;
 
 					}
+					inter_ijk_list.emplace_back(Vector3i(i, j, c));
+				}
+			}
+		}
+
+		int listsize = inter_ijk_list.size();
+
+		for (int i = 0; i < listsize; i++) {
+			for (int j = i + 1; j < listsize; j++) {
+				//check triangle{ { envprism[list[i][0]][p_triangle[list[i][1]][list[i][2]][0]], ...[1],...[2] } } and triangle{ { envprism[list[j][0]][p_triangle[list[j][1]][list[j][2]][0]], ...[1],...[2] } }
+				//and T
+
+
+			}
+		}
+
+
+
 
 
 					for (int e = 0; e < inter_ijk_list.size(); e++) {
