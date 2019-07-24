@@ -27,33 +27,96 @@ static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 };
 
 
-static  std::map<std::array<int, 2>, std::array<int, 2>>prism_map = {
-		{
-			{{0,2},{0,1}},
-	{{0,3},{1,2}},
-	{{0,4},{2,3}},
-	{{0,5},{3,4}},
-	{{0,6},{4,5}},
-	{{0,7},{0,5}},
-	{{1,2},{6,7}},
-	{{1,3},{7,8}},
-	{{1,4},{8,9}},
-	{{1,5},{9,10}},
-	{{1,6},{10,11}},
-	{{1,7},{6,11}},
-	{{2,3},{1,7}},
-	{{2,7},{0,6}},
-	{{3,4},{2,8}},
-	{{4,5},{3,9}},
-	{{5,6},{4,10}},
-	{{6,7},{5,11}}
-
-
-	}
+//static  std::map<std::array<int, 2>, std::array<int, 2>>prism_map = {
+//		{
+//			{{0,2},{0,1}},
+//	{{0,3},{1,2}},
+//	{{0,4},{2,3}},
+//	{{0,5},{3,4}},
+//	{{0,6},{4,5}},
+//	{{0,7},{0,5}},
+//	{{1,2},{6,7}},
+//	{{1,3},{7,8}},
+//	{{1,4},{8,9}},
+//	{{1,5},{9,10}},
+//	{{1,6},{10,11}},
+//	{{1,7},{6,11}},
+//	{{2,3},{1,7}},
+//	{{2,7},{0,6}},
+//	{{3,4},{2,8}},
+//	{{4,5},{3,9}},
+//	{{5,6},{4,10}},
+//	{{6,7},{5,11}}
+//
+//
+//	}
+//};
+static const int prism_map[64][2] = {
+{-1, -1},
+ {-1, -1},
+ {0, 1},
+ {1, 2},
+ {2, 3},
+ {3, 4},
+ {4, 5},
+ {0, 5},
+ {-1, -1},
+ {-1, -1},
+ {6, 7},
+ {7, 8},
+ {8, 9},
+ {9, 10},
+ {10, 11},
+ {6, 11},
+ {0, 1},
+ {6, 7},
+ {-1, -1},
+ {1, 7},
+ {-1, -1},
+ {-1, -1},
+ {-1, -1},
+ {0, 6},
+ {1, 2},
+ {7, 8},
+ {1, 7},
+ {-1, -1},
+ {2, 8},
+ {-1, -1},
+ {-1, -1},
+ {-1, -1},
+ {2, 3},
+ {8, 9},
+ {-1, -1},
+ {2, 8},
+ {-1, -1},
+ {3, 9},
+ {-1, -1},
+ {-1, -1},
+ {3, 4},
+ {9, 10},
+ {-1, -1},
+ {-1, -1},
+ {3, 9},
+ {-1, -1},
+ {4, 10},
+ {-1, -1},
+ {4, 5},
+ {10, 11},
+ {-1, -1},
+ {-1, -1},
+ {-1, -1},
+ {4, 10},
+ {-1, -1},
+ {5, 11},
+ {0, 5},
+ {6, 11},
+ {0, 6},
+ {-1, -1},
+ {-1, -1},
+ {-1, -1},
+ {5, 11},
+ {-1, -1}
 };
-
-
-
 
 
 static const   std::function<int(double)> check_double = [](double v) {
@@ -465,12 +528,15 @@ namespace fastEnvelope {
 					}
 				}
 				else {//belong to one same prism
-					std::map<std::array<int, 2>, std::array<int, 2>>::iterator iter = prism_map.find({ inter_ijk_list[i][1],inter_ijk_list[j][1] });
-					if (iter->second[1] != 0) {//find map
+					
+					//find prism_map[list[i][1]*8+list[j][1]][0],prism_map[list[i][1]*8+list[j][1]][1]
+					int id = inter_ijk_list[i][1] * 8 + inter_ijk_list[j][1];
+					int id0 = prism_map[id][0], id1 = prism_map[id][1];
+					if (id0!= -1) {//find map
 						jump.clear();
 						jump.emplace_back(inter_ijk_list[i][0]);
-						//the segment is envprism[inter_ijk_list[i][0]][iter->second[0]],envprism[inter_ijk_list[i][0]][iter->second[1]]
-						int inter2 = Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(envprism[inter_ijk_list[i][0]][iter->second[0]], envprism[inter_ijk_list[i][0]][iter->second[1]], triangle, envprism, jump);
+						//the segment is envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][0]],envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][1]]
+						int inter2 = Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(envprism[inter_ijk_list[i][0]][id0], envprism[inter_ijk_list[i][0]][id1], triangle, envprism, jump);
 						if (inter2 == 1) {
 
 							return 1;//out
@@ -1134,9 +1200,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t00, t01, t02,
 				t10, t11, t12, check_rational);
-			if (o1 == 1) after21++;
+			/*if (o1 == 1) after21++;
 			if (o1 == -1) after22++;
-			if (o1 == 0) after20++;
+			if (o1 == 0) after20++;*/
 			if (o1 == 0) return false;
 
 			int o2= orient3D_TPI_postfilter_multiprecision(
@@ -1144,9 +1210,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t10, t11, t12,
 				t20, t21, t22, check_rational);
-			if (o2 == 1) after21++;
+			/*if (o2 == 1) after21++;
 			if (o2 == -1) after22++;
-			if (o2 == 0) after20++;
+			if (o2 == 0) after20++;*/
 			if (o2 == 0 || o1 + o2 == 0) return false;
 
 			int o3 = orient3D_TPI_postfilter_multiprecision(
@@ -1154,9 +1220,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t20, t21, t22,
 				t00, t01, t02, check_rational);
-			if (o3 == 1) after21++;
+			/*if (o3 == 1) after21++;
 			if (o3 == -1) after22++;
-			if (o3 == 0) after20++;
+			if (o3 == 0) after20++;*/
 			if (o3 == 0 || o1 + o3 == 0) return false;
 
 			return true;
@@ -1196,9 +1262,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t00, t01, t02,
 				t10, t11, t12, check_rational);
-			if (o1 == 1) after21++;
+			/*if (o1 == 1) after21++;
 			if (o1 == -1) after22++;
-			if (o1 == 0) after20++;
+			if (o1 == 0) after20++;*/
 		}
 		
 		if (o1 == 0) return false;
@@ -1220,9 +1286,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t10, t11, t12,
 				t20, t21, t22, check_rational);
-			if (o2 == 1) after21++;
+			/*if (o2 == 1) after21++;
 			if (o2 == -1) after22++;
-			if (o2 == 0) after20++;
+			if (o2 == 0) after20++;*/
 		}
 		if (o2 == 0 || o1 + o2 == 0) return false;
 
@@ -1243,9 +1309,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t20, t21, t22,
 				t00, t01, t02, check_rational);
-			if (o3 == 1) after21++;
+			/*if (o3 == 1) after21++;
 			if (o3 == -1) after22++;
-			if (o3 == 0) after20++;
+			if (o3 == 0) after20++;*/
 		}
 		if (o3 == 0 || o1 + o3 == 0) return false;
 		

@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100139\\100139.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100139\\BitDriver.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\101249.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -937,6 +937,51 @@ void rational_try(Rational &r) {
 	cout << Rational(c*r) << endl;
 }
 
+void writelist() {
+	int list[64][2];
+	for (int i = 0; i < 64; i++) {
+		list[i][0] = -1;
+		list[i][1] = -1;
+	}
+	int m[18][4] = {
+
+	{0,2,0,1},
+	{0,3,1,2},
+	{0,4,2,3},
+	{0,5,3,4},
+	{0,6,4,5},
+
+	{0,7,0,5},
+	{1,2,6,7},
+	{1,3,7,8},
+	{1,4,8,9},
+	{1,5,9,10},
+
+	{1,6,10,11},
+	{1,7,6,11},
+	{2,3,1,7},
+	{2,7,0,6},
+	{3,4,2,8},
+
+	{4,5,3,9},
+	{5,6,4,10},
+	{6,7,5,11}
+	};
+	for (int i = 0; i < 18; i++) {
+		list[m[i][0] * 8 + m[i][1]][0] = m[i][2];
+		list[m[i][0] * 8 + m[i][1]][1] = m[i][3];
+		list[m[i][1] * 8 + m[i][0]][0] = m[i][2];
+		list[m[i][1] * 8 + m[i][0]][1] = m[i][3];
+
+	}
+	cout << "start" << endl;
+	for (int i = 0; i < 64; i++) {
+		cout <<" {"<< list[i][0] << ", " << list[i][1]<<"}," << endl;
+	}
+	cout << "end" << endl;
+
+}
+
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
@@ -1037,7 +1082,7 @@ int main(int argc, char const *argv[])
 	test_in_wild();
 
 
-	
+	//writelist();
 
 	//inf();
 	//sample_triangle_test();
