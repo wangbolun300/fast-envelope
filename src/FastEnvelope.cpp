@@ -537,7 +537,9 @@ namespace fastEnvelope {
 					ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 						e00, e01, e02, e10, e11, e12,
 						e20, e21, e22, check_rational);
-
+					if (ori == 1) after11++;
+					if (ori == -1) after12++;
+					if (ori == 0) after10++;
 					if (ori == 1 || ori == 0) {
 						break;
 					}
@@ -679,7 +681,9 @@ namespace fastEnvelope {
 					ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 						e00, e01, e02, e10, e11, e12,
 						e20, e21, e22, check_rational);
-
+					if (ori == 1) after11++;
+					if (ori == -1) after12++;
+					if (ori == 0) after10++;
 					if (ori == 1 || ori == 0) {
 						break;
 					}
@@ -831,7 +835,9 @@ namespace fastEnvelope {
 						e10(envprism[i][p_face[j][1]][0]), e11(envprism[i][p_face[j][1]][1]), e12(envprism[i][p_face[j][1]][2]),
 						e20(envprism[i][p_face[j][2]][0]), e21(envprism[i][p_face[j][2]][1]), e22(envprism[i][p_face[j][2]][2]);
 					ori = orient3D_TPI_postfilter_multiprecision(dr, n1r, n2r, n3r, e00, e01, e02, e10, e11, e12, e20, e21, e22,check_rational);
-
+					if (ori == 1) after21++;
+					if (ori == -1) after22++;
+					if (ori == 0) after20++;
 					if (ori == 1 || ori == 0) {
 						break;
 					}
@@ -925,9 +931,11 @@ namespace fastEnvelope {
 				ori = orient3D_TPI_postfilter_multiprecision(dr, n1r, n2r, n3r,
 					e00, e01, e02, e10, e11, e12,
 					e20, e21, e22, check_rational);
-				if (ori == 1) after11++;
-				if (ori == -1) after12++;
-				if (ori == 0) after10++;
+
+				if (ori == 1) after21++;
+				if (ori == -1) after22++;
+				if (ori == 0) after20++;
+				
 				//if (ori == -2) std::cout << "impossible thing happens in lpi" << std::endl;
 				if (ori == 1 || ori == 0) break;
 			}
@@ -1126,6 +1134,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t00, t01, t02,
 				t10, t11, t12, check_rational);
+			if (o1 == 1) after21++;
+			if (o1 == -1) after22++;
+			if (o1 == 0) after20++;
 			if (o1 == 0) return false;
 
 			int o2= orient3D_TPI_postfilter_multiprecision(
@@ -1133,6 +1144,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t10, t11, t12,
 				t20, t21, t22, check_rational);
+			if (o2 == 1) after21++;
+			if (o2 == -1) after22++;
+			if (o2 == 0) after20++;
 			if (o2 == 0 || o1 + o2 == 0) return false;
 
 			int o3 = orient3D_TPI_postfilter_multiprecision(
@@ -1140,6 +1154,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t20, t21, t22,
 				t00, t01, t02, check_rational);
+			if (o3 == 1) after21++;
+			if (o3 == -1) after22++;
+			if (o3 == 0) after20++;
 			if (o3 == 0 || o1 + o3 == 0) return false;
 
 			return true;
@@ -1179,7 +1196,11 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t00, t01, t02,
 				t10, t11, t12, check_rational);
+			if (o1 == 1) after21++;
+			if (o1 == -1) after22++;
+			if (o1 == 0) after20++;
 		}
+		
 		if (o1 == 0) return false;
 
 		int o2 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
@@ -1199,6 +1220,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t10, t11, t12,
 				t20, t21, t22, check_rational);
+			if (o2 == 1) after21++;
+			if (o2 == -1) after22++;
+			if (o2 == 0) after20++;
 		}
 		if (o2 == 0 || o1 + o2 == 0) return false;
 
@@ -1219,6 +1243,9 @@ namespace fastEnvelope {
 				nr0, nr1, nr2,
 				t20, t21, t22,
 				t00, t01, t02, check_rational);
+			if (o3 == 1) after21++;
+			if (o3 == -1) after22++;
+			if (o3 == 0) after20++;
 		}
 		if (o3 == 0 || o1 + o3 == 0) return false;
 		
