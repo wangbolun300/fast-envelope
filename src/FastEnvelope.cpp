@@ -27,7 +27,7 @@ static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 };
 
 
-static const std::map<std::array<int, 2>, std::array<int, 2>>prism_map = {
+static  std::map<std::array<int, 2>, std::array<int, 2>>prism_map = {
 		{
 			{{0,2},{0,1}},
 	{{0,3},{1,2}},
