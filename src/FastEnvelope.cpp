@@ -7,10 +7,13 @@
 #include <fastenvelope/ip_filtered.h>
 #include <arbitraryprecision/fprecision.h>
 #include <fastenvelope/Rational.hpp>
-#include<map>
+#include <igl/Timer.h>
+
 
 int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
+double timerecord = 0;
+igl::Timer timer;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 		{
@@ -408,151 +411,259 @@ namespace fastEnvelope {
 
 
 	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
+
 	{
 
+
+
 		if (envprism.size() == 0) {
+
 			return 1;
+
 		}
+
 		std::vector<int> jump;
+
 		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
+
 		bool out;
+
 		int inter, inter1, record1, record2,
+
 			tti;//triangle-triangle intersection
+
 		jump.clear();
+
 		for (int i = 0; i < 3; i++) {
+
 			out = point_out_prism(triangle[i], envprism, jump);
+
 			if (out == true) {
+
 				return 1;
+
 			}
+
 		}
+
+
+
 
 
 		////////////////////degeneration fix
-		int degeneration= is_triangle_degenerated(triangle);
-		if (degeneration== DEGENERATED_POINT) {//case 1 degenerate to a point
+
+		int degeneration = is_triangle_degenerated(triangle);
+
+		if (degeneration == DEGENERATED_POINT) {//case 1 degenerate to a point
+
 			return 0;
+
 		}//case 1 degenerate to a point
+
 		if (degeneration == DEGENERATED_SEGMENT) {
+
 			for (int we = 0; we < 3; we++) {//case 2 degenerated as a segment, at most test 2 segments,but still we need to test 3, because
+
 											// of the endpoint-triangle intersection will be ignored
+
 											// the segment is {triangle[triseg[we][0]], triangle[triseg[we][1]]}
-					for (int i = 0; i < envprism.size(); i++) {
-						for (int j = 0; j < 8; j++) {
-							for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
-								tti = seg_cut_tri(triangle[triseg[we][0]], triangle[triseg[we][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
-								if (tti == CUT_COPLANAR) {
-									break;
-								}
-								if (tti == CUT_EMPTY) {//this is not redundant
-									continue;
-								}
-								jump.clear();
-								jump.emplace_back(i);
 
+				for (int i = 0; i < envprism.size(); i++) {
 
-								inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
-									{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
-								
+					for (int j = 0; j < 8; j++) {
 
-								if (inter == 1) {
-									return 1;
-								}
+						for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
+
+							tti = seg_cut_tri(triangle[triseg[we][0]], triangle[triseg[we][1]], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
+
+							if (tti == CUT_COPLANAR) {
+
 								break;
 
 							}
+
+							if (tti == CUT_EMPTY) {//this is not redundant
+
+								continue;
+
+							}
+
+							jump.clear();
+
+							jump.emplace_back(i);
+
+
+
+
+
+							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
+
+								{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
+
+
+
+
+
+							if (inter == 1) {
+
+								return 1;
+
+							}
+
+							break;
+
+
+
 						}
+
 					}
+
+				}
+
 			}//case 2 case 2 degenerated as a segment
+
 			return 0;
+
 		}
+
+
+
 
 
 		////////////////////////////////degeneration fix over
 
 
 
+
+
+
+
 		for (int i = 0; i < envprism.size(); i++) {
+
 			for (int j = 0; j < 8; j++) {
+
 				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
+
 					tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
+
 					if (tti == CUT_COPLANAR) {
+
 						break;
+
 					}
+
 					if (tti == CUT_EMPTY) {//TODO maybe redundant because we want "float above" case leading to break
+
 						continue;
+
 					}
+
+
 
 					record1 = 0;
 
+
+
 					jump.clear();
+
 					jump.emplace_back(i);
+
 					for (int k = 0; k < 3; k++) {
 
+
+
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
+
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
 
+
+
+
 						if (inter == 1) {
+
 							return 1;
+
 						}
+
 						record1 = record1 + inter;
+
 					}
+
 					if (record1 >= 4) {
+
 						std::cout << "intersection predicate wrong1, record " << record1 << std::endl;
 
+
+
 					}
-					inter_ijk_list.emplace_back(Vector3i(i, j, c));
-				}
-			}
-		}
 
-		int listsize = inter_ijk_list.size();
 
-		for (int i = 1; i < listsize; i++) {
-			for (int j = 0; j < i; j++) {
-				//check triangle{ { envprism[list[i][0]][p_triangle[list[i][1]][list[i][2]][0]], ...[1],...[2] } } and triangle{ { envprism[list[j][0]][p_triangle[list[j][1]][list[j][2]][0]], ...[1],...[2] } }
-				//and T
-				tti = tri_cut_tri_simple(envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][0]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][1]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][2]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][0]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][1]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][2]]);
-				if (tti == CUT_COPLANAR) continue;
-				if (inter_ijk_list[i][0] != inter_ijk_list[j][0]) {//belong to two different prisms
-					jump.clear();
-					jump.emplace_back(inter_ijk_list[i][0]);
-					jump.emplace_back(inter_ijk_list[j][0]);
 
-					int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
-						{ { envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][0]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][1]],envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][2]] } },
-						{ { envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][0]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][1]],envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][2]] } },
-						 envprism, jump);
 
-					if (inter2 == 1) {
 
-						return 1;//out
-					}
-				}
-				else {//belong to one same prism
-					
-					//find prism_map[list[i][1]*8+list[j][1]][0],prism_map[list[i][1]*8+list[j][1]][1]
-					int id = inter_ijk_list[i][1] * 8 + inter_ijk_list[j][1];
-					int id0 = prism_map[id][0], id1 = prism_map[id][1];
-					if (id0!= -1) {//find map
-						jump.clear();
-						jump.emplace_back(inter_ijk_list[i][0]);
-						//the segment is envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][0]],envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][1]]
-						int inter2 = Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(envprism[inter_ijk_list[i][0]][id0], envprism[inter_ijk_list[i][0]][id1], triangle, envprism, jump);
-						if (inter2 == 1) {
+					for (int e = 0; e < inter_ijk_list.size(); e++) {
 
-							return 1;//out
+						for (int f = inter_ijk_list[e][2]; f < p_triangle[inter_ijk_list[e][1]].size(); f++) {
+
+							tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2],
+
+								envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]);
+
+							if (tti == CUT_COPLANAR) {
+
+								break;
+
+							}
+
+							if (tti == CUT_EMPTY) {
+
+								continue;
+
+							}
+
+							jump.clear();
+
+							jump.emplace_back(inter_ijk_list[e][0]);
+
+							jump.emplace_back(i);
+
+
+
+							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
+
+								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
+
+								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
+
+
+
+							if (inter2 == 1) {
+
+
+
+								return 1;//out
+
+							}
+
 						}
+
 					}
 
-				}
+					inter_ijk_list.emplace_back(Vector3i(i, j, c));
 
+					break;
+
+				}//each triangle of the facet
 
 			}
+
 		}
+
 
 
 		return 0;
+
 	}
 
 	struct INDEX {
