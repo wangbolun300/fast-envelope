@@ -30,7 +30,7 @@ namespace fastEnvelope {
 		static const int DEGENERATED_POINT = 3;
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
-		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac);
+		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac);
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		inline int prism_size() const { return envprism.size(); }
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
@@ -51,7 +51,7 @@ namespace fastEnvelope {
 	private:
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
-		static bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
+		bool testImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism) const;
 
 		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
 	public:
@@ -199,9 +199,9 @@ namespace fastEnvelope {
 
 			T n ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
 
-			a11 *= n;
-			a12 *= n;
-			a13 *= n;
+			a11 = a11 * n;
+			a12 = a12 * n;
+			a13 = a13 * n;
 			return true;
 		}
 

@@ -12,7 +12,7 @@
 
 int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
-double timerecord = 0;
+double timerecordi = 0, timerecordt = 0;
 igl::Timer timer;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
@@ -188,7 +188,8 @@ namespace fastEnvelope {
 		std::cout << "lpi 1 " << float(after11)/float(after11+ after12+ after10) << " lpi -1 " << after12 / float(after11 + after12 + after10) << " lpi 0 " << after10 / float(after11 + after12 + after10) << " tot  " << after11 + after12 + after10 << std::endl;
 		std::cout << "tpi 1 " << after21 / float(after21 + after22 + after20) << " tpi -1 " << after22 / float(after21 + after22 + after20) << " tpi 0 " << after20 / float(after21 + after22 + after20) << " tot  " << after21 + after22 + after20<< std::endl;
 	}
-	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar& eps, const int& spac)
+	
+	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
 	{
 		get_bb_corners(m_ver, min, max);
 		Scalar bbd = (max - min).norm();
@@ -219,6 +220,7 @@ namespace fastEnvelope {
 		Vector3 tmin, tmax;
 		std::vector<int> inumber;
 		std::vector<int> intercell;
+		//TODO: use index instead of copying
 		std::vector<std::array<Vector3, 12>> interenvprism;
 		get_triangle_corners(triangle, tmin, tmax);
 		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
@@ -235,7 +237,7 @@ namespace fastEnvelope {
 		for (int j = 0; j < inumber.size(); j++) {
 			interenvprism.emplace_back(envprism[inumber[j]]);
 		}
-		return FastEnvelope::FastEnvelopeTestImplicit(triangle, interenvprism);
+		return testImplicit(triangle, interenvprism);
 	}
 
 	/*bool FastEnvelope::is_outside_signal(const std::array<Vector3, 3> &triangle, int &signal) const {
@@ -410,16 +412,10 @@ namespace fastEnvelope {
 
 
 
-	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism)
-
+	bool FastEnvelope::testImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism) const
 	{
-
-
-
 		if (envprism.size() == 0) {
-
-			return 1;
-
+			return true;
 		}
 
 		std::vector<int> jump;
@@ -435,15 +431,11 @@ namespace fastEnvelope {
 		jump.clear();
 
 		for (int i = 0; i < 3; i++) {
-
 			out = point_out_prism(triangle[i], envprism, jump);
 
-			if (out == true) {
-
-				return 1;
-
+			if (out) {
+				return true;
 			}
-
 		}
 
 
@@ -455,9 +447,7 @@ namespace fastEnvelope {
 		int degeneration = is_triangle_degenerated(triangle);
 
 		if (degeneration == DEGENERATED_POINT) {//case 1 degenerate to a point
-
-			return 0;
-
+			return false;
 		}//case 1 degenerate to a point
 
 		if (degeneration == DEGENERATED_SEGMENT) {
@@ -522,7 +512,7 @@ namespace fastEnvelope {
 
 			}//case 2 case 2 degenerated as a segment
 
-			return 0;
+			return false;
 
 		}
 
@@ -539,7 +529,7 @@ namespace fastEnvelope {
 
 
 		for (int i = 0; i < envprism.size(); i++) {
-
+		//deal with something that's not a prism
 			for (int j = 0; j < 8; j++) {
 
 				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
@@ -547,43 +537,27 @@ namespace fastEnvelope {
 					tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
 
 					if (tti == CUT_COPLANAR) {
-
 						break;
 
 					}
 
 					if (tti == CUT_EMPTY) {//TODO maybe redundant because we want "float above" case leading to break
-
 						continue;
-
 					}
 
-
-
 					record1 = 0;
-
-
 
 					jump.clear();
 
 					jump.emplace_back(i);
 
 					for (int k = 0; k < 3; k++) {
-
-
-
-						inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
-
+							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
+								//remove array and pass 3 args instead
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
-
-
-
-
 						if (inter == 1) {
-
-							return 1;
-
+							return false;
 						}
 
 						record1 = record1 + inter;
@@ -591,62 +565,32 @@ namespace fastEnvelope {
 					}
 
 					if (record1 >= 4) {
-
 						std::cout << "intersection predicate wrong1, record " << record1 << std::endl;
-
-
-
 					}
-
-
-
+					//TODO: maybe close all loops and restart (remember to push jc to inter_ijk_list together with i)
 
 
 					for (int e = 0; e < inter_ijk_list.size(); e++) {
-
-						for (int f = inter_ijk_list[e][2]; f < p_triangle[inter_ijk_list[e][1]].size(); f++) {
-
-							tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2],
-
-								envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]);
-
-							if (tti == CUT_COPLANAR) {
-
-								break;
-
-							}
-
-							if (tti == CUT_EMPTY) {
-
-								continue;
-
-							}
-
 							jump.clear();
 
 							jump.emplace_back(inter_ijk_list[e][0]);
-
 							jump.emplace_back(i);
 
 
 
 							int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
-
-								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][f][2]]} },
+								//remove array and pass 3 args instead
+								{ {envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][inter_ijk_list[e][2]][0]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][inter_ijk_list[e][2]][1]], envprism[inter_ijk_list[e][0]][p_triangle[inter_ijk_list[e][1]][inter_ijk_list[e][2]][2]]} },
 
 								{ {envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]} }, envprism, jump);
 
 
 
 							if (inter2 == 1) {
-
-
-
 								return 1;//out
-
 							}
 
-						}
+						//}
 
 					}
 
