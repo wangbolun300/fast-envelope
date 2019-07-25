@@ -193,7 +193,15 @@ namespace fastEnvelope {
 			if (flag1 == -2 || flag1 == 0) {
 				return false;// not enough precision
 			}
-		
+			T px_rx( px - rx);
+			T py_ry( py - ry);
+			T pz_rz( pz - rz);
+
+			T n ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
+
+			a11 *= n;
+			a12 *= n;
+			a13 *= n;
 			return true;
 		}
 
