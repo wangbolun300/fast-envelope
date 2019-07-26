@@ -12,7 +12,7 @@
 
 int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
-double timerecordi = 0, timerecordt = 0;
+int go1 = 0, go2 = 0;
 igl::Timer timer;
 static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
@@ -187,6 +187,8 @@ namespace fastEnvelope {
 		//std::cout << "triangle_intersection filter number tpi -2 " << filternumbertpi2 << " percentage " << float(filternumbertpi2) / float(totalnumbertpi+ totalnumber1) << std::endl;
 		std::cout << "lpi 1 " << float(after11)/float(after11+ after12+ after10) << " lpi -1 " << after12 / float(after11 + after12 + after10) << " lpi 0 " << after10 / float(after11 + after12 + after10) << " tot  " << after11 + after12 + after10 << std::endl;
 		std::cout << "tpi 1 " << after21 / float(after21 + after22 + after20) << " tpi -1 " << after22 / float(after21 + after22 + after20) << " tpi 0 " << after20 / float(after21 + after22 + after20) << " tot  " << after21 + after22 + after20<< std::endl;
+		std::cout << "go1 " << go1 << " go2 " << go2 << std::endl;
+	
 	}
 	
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
@@ -493,15 +495,9 @@ namespace fastEnvelope {
 							jump.emplace_back(i);
 
 
-
-
-
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
 
 								{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
-
-
-
 
 
 							if (inter == 1) {
@@ -547,38 +543,24 @@ namespace fastEnvelope {
 					tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]]);
 
 					if (tti == CUT_COPLANAR) {
-
 						break;
-
 					}
 
 					if (tti == CUT_EMPTY) {//TODO maybe redundant because we want "float above" case leading to break
-
 						continue;
-
 					}
 
-
-
 					record1 = 0;
-
-
-
 					jump.clear();
 
 					jump.emplace_back(i);
 
 					for (int k = 0; k < 3; k++) {
-
-
-
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
 
 							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
 
-
-
-
+						go1++;
 
 						if (inter == 1) {
 
@@ -599,7 +581,7 @@ namespace fastEnvelope {
 					}
 
 					inter_ijk_list.emplace_back(Vector3i(i, j, c));
-
+					break;
 				}
 
 			}
@@ -642,7 +624,7 @@ namespace fastEnvelope {
 
 						envprism, jump);
 
-
+					go2++;
 
 					if (inter2 == 1) {
 
@@ -674,6 +656,7 @@ namespace fastEnvelope {
 
 						int inter2 = Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(envprism[inter_ijk_list[i][0]][id0], envprism[inter_ijk_list[i][0]][id1], triangle, envprism, jump);
 
+						go2++;
 						if (inter2 == 1) {
 
 
@@ -820,12 +803,13 @@ namespace fastEnvelope {
 			}
 
 			if (ori != 1) {
+				assert(!index.FACES.empty());
 				index.Pi = i;
 				recompute.push_back(index);
 			}
 		}
 
-		if (recompute.size() > 0) {
+		if (!recompute.empty()) {
 			Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
 				t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
 				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
@@ -836,8 +820,9 @@ namespace fastEnvelope {
 
 
 			for (int k = 0; k < recompute.size(); k++) {
+				int in1 = recompute[k].Pi;
 				for (int j = 0; j < recompute[k].FACES.size(); j++) {
-					int in1 = recompute[k].Pi, in2 = recompute[k].FACES[j];
+					int in2 = recompute[k].FACES[j];
 					Rational
 						e00(envprism[in1][p_face[in2][0]][0]), e01(envprism[in1][p_face[in2][0]][1]), e02(envprism[in1][p_face[in2][0]][2]),
 						e10(envprism[in1][p_face[in2][1]][0]), e11(envprism[in1][p_face[in2][1]][1]), e12(envprism[in1][p_face[in2][1]][2]),
@@ -1149,9 +1134,12 @@ namespace fastEnvelope {
 
 
 			for (int k = 0; k < recompute.size(); k++) {
+				int in1 = recompute[k].Pi;
 				for (int j = 0; j < recompute[k].FACES.size(); j++) {
-					int in1 = recompute[k].Pi, in2 = recompute[k].FACES[j];
-					Rational
+					int in2 = recompute[k].FACES[j];
+					//static Rational e00, e01, ...;
+					//e00 = ...; e01 = ...;
+					Rational 
 						e00(envprism[in1][p_face[in2][0]][0]), e01(envprism[in1][p_face[in2][0]][1]), e02(envprism[in1][p_face[in2][0]][2]),
 						e10(envprism[in1][p_face[in2][1]][0]), e11(envprism[in1][p_face[in2][1]][1]), e12(envprism[in1][p_face[in2][1]][2]),
 						e20(envprism[in1][p_face[in2][2]][0]), e21(envprism[in1][p_face[in2][2]][1]), e22(envprism[in1][p_face[in2][2]][2]);
@@ -1319,10 +1307,12 @@ namespace fastEnvelope {
 	}
 #include<ctime>
 	bool FastEnvelope::is_3_triangle_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2) {
+		//make this guy static
 		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
 		//Vector3 n = max;
 		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0) {
 			std::cout << "Degeneration happens" << std::endl;
+			//move this guy in constructor and use fixed seed
 			srand(int(time(0)));
 			n = { {Vector3(rand(),rand(),rand()) } };
 		}
