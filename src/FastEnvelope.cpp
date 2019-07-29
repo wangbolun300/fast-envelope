@@ -602,12 +602,25 @@ namespace fastEnvelope {
 
 				//and T
 
-				tti = tri_cut_tri_simple(envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][0]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][1]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][2]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][0]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][1]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][2]]);
-
-				if (tti == CUT_COPLANAR) continue;
-
 				if (inter_ijk_list[i][0] != inter_ijk_list[j][0]) {//belong to two different prisms
+					for (int c1 = inter_ijk_list[i][2]; c1 < p_triangle[inter_ijk_list[i][1]].size(); c1++) {
+						for (int c2 = inter_ijk_list[j][2]; c2 < p_triangle[inter_ijk_list[j][1]].size(); c2++) {
+							tti = tri_cut_tri_simple(
+								envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][c1][0]],
+								envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][c1][1]],
+								envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][c1][2]],
+								envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][c2][0]],
+								envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][c2][1]],
+								envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][c2][2]]);
+							if (tti == CUT_FACE || tti == CUT_COPLANAR) break;
+						}
+						if (tti == CUT_FACE || tti == CUT_COPLANAR) break;
+					}
+					if (tti == CUT_COPLANAR || tti == CUT_EMPTY) continue;
 
+					
+
+					
 					jump.clear();
 
 					jump.emplace_back(inter_ijk_list[i][0]);
