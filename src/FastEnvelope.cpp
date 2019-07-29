@@ -488,7 +488,7 @@ namespace fastEnvelope {
 
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
 
-								{ { envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]] } }, prismindex, jump1);
+								 envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]] , prismindex, jump1);
 
 
 							if (inter == 1) {
@@ -550,7 +550,7 @@ namespace fastEnvelope {
 					for (int k = 0; k < 3; k++) {
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
 
-							{ { envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]] } }, prismindex, jump1);
+							 envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]] , prismindex, jump1);
 
 						go1++;
 
@@ -616,9 +616,9 @@ namespace fastEnvelope {
 
 					int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
 
-						{ { envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][0]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][1]],envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][2]] } },
+						 envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][0]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][1]],envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][2]],
 
-						{ { envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][0]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][1]],envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][2]] } },
+						 envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][0]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][1]],envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][2]],
 
 						prismindex, jump1, jump2);
 
@@ -690,10 +690,10 @@ namespace fastEnvelope {
 		std::vector<int> FACES;
 	};
 
-	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-		const std::vector<int>& prismindex, const int& jump) const{
+	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle0,
+		const Vector3& triangle1, const Vector3& triangle2, const std::vector<int>& prismindex, const int& jump) const {
 		int  ori;
-		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
+		int inter = seg_cut_tri(segpoint0, segpoint1, triangle0, triangle1, triangle2);
 		
 		if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
 									//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
@@ -705,16 +705,16 @@ namespace fastEnvelope {
 		bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 			segpoint0[0], segpoint0[1], segpoint0[2],
 			segpoint1[0], segpoint1[1], segpoint1[2],
-			triangle[0][0], triangle[0][1], triangle[0][2],
-			triangle[1][0], triangle[1][1], triangle[1][2],
-			triangle[2][0], triangle[2][1], triangle[2][2],
+			triangle0[0], triangle0[1], triangle0[2],
+			triangle1[0], triangle1[1], triangle1[2],
+			triangle2[0], triangle2[1], triangle2[2],
 			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 
 		if (precom == false) {
 			Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
-				t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
-				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
-				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+				t00(triangle0[0]), t01(triangle0[1]), t02(triangle0[2]),
+				t10(triangle1[0]), t11(triangle1[1]), t12(triangle1[2]),
+				t20(triangle2[0]), t21(triangle2[1]), t22(triangle2[2]),
 				a11r, a12r, a13r, dr;
 			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
 				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
@@ -804,9 +804,9 @@ namespace fastEnvelope {
 
 		if (!recompute.empty()) {
 			Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
-				t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
-				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
-				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
+				t00(triangle0[0]), t01(triangle0[1]), t02(triangle0[2]),
+				t10(triangle1[0]), t11(triangle1[1]), t12(triangle1[2]),
+				t20(triangle2[0]), t21(triangle2[1]), t22(triangle2[2]),
 				a11r, a12r, a13r, dr;
 			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
 				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
@@ -986,10 +986,12 @@ namespace fastEnvelope {
 		return OUT_PRISM;
 	}
 
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<int>& prismindex, const int& jump1, const int &jump2) const{
+	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, 
+		const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22,
+		const std::vector<int>& prismindex, const int& jump1, const int &jump2) const{
 		int ori;
 		int tot;
-		bool in = is_3_triangle_cut(triangle, facet1, facet2);
+		bool in = is_3_triangle_cut(triangle, facet10, facet11, facet12, facet20, facet21, facet22);
 
 		if (in == 0) {
 			return NOT_INTERSECTD;
@@ -1000,12 +1002,12 @@ namespace fastEnvelope {
 			triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
-			facet1[0][0], facet1[0][1], facet1[0][2],
-			facet1[1][0], facet1[1][1], facet1[1][2],
-			facet1[2][0], facet1[2][1], facet1[2][2],
-			facet2[0][0], facet2[0][1], facet2[0][2],
-			facet2[1][0], facet2[1][1], facet2[1][2],
-			facet2[2][0], facet2[2][1], facet2[2][2], d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
+			facet10[0], facet10[1], facet10[2],
+			facet11[0], facet11[1], facet11[2],
+			facet12[0], facet12[1], facet12[2],
+			facet20[0], facet20[1], facet20[2],
+			facet21[0], facet21[1], facet21[2],
+			facet22[0], facet22[1], facet22[2], d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
 
 		if (precom == false) {
 			Rational 
@@ -1013,13 +1015,13 @@ namespace fastEnvelope {
 				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
 				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
 				
-				f100(facet1[0][0]), f101(facet1[0][1]), f102(facet1[0][2]),
-				f110(facet1[1][0]), f111(facet1[1][1]), f112(facet1[1][2]),
-				f120(facet1[2][0]), f121(facet1[2][1]), f122(facet1[2][2]),
+				f100(facet10[0]), f101(facet10[1]), f102(facet10[2]),
+				f110(facet11[0]), f111(facet11[1]), f112(facet11[2]),
+				f120(facet12[0]), f121(facet12[1]), f122(facet12[2]),
 
-				f200(facet2[0][0]), f201(facet2[0][1]), f202(facet2[0][2]),
-				f210(facet2[1][0]), f211(facet2[1][1]), f212(facet2[1][2]),
-				f220(facet2[2][0]), f221(facet2[2][1]), f222(facet2[2][2]),
+				f200(facet20[0]), f201(facet20[1]), f202(facet20[2]),
+				f210(facet21[0]), f211(facet21[1]), f212(facet21[2]),
+				f220(facet22[0]), f221(facet22[1]), f222(facet22[2]),
 				dr, n1r, n2r, n3r;
 			bool premulti = orient3D_TPI_prefilter_multiprecision(t00, t01, t02, t10, t11, t12, t20, t21, t22,
 				f100, f101, f102, f110, f111, f112, f120, f121, f122,
@@ -1103,13 +1105,13 @@ namespace fastEnvelope {
 				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
 				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
 
-				f100(facet1[0][0]), f101(facet1[0][1]), f102(facet1[0][2]),
-				f110(facet1[1][0]), f111(facet1[1][1]), f112(facet1[1][2]),
-				f120(facet1[2][0]), f121(facet1[2][1]), f122(facet1[2][2]),
+				f100(facet10[0]), f101(facet10[1]), f102(facet10[2]),
+				f110(facet11[0]), f111(facet11[1]), f112(facet11[2]),
+				f120(facet12[0]), f121(facet12[1]), f122(facet12[2]),
 
-				f200(facet2[0][0]), f201(facet2[0][1]), f202(facet2[0][2]),
-				f210(facet2[1][0]), f211(facet2[1][1]), f212(facet2[1][2]),
-				f220(facet2[2][0]), f221(facet2[2][1]), f222(facet2[2][2]),
+				f200(facet20[0]), f201(facet20[1]), f202(facet20[2]),
+				f210(facet21[0]), f211(facet21[1]), f212(facet21[2]),
+				f220(facet22[0]), f221(facet22[1]), f222(facet22[2]),
 				dr, n1r, n2r, n3r;
 			bool premulti = orient3D_TPI_prefilter_multiprecision(t00, t01, t02, t10, t11, t12, t20, t21, t22,
 				f100, f101, f102, f110, f111, f112, f120, f121, f122,
@@ -1148,149 +1150,11 @@ namespace fastEnvelope {
 
 		return OUT_PRISM;
 	}
-	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
-		int jm = 0, ori;
-		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
-
-		if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
-									//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
-			return NOT_INTERSECTD;//not intersected
-		}
-		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {//TODO jump avoid vector
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
-			}
-
-			for (int j = 0; j < 8; j++) {
-				//ftimer2.start();
-				ori = ip_filtered::
-					orient3D_LPI_filtered(
-						segpoint0[0], segpoint0[1], segpoint0[2], segpoint1[0], segpoint1[1], segpoint1[2],
-						triangle[0][0], triangle[0][1], triangle[0][2], triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
-						envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2], envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2], envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
-				
-				/////////////////////////////////////////
 
 
-
-				/*if (ori == 0) {
-					if (markhf == 0) {
-						Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
-							t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]),
-							t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
-							t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
-							e00(envprism[i][p_face[j][0]][0]), e01(envprism[i][p_face[j][0]][1]), e02(envprism[i][p_face[j][0]][2]),
-							e10(envprism[i][p_face[j][1]][0]), e11(envprism[i][p_face[j][1]][1]), e12(envprism[i][p_face[j][1]][2]),
-							e20(envprism[i][p_face[j][2]][0]), e21(envprism[i][p_face[j][2]][1]), e22(envprism[i][p_face[j][2]][2]);
-
-						ori = orient3D_LPI_filtered_multiprecision(
-							s00, s01, s02, s10, s11, s12,
-							t00, t01, t02, t10, t11, t12, t20, t21, t22,
-							e00, e01, e02, e10, e11, e12, e20, e21, e22, check_rational);
-
-
-
-
-
-					}
-				}*/
-
-				///////////////////////////////////////////
-				if (ori == -2) {
-					return NOT_INTERSECTD;
-				}
-				if (ori == 1 || ori == 0) {
-					break;
-				}
-
-				if (j == 7) {
-
-					return IN_PRISM;
-				}
-			}
-
-
-		}
-		return OUT_PRISM;
-	}
-
-
-
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
-	{
-		int jm = 0, ori;
-
-		bool in = is_3_triangle_cut(triangle, facet1, facet2);
-		
-		if (in == 0) {
-			return NOT_INTERSECTD;
-		}
-
-
-		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {//TODO jump avoid vector
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
-
-			}
-			for (int j = 0; j < 8; j++) {
-				ori = ip_filtered::orient3D_TPI_filtered(triangle[0][0], triangle[0][1], triangle[0][2],
-					triangle[1][0], triangle[1][1], triangle[1][2],
-					triangle[2][0], triangle[2][1], triangle[2][2],
-					facet1[0][0], facet1[0][1], facet1[0][2],
-					facet1[1][0], facet1[1][1], facet1[1][2],
-					facet1[2][0], facet1[2][1], facet1[2][2],
-					facet2[0][0], facet2[0][1], facet2[0][2],
-					facet2[1][0], facet2[1][1], facet2[1][2],
-					facet2[2][0], facet2[2][1], facet2[2][2],
-					envprism[i][p_face[j][0]][0], envprism[i][p_face[j][0]][1], envprism[i][p_face[j][0]][2],
-					envprism[i][p_face[j][1]][0], envprism[i][p_face[j][1]][1], envprism[i][p_face[j][1]][2],
-					envprism[i][p_face[j][2]][0], envprism[i][p_face[j][2]][1], envprism[i][p_face[j][2]][2]);
-				
-				////////////////////////////////////////////////////////////////////////
-				/*if (ori == 0) {
-					ori = orient3D_TPI_filtered_multiprecision(
-						Rational(triangle[0][0]), Rational(triangle[0][1]), Rational(triangle[0][2]),
-						Rational(triangle[1][0]), Rational(triangle[1][1]), Rational(triangle[1][2]),
-						Rational(triangle[2][0]), Rational(triangle[2][1]), Rational(triangle[2][2]),
-						Rational(facet1[0][0]), Rational(facet1[0][1]), Rational(facet1[0][2]),
-						Rational(facet1[1][0]), Rational(facet1[1][1]), Rational(facet1[1][2]),
-						Rational(facet1[2][0]), Rational(facet1[2][1]), Rational(facet1[2][2]),
-						Rational(facet2[0][0]), Rational(facet2[0][1]), Rational(facet2[0][2]),
-						Rational(facet2[1][0]), Rational(facet2[1][1]), Rational(facet2[1][2]),
-						Rational(facet2[2][0]), Rational(facet2[2][1]), Rational(facet2[2][2]),
-						Rational(envprism[i][p_face[j][0]][0]), Rational(envprism[i][p_face[j][0]][1]), Rational(envprism[i][p_face[j][0]][2]),
-						Rational(envprism[i][p_face[j][1]][0]), Rational(envprism[i][p_face[j][1]][1]), Rational(envprism[i][p_face[j][1]][2]),
-						Rational(envprism[i][p_face[j][2]][0]), Rational(envprism[i][p_face[j][2]][1]), Rational(envprism[i][p_face[j][2]][2]), check_rational);
-				}*/
-
-
-				////////////////////////////////////////////////////////////////////////
-
-				if (ori == 1 || ori == 0) {
-
-					break;
-				}
-				if (ori == -2) {
-					return NOT_INTERSECTD;
-				}
-				if (j == 7) {
-
-					return IN_PRISM;
-				}
-			}
-		}
-
-		return OUT_PRISM;
-	}
 #include<ctime>
-	bool FastEnvelope::is_3_triangle_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2) {
+	bool FastEnvelope::is_3_triangle_cut(const std::array<Vector3, 3>& triangle, 
+		const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22 ) {
 		//make this guy static
 		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
 		//Vector3 n = max;
@@ -1306,8 +1170,8 @@ namespace fastEnvelope {
 			triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
-			f1[0][0], f1[0][1], f1[0][2], f1[1][0], f1[1][1], f1[1][2], f1[2][0], f1[2][1], f1[2][2],
-			f2[0][0], f2[0][1], f2[0][2], f2[1][0], f2[1][1], f2[1][2], f2[2][0], f2[2][1], f2[2][2],
+			facet10[0], facet10[1], facet10[2], facet11[0], facet11[1], facet11[2], facet12[0], facet12[1], facet12[2],
+			facet20[0], facet20[1], facet20[2], facet21[0], facet21[1], facet21[2], facet22[0], facet22[1], facet22[2],
 				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
 
 		if (pre == false) {
@@ -1316,13 +1180,13 @@ namespace fastEnvelope {
 				t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
 				t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
 
-				f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
-				f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
-				f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
+				f100(facet10[0]), f101(facet10[1]), f102(facet10[2]),
+				f110(facet11[0]), f111(facet11[1]), f112(facet11[2]),
+				f120(facet12[0]), f121(facet12[1]), f122(facet12[2]),
 
-				f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
-				f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
-				f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
+				f200(facet20[0]), f201(facet20[1]), f202(facet20[2]),
+				f210(facet21[0]), f211(facet21[1]), f212(facet21[2]),
+				f220(facet22[0]), f221(facet22[1]), f222(facet22[2]),
 
 				nr0(n[0]), nr1(n[1]), nr2(n[2]),
 
@@ -1374,13 +1238,13 @@ namespace fastEnvelope {
 			t10(triangle[1][0]), t11(triangle[1][1]), t12(triangle[1][2]),
 			t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]),
 
-			f100(f1[0][0]), f101(f1[0][1]), f102(f1[0][2]),
-			f110(f1[1][0]), f111(f1[1][1]), f112(f1[1][2]),
-			f120(f1[2][0]), f121(f1[2][1]), f122(f1[2][2]),
+			f100(facet10[0]), f101(facet10[1]), f102(facet10[2]),
+			f110(facet11[0]), f111(facet11[1]), f112(facet11[2]),
+			f120(facet12[0]), f121(facet12[1]), f122(facet12[2]),
 
-			f200(f2[0][0]), f201(f2[0][1]), f202(f2[0][2]),
-			f210(f2[1][0]), f211(f2[1][1]), f212(f2[1][2]),
-			f220(f2[2][0]), f221(f2[2][1]), f222(f2[2][2]),
+			f200(facet20[0]), f201(facet20[1]), f202(facet20[2]),
+			f210(facet21[0]), f211(facet21[1]), f212(facet21[2]),
+			f220(facet22[0]), f221(facet22[1]), f222(facet22[2]),
 
 			nr0(n[0]), nr1(n[1]), nr2(n[2]),
 

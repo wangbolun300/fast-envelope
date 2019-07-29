@@ -136,20 +136,19 @@ namespace fastEnvelope {
 		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon);
 
 
-		static int Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
+		
 
-		 int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-			const std::vector<int>& prismindex, const int& jump)const;
+		 int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle1, 
+			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<int>& prismindex, const int& jump)const;
 
 		 int Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 			const std::vector<int>& prismindex, const int& jump)const;
 
 
-		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
-			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 
-		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
+
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, 
+			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22, 
 			const std::vector<int>& prismindex, const int& jump1,const int &jump2) const;
 
 
@@ -160,7 +159,8 @@ namespace fastEnvelope {
 
 
 
-		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& f1, const std::array<Vector3, 3>& f2);
+		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, 
+			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2);
 		public:
 		static int is_triangle_degenerated(const std::array<Vector3, 3>& triangle);
 		private:
