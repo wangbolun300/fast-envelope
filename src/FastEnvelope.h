@@ -131,7 +131,7 @@ namespace fastEnvelope {
 		}
 
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
-		static bool point_out_prism(const Vector3& point, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
+		static bool point_out_prism(const Vector3& point, const std::vector<std::array<Vector3, 12>>& envprism, const int& jump);
 
 		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon);
 
@@ -140,17 +140,17 @@ namespace fastEnvelope {
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 
 		static int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
+			const std::vector<std::array<Vector3, 12>>& envprism, const int& jump);
 
 		static int Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
+			const std::vector<std::array<Vector3, 12>>& envprism, const int& jump);
 
 
 		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 
 		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
-			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
+			const std::vector<std::array<Vector3, 12>>& envprism, const int& jump1,const int &jump2);
 
 
 

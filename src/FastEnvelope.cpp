@@ -321,7 +321,7 @@ namespace fastEnvelope {
 		for (int j = 0; j < inumber.size(); j++) {
 			interenvprism.emplace_back(envprism[inumber[j]]);
 		}
-		std::vector<int> jump;
+		int jump;
 		for (int i = 0; i < ps.size(); i++) {
 			out = point_out_prism(ps[i], interenvprism, jump);
 
@@ -424,7 +424,7 @@ namespace fastEnvelope {
 
 		}
 
-		std::vector<int> jump;
+		 int jump1,jump2;
 
 		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
 
@@ -434,11 +434,11 @@ namespace fastEnvelope {
 
 			tti;//triangle-triangle intersection
 
-		jump.clear();
-
+		
+		jump1 = -1;
 		for (int i = 0; i < 3; i++) {
 
-			out = point_out_prism(triangle[i], envprism, jump);
+			out = point_out_prism(triangle[i], envprism, jump1);
 
 			if (out == true) {
 
@@ -471,6 +471,7 @@ namespace fastEnvelope {
 											// the segment is {triangle[triseg[we][0]], triangle[triseg[we][1]]}
 
 				for (int i = 0; i < envprism.size(); i++) {
+					jump1 = i;
 
 					for (int j = 0; j < 8; j++) {
 
@@ -490,14 +491,12 @@ namespace fastEnvelope {
 
 							}
 
-							jump.clear();
-
-							jump.emplace_back(i);
+							
 
 
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
 
-								{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
+								{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump1);
 
 
 							if (inter == 1) {
@@ -535,6 +534,7 @@ namespace fastEnvelope {
 
 
 		for (int i = 0; i < envprism.size(); i++) {
+			jump1 = i;
 
 			for (int j = 0; j < 8; j++) {
 
@@ -551,14 +551,14 @@ namespace fastEnvelope {
 					}
 
 					record1 = 0;
-					jump.clear();
+					
 
-					jump.emplace_back(i);
+					
 
 					for (int k = 0; k < 3; k++) {
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
 
-							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump);
+							{ { envprism[i][p_triangle[j][c][0]], envprism[i][p_triangle[j][c][1]], envprism[i][p_triangle[j][c][2]] } }, envprism, jump1);
 
 						go1++;
 
@@ -595,7 +595,7 @@ namespace fastEnvelope {
 
 
 		for (int i = 1; i < listsize; i++) {
-
+			jump1 = inter_ijk_list[i][0];
 			for (int j = 0; j < i; j++) {
 
 				//check triangle{ { envprism[list[i][0]][p_triangle[list[i][1]][list[i][2]][0]], ...[1],...[2] } } and triangle{ { envprism[list[j][0]][p_triangle[list[j][1]][list[j][2]][0]], ...[1],...[2] } }
@@ -618,16 +618,9 @@ namespace fastEnvelope {
 					}
 					if (tti == CUT_COPLANAR || tti == CUT_EMPTY) continue;
 
-					
+				
 
-					
-					jump.clear();
-
-					jump.emplace_back(inter_ijk_list[i][0]);
-
-					jump.emplace_back(inter_ijk_list[j][0]);
-
-
+					jump2 = inter_ijk_list[j][0];
 
 					int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
 
@@ -635,7 +628,7 @@ namespace fastEnvelope {
 
 						{ { envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][0]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][1]],envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][2]] } },
 
-						envprism, jump);
+						envprism, jump1, jump2);
 
 					go2++;
 
@@ -661,13 +654,13 @@ namespace fastEnvelope {
 
 					if (id0 != -1) {//find map
 
-						jump.clear();
+						
 
-						jump.emplace_back(inter_ijk_list[i][0]);
+						
 
 						//the segment is envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][0]],envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][1]]
 
-						int inter2 = Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(envprism[inter_ijk_list[i][0]][id0], envprism[inter_ijk_list[i][0]][id1], triangle, envprism, jump);
+						int inter2 = Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(envprism[inter_ijk_list[i][0]][id0], envprism[inter_ijk_list[i][0]][id1], triangle, envprism, jump1);
 
 						go2++;
 						if (inter2 == 1) {
@@ -709,8 +702,8 @@ namespace fastEnvelope {
 	};
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
-		int jm = 0, ori;
+		const std::vector<std::array<Vector3, 12>>& envprism, const int& jump) {
+		int  ori;
 		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
 		
 		if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
@@ -737,12 +730,12 @@ namespace fastEnvelope {
 			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
 				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
 			for (int i = 0; i < envprism.size(); i++) {
-				if (jump.size() > 0) {
-					if (i == jump[jm]) {//TODO jump avoid vector
-						jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-						continue;
-					}
+
+				if (i == jump) {
+					
+					continue;
 				}
+
 				tot = 0;
 				for (int j = 0; j < 8; j++) {
 					//ftimer2.start();
@@ -778,11 +771,9 @@ namespace fastEnvelope {
 		INDEX index;
 		std::vector<INDEX> recompute;
 		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {//TODO jump avoid vector
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
+			if (i == jump) {
+
+				continue;
 			}
 
 			index.FACES.clear();
@@ -859,8 +850,8 @@ namespace fastEnvelope {
 		return OUT_PRISM;
 	}
 	int FastEnvelope::Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-		const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
-		int jm = 0, ori;
+		const std::vector<std::array<Vector3, 12>>& envprism, const int& jump) {
+		int  ori;
 		int inter = seg_cut_tri(segpoint0, segpoint1, triangle[0], triangle[1], triangle[2]);
 
 		if (inter == CUT_COPLANAR || inter == CUT_EMPTY) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
@@ -887,12 +878,8 @@ namespace fastEnvelope {
 			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
 				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
 			for (int i = 0; i < envprism.size(); i++) {
-				if (jump.size() > 0) {
-					if (i == jump[jm]) {//TODO jump avoid vector
-						jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-						continue;
-					}
-				}
+				if (i == jump) continue;
+
 				tot = 0;
 				for (int j = 0; j < 8; j++) {
 					//ftimer2.start();
@@ -928,12 +915,7 @@ namespace fastEnvelope {
 		INDEX index;
 		std::vector<INDEX> recompute;
 		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {//TODO jump avoid vector
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
-			}
+			if (i == jump) continue;
 
 			index.FACES.clear();
 			tot = 0;
@@ -1006,8 +988,8 @@ namespace fastEnvelope {
 		return OUT_PRISM;
 	}
 
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump) {
-		int jm = 0, ori;
+	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2, const std::vector<std::array<Vector3, 12>>& envprism, const int& jump1, const int &jump2) {
+		int ori;
 		int tot;
 		bool in = is_3_triangle_cut(triangle, facet1, facet2);
 
@@ -1046,12 +1028,7 @@ namespace fastEnvelope {
 				f200, f201, f202, f210, f211, f212, f220, f221, f222,
 				dr, n1r, n2r, n3r, check_rational);
 			for (int i = 0; i < envprism.size(); i++) {
-				if (jump.size() > 0) {
-					if (i == jump[jm]) {//TODO jump avoid vector
-						jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-						continue;
-					}
-				}
+				if (i == jump1 || i == jump2) continue;
 				tot = 0;
 				for (int j = 0; j < 8; j++) {
 					//ftimer2.start();
@@ -1084,12 +1061,8 @@ namespace fastEnvelope {
 		INDEX index;
 		std::vector<INDEX> recompute;
 		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {//TODO jump avoid vector
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
-			}
+			if (i == jump1 || i == jump2) continue;
+
 
 			index.FACES.clear();
 			tot = 0;
@@ -1542,18 +1515,13 @@ namespace fastEnvelope {
 
 
 
-	bool FastEnvelope::point_out_prism(const Vector3 & point, const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump)
+	bool FastEnvelope::point_out_prism(const Vector3 & point, const std::vector<std::array<Vector3, 12>>& envprism, const int& jump)
 	{
 
-		int jm = 0, ori;
+		int  ori;
 
 		for (int i = 0; i < envprism.size(); i++) {
-			if (jump.size() > 0) {
-				if (i == jump[jm]) {//TODO jump avoid vector
-					jm = (jm + 1) >= jump.size() ? 0 : (jm + 1);
-					continue;
-				}
-			}
+			if (i = jump) continue;
 
 			for (int j = 0; j < 8; j++) {
 
