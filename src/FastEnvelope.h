@@ -51,7 +51,7 @@ namespace fastEnvelope {
 	private:
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
-		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism) const;
+		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex) const;
 
 		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
 	public:
@@ -131,7 +131,7 @@ namespace fastEnvelope {
 		}
 
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
-		static bool point_out_prism(const Vector3& point, const std::vector<std::array<Vector3, 12>>& envprism, const int& jump);
+		bool point_out_prism(const Vector3& point, const std::vector<int>& prismindex, const int& jump) const;
 
 		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon);
 
@@ -139,18 +139,18 @@ namespace fastEnvelope {
 		static int Implicit_Seg_Facet_interpoint_Out_Prism_redundant(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 
-		static int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-			const std::vector<std::array<Vector3, 12>>& envprism, const int& jump);
+		 int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
+			const std::vector<int>& prismindex, const int& jump)const;
 
-		static int Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-			const std::vector<std::array<Vector3, 12>>& envprism, const int& jump);
+		 int Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
+			const std::vector<int>& prismindex, const int& jump)const;
 
 
 		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_redundant(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
 			const std::vector<std::array<Vector3, 12>>& envprism, const std::vector<int>& jump);
 
-		static int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
-			const std::vector<std::array<Vector3, 12>>& envprism, const int& jump1,const int &jump2);
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, const std::array<Vector3, 3>& facet1, const std::array<Vector3, 3>& facet2,
+			const std::vector<int>& prismindex, const int& jump1,const int &jump2) const;
 
 
 
