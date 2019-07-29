@@ -321,7 +321,7 @@ namespace fastEnvelope {
 		for (int j = 0; j < inumber.size(); j++) {
 			interenvprism.emplace_back(envprism[inumber[j]]);
 		}
-		int jump;
+		int jump = -1;
 		for (int i = 0; i < ps.size(); i++) {
 			out = point_out_prism(ps[i], interenvprism, jump);
 
@@ -1521,7 +1521,7 @@ namespace fastEnvelope {
 		int  ori;
 
 		for (int i = 0; i < envprism.size(); i++) {
-			if (i = jump) continue;
+			if (i == jump) continue;
 
 			for (int j = 0; j < 8; j++) {
 
