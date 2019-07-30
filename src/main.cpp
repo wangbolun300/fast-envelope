@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100339\\100339.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100339\\Stonehenge_Piece1_X1.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -1083,7 +1083,7 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 	
-	//test_in_wild();
+	test_in_wild();
 
 
 	//writelist();

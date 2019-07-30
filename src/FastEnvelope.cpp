@@ -28,32 +28,9 @@ static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 
 		}
 };
+static const int p_facenumber = 8;
 
 
-//static  std::map<std::array<int, 2>, std::array<int, 2>>prism_map = {
-//		{
-//			{{0,2},{0,1}},
-//	{{0,3},{1,2}},
-//	{{0,4},{2,3}},
-//	{{0,5},{3,4}},
-//	{{0,6},{4,5}},
-//	{{0,7},{0,5}},
-//	{{1,2},{6,7}},
-//	{{1,3},{7,8}},
-//	{{1,4},{8,9}},
-//	{{1,5},{9,10}},
-//	{{1,6},{10,11}},
-//	{{1,7},{6,11}},
-//	{{2,3},{1,7}},
-//	{{2,7},{0,6}},
-//	{{3,4},{2,8}},
-//	{{4,5},{3,9}},
-//	{{5,6},{4,10}},
-//	{{6,7},{5,11}}
-//
-//
-//	}
-//};
 static const int prism_map[64][2] = {
 {-1, -1},
  {-1, -1},
@@ -468,7 +445,7 @@ namespace fastEnvelope {
 				for (int i = 0; i < prismindex.size(); i++) {
 					jump1 = prismindex[i];
 
-					for (int j = 0; j < 8; j++) {
+					for (int j = 0; j < p_facenumber; j++) {
 
 						for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 
@@ -528,7 +505,7 @@ namespace fastEnvelope {
 		for (int i = 0; i < prismindex.size(); i++) {
 			jump1 = prismindex[i];
 
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < p_facenumber; j++) {
 
 				for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 
@@ -736,7 +713,7 @@ namespace fastEnvelope {
 				}
 
 				tot = 0;
-				for (int j = 0; j < 8; j++) {
+				for (int j = 0; j < p_facenumber; j++) {
 					//ftimer2.start();
 					
 					e00=envprism[prismindex[i]][p_face[j][0]][0]; e01=envprism[prismindex[i]][p_face[j][0]][1]; e02=envprism[prismindex[i]][p_face[j][0]][2];
@@ -757,7 +734,7 @@ namespace fastEnvelope {
 					}
 
 				}
-				if (tot == 8) {
+				if (tot == p_facenumber) {
 
 					return IN_PRISM;
 				}
@@ -777,7 +754,7 @@ namespace fastEnvelope {
 
 			index.FACES.clear();
 			tot = 0;
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < p_facenumber; j++) {
 				//ftimer2.start();
 				ori = ip_filtered::
 					orient3D_LPI_postfilter(
@@ -800,7 +777,7 @@ namespace fastEnvelope {
 				}
 
 			}
-			if (tot == 8) {
+			if (tot == p_facenumber) {
 
 				return IN_PRISM;
 			}
@@ -905,7 +882,7 @@ namespace fastEnvelope {
 				}
 
 				tot = 0;
-				for (int j = 0; j < 8; j++) {
+				for (int j = 0; j < p_facenumber; j++) {
 					//ftimer2.start();
 					
 
@@ -927,7 +904,7 @@ namespace fastEnvelope {
 					}
 
 				}
-				if (tot == 8) {
+				if (tot == p_facenumber) {
 
 					return IN_PRISM;
 				}
@@ -947,7 +924,7 @@ namespace fastEnvelope {
 
 			index.FACES.clear();
 			tot = 0;
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < p_facenumber; j++) {
 				//ftimer2.start();
 				ori = ip_filtered::
 					orient3D_LPI_postfilter(
@@ -970,7 +947,7 @@ namespace fastEnvelope {
 				}
 
 			}
-			if (tot == 8) {
+			if (tot == p_facenumber) {
 
 				return IN_PRISM;
 			}
@@ -1089,7 +1066,7 @@ namespace fastEnvelope {
 			for (int i = 0; i < prismindex.size(); i++) {
 				if (prismindex[i] == jump1 || prismindex[i] == jump2) continue;
 				tot = 0;
-				for (int j = 0; j < 8; j++) {
+				for (int j = 0; j < p_facenumber; j++) {
 					
 					e00=(envprism[prismindex[i]][p_face[j][0]][0]); e01=(envprism[prismindex[i]][p_face[j][0]][1]); e02=(envprism[prismindex[i]][p_face[j][0]][2]);
 					e10=(envprism[prismindex[i]][p_face[j][1]][0]); e11=(envprism[prismindex[i]][p_face[j][1]][1]); e12=(envprism[prismindex[i]][p_face[j][1]][2]);
@@ -1107,7 +1084,7 @@ namespace fastEnvelope {
 					}
 
 				}
-				if (tot == 8) {
+				if (tot == p_facenumber) {
 
 					return IN_PRISM;
 				}
@@ -1124,7 +1101,7 @@ namespace fastEnvelope {
 
 			index.FACES.clear();
 			tot = 0;
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < p_facenumber; j++) {
 				//ftimer2.start();
 				ori = ip_filtered::
 					orient3D_TPI_postfilter(
@@ -1146,7 +1123,7 @@ namespace fastEnvelope {
 				}
 
 			}
-			if (tot == 8) {
+			if (tot == p_facenumber) {
 
 				return IN_PRISM;
 			}
@@ -1511,7 +1488,7 @@ namespace fastEnvelope {
 		for (int i = 0; i < prismindex.size(); i++) {
 			if (prismindex[i] == jump) continue;
 
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < p_facenumber; j++) {
 
 				ori = Predicates::orient_3d(envprism[prismindex[i]][p_face[j][0]], envprism[prismindex[i]][p_face[j][1]], envprism[prismindex[i]][p_face[j][2]], point);
 				if (ori == -1 || ori == 0) {
@@ -1565,20 +1542,18 @@ namespace fastEnvelope {
 		Parameters pram;
 		std::array<Vector3, 6> polygon;
 		std::array<Vector3, 12> polygonoff;
-		Scalar  a, b, c,
+		Scalar 
 			tolerance = epsilon/ sqrt(3),
 
 			area;
-
+		static std::array<Vector3,3> triangle;
 		for (int i = 0; i < m_faces.size(); i++) {
 			AB = m_ver[m_faces[i][1]] - m_ver[m_faces[i][0]];
 			AC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][0]];
 			BC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][1]];
-			a = BC.norm();
-			b = AC.norm();
-			c = AB.norm();
-			area = 0.25*sqrt((a + b + c)*(a + b - c)*(a + c - b)*(b + c - a));
-			if (area < SCALAR_ZERO) {//TODO fix this with degeneration detection function
+			triangle = { {m_ver[m_faces[i][0]],m_ver[m_faces[i][1]],m_ver[m_faces[i][2]]} };
+			area = is_triangle_degenerated(triangle);
+			if (area != NOT_DEGENERATED) {//TODO fix this with degeneration detection function
 				std::cout << "Envelope Triangle Degeneration" << std::endl;
 				continue;
 			}
