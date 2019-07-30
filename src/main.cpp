@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\101249.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -995,7 +995,11 @@ int main(int argc, char const *argv[])
 	std::cout << rrr << std::endl;
 	Scalar p = 1.3;
 	Rational pr(p);
-	std::cout << pr << std::endl;
+	pr = pr * pr;
+	pr = pr * pr;
+	pr = pr * pr;
+	double pr1;
+	std::cout << std::setprecision(17) << pr << std::endl;
 	rational_try(Rational(0.7));
 	/*const std::function<int(double)> check_double = [](double v) {
 
@@ -1079,7 +1083,7 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 	
-	test_in_wild();
+	//test_in_wild();
 
 
 	//writelist();
