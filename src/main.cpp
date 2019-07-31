@@ -636,9 +636,33 @@ void test_in_wild() {
 	const int spac = 10;// space subdivision parameter
 	const int fn = triangles.size();//test face number
 	//////////////////////////////////////////////////////////////
+
+
+
 	eps = eps / shrink;
 	eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
 	igl::Timer timer;
+
+
+	/////////////////////////////////
+	//for aabb method
+	Vector3 min, max;
+	Parameters params;
+	Scalar dd;
+	get_bb_corners(params, env_vertices, min, max);
+	dd = ((max - min).norm()) / 1000 / shrink;
+	timer.start();
+	AABBWrapper sf_tree(envmesh);
+	for (int i = 0; i < fn; i++) {
+
+		is_out_function(triangles[i], dd, sf_tree); ;
+	}
+	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
+
+	std::cout << "TEST aabb FINISHED  " << std::endl;
+	//////////////////////////////
+
+
 	timer.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	vector<bool> pos1, pos2;
