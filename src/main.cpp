@@ -640,26 +640,26 @@ void test_in_wild() {
 
 
 	eps = eps / shrink;
-	eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
+	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
 	igl::Timer timer;
 
 
 	/////////////////////////////////
-	//for aabb method
-	Vector3 min, max;
-	Parameters params;
-	Scalar dd;
-	get_bb_corners(params, env_vertices, min, max);
-	dd = ((max - min).norm()) / 1000 / shrink;
-	timer.start();
-	AABBWrapper sf_tree(envmesh);
-	for (int i = 0; i < fn; i++) {
+	////for aabb method
+	//Vector3 min, max;
+	//Parameters params;
+	//Scalar dd;
+	//get_bb_corners(params, env_vertices, min, max);
+	//dd = ((max - min).norm()) / 1000 / shrink;
+	//timer.start();
+	//AABBWrapper sf_tree(envmesh);
+	//for (int i = 0; i < fn; i++) {
 
-		is_out_function(triangles[i], dd, sf_tree); ;
-	}
-	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
+	//	is_out_function(triangles[i], dd, sf_tree); ;
+	//}
+	//cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
 
-	std::cout << "TEST aabb FINISHED  " << std::endl;
+	//std::cout << "TEST aabb FINISHED  " << std::endl;
 	//////////////////////////////
 
 
@@ -679,7 +679,7 @@ void test_in_wild() {
 
 
 
-	int rcd = 0, eq0 = 0, eq02 = 0,rmk=0;
+	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
 	for (int i = 0; i < fn; i++) {
 		if (pos1[i] - pos2[i] != 0) {
 			//if (pos1[i]== 0) {
@@ -705,7 +705,7 @@ void test_in_wild() {
 	cout << endl;
 	FastEnvelope::print_number();
 
-	 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	std::vector<bool> pos3;
 	pos3.resize(fn);
@@ -719,7 +719,7 @@ void test_in_wild() {
 		tri = triangles[i];
 		l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
 		//l1 = (tri[0] - tri[1]).norm() / 30;
-		pos3[i]=fast_envelope.sample_triangle_outside(tri, l1);
+		pos3[i] = fast_envelope.sample_triangle_outside(tri, l1);
 	}
 
 	int count = 0, count1 = 0, count2 = 0, count3 = 0;
@@ -745,15 +745,15 @@ void test_in_wild() {
 
 	std::cout << "how many different cases in comparison:  " << count << std::endl;
 	std::cout << "1-0 cases in comparison:  " << count1 << std::endl;
-	std::cout << "**0-1 cases in comparison:  " << count-count1 << std::endl;
+	std::cout << "**0-1 cases in comparison:  " << trindex1.size() << std::endl;
 	std::cout << "1-0 case size:  " << trindex2.size() << std::endl;
 	std::cout << "our inside size:  " << insiden_o << std::endl;
 	std::cout << "sap inside size:  " << insiden_s << std::endl;
 
 	int nbr = 0;
 	for (int i = 0; i < trindex2.size(); i++) {
-		
-		if (FastEnvelope::is_triangle_degenerated(triangles[trindex2[i]][0], triangles[trindex2[i]][1], triangles[trindex2[i]][2])!= 0) {
+
+		if (FastEnvelope::is_triangle_degenerated(triangles[trindex2[i]][0], triangles[trindex2[i]][1], triangles[trindex2[i]][2]) != 0) {
 			nbr++;
 		}
 
@@ -761,14 +761,14 @@ void test_in_wild() {
 	cout << "\ndegeneration counting: " << nbr << endl;
 
 	////////////////////////////////////////////////////////////////////////////////////////
-	
-	cout << "\nstarting iteration: " << nbr << endl;
+
+	cout << "\nstarting iteration: " << endl;
 
 	const int irt = 12;
 	std::vector<bool> pos4;
-	vector<int> ti,ti1;//triangle index
+	vector<int> ti, ti1;//triangle index
 	ti = trindex2;
-	int lth[irt] = { 60,100,200,400,600,800,1000,2000,2500,5000,10000,20000};
+	int lth[irt] = { 60,100,200,400,600,800,1000,2000,2500,5000,10000,20000 };
 	for (int j = 0; j < irt; j++) {
 		int howmany = 0;
 		ti1.resize(0);
@@ -791,7 +791,8 @@ void test_in_wild() {
 		}
 		else {
 			cout << "kill all the different cases";
-			break; };
+			break;
+		};
 	}
 
 
@@ -832,31 +833,78 @@ void test_in_wild() {
 
 
 
-	
-	if (ti1.size() > 0) {
+
+	if (trindex1.size() > 0) {
 		std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-		int idx = 1;
-		std::cout << "output NO. " << ti[idx] << endl;
+		int idx = 0;
+		std::cout << "output NO. " << trindex1[idx] << endl;
 		for (int i = 0; i < 3; i++) {
 
-			fout << std::setprecision(17) << triangles[ti[idx]][i][0] << " " << triangles[ti[idx]][i][1] << " " << triangles[ti[idx]][i][2] << endl;
+			fout << std::setprecision(17) << triangles[trindex1[idx]][i][0] << " " << triangles[trindex1[idx]][i][1] << " " << triangles[trindex1[idx]][i][2] << endl;
 
 		}
 		fout.close();
 
-		fast_envelope.print_prisms(triangles[ti[idx]]);
-		int signal = 1;
-		//fast_envelope.is_outside_signal(triangles[trindex1[idx]], signal);
+		fast_envelope.print_prisms(triangles[trindex1[idx]]);
+
 	}
-	
 
 
+	//////////
+	//fast_envelope.sample_triangle_outside(triangles[trindex1[0]], l1);
+
+}
+void fordebug() {
+
+
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
+	vector<int> outenvelope;
+	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
+
+	std::vector<Vector3> env_vertices;
+	std::vector<Vector3i> env_faces;
+	GEO::Mesh envmesh;
+
+	///////////////////////////////////////////////////////
+	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
+	if (!ok1) {
+		std::cout << ("Unable to load mesh") << std::endl;
+		return;
+	}
+	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
+
+
+
+	Scalar shrink = 10;
+	Scalar eps = 1e-3;
+	const int spac = 10;// space subdivision parameter
+	const int fn = triangles.size();//test face number
+	//////////////////////////////////////////////////////////////
+
+
+
+	eps = eps / shrink;
+	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
+	igl::Timer timer;
+
+
+
+
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+
+
+
+
+
+	//////////
+	//fast_envelope.sample_triangle_outside(triangles[trindex1[0]], l1);
 
 
 	////////////////////////////////////////////////////////////////////////////////////////
-}
 
+}
 
 void sample_triangle_test() {
 	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
