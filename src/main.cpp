@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100339\\100339.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100339\\Stonehenge_Piece1_X1.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -729,7 +729,7 @@ void test_in_wild() {
 	int nbr = 0;
 	for (int i = 0; i < trindex2.size(); i++) {
 		
-		if (FastEnvelope::is_triangle_degenerated(triangles[trindex2[i]])!= 0) {
+		if (FastEnvelope::is_triangle_degenerated(triangles[trindex2[i]][0], triangles[trindex2[i]][1], triangles[trindex2[i]][2])!= 0) {
 			nbr++;
 		}
 

@@ -199,7 +199,7 @@ namespace fastEnvelope {
 		Vector3 tmin, tmax;
 		std::vector<int> inumber;
 		std::vector<int> intercell;
-		//TODO: use index instead of copying
+	
 		
 		get_triangle_corners(triangle, tmin, tmax);
 		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
@@ -311,7 +311,7 @@ namespace fastEnvelope {
 	void FastEnvelope::triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error) {
 		ps.clear();
 		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm(), l3 = (triangle[2] - triangle[1]).norm();//length
-		int de = is_triangle_degenerated(triangle);
+		int de = is_triangle_degenerated(triangle[0],triangle[1],triangle[2]);
 		if (de==DEGENERATED_POINT) {
 			ps.push_back(triangle[0]);
 			return;
@@ -426,7 +426,7 @@ namespace fastEnvelope {
 
 		////////////////////degeneration fix
 
-		int degeneration = is_triangle_degenerated(triangle);
+		int degeneration = is_triangle_degenerated(triangle[0],triangle[1],triangle[2]);
 
 		if (degeneration == DEGENERATED_POINT) {//case 1 degenerate to a point
 
@@ -515,7 +515,7 @@ namespace fastEnvelope {
 						break;
 					}
 
-					if (tti == CUT_EMPTY) {//TODO maybe redundant because we want "float above" case leading to break
+					if (tti == CUT_EMPTY) {
 						continue;
 					}
 
@@ -714,7 +714,7 @@ namespace fastEnvelope {
 
 				tot = 0;
 				for (int j = 0; j < p_facenumber; j++) {
-					//ftimer2.start();
+					
 					
 					e00=envprism[prismindex[i]][p_face[j][0]][0]; e01=envprism[prismindex[i]][p_face[j][0]][1]; e02=envprism[prismindex[i]][p_face[j][0]][2];
 					e10=envprism[prismindex[i]][p_face[j][1]][0]; e11=envprism[prismindex[i]][p_face[j][1]][1]; e12=envprism[prismindex[i]][p_face[j][1]][2];
@@ -824,7 +824,7 @@ namespace fastEnvelope {
 					if (ori == 1) after11++;
 					if (ori == -1) after12++;
 					if (ori == 0) after10++;
-					//if (ori == -2) std::cout << "impossible thing happens in lpi" << std::endl;
+					
 					if (ori == 1 || ori == 0) break;
 				}
 
@@ -1505,9 +1505,9 @@ namespace fastEnvelope {
 		return true;
 	}
 
-	int FastEnvelope::is_triangle_degenerated(const std::array<Vector3, 3>& triangle) {//TODO temporary version of degeneration detection
+	int FastEnvelope::is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2) {
 
-		Vector3 a = triangle[0] - triangle[1], b = triangle[0] - triangle[2];
+		Vector3 a = triangle0 - triangle1, b = triangle0 - triangle2;
 		Vector3 normal = a.cross(b);
 		Scalar nbr = normal.norm();
 
@@ -1517,23 +1517,25 @@ namespace fastEnvelope {
 		int ori;
 		std::array < Vector2, 3> p;
 		for (int j = 0; j < 3; j++) {
-			for (int i = 0; i < 3; i++) {
-				p[i] = to_2d(triangle[i], j);
-			}
+			
+			p[0] = to_2d(triangle0, j);
+			p[1] = to_2d(triangle1, j);
+			p[2] = to_2d(triangle2, j);
+			
 			ori = Predicates::orient_2d(p[0], p[1], p[2]);
 			if (ori != 0) {
 				return NERLY_DEGENERATED;
 			}
 		}
 
-		if (triangle[0][0] != triangle[1][0] || triangle[0][1] != triangle[1][1] || triangle[0][2] != triangle[1][2]) {
+		if (triangle0[0] != triangle1[0] || triangle0[1] != triangle1[1] || triangle0[2] != triangle1[2]) {
 			return DEGENERATED_SEGMENT;
 		}
-		if (triangle[0][0] != triangle[2][0] || triangle[0][1] != triangle[2][1] || triangle[0][2] != triangle[2][2]) {
+		if (triangle0[0] != triangle2[0] || triangle0[1] != triangle2[1] || triangle0[2] != triangle2[2]) {
 			return DEGENERATED_SEGMENT;
 		}
 		return DEGENERATED_POINT;
-		//TODO not finished
+		
 	}
 	void FastEnvelope::BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon)
 	{
@@ -1546,15 +1548,17 @@ namespace fastEnvelope {
 			tolerance = epsilon/ sqrt(3),
 
 			area;
-		static std::array<Vector3,3> triangle;
+		
 		for (int i = 0; i < m_faces.size(); i++) {
 			AB = m_ver[m_faces[i][1]] - m_ver[m_faces[i][0]];
 			AC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][0]];
 			BC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][1]];
-			triangle = { {m_ver[m_faces[i][0]],m_ver[m_faces[i][1]],m_ver[m_faces[i][2]]} };
-			area = is_triangle_degenerated(triangle);
-			if (area != NOT_DEGENERATED) {//TODO fix this with degeneration detection function
+			area = is_triangle_degenerated(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
+			if (area != NOT_DEGENERATED) {
 				std::cout << "Envelope Triangle Degeneration" << std::endl;
+
+				//TODO 
+
 				continue;
 			}
 			normal = AB.cross(AC).normalized();
@@ -1589,6 +1593,7 @@ namespace fastEnvelope {
 			envprism.emplace_back(polygonoff);
 
 		}
+		
 
 
 	}

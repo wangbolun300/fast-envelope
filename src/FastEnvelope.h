@@ -35,9 +35,7 @@ namespace fastEnvelope {
 		inline int prism_size() const { return envprism.size(); }
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
-		static int test_dege(const std::array<Vector3, 3>& triangle) {
-			return is_triangle_degenerated(triangle);
-		}
+		
 		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit);
 
 	private:
@@ -46,6 +44,7 @@ namespace fastEnvelope {
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
 		std::vector<std::array<Vector3, 2>> cornerlist;
+		std::vector<std::array<Vector3, 8>> envcubic;
 		Vector3 min, max;
 		int subx, suby, subz;
 	private:
@@ -162,7 +161,7 @@ namespace fastEnvelope {
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, 
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2);
 		public:
-		static int is_triangle_degenerated(const std::array<Vector3, 3>& triangle);
+		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);
 		private:
 		static Vector2 to_2d(const Vector3 &p, int t) {
 			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
