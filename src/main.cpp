@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100729\\100729.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100729\\Diff_Casing_Side_2.A.9.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -631,7 +631,7 @@ void test_in_wild() {
 
 
 
-	Scalar shrink = 10;
+	Scalar shrink = 1;
 	Scalar eps = 1e-3;
 	const int spac = 10;// space subdivision parameter
 	const int fn = triangles.size();//test face number
@@ -850,9 +850,23 @@ void test_in_wild() {
 
 	}
 
+	////for aabb method
+	Vector3 min, max;
+	Parameters params;
+	Scalar dd;
+	get_bb_corners(params, env_vertices, min, max);
+	dd = ((max - min).norm()) / 1000 / shrink;
+	timer.start();
+	AABBWrapper sf_tree(envmesh);
+	for (int i = 0; i < fn; i++) {
 
+		is_out_function(triangles[i], dd, sf_tree); ;
+	}
+	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
+
+	std::cout << "TEST aabb FINISHED  " << std::endl;
+	//////////////////////////////
 	//////////
-	//fast_envelope.sample_triangle_outside(triangles[trindex1[0]], l1);
 
 }
 void fordebug() {
@@ -1179,10 +1193,10 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 	
-	//test_in_wild();
+	test_in_wild();
 
 
-	fordebug();
+	//fordebug();
 	//writelist();
 
 	//inf();
