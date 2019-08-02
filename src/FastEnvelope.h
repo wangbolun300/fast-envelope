@@ -197,13 +197,168 @@ namespace fastEnvelope {
 			T py_ry( py - ry);
 			T pz_rz( pz - rz);
 
-			T n ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
+			T n((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
 
 			a11 = a11 * n;
 			a12 = a12 * n;
 			a13 = a13 * n;
 			return true;
 		}
+
+		
+		template<typename T>
+		static int orient3D_LPI_filtered_multiprecision(
+			T px, T py, T pz, T qx, T qy, T qz,
+			T rx, T ry, T rz, T sx, T sy, T sz, T tx, T ty, T tz,
+			T ax, T ay, T az, T bx, T by, T bz, T cx, T cy, T cz, const std::function<int(T)> &checker) {
+
+
+			T a11(px - qx);
+
+			T a12(py - qy);
+
+			T a13(pz - qz);
+
+			T a21(sx - rx);
+
+			T a22(sy - ry);
+
+			T a23(sz - rz);
+
+			T a31(tx - rx);
+
+			T a32(ty - ry);
+
+			T a33(tz - rz);
+
+			T a2233((a22 * a33) - (a23 * a32));
+
+			T a2133((a21 * a33) - (a23 * a31));
+
+			T a2132((a21 * a32) - (a22 * a31));
+
+			T d(((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
+
+			//std::cout << "d digits " << d.ref_lower()->precision() << std::endl;
+
+			//std::cout << "d  " << d << std::endl;
+
+			int flag1 = checker(d);
+
+			if (flag1 == -2) {
+
+				return 100;// not enough precision
+
+			}
+
+			if (flag1 == 0) {
+
+				return -2;// not exist
+
+			}
+
+			// The almost static filter for 'd' might be moved here
+
+			T px_rx(px - rx);
+
+			T py_ry(py - ry);
+
+			T pz_rz(pz - rz);
+
+			T n((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
+
+
+
+			T px_cx(px - cx);
+
+			T py_cy(py - cy);
+
+			T pz_cz(pz - cz);
+
+
+
+			T d11((d * px_cx) + (a11 * n));
+
+			T d21(ax - cx);
+
+			T d31(bx - cx);
+
+			T d12((d * py_cy) + (a12 * n));
+
+			T d22(ay - cy);
+
+			T d32(by - cy);
+
+			T d13((d * pz_cz) + (a13 * n));
+
+			T d23(az - cz);
+
+			T d33(bz - cz);
+
+
+
+			T d2233(d22 * d33);
+
+			T d2332(d23 * d32);
+
+			T d2133(d21 * d33);
+
+			T d2331(d23 * d31);
+
+			T d2132(d21 * d32);
+
+			T d2231(d22 * d31);
+
+
+			T det(d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231));
+
+			int flag2 = checker(det);
+
+			if (flag2 == -2) {
+
+				return 100;// not enough precision
+
+			}
+
+			if (flag2 == 1) {
+
+				if (flag1 == 1) {
+
+					return 1;
+
+				}
+
+				if (flag1 == -1) {
+
+					return -1;
+
+				}
+
+			}
+
+			if (flag2 == -1) {
+
+				if (flag1 == 1) {
+
+					return -1;
+
+				}
+
+				if (flag1 == -1) {
+
+					return 1;
+
+				}
+
+			}
+
+			return 0;
+
+
+
+		}
+
+
 
 		template<typename T>
 		static bool orient3D_TPI_prefilter_multiprecision(

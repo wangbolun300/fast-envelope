@@ -879,7 +879,7 @@ void fordebug() {
 
 	Scalar shrink = 10;
 	Scalar eps = 1e-3;
-	const int spac = 10;// space subdivision parameter
+	const int spac = 30;// space subdivision parameter
 	const int fn = triangles.size();//test face number
 	//////////////////////////////////////////////////////////////
 
@@ -899,10 +899,34 @@ void fordebug() {
 
 
 	//////////
-	//fast_envelope.sample_triangle_outside(triangles[trindex1[0]], l1);
+	int id = 15619;
+	std::array<Vector3, 3> tri;
+	Scalar l1;
+	tri[0] = triangles[id][0];
+	tri[1] = triangles[id][1];
+	tri[2] = triangles[id][2];
+	l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
 
+	bool out=fast_envelope.sample_triangle_outside(triangles[15619], l1);
 
+	std::cout << "sample out or not " << out << std::endl;
+
+	out = fast_envelope.is_outside(tri);
+	std::cout << "our out or not " << out << std::endl;
 	////////////////////////////////////////////////////////////////////////////////////////
+
+
+	std::ofstream fout;
+	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
+	
+	for (int i = 0; i < 3; i++) {
+
+		fout << std::setprecision(17) << triangles[id][i][0] << " " << triangles[id][i][1] << " " << triangles[id][i][2] << endl;
+
+	}
+	fout.close();
+
+	fast_envelope.print_prisms(triangles[id]);
 
 }
 
@@ -1155,9 +1179,10 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 	
-	test_in_wild();
+	//test_in_wild();
 
 
+	fordebug();
 	//writelist();
 
 	//inf();
