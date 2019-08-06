@@ -368,8 +368,7 @@ namespace GEO {
                 1, 0, mesh_.facets.nb()
             ) + 1 // <-- this is because size == max_index + 1 !!!
         );
-        init_bboxes_recursive(
-            mesh_, bboxes_, 1, 0, mesh_.facets.nb(), get_facet_bbox
+        init_bboxes_recursive( mesh_, bboxes_, 1, 0, mesh_.facets.nb(), get_facet_bbox
         );
     }
 

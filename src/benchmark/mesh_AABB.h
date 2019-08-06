@@ -272,7 +272,7 @@ namespace GEO {
 
             // Leaf case
             if(e == b+1) {
-                action(b);
+                action.push_back(b);
                 return;
             }
 

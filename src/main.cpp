@@ -257,7 +257,7 @@ void add_hashing() {
 	eps = eps / shrink;
 	eps=eps*sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
 
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac,envmesh);
 
 	dd = ((max - min).norm()) / 1000 / shrink;
 	std::vector<GEO::vec3> ps;
@@ -664,7 +664,7 @@ void test_in_wild() {
 
 
 	timer.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac, envmesh);
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
 	pos2.resize(fn);
@@ -906,41 +906,41 @@ void fordebug() {
 
 
 
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac,envmesh);
 
 
 
 
 
 	//////////
-	int id = 15619;
-	std::array<Vector3, 3> tri;
-	Scalar l1;
-	tri[0] = triangles[id][0];
-	tri[1] = triangles[id][1];
-	tri[2] = triangles[id][2];
-	l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
+	//int id = 15619;
+	//std::array<Vector3, 3> tri;
+	//Scalar l1;
+	//tri[0] = triangles[id][0];
+	//tri[1] = triangles[id][1];
+	//tri[2] = triangles[id][2];
+	//l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
 
-	bool out=fast_envelope.sample_triangle_outside(triangles[15619], l1);
+	//bool out=fast_envelope.sample_triangle_outside(triangles[15619], l1);
 
-	std::cout << "sample out or not " << out << std::endl;
+	//std::cout << "sample out or not " << out << std::endl;
 
-	out = fast_envelope.is_outside(tri);
-	std::cout << "our out or not " << out << std::endl;
-	////////////////////////////////////////////////////////////////////////////////////////
+	//out = fast_envelope.is_outside(tri);
+	//std::cout << "our out or not " << out << std::endl;
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 
-	std::ofstream fout;
-	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-	
-	for (int i = 0; i < 3; i++) {
+	//std::ofstream fout;
+	//fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
+	//
+	//for (int i = 0; i < 3; i++) {
 
-		fout << std::setprecision(17) << triangles[id][i][0] << " " << triangles[id][i][1] << " " << triangles[id][i][2] << endl;
+	//	fout << std::setprecision(17) << triangles[id][i][0] << " " << triangles[id][i][1] << " " << triangles[id][i][2] << endl;
 
-	}
-	fout.close();
+	//}
+	//fout.close();
 
-	fast_envelope.print_prisms(triangles[id]);
+	//fast_envelope.print_prisms(triangles[id]);
 
 }
 
@@ -1193,10 +1193,10 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 	
-	test_in_wild();
+	//test_in_wild();
 
 
-	//fordebug();
+	fordebug();
 	//writelist();
 
 	//inf();

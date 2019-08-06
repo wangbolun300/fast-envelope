@@ -7,6 +7,8 @@
 #include<iostream>
 #include<arbitraryprecision/fprecision.h>
 #include<arbitraryprecision/intervalprecision.h>
+#include <fastenvelope/mesh_AABB.h>
+
 namespace fastEnvelope {
 
 
@@ -30,7 +32,7 @@ namespace fastEnvelope {
 		static const int DEGENERATED_POINT = 3;
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
-		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac);
+		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac, const GEO::Mesh& M1);
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		inline int prism_size() const { return envprism.size(); }
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
@@ -50,6 +52,7 @@ namespace fastEnvelope {
 	private:
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
+		
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex) const;
 
 		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
@@ -645,6 +648,72 @@ namespace fastEnvelope {
 
 		}
 
+		
+	};
+	class Envelope_AABB
+	{
+	public:
+		Envelope_AABB(const std::vector<std::array<Vector3, 2>> cornerlist);
+		
+		GEO::vector<GEO::Box> bboxes_;
+		
+
+		static void init_bboxes_recursive(
+			const std::vector<std::array<Vector3, 2>> cornerlist, GEO::vector<GEO::Box>& bboxes,
+			unsigned int node_index,
+			unsigned int b, unsigned int e) {
+			geo_debug_assert(node_index < bboxes.size());
+			geo_debug_assert(b != e);
+			if (b + 1 == e) {
+				for (int i = 0; i < 3; i++) {
+					bboxes[node_index].xyz_min[i] = cornerlist[b][0][i];//TODO not sure
+					bboxes[node_index].xyz_max[i] = cornerlist[b][1][i];
+				}
+
+				//get_bbox(M, bboxes[node_index], b);
+				return;
+			}
+			unsigned int  m = b + (e - b) / 2;
+			std::cout << "here 2,node index " << node_index<<" box size "<<bboxes.size() << std::endl;
+			unsigned int  childl = 2 * node_index;
+			unsigned int  childr = 2 * node_index + 1;
+			geo_debug_assert(childl < bboxes.size());
+			geo_debug_assert(childr < bboxes.size());
+			init_bboxes_recursive(cornerlist, bboxes, childl, b, m);
+			init_bboxes_recursive(cornerlist, bboxes, childr, m, e);
+			geo_debug_assert(childl < bboxes.size());
+			geo_debug_assert(childr < bboxes.size());
+			GEO::bbox_union(bboxes[node_index], bboxes[childl], bboxes[childr]);
+			std::cout << "here 2 " << bboxes.size() << std::endl;
+		}
+
+		template <class ACTION>
+		static void bbox_intersect_recursive(
+			ACTION& action,
+			const  GEO::Box& box,
+			GEO::index_t node, GEO::index_t b, GEO::index_t e
+		)  {
+			geo_debug_assert(e != b);
+
+			// Prune sub-tree that does not have intersection
+			if (!bboxes_overlap(box, bboxes_[node])) {
+				return;
+			}
+
+			// Leaf case
+			if (e == b + 1) {
+				action.push_back(b);
+				return;
+			}
+
+			// Recursion
+			index_t m = b + (e - b) / 2;
+			index_t node_l = 2 * node;
+			index_t node_r = 2 * node + 1;
+
+			bbox_intersect_recursive(action, box, node_l, b, m);
+			bbox_intersect_recursive(action, box, node_r, m, e);
+		}
 
 
 	};
