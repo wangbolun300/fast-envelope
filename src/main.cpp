@@ -6,7 +6,7 @@
 #include <istream>
 #include<fastenvelope/Predicates.hpp>
 #include<fastenvelope/Types.hpp>
-#include <fastenvelope/AABBWrapper.h>
+//#include <fastenvelope/AABBWrapper.h>
 #include <fastenvelope/Rational.hpp>
 #include <igl/Timer.h>
 #include <ctime>
@@ -193,33 +193,33 @@ void testOrientation() {
 	std::cout << "orientation test : " << ori << std::endl;
 }
 
-bool is_out_function(const std::array<Vector3, 3>& triangle, const Scalar& dd, AABBWrapper& sf_tree) {
-	std::vector<GEO::vec3> ps;
-	sample_triangle(triangle, ps, dd);//dd is used for sapmling
-	return sf_tree.is_out_sf_envelope(ps, pow(dd*(1 - (1 / sqrt(3))), 2));
-	//int cnt = 0;
-	//Scalar sq_dist;
-	//double sq_distg;
-	//GEO::vec3 nearest_point;
-	//const unsigned int ps_size = ps.size();
-	//for (unsigned int i = ps_size / 2;; i = (i + 1) % ps_size) {//check from the middle
-	////for (unsigned int i = 0; i < ps.size(); i++) {
-	//	GEO::vec3 &current_point = ps[i];
-	//	sf_tree.nearest_facet(current_point, nearest_point, sq_distg);
-	//	sq_dist = sq_distg;
-	//	if (sq_dist > pow(dd*(1 - (1 / sqrt(3))), 2))// eps_here=eps-dd/sprt(3). in this case eps=dd
-	//		return true;
-	//	cnt++;
-
-	//	if (cnt >= ps_size)
-	//		break;
-
-
-	//}
-	//return false;
-}
-
-
+//bool is_out_function(const std::array<Vector3, 3>& triangle, const Scalar& dd, AABBWrapper& sf_tree) {
+//	//std::vector<GEO::vec3> ps;
+//	//sample_triangle(triangle, ps, dd);//dd is used for sapmling
+//	//return sf_tree.is_out_sf_envelope(ps, pow(dd*(1 - (1 / sqrt(3))), 2));
+//	//int cnt = 0;
+//	//Scalar sq_dist;
+//	//double sq_distg;
+//	//GEO::vec3 nearest_point;
+//	//const unsigned int ps_size = ps.size();
+//	//for (unsigned int i = ps_size / 2;; i = (i + 1) % ps_size) {//check from the middle
+//	////for (unsigned int i = 0; i < ps.size(); i++) {
+//	//	GEO::vec3 &current_point = ps[i];
+//	//	sf_tree.nearest_facet(current_point, nearest_point, sq_distg);
+//	//	sq_dist = sq_distg;
+//	//	if (sq_dist > pow(dd*(1 - (1 / sqrt(3))), 2))// eps_here=eps-dd/sprt(3). in this case eps=dd
+//	//		return true;
+//	//	cnt++;
+//
+//	//	if (cnt >= ps_size)
+//	//		break;
+//
+//
+//	//}
+//	//return false;
+//}
+//
+//
 
 
 
@@ -265,7 +265,7 @@ void add_hashing() {
 	double sq_distg;
 	GEO::vec3 nearest_point;
 	unsigned int ps_size;
-	AABBWrapper sf_tree(envmesh);
+	//AABBWrapper sf_tree(envmesh);
 
 
 	//////////////////////////generation of noised points
@@ -309,13 +309,13 @@ void add_hashing() {
 		triangle[i] = { testvertices[testfaces[i][0]],testvertices[testfaces[i][1]],    testvertices[testfaces[i][2]] };
 	}
 	/////////////////////////////////////////
-	timer1.start();
+	/*timer1.start();
 	for (int i = 0; i < fn; i++) {
 
 		pos1[i] = is_out_function(triangle[i], dd, sf_tree);	;
 	}
 	time1 = time1 + timer1.getElapsedTimeInSec();
-	std::cout << "TEST ONE FINISHED  " << std::endl;
+	std::cout << "TEST ONE FINISHED  " << std::endl;*/
 	//////////////////////////////
 
 
@@ -857,11 +857,11 @@ void test_in_wild() {
 	get_bb_corners(params, env_vertices, min, max);
 	dd = ((max - min).norm()) / 1000 / shrink;
 	timer.start();
-	AABBWrapper sf_tree(envmesh);
+	/*AABBWrapper sf_tree(envmesh);
 	for (int i = 0; i < fn; i++) {
 
 		is_out_function(triangles[i], dd, sf_tree); ;
-	}
+	}*/
 	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
 
 	std::cout << "TEST aabb FINISHED  " << std::endl;
@@ -906,41 +906,41 @@ void fordebug() {
 
 
 
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
-
-
+	//const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	//Envelope_AABB envaabb(fast_envelope.cornerlist);
+	const GEO::MeshFacetsAABBWithEps ouraabb(envmesh,env_vertices, env_faces, eps, spac);
 
 
 
 	//////////
-	int id = 15619;
-	std::array<Vector3, 3> tri;
-	Scalar l1;
-	tri[0] = triangles[id][0];
-	tri[1] = triangles[id][1];
-	tri[2] = triangles[id][2];
-	l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
+	//int id = 15619;
+	//std::array<Vector3, 3> tri;
+	//Scalar l1;
+	//tri[0] = triangles[id][0];
+	//tri[1] = triangles[id][1];
+	//tri[2] = triangles[id][2];
+	//l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
 
-	bool out=fast_envelope.sample_triangle_outside(triangles[15619], l1);
+	//bool out=fast_envelope.sample_triangle_outside(triangles[15619], l1);
 
-	std::cout << "sample out or not " << out << std::endl;
+	//std::cout << "sample out or not " << out << std::endl;
 
-	out = fast_envelope.is_outside(tri);
-	std::cout << "our out or not " << out << std::endl;
-	////////////////////////////////////////////////////////////////////////////////////////
+	//out = fast_envelope.is_outside(tri);
+	//std::cout << "our out or not " << out << std::endl;
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 
-	std::ofstream fout;
-	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-	
-	for (int i = 0; i < 3; i++) {
+	//std::ofstream fout;
+	//fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
+	//
+	//for (int i = 0; i < 3; i++) {
 
-		fout << std::setprecision(17) << triangles[id][i][0] << " " << triangles[id][i][1] << " " << triangles[id][i][2] << endl;
+	//	fout << std::setprecision(17) << triangles[id][i][0] << " " << triangles[id][i][1] << " " << triangles[id][i][2] << endl;
 
-	}
-	fout.close();
+	//}
+	//fout.close();
 
-	fast_envelope.print_prisms(triangles[id]);
+	//fast_envelope.print_prisms(triangles[id]);
 
 }
 
@@ -1193,10 +1193,10 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 	
-	test_in_wild();
+	//test_in_wild();
 
 
-	//fordebug();
+	fordebug();
 	//writelist();
 
 	//inf();
