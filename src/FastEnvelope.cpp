@@ -194,20 +194,7 @@ namespace fastEnvelope {
 			}
 		}
 		std::cout << "map size " << prismmap.size() << std::endl;
-
-		std::cout << "envprism size " << envprism.size() << std::endl;
-		
-
-		
-		
 	}
-	Envelope_AABB::Envelope_AABB(const std::vector<std::array<Vector3, 2>> cornerlist) {
-		bboxes_.resize(cornerlist.size()+1);
-		std::cout << "here 1" << std::endl;
-		init_bboxes_recursive(cornerlist, bboxes_, 1, 0, cornerlist.size());
-		
-	}
-	
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const {
 		Vector3 tmin, tmax;
 		std::vector<int> inumber;
@@ -225,17 +212,6 @@ namespace fastEnvelope {
 		}
 		sort(inumber.begin(), inumber.end());
 		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
-
-		std::vector<unsigned int >indlist;
-		GEO::Box box;
-		box.xyz_min[0] = tmin[0];
-		box.xyz_min[1] = tmin[1];
-		box.xyz_min[2] = tmin[2];
-		box.xyz_max[0] = tmax[0];
-		box.xyz_max[1] = tmax[1];
-		box.xyz_max[2] = tmax[2];
-
-		//Envelope_AABB::bbox_intersect_recursive(indlist, box, 1, 0, envprism.size());
 
 
 		return FastEnvelopeTestImplicit(triangle, inumber);
@@ -1656,8 +1632,6 @@ namespace fastEnvelope {
 		//std::cout << "pre " << b.ref_lower()->precision() << std::endl;
 		return b;
 	}
-
-	
 
 
 }

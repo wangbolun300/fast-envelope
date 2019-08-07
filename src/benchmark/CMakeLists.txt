@@ -8,8 +8,8 @@ set(SOURCES
 	mesh_AABB.h
 	mesh_AABB.cpp
 
-	#AABBWrapper.cpp
-	#AABBWrapper.h
+	AABBWrapper.cpp
+	AABBWrapper.h
 )
 
 prepend_current_path(SOURCES)

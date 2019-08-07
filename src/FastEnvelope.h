@@ -7,8 +7,6 @@
 #include<iostream>
 #include<arbitraryprecision/fprecision.h>
 #include<arbitraryprecision/intervalprecision.h>
-#include <fastenvelope/mesh_AABB.h>
-
 namespace fastEnvelope {
 
 
@@ -45,16 +43,13 @@ namespace fastEnvelope {
 
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
-
-		std::vector<std::array<Vector3, 8>> envcubic;
-	public:
 		std::vector<std::array<Vector3, 2>> cornerlist;
+		std::vector<std::array<Vector3, 8>> envcubic;
 		Vector3 min, max;
 		int subx, suby, subz;
 	private:
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
-		
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex) const;
 
 		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
@@ -650,72 +645,6 @@ namespace fastEnvelope {
 
 		}
 
-		
-	};
-	class Envelope_AABB
-	{
-	public:
-		Envelope_AABB(const std::vector<std::array<Vector3, 2>> cornerlist);
-		
-		GEO::vector<GEO::Box> bboxes_;
-		
-
-		void init_bboxes_recursive(
-			const std::vector<std::array<Vector3, 2>> cornerlist, GEO::vector<GEO::Box>& bboxes,
-			unsigned int node_index,
-			unsigned int b, unsigned int e) const{
-			geo_debug_assert(node_index < bboxes.size());
-			geo_debug_assert(b != e);
-			if (b + 1 == e) {
-				for (int i = 0; i < 3; i++) {
-					bboxes[node_index].xyz_min[i] = cornerlist[b][0][i];//TODO not sure
-					bboxes[node_index].xyz_max[i] = cornerlist[b][1][i];
-				}
-
-				//get_bbox(M, bboxes[node_index], b);
-				return;
-			}
-			unsigned int  m = b + (e - b) / 2;
-			std::cout << "here 2,node index " << node_index<<" box size "<<bboxes.size() << std::endl;
-			unsigned int  childl = 2 * node_index;
-			unsigned int  childr = 2 * node_index + 1;
-			geo_debug_assert(childl < bboxes.size());
-			geo_debug_assert(childr < bboxes.size());
-			init_bboxes_recursive(cornerlist, bboxes, childl, b, m);
-			init_bboxes_recursive(cornerlist, bboxes, childr, m, e);
-			geo_debug_assert(childl < bboxes.size());
-			geo_debug_assert(childr < bboxes.size());
-			GEO::bbox_union(bboxes[node_index], bboxes[childl], bboxes[childr]);
-			std::cout << "here 2 " << bboxes.size() << std::endl;
-		}
-
-		template <class ACTION>
-		void bbox_intersect_recursive(
-			ACTION& action,
-			const  GEO::Box& box,
-			GEO::index_t node, GEO::index_t b, GEO::index_t e
-		) const {
-			geo_debug_assert(e != b);
-
-			// Prune sub-tree that does not have intersection
-			if (!bboxes_overlap(box, bboxes_[node])) {
-				return;
-			}
-
-			// Leaf case
-			if (e == b + 1) {
-				action.push_back(b);
-				return;
-			}
-
-			// Recursion
-			index_t m = b + (e - b) / 2;
-			index_t node_l = 2 * node;
-			index_t node_r = 2 * node + 1;
-
-			bbox_intersect_recursive(action, box, node_l, b, m);
-			bbox_intersect_recursive(action, box, node_r, m, e);
-		}
 
 
 	};
