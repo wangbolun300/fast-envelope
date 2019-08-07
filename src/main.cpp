@@ -17,7 +17,7 @@
 #include <arbitraryprecision/intervalprecision.h>
 #include <stdio.h>
 #include<assert.h>
-
+#include <fastenvelope/Multiprecision.hpp>
 
 using namespace floatTetWild;
 using namespace fastEnvelope;
@@ -932,7 +932,7 @@ void fordebug() {
 
 	std::ofstream fout;
 	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-	
+
 	for (int i = 0; i < 3; i++) {
 
 		fout << std::setprecision(17) << triangles[id][i][0] << " " << triangles[id][i][1] << " " << triangles[id][i][2] << endl;
@@ -1042,7 +1042,7 @@ void try2() {
 	assert(axxy == 1);
 	cout << "here ！@！！！！！！！！！！" << endl;
 }
-void rational_try(Rational &r) {
+void rational_try(const Rational &r) {
 	Rational c = Rational(1) / r;
 	cout << Rational(c*r) << endl;
 }
@@ -1096,6 +1096,7 @@ int main(int argc, char const *argv[])
 {
 	GEO::initialize();
 
+	{
 	Rational r1(1);
 	Rational r3(3);
 
@@ -1109,8 +1110,27 @@ int main(int argc, char const *argv[])
 	pr = pr * pr;
 	pr = pr * pr;
 	double pr1;
-	std::cout << std::setprecision(17) << pr << std::endl;
+	std::cout << "rr "<<std::setprecision(17) << pr << std::endl;
 	rational_try(Rational(0.7));
+	}
+
+	{
+	Multiprecision r1(1);
+	Multiprecision r3(3);
+
+	Multiprecision rr = r1 / r3 / r3;
+	Multiprecision rrr = r3 * rr * r3;
+
+	std::cout << rrr << std::endl;
+	Scalar p = 1.3;
+	Multiprecision pr(p);
+	pr = pr * pr;
+	pr = pr * pr;
+	pr = pr * pr;
+	double pr1;
+	std::cout << "mp " << std::setprecision(17) << pr << std::endl;
+	}
+
 	/*const std::function<int(double)> check_double = [](double v) {
 
 		if (fabs(v) < 1e-10)
@@ -1152,11 +1172,11 @@ int main(int argc, char const *argv[])
 	interval<float_precision> h(f);
 
 	std::cout << "triansfer "<<h.ref_lower()->precision()<<"\n" << endl;
-	
+
 	float_precision fp(0.3333333333333337, 16);
 	float_precision fpp(3.333333333333339, 16);
 	float_precision fppp(fp/fpp);
-	
+
 	//fppp = fp * fpp;
 	std::cout << "fp " << fp << " fp digits " << fp.precision() << endl;
 	std::cout << "fpp " << fpp << " fp digits " << fpp.precision() << endl;
@@ -1192,7 +1212,7 @@ int main(int argc, char const *argv[])
 	//test_ttt();
 	//test_diff();
 
-	
+
 	test_in_wild();
 
 

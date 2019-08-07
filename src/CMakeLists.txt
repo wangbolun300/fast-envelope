@@ -2,6 +2,7 @@ set(SOURCES
         FastEnvelope.cpp
         FastEnvelope.h
         Logger.hpp
+        Multiprecision.hpp
         Parameters.h
         Rational.hpp
         Types.hpp
