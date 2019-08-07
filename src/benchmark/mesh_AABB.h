@@ -447,4 +447,17 @@ namespace floatTetWild {
 			p, p1, p2, p3, nearest_p, lambda1, lambda2, lambda3
 		);
 	}
+
+	/*class OUR_AABB {
+	public:
+		OUR_AABB(const std::vector<fastEnvelope::Vector3>& m_ver, const std::vector<fastEnvelope::Vector3i>& m_faces, const fastEnvelope::Scalar eps, const int spac);
+	
+		GEO::vector<GEO::Box> ourbboxes;
+		static void init_bboxes_recursive(
+			GEO::vector<GEO::Box>& bboxes,
+			GEO::index_t node_index,
+			GEO::index_t b, GEO::index_t e,
+			const fastEnvelope::FastEnvelope envclass
+		);
+	};*/
 }

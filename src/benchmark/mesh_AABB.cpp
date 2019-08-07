@@ -394,7 +394,7 @@ namespace GEO {
 		bboxes_.resize(size);
 
 		init_bboxes_recursive(
-			 bboxes_, 1, 0, size, fastenv//size or size -1 ?
+			 bboxes_, 1, 0, size-1, fastenv//size or size -1 ?
 		);
 	}
 
@@ -594,6 +594,44 @@ namespace GEO {
 	}
 
 	/****************************************************************************/
+	//using namespace floatTetWild;
+	//OUR_AABB::OUR_AABB(const std::vector<fastEnvelope::Vector3>& m_ver, const std::vector<fastEnvelope::Vector3i>& m_faces, const fastEnvelope::Scalar eps, const int spac) {
+	//	
+	//	fastEnvelope::FastEnvelope fastenv(m_ver, m_faces, eps, spac);
+	//	int size = fastenv.cornerlist.size();
+	//	OUR_AABB::ourbboxes.resize(size);
 
+	//	init_bboxes_recursive(
+	//		ourbboxes, 1, 0, size, fastenv//size or size -1 ?
+	//	);
+
+
+	//	void OUR_AABB::init_bboxes_recursive(
+	//		vector<Box>& bboxes,
+	//		index_t node_index,
+	//		index_t b, index_t e,
+	//		const fastEnvelope::FastEnvelope envclass
+	//	){
+	//		geo_debug_assert(node_index < bboxes.size());
+	//		geo_debug_assert(b != e);
+	//		if (b + 1 == e) {
+	//			get_prism_bbox(envclass, bboxes[node_index], b);
+	//			//get_bbox(M, bboxes[node_index], b);
+	//			return;
+	//		}
+	//		index_t m = b + (e - b) / 2;
+	//		index_t childl = 2 * node_index;
+	//		index_t childr = 2 * node_index + 1;
+	//		geo_debug_assert(childl < bboxes.size());
+	//		geo_debug_assert(childr < bboxes.size());
+	//		init_bboxes_recursive(bboxes, childl, b, m, envclass);
+	//		init_bboxes_recursive(bboxes, childr, m, e, envclass);
+	//		geo_debug_assert(childl < bboxes.size());
+	//		geo_debug_assert(childr < bboxes.size());
+	//		bbox_union(bboxes[node_index], bboxes[childl], bboxes[childr]);
+	//	}
+
+
+	
 }
 
