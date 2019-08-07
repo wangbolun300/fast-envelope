@@ -520,6 +520,8 @@ namespace fastEnvelope {
 
 
 					for (int k = 0; k < 3; k++) {
+						TODO here need another seg-tri-intersection check
+
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
 
 							envprism[prismindex[i]][p_triangle[j][0][0]], envprism[prismindex[i]][p_triangle[j][0][1]], envprism[prismindex[i]][p_triangle[j][0][2]], prismindex, jump1);
@@ -665,12 +667,12 @@ namespace fastEnvelope {
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle0,
 		const Vector3& triangle1, const Vector3& triangle2, const std::vector<int>& prismindex, const int& jump) const {
 		int  ori;
-		int inter = seg_cut_tri(segpoint0, segpoint1, triangle0, triangle1, triangle2);
+		//int inter = seg_cut_tri(segpoint0, segpoint1, triangle0, triangle1, triangle2);
 
-		if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
-									//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
-			return NOT_INTERSECTD;//not intersected
-		}
+		//if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
+		//							//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
+		//	return NOT_INTERSECTD;//not intersected
+		//}
 
 		int tot;
 		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
