@@ -32,7 +32,7 @@ namespace fastEnvelope {
 		static const int DEGENERATED_POINT = 3;
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
-		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac, const GEO::Mesh& M1);
+		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac);
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		inline int prism_size() const { return envprism.size(); }
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
@@ -45,8 +45,10 @@ namespace fastEnvelope {
 
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
-		std::vector<std::array<Vector3, 2>> cornerlist;
+
 		std::vector<std::array<Vector3, 8>> envcubic;
+	public:
+		std::vector<std::array<Vector3, 2>> cornerlist;
 		Vector3 min, max;
 		int subx, suby, subz;
 	private:
@@ -658,10 +660,10 @@ namespace fastEnvelope {
 		GEO::vector<GEO::Box> bboxes_;
 		
 
-		static void init_bboxes_recursive(
+		void init_bboxes_recursive(
 			const std::vector<std::array<Vector3, 2>> cornerlist, GEO::vector<GEO::Box>& bboxes,
 			unsigned int node_index,
-			unsigned int b, unsigned int e) {
+			unsigned int b, unsigned int e) const{
 			geo_debug_assert(node_index < bboxes.size());
 			geo_debug_assert(b != e);
 			if (b + 1 == e) {
@@ -688,11 +690,11 @@ namespace fastEnvelope {
 		}
 
 		template <class ACTION>
-		static void bbox_intersect_recursive(
+		void bbox_intersect_recursive(
 			ACTION& action,
 			const  GEO::Box& box,
 			GEO::index_t node, GEO::index_t b, GEO::index_t e
-		)  {
+		) const {
 			geo_debug_assert(e != b);
 
 			// Prune sub-tree that does not have intersection

@@ -257,7 +257,7 @@ void add_hashing() {
 	eps = eps / shrink;
 	eps=eps*sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
 
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac,envmesh);
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 
 	dd = ((max - min).norm()) / 1000 / shrink;
 	std::vector<GEO::vec3> ps;
@@ -664,7 +664,7 @@ void test_in_wild() {
 
 
 	timer.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac, envmesh);
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
 	pos2.resize(fn);
@@ -906,8 +906,8 @@ void fordebug() {
 
 
 
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac,envmesh);
-
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	//Envelope_AABB envaabb(fast_envelope.cornerlist);
 
 
 

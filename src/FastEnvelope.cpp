@@ -168,7 +168,7 @@ namespace fastEnvelope {
 
 	}
 
-	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac, const GEO::Mesh& M1)
+	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
 	{
 		get_bb_corners(m_ver, min, max);
 		Scalar bbd = (max - min).norm();
@@ -194,19 +194,17 @@ namespace fastEnvelope {
 			}
 		}
 		std::cout << "map size " << prismmap.size() << std::endl;
-		
-		
-		
-		std::cout << "envprism size " << envprism.size() << std::endl;
-		Envelope_AABB envaabb(cornerlist);
 
-		std::cout << "boxes size " << envaabb.bboxes_.size() << std::endl;
+		std::cout << "envprism size " << envprism.size() << std::endl;
+		
+
+		
 		
 	}
 	Envelope_AABB::Envelope_AABB(const std::vector<std::array<Vector3, 2>> cornerlist) {
-		bboxes_.resize(cornerlist.size());
+		bboxes_.resize(cornerlist.size()+1);
 		std::cout << "here 1" << std::endl;
-		init_bboxes_recursive(cornerlist, bboxes_, 0, 0, cornerlist.size());
+		init_bboxes_recursive(cornerlist, bboxes_, 1, 0, cornerlist.size());
 		
 	}
 	

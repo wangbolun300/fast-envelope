@@ -46,7 +46,7 @@
 #include <fastenvelope/mesh_AABB.h>
 #include <geogram/mesh/mesh_geometry.h>
 #include <geogram/basic/geometry_nd.h>
-
+#include<fastenvelope/FastEnvelope.h>
 namespace {
 
 	using namespace GEO;
@@ -73,6 +73,22 @@ namespace {
 				B.xyz_max[coord] = std::max(B.xyz_max[coord], p[coord]);
 			}
 		}
+	}
+	
+	//template <class env_class>
+	void get_prism_bbox(
+
+		const fastEnvelope::FastEnvelope envclass, Box& B, index_t c
+
+	) {
+
+		for (coord_index_t coord = 0; coord < 3; ++coord) {
+
+			B.xyz_min[coord] = envclass.cornerlist[c][0][coord];
+			B.xyz_max[coord] = envclass.cornerlist[c][1][coord];
+
+		}
+
 	}
 
 	/**
@@ -112,17 +128,19 @@ namespace {
 	 *   will be stored
 	 *  - element: the index of the element
 	 */
-	template <class GET_BBOX>
+
+	//template <class ENVCLASS>
 	void init_bboxes_recursive(
-		const Mesh& M, vector<Box>& bboxes,
+		 vector<Box>& bboxes,
 		index_t node_index,
 		index_t b, index_t e,
-		const GET_BBOX& get_bbox
+		const fastEnvelope::FastEnvelope envclass
 	) {
 		geo_debug_assert(node_index < bboxes.size());
 		geo_debug_assert(b != e);
 		if (b + 1 == e) {
-			get_bbox(M, bboxes[node_index], b);
+			get_prism_bbox(envclass, bboxes[node_index], b);
+			//get_bbox(M, bboxes[node_index], b);
 			return;
 		}
 		index_t m = b + (e - b) / 2;
@@ -130,8 +148,8 @@ namespace {
 		index_t childr = 2 * node_index + 1;
 		geo_debug_assert(childl < bboxes.size());
 		geo_debug_assert(childr < bboxes.size());
-		init_bboxes_recursive(M, bboxes, childl, b, m, get_bbox);
-		init_bboxes_recursive(M, bboxes, childr, m, e, get_bbox);
+		init_bboxes_recursive( bboxes, childl, b, m, envclass);
+		init_bboxes_recursive( bboxes, childr, m, e, envclass);
 		geo_debug_assert(childl < bboxes.size());
 		geo_debug_assert(childr < bboxes.size());
 		bbox_union(bboxes[node_index], bboxes[childl], bboxes[childr]);
@@ -351,8 +369,8 @@ namespace {
 
 namespace GEO {
 
-	MeshFacetsAABBWithEps::MeshFacetsAABBWithEps(const Mesh& M)
-		: mesh_(M) {
+	MeshFacetsAABBWithEps::MeshFacetsAABBWithEps(const Mesh& M,const std::vector<fastEnvelope::Vector3>& m_ver, const std::vector<fastEnvelope::Vector3i>& m_faces, const fastEnvelope::Scalar eps, const int spac)
+		:mesh_(M) {
 		// if(!M.facets.are_simplices()) {
 		//     mesh_repair(
 		//         M,
@@ -364,13 +382,19 @@ namespace GEO {
 		// if(reorder) {
 		//     mesh_reorder(mesh_, MESH_ORDER_MORTON);
 		// }
-		bboxes_.resize(
-			max_node_index(
-				1, 0, mesh_.facets.nb()
-			) + 1 // <-- this is because size == max_index + 1 !!!
-		);
+		//bboxes_.resize(
+		//	max_node_index(
+		//		1, 0, mesh_.facets.nb()
+		//	) + 1 // <-- this is because size == max_index + 1 !!!
+		//);
+		
+		bboxes_.resize(0);
+		fastEnvelope::FastEnvelope fastenv(m_ver, m_faces, eps, spac);
+		int size = fastenv.cornerlist.size();
+		bboxes_.resize(size);
+
 		init_bboxes_recursive(
-			mesh_, bboxes_, 1, 0, mesh_.facets.nb(), get_facet_bbox
+			 bboxes_, 1, 0, size, fastenv//size or size -1 ?
 		);
 	}
 

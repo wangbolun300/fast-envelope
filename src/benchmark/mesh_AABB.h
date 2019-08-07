@@ -55,7 +55,7 @@
 #include <geogram/basic/common.h>
 #include <geogram/mesh/mesh.h>
 #include <geogram/basic/geometry.h>
-
+#include<fastenvelope/FastEnvelope.h>
 namespace GEO {
 
 	/**
@@ -76,7 +76,7 @@ namespace GEO {
 		 *  called else the algorithm will be pretty unefficient).
 		 * \pre M.facets.are_simplices()
 		 */
-		MeshFacetsAABBWithEps(const Mesh& M);
+		MeshFacetsAABBWithEps(const Mesh& M,const std::vector<fastEnvelope::Vector3>& m_ver, const std::vector<fastEnvelope::Vector3i>& m_faces, const fastEnvelope::Scalar eps, const int spac);
 
 		/**
 		 * \brief Computes all the pairs of intersecting facets.
