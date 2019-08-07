@@ -123,19 +123,14 @@ static const   std::function<int(fastEnvelope::Rational)> check_rational = [](fa
 	return 0;
 };
 
-static const std::function<int(arbitrary_precision::interval<arbitrary_precision::float_precision>)> check_interval =
-[](arbitrary_precision::interval<arbitrary_precision::float_precision> v) {
-	const auto clazz = v.is_class();
-	if (clazz == arbitrary_precision::MIXED || clazz == arbitrary_precision::NO_CLASS)
-		return -2;
+static const   std::function<int(fastEnvelope::Multiprecision)> check_Multiprecision = [](fastEnvelope::Multiprecision v) {
 
-	if (clazz == arbitrary_precision::POSITIVE)
+	if (v > 0)
 		return 1;
 
-	if (clazz == arbitrary_precision::NEGATIVE)
+	if (v < 0)
 		return -1;
 
-	assert(clazz == arbitrary_precision::ZERO);
 	return 0;
 };
 
@@ -527,7 +522,7 @@ namespace fastEnvelope {
 					for (int k = 0; k < 3; k++) {
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
 
-							envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]], prismindex, jump1);
+							envprism[prismindex[i]][p_triangle[j][0][0]], envprism[prismindex[i]][p_triangle[j][0][1]], envprism[prismindex[i]][p_triangle[j][0][2]], prismindex, jump1);
 
 						go1++;
 
@@ -593,9 +588,9 @@ namespace fastEnvelope {
 
 					int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
 
-						envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][0]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][1]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][inter_ijk_list[i][2]][2]],
-
-						envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][0]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][1]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][inter_ijk_list[j][2]][2]],
+						envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][0][0]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][0][1]], envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][0][2]],
+																																																										
+						envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][0][0]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][0][1]], envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][0][2]],
 
 						prismindex, jump1, jump2);
 
@@ -666,7 +661,7 @@ namespace fastEnvelope {
 		int Pi;
 		std::vector<int> FACES;
 	};
-
+	
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle0,
 		const Vector3& triangle1, const Vector3& triangle2, const std::vector<int>& prismindex, const int& jump) const {
 		int  ori;
@@ -688,7 +683,7 @@ namespace fastEnvelope {
 			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 
 		if (precom == false) {
-			static Rational
+			static Multiprecision
 				s00, s01, s02, s10, s11, s12,
 				t00, t01, t02,
 				t10, t11, t12,
@@ -704,7 +699,7 @@ namespace fastEnvelope {
 			t20 = triangle2[0]; t21 = triangle2[1]; t22 = triangle2[2];
 
 			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
-				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
+				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_Multiprecision);
 			for (int i = 0; i < prismindex.size(); i++) {
 
 				if (prismindex[i] == jump) {
@@ -721,7 +716,7 @@ namespace fastEnvelope {
 					e20 = envprism[prismindex[i]][p_face[j][2]][0]; e21 = envprism[prismindex[i]][p_face[j][2]][1]; e22 = envprism[prismindex[i]][p_face[j][2]][2];
 					ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 						e00, e01, e02, e10, e11, e12,
-						e20, e21, e22, check_rational);
+						e20, e21, e22, check_Multiprecision);
 					if (ori == 1) after11++;
 					if (ori == -1) after12++;
 					if (ori == 0) after10++;
@@ -790,7 +785,7 @@ namespace fastEnvelope {
 		}
 
 		if (!recompute.empty()) {
-			static Rational
+			static Multiprecision
 				s00, s01, s02, s10, s11, s12,
 				t00, t01, t02,
 				t10, t11, t12,
@@ -805,7 +800,7 @@ namespace fastEnvelope {
 			t10 = triangle1[0]; t11 = triangle1[1]; t12 = triangle1[2];
 			t20 = triangle2[0]; t21 = triangle2[1]; t22 = triangle2[2];
 			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
-				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
+				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_Multiprecision);
 
 
 			for (int k = 0; k < recompute.size(); k++) {
@@ -820,7 +815,7 @@ namespace fastEnvelope {
 
 					ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 						e00, e01, e02, e10, e11, e12,
-						e20, e21, e22, check_rational);
+						e20, e21, e22, check_Multiprecision);
 					if (ori == 1) after11++;
 					if (ori == -1) after12++;
 					if (ori == 0) after10++;
@@ -856,7 +851,7 @@ namespace fastEnvelope {
 			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 
 		if (precom == false) {
-			static Rational
+			static Multiprecision
 				s00, s01, s02, s10, s11, s12,
 				t00, t01, t02,
 				t10, t11, t12,
@@ -872,7 +867,7 @@ namespace fastEnvelope {
 			t20 = triangle[2][0]; t21 = triangle[2][1]; t22 = triangle[2][2];
 
 			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
-				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
+				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_Multiprecision);
 
 			for (int i = 0; i < prismindex.size(); i++) {
 
@@ -891,7 +886,7 @@ namespace fastEnvelope {
 					e20 = (envprism[prismindex[i]][p_face[j][2]][0]); e21 = (envprism[prismindex[i]][p_face[j][2]][1]); e22 = (envprism[prismindex[i]][p_face[j][2]][2]);
 					ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 						e00, e01, e02, e10, e11, e12,
-						e20, e21, e22, check_rational);
+						e20, e21, e22, check_Multiprecision);
 					if (ori == 1) after11++;
 					if (ori == -1) after12++;
 					if (ori == 0) after10++;
@@ -960,7 +955,7 @@ namespace fastEnvelope {
 		}
 
 		if (!recompute.empty()) {
-			static Rational
+			static Multiprecision
 				s00, s01, s02, s10, s11, s12,
 				t00, t01, t02,
 				t10, t11, t12,
@@ -975,7 +970,7 @@ namespace fastEnvelope {
 			t10 = triangle[1][0]; t11 = triangle[1][1]; t12 = triangle[1][2];
 			t20 = triangle[2][0]; t21 = triangle[2][1]; t22 = triangle[2][2];
 			bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
-				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_rational);
+				t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_Multiprecision);
 
 
 			for (int k = 0; k < recompute.size(); k++) {
@@ -989,7 +984,7 @@ namespace fastEnvelope {
 
 					ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 						e00, e01, e02, e10, e11, e12,
-						e20, e21, e22, check_rational);
+						e20, e21, e22, check_Multiprecision);
 					if (ori == 1) after11++;
 					if (ori == -1) after12++;
 					if (ori == 0) after10++;
@@ -1030,7 +1025,7 @@ namespace fastEnvelope {
 			facet22[0], facet22[1], facet22[2], d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
 
 		if (precom == false) {
-			static Rational
+			static Multiprecision
 				t00, t01, t02,
 				t10, t11, t12,
 				t20, t21, t22,
@@ -1061,7 +1056,7 @@ namespace fastEnvelope {
 			bool premulti = orient3D_TPI_prefilter_multiprecision(t00, t01, t02, t10, t11, t12, t20, t21, t22,
 				f100, f101, f102, f110, f111, f112, f120, f121, f122,
 				f200, f201, f202, f210, f211, f212, f220, f221, f222,
-				dr, n1r, n2r, n3r, check_rational);
+				dr, n1r, n2r, n3r, check_Multiprecision);
 
 			for (int i = 0; i < prismindex.size(); i++) {
 				if (prismindex[i] == jump1 || prismindex[i] == jump2) continue;
@@ -1071,7 +1066,7 @@ namespace fastEnvelope {
 					e00 = (envprism[prismindex[i]][p_face[j][0]][0]); e01 = (envprism[prismindex[i]][p_face[j][0]][1]); e02 = (envprism[prismindex[i]][p_face[j][0]][2]);
 					e10 = (envprism[prismindex[i]][p_face[j][1]][0]); e11 = (envprism[prismindex[i]][p_face[j][1]][1]); e12 = (envprism[prismindex[i]][p_face[j][1]][2]);
 					e20 = (envprism[prismindex[i]][p_face[j][2]][0]); e21 = (envprism[prismindex[i]][p_face[j][2]][1]); e22 = (envprism[prismindex[i]][p_face[j][2]][2]);
-					ori = orient3D_TPI_postfilter_multiprecision(dr, n1r, n2r, n3r, e00, e01, e02, e10, e11, e12, e20, e21, e22, check_rational);
+					ori = orient3D_TPI_postfilter_multiprecision(dr, n1r, n2r, n3r, e00, e01, e02, e10, e11, e12, e20, e21, e22, check_Multiprecision);
 					if (ori == 1) after21++;
 					if (ori == -1) after22++;
 					if (ori == 0) after20++;
@@ -1135,7 +1130,7 @@ namespace fastEnvelope {
 		}
 
 		if (recompute.size() > 0) {
-			static Rational
+			static Multiprecision
 				t00, t01, t02,
 				t10, t11, t12,
 				t20, t21, t22,
@@ -1166,7 +1161,7 @@ namespace fastEnvelope {
 			bool premulti = orient3D_TPI_prefilter_multiprecision(t00, t01, t02, t10, t11, t12, t20, t21, t22,
 				f100, f101, f102, f110, f111, f112, f120, f121, f122,
 				f200, f201, f202, f210, f211, f212, f220, f221, f222,
-				dr, n1r, n2r, n3r, check_rational);
+				dr, n1r, n2r, n3r, check_Multiprecision);
 
 
 
@@ -1182,7 +1177,7 @@ namespace fastEnvelope {
 					e20 = (envprism[in1][p_face[in2][2]][0]); e21 = (envprism[in1][p_face[in2][2]][1]); e22 = (envprism[in1][p_face[in2][2]][2]);
 					ori = orient3D_TPI_postfilter_multiprecision(dr, n1r, n2r, n3r,
 						e00, e01, e02, e10, e11, e12,
-						e20, e21, e22, check_rational);
+						e20, e21, e22, check_Multiprecision);
 
 					if (ori == 1) after21++;
 					if (ori == -1) after22++;
@@ -1226,7 +1221,7 @@ namespace fastEnvelope {
 				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
 
 		if (pre == false) {
-			static Rational
+			static Multiprecision
 				t00, t01, t02,
 				t10, t11, t12,
 				t20, t21, t22,
@@ -1260,14 +1255,14 @@ namespace fastEnvelope {
 				t00, t01, t02, t10, t11, t12, t20, t21, t22,
 				f100, f101, f102, f110, f111, f112, f120, f121, f122,
 				f200, f201, f202, f210, f211, f212, f220, f221, f222,
-				dr, n1r, n2r, n3r, check_rational);
+				dr, n1r, n2r, n3r, check_Multiprecision);
 			if (premulti == false) return false;
 
 			int o1 = orient3D_TPI_postfilter_multiprecision(
 				dr, n1r, n2r, n3r,
 				nr0, nr1, nr2,
 				t00, t01, t02,
-				t10, t11, t12, check_rational);
+				t10, t11, t12, check_Multiprecision);
 			/*if (o1 == 1) after21++;
 			if (o1 == -1) after22++;
 			if (o1 == 0) after20++;*/
@@ -1277,7 +1272,7 @@ namespace fastEnvelope {
 				dr, n1r, n2r, n3r,
 				nr0, nr1, nr2,
 				t10, t11, t12,
-				t20, t21, t22, check_rational);
+				t20, t21, t22, check_Multiprecision);
 			/*if (o2 == 1) after21++;
 			if (o2 == -1) after22++;
 			if (o2 == 0) after20++;*/
@@ -1287,7 +1282,7 @@ namespace fastEnvelope {
 				dr, n1r, n2r, n3r,
 				nr0, nr1, nr2,
 				t20, t21, t22,
-				t00, t01, t02, check_rational);
+				t00, t01, t02, check_Multiprecision);
 			/*if (o3 == 1) after21++;
 			if (o3 == -1) after22++;
 			if (o3 == 0) after20++;*/
@@ -1298,7 +1293,7 @@ namespace fastEnvelope {
 			return true;
 		}
 
-		static Rational
+		static Multiprecision
 			t00, t01, t02,
 			t10, t11, t12,
 			t20, t21, t22,
@@ -1340,12 +1335,12 @@ namespace fastEnvelope {
 				t00, t01, t02, t10, t11, t12, t20, t21, t22,
 				f100, f101, f102, f110, f111, f112, f120, f121, f122,
 				f200, f201, f202, f210, f211, f212, f220, f221, f222,
-				dr, n1r, n2r, n3r, check_rational);
+				dr, n1r, n2r, n3r, check_Multiprecision);
 			o1 = orient3D_TPI_postfilter_multiprecision(
 				dr, n1r, n2r, n3r,
 				nr0, nr1, nr2,
 				t00, t01, t02,
-				t10, t11, t12, check_rational);
+				t10, t11, t12, check_Multiprecision);
 			/*if (o1 == 1) after21++;
 			if (o1 == -1) after22++;
 			if (o1 == 0) after20++;*/
@@ -1375,13 +1370,13 @@ namespace fastEnvelope {
 					t00, t01, t02, t10, t11, t12, t20, t21, t22,
 					f100, f101, f102, f110, f111, f112, f120, f121, f122,
 					f200, f201, f202, f210, f211, f212, f220, f221, f222,
-					dr, n1r, n2r, n3r, check_rational);
+					dr, n1r, n2r, n3r, check_Multiprecision);
 			}
 			o2 = orient3D_TPI_postfilter_multiprecision(
 				dr, n1r, n2r, n3r,
 				nr0, nr1, nr2,
 				t10, t11, t12,
-				t20, t21, t22, check_rational);
+				t20, t21, t22, check_Multiprecision);
 			/*if (o2 == 1) after21++;
 			if (o2 == -1) after22++;
 			if (o2 == 0) after20++;*/
@@ -1410,13 +1405,13 @@ namespace fastEnvelope {
 					t00, t01, t02, t10, t11, t12, t20, t21, t22,
 					f100, f101, f102, f110, f111, f112, f120, f121, f122,
 					f200, f201, f202, f210, f211, f212, f220, f221, f222,
-					dr, n1r, n2r, n3r, check_rational);
+					dr, n1r, n2r, n3r, check_Multiprecision);
 			}
 			o3 = orient3D_TPI_postfilter_multiprecision(
 				dr, n1r, n2r, n3r,
 				nr0, nr1, nr2,
 				t20, t21, t22,
-				t00, t01, t02, check_rational);
+				t00, t01, t02, check_Multiprecision);
 			/*if (o3 == 1) after21++;
 			if (o3 == -1) after22++;
 			if (o3 == 0) after20++;*/
@@ -1624,14 +1619,7 @@ namespace fastEnvelope {
 
 	}
 
-	arbitrary_precision::interval<arbitrary_precision::float_precision> FastEnvelope::converting_Scalar_to_arbitary(const Scalar &a, const int &i) {
-		arbitrary_precision::interval<arbitrary_precision::float_precision> b;
-		b.ref_lower()->precision(i);
-		b.ref_upper()->precision(i);
-		b = arbitrary_precision::float_precision(a, 16);
-		//std::cout << "pre " << b.ref_lower()->precision() << std::endl;
-		return b;
-	}
+	
 
 
 }

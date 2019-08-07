@@ -7,6 +7,7 @@
 #include<iostream>
 #include<arbitraryprecision/fprecision.h>
 #include<arbitraryprecision/intervalprecision.h>
+#include <fastenvelope/Multiprecision.hpp>
 namespace fastEnvelope {
 
 
