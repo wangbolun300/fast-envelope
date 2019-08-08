@@ -908,6 +908,7 @@ void fordebug() {
 
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 
+	std::cout << "cube size  " <<fast_envelope.envcubic.size() << std::endl;
 
 
 
@@ -921,7 +922,7 @@ void fordebug() {
 	tri[2] = triangles[id][2];
 	l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
 
-	bool out=fast_envelope.sample_triangle_outside(triangles[15619], l1);
+	bool out=fast_envelope.sample_triangle_outside(tri, l1);
 
 	std::cout << "sample out or not " << out << std::endl;
 
@@ -1096,23 +1097,23 @@ int main(int argc, char const *argv[])
 {
 	GEO::initialize();
 
-	{
-	Rational r1(1);
-	Rational r3(3);
+	//{
+	//Rational r1(1);
+	//Rational r3(3);
 
-	Rational rr = r1 / r3 / r3;
-	Rational rrr = r3 * rr*r3;
+	//Rational rr = r1 / r3 / r3;
+	//Rational rrr = r3 * rr*r3;
 
-	std::cout << rrr << std::endl;
-	Scalar p = 1.3;
-	Rational pr(p);
-	pr = pr * pr;
-	pr = pr * pr;
-	pr = pr * pr;
-	double pr1;
-	std::cout << "rr "<<std::setprecision(17) << pr << std::endl;
-	rational_try(Rational(0.7));
-	}
+	//std::cout << rrr << std::endl;
+	//Scalar p = 1.3;
+	//Rational pr(p);
+	//pr = pr * pr;
+	//pr = pr * pr;
+	//pr = pr * pr;
+	//double pr1;
+	//std::cout << "rr "<<std::setprecision(17) << pr << std::endl;
+	//rational_try(Rational(0.7));
+	//}
 
 	{
 	Multiprecision r1(1);
@@ -1122,14 +1123,25 @@ int main(int argc, char const *argv[])
 	Multiprecision rrr = r3 * rr * r3;
 
 	std::cout << rrr << std::endl;
-	Scalar p = 1.3;
+	Scalar p = 1.473;
 	Multiprecision pr(p);
-	pr = pr * pr;
-	pr = pr * pr;
-	pr = pr * pr;
-	double pr1;
+	pr = pr * pr;//9 6
+	pr = pr * pr;//1 12
+	pr = Multiprecision(p) * pr;//3 15
+	//pr = pr * pr;
+	
+	std::cout << "mp " << pr << std::endl;
 	std::cout << "mp " << std::setprecision(17) << pr << std::endl;
 	}
+
+	Rational r=double(1.473);
+	r = r * r;
+	r = r * r;
+	r = 1.473 * r;
+	
+	std::cout << "r  " << std::setprecision(16) << r << std::endl;
+	double f = r.to_double();
+	std::cout << "f  " << std::setprecision(16) << f << std::endl;
 
 	/*const std::function<int(double)> check_double = [](double v) {
 
@@ -1213,10 +1225,10 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	test_in_wild();
+	//test_in_wild();
 
 
-	//fordebug();
+	fordebug();
 	//writelist();
 
 	//inf();

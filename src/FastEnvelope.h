@@ -8,6 +8,7 @@
 #include<arbitraryprecision/fprecision.h>
 #include<arbitraryprecision/intervalprecision.h>
 #include <fastenvelope/Multiprecision.hpp>
+#include <fastenvelope/Rational.hpp>
 namespace fastEnvelope {
 
 
@@ -29,6 +30,9 @@ namespace fastEnvelope {
 		static const int NERLY_DEGENERATED = 1;
 		static const int DEGENERATED_SEGMENT = 2;
 		static const int DEGENERATED_POINT = 3;
+		
+		typedef fastEnvelope::Rational typeprec;
+		
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac);
@@ -37,7 +41,7 @@ namespace fastEnvelope {
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
 		
-		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle, const int &digit);
+		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle);
 
 	private:
 		
@@ -45,15 +49,19 @@ namespace fastEnvelope {
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
 		std::vector<std::array<Vector3, 2>> cornerlist;
-		std::vector<std::array<Vector3, 8>> envcubic;
 		Vector3 min, max;
 		int subx, suby, subz;
+	public:
+		std::vector<std::array<Vector3, 8>> envcubic;
 	private:
 		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex) const;
 
 		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
+		static int seg_cut_polygon_4(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3);
+		static int seg_cut_polygon_6(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3, const Vector3 &t4, const Vector3 &t5);
+
 	public:
 		static void triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error);
 		//static void rational_triangle_sample
@@ -134,7 +142,7 @@ namespace fastEnvelope {
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		bool point_out_prism(const Vector3& point, const std::vector<int>& prismindex, const int& jump) const;
 
-		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism, const Scalar& epsilon);
+		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism,  std::vector<std::array<Vector3, 8>>& envbox, const Scalar& epsilon);
 
 
 		
@@ -142,8 +150,8 @@ namespace fastEnvelope {
 		 int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle1, 
 			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<int>& prismindex, const int& jump)const;
 
-		 int Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-			const std::vector<int>& prismindex, const int& jump)const;
+		/* int Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
+			const std::vector<int>& prismindex, const int& jump)const;*/
 
 
 
@@ -162,8 +170,10 @@ namespace fastEnvelope {
 
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, 
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2);
+
 		public:
 		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);
+
 		private:
 		static Vector2 to_2d(const Vector3 &p, int t) {
 			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
