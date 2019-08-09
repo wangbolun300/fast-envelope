@@ -1142,6 +1142,11 @@ int main(int argc, char const *argv[])
 	std::cout << "r  " << std::setprecision(16) << r << std::endl;
 	double f = r.to_double();
 	std::cout << "f  " << std::setprecision(16) << f << std::endl;
+	
+	
+	Multiprecision s = 1.414;
+	std::cout << "s  " <<  s.sqrt(s) << std::endl;
+
 
 	/*const std::function<int(double)> check_double = [](double v) {
 
@@ -1228,7 +1233,7 @@ int main(int argc, char const *argv[])
 	//test_in_wild();
 
 
-	fordebug();
+	//fordebug();
 	//writelist();
 
 	//inf();

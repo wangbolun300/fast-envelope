@@ -1647,38 +1647,45 @@ namespace fastEnvelope {
 			AC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][0]];
 			BC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][1]];
 			de = is_triangle_degenerated(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
-			if (de != NOT_DEGENERATED) {
-				std::cout << "Envelope Triangle Degeneration" << std::endl;
+			
+			
 
-				if (de == DEGENERATED_POINT) {
-					for (int j = 0; j < 8; j++) {
-						box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
-					}
-					envbox.push_back(box);
+			if (de == DEGENERATED_POINT) {
+				std::cout << "Envelope Triangle Degeneration- Point" << std::endl;
+				for (int j = 0; j < 8; j++) {
+					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
 				}
-				if (de == DEGENERATED_SEGMENT) {
-					Scalar length1 = AB.norm(), length2 = AC.norm(), length3 = BC.norm();
-					if (length1 >= length2 && length1 >= length3) {
-						seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], tolerance, box);
-						envbox.push_back(box);
-					}
-					if (length2 >= length1 && length2 >= length3) {
-						seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][2]], tolerance, box);
-						envbox.push_back(box);
-					}
-					if (length3 >= length1 && length3 >= length2) {
-						seg_cube(m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tolerance, box);
-						envbox.push_back(box);
-					}
-				}
-				if (de == NERLY_DEGENERATED) {
-					TOSO
-				}
-
+				envbox.push_back(box);
 				continue;
 			}
-			normal = AB.cross(AC).normalized();
-			vector1 = AB.cross(normal).normalized();
+			if (de == DEGENERATED_SEGMENT) {
+				std::cout << "Envelope Triangle Degeneration- Segment" << std::endl;
+				Scalar length1 = AB.norm(), length2 = AC.norm(), length3 = BC.norm();
+				if (length1 >= length2 && length1 >= length3) {
+					seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], tolerance, box);
+					envbox.push_back(box);
+				}
+				if (length2 >= length1 && length2 >= length3) {
+					seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][2]], tolerance, box);
+					envbox.push_back(box);
+				}
+				if (length3 >= length1 && length3 >= length2) {
+					seg_cube(m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tolerance, box);
+					envbox.push_back(box);
+				}
+				continue;
+			}
+			if (de == NERLY_DEGENERATED) {
+				std::cout << "Envelope Triangle Degeneration- Nearly" << std::endl;
+
+				normal = accurate_normal_vector(AB, AC);
+				vector1= accurate_normal_vector(AB, normal);
+			}
+			else {
+				normal = AB.cross(AC).normalized();
+				vector1 = AB.cross(normal).normalized();
+			}
+
 			ABn = AB.normalized();
 			polygon[0] = m_ver[m_faces[i][0]] + (vector1 - ABn) * tolerance;
 			polygon[1] = m_ver[m_faces[i][1]] + (vector1 + ABn) * tolerance;
@@ -1742,25 +1749,23 @@ namespace fastEnvelope {
 		envbox[7] = p1 + width * (-v + v1 - v2);
 	}
 
-	Vector3 FastEnvelope::accurate_normal_vector(const std::array<Vector3, 3> & triangle) {
+	Vector3 FastEnvelope::accurate_normal_vector(const Vector3 & p, const Vector3 & q) {
 		
-		const Multiprecision ax = triangle[0][0] - triangle[1][0];
-		const Multiprecision ay = triangle[0][1] - triangle[1][1];
-		const Multiprecision az = triangle[0][2] - triangle[1][2];
-
-		const Multiprecision bx = triangle[0][0] - triangle[2][0];
-		const Multiprecision by = triangle[0][1] - triangle[2][1];
-		const Multiprecision bz = triangle[0][2] - triangle[2][2];
+		const Multiprecision ax = p[0];
+		const Multiprecision ay = p[1];
+		const Multiprecision az = p[2];
+								   
+		const Multiprecision bx = q[0];
+		const Multiprecision by = q[1];
+		const Multiprecision bz = q[2];
 
 		Multiprecision x = ay * bz - az * by;
 		Multiprecision y = az * bx - ax * bz;
 		Multiprecision z = ax * by - ay * bx;
+		Multiprecision ssum = x * x + y * y + z * z;
+		const Multiprecision length = ssum.sqrt(ssum);
+		x = x / length; y = y / length; z = z / length;
 		
-		const Multiprecision length = sqrt(x * x + y * y + z * z);
-		//x = x / length; y = y / length; z = z / length;
-		
-		
-		std::cout << "value " << x << " vs " << ax << " vs " << std::endl;
 		Scalar fx = x.to_double(), fy = y.to_double(), fz = z.to_double();
 		return Vector3(fx, fy, fz);
 

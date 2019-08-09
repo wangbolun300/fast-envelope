@@ -41,7 +41,7 @@ namespace fastEnvelope {
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
 		
-		static Vector3 accurate_normal_vector(const std::array<Vector3, 3> & triangle);
+		static Vector3 accurate_normal_vector(const Vector3 & p, const Vector3 & q);
 
 	private:
 		
