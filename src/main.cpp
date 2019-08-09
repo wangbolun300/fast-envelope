@@ -1230,7 +1230,7 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	//test_in_wild();
+	test_in_wild();
 
 
 	//fordebug();
