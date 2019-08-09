@@ -1656,6 +1656,10 @@ namespace fastEnvelope {
 					}
 					envbox.push_back(box);
 				}
+				if (de == DEGENERATED_SEGMENT) {
+
+				}
+
 
 				continue;
 			}
