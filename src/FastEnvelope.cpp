@@ -1657,9 +1657,23 @@ namespace fastEnvelope {
 					envbox.push_back(box);
 				}
 				if (de == DEGENERATED_SEGMENT) {
-
+					Scalar length1 = AB.norm(), length2 = AC.norm(), length3 = BC.norm();
+					if (length1 >= length2 && length1 >= length3) {
+						seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], tolerance, box);
+						envbox.push_back(box);
+					}
+					if (length2 >= length1 && length2 >= length3) {
+						seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][2]], tolerance, box);
+						envbox.push_back(box);
+					}
+					if (length3 >= length1 && length3 >= length2) {
+						seg_cube(m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tolerance, box);
+						envbox.push_back(box);
+					}
 				}
-
+				if (de == NERLY_DEGENERATED) {
+					TOSO
+				}
 
 				continue;
 			}
@@ -1699,7 +1713,34 @@ namespace fastEnvelope {
 
 
 	}
+	void FastEnvelope::seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar& width, std::array<Vector3, 8>& envbox) {
+		Vector3 v1, v2, v = p2 - p1;//p12
+		if (v[0] != 0) {
+			v1 = Vector3((0 - v[1] - v[2]) / v[0], 1, 1);
+		}
+		else {
+			if (v[1] != 0) {
+				v1 = Vector3(1, (0 - v[2]) / v[1], 1);
 
+			}
+			else {
+				v1 = Vector3(1, 1, 0);
+
+			}
+		}
+		v2 = v.cross(v1);
+		v = v.normalized();
+		v1 = v1.normalized();
+		v2 = v2.normalized();
+		envbox[0] = p2 + width * (v + v1 + v2);
+		envbox[1] = p2 + width * (v - v1 + v2);
+		envbox[2] = p2 + width * (v - v1 - v2);
+		envbox[3] = p2 + width * (v + v1 - v2);
+		envbox[4] = p1 + width * (-v + v1 + v2);
+		envbox[5] = p1 + width * (-v - v1 + v2);
+		envbox[6] = p1 + width * (-v - v1 - v2);
+		envbox[7] = p1 + width * (-v + v1 - v2);
+	}
 
 	Vector3 FastEnvelope::accurate_normal_vector(const std::array<Vector3, 3> & triangle) {
 		
@@ -1714,8 +1755,8 @@ namespace fastEnvelope {
 		Multiprecision x = ay * bz - az * by;
 		Multiprecision y = az * bx - ax * bz;
 		Multiprecision z = ax * by - ay * bx;
-		//TODO
-		//const Multiprecision length = sqrt(x * x + y * y + z * z);
+		
+		const Multiprecision length = sqrt(x * x + y * y + z * z);
 		//x = x / length; y = y / length; z = z / length;
 		
 		

@@ -143,7 +143,7 @@ namespace fastEnvelope {
 		bool point_out_prism(const Vector3& point, const std::vector<int>& prismindex, const int& jump) const;
 
 		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism,  std::vector<std::array<Vector3, 8>>& envbox, const Scalar& epsilon);
-
+		static void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar& width, std::array<Vector3, 8>& envbox);
 
 		
 
