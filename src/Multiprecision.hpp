@@ -129,5 +129,13 @@ public:
         os << mpf_get_d(r.value);
         return os;
     }
+
+    Multiprecision sqrt(const Multiprecision &mp)
+    {
+        Multiprecision res;
+        mpf_sqrt(res.value, mp.value);
+
+        return res;
+    }
     };
 }
