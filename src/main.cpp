@@ -1121,7 +1121,7 @@ int main(int argc, char const *argv[])
 
 	Multiprecision rr = r1 / r3 / r3;
 	Multiprecision rrr = r3 * rr * r3;
-
+	
 	std::cout << rrr << std::endl;
 	Scalar p = 1.473;
 	Multiprecision pr(p);
@@ -1130,8 +1130,8 @@ int main(int argc, char const *argv[])
 	pr = Multiprecision(p) * pr;//3 15
 	//pr = pr * pr;
 	
-	std::cout << "mp " << pr << std::endl;
-	std::cout << "mp " << std::setprecision(17) << pr << std::endl;
+	//std::cout << "mp " << pr << std::endl;
+	//std::cout << "mp " << std::setprecision(17) << pr << std::endl;
 	}
 
 	Rational r=double(1.473);
@@ -1139,15 +1139,29 @@ int main(int argc, char const *argv[])
 	r = r * r;
 	r = 1.473 * r;
 	
-	std::cout << "r  " << std::setprecision(16) << r << std::endl;
-	double f = r.to_double();
-	std::cout << "f  " << std::setprecision(16) << f << std::endl;
+	//std::cout << "r  " << std::setprecision(16) << r << std::endl;
 	
 	
-	Multiprecision s = 1.414;
-	std::cout << "s  " <<  s.sqrt(s) << std::endl;
+	
+	typedef Multiprecision T;
+	//typedef Rational T;
+	double n1 = 1.41414, n2 = 0.76, n3 = 7.6, n4 = 0.1;
+	T a=T(141414)/T(100000);
+	T b=T(76)/T(100);
+	T result(a * b);
+	cout << "result " << result << endl;
+	T b1=T(76)/T(10);
+	T result1(a * b1);
+	cout << "result1 " << result1 << endl;
+	T n5 = T(1) / T(10);
+	T result2 ( result1 *n5);
+	cout << "result2 " << result2 << endl;
+	T minu(result - result2);
+	cout << "check " << minu.get_sign() << endl;
 
-
+	if (minu == 0) {
+		cout << "=0" << endl;
+	}
 	/*const std::function<int(double)> check_double = [](double v) {
 
 		if (fabs(v) < 1e-10)
@@ -1230,7 +1244,7 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	test_in_wild();
+	//test_in_wild();
 
 
 	//fordebug();
