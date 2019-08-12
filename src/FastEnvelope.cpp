@@ -479,7 +479,7 @@ namespace fastEnvelope {
 					
 						if (tti == CUT_COPLANAR) {
 
-							break;
+							continue;
 
 						}
 
@@ -1522,7 +1522,7 @@ namespace fastEnvelope {
 		/*if (o3*o4 == 1 && o3*o5 == 1) {
 			return CUT_FACE;
 		}*/
-		if (o3 + o4 + o5 >= 3 || o3 + o4 + o5 <= -3) {// in fact, cut through triangle or segment cut triangle edge
+		if (o3 + o4 + o5 + o6 >= 3 || o3 + o4 + o5 + o6 <= -3) {// in fact, cut through triangle or segment cut triangle edge
 			return CUT_FACE;
 		}
 		return CUT_EMPTY;
@@ -1551,7 +1551,7 @@ namespace fastEnvelope {
 		/*if (o3*o4 == 1 && o3*o5 == 1) {
 			return CUT_FACE;
 		}*/
-		if (o3 + o4 + o5 >= 5 || o3 + o4 + o5 <= -5) {// in fact, cut through triangle or segment cut triangle edge
+		if (o3 + o4 + o5 + o6 + o7 + o8 >= 5 || o3 + o4 + o5 + o6 + o7 + o8 <= -5) {// in fact, cut through triangle or segment cut triangle edge
 			return CUT_FACE;
 		}
 		return CUT_EMPTY;
