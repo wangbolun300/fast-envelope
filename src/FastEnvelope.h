@@ -31,7 +31,7 @@ namespace fastEnvelope {
 		static const int DEGENERATED_SEGMENT = 2;
 		static const int DEGENERATED_POINT = 3;
 		
-		typedef fastEnvelope::Rational typeprec;
+		
 		
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
@@ -146,19 +146,19 @@ namespace fastEnvelope {
 		static void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar& width, std::array<Vector3, 8>& envbox);
 
 		
-
+		template<typename T>
 		 int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle1, 
-			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<int>& prismindex, const int& jump)const;
+			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<int>& prismindex, const int& jump, const std::function<int(T)> &checker)const;
 
 		/* int Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 			const std::vector<int>& prismindex, const int& jump)const;*/
 
 
 
-
+		 template<typename T>
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, 
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22, 
-			const std::vector<int>& prismindex, const int& jump1,const int &jump2) const;
+			const std::vector<int>& prismindex, const int& jump1,const int &jump2, const std::function<int(T)> &checker) const;
 
 
 
@@ -167,9 +167,9 @@ namespace fastEnvelope {
 
 
 
-
+		template<typename T>
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, 
-			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2);
+			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, const std::function<int(T)> &checker);
 
 		public:
 		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);
@@ -659,4 +659,5 @@ namespace fastEnvelope {
 
 
 	};
+	
 }
