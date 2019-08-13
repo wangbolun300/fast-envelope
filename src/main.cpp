@@ -361,7 +361,7 @@ void add_hashing() {
 	std::cout << "time1 and time2:  " << time1 << "," << time2 << std::endl;
 	std::cout << "dd:  " << dd << std::endl;
 	std::cout << "shrink size:  " << shrink << std::endl;
-	std::cout << "all the prism size:  " << fast_envelope.prism_size() << std::endl;
+	//std::cout << "all the prism size:  " << fast_envelope.prism_size() << std::endl;
 	std::cout << "\ngetbbcorners time:  " << time3 << std::endl;
 	std::cout << "intersection element finding time:  " << time4 << std::endl;
 	std::cout << "function time:  " << time5 << std::endl;
@@ -1049,7 +1049,7 @@ void rational_try(const Rational &r) {
 }
 
 void writelist() {
-	int list[64][2];
+	/*int list[64][2];
 	for (int i = 0; i < 64; i++) {
 		list[i][0] = -1;
 		list[i][1] = -1;
@@ -1088,6 +1088,42 @@ void writelist() {
 	cout << "start" << endl;
 	for (int i = 0; i < 64; i++) {
 		cout <<" {"<< list[i][0] << ", " << list[i][1]<<"}," << endl;
+	}
+	cout << "end" << endl;*/
+
+
+	int list[36][2];
+	for (int i = 0; i < 36; i++) {
+		list[i][0] = -1;
+		list[i][1] = -1;
+	}
+	int m[12][4] = {
+
+	{0,2,0,3},
+	{0,3,0,1},
+	{0,4,1,2},
+	{0,5,2,3},
+	{1,2,4,7},
+
+	{1,3,4,5},
+	{1,4,5,6},
+	{1,5,6,7},
+	{2,3,0,4},
+	{2,5,3,7},
+
+	{3,4,1,5},
+	{4,5,2,6}
+	};
+	for (int i = 0; i < 12; i++) {
+		list[m[i][0] * 6 + m[i][1]][0] = m[i][2];
+		list[m[i][0] * 6 + m[i][1]][1] = m[i][3];
+		list[m[i][1] * 6 + m[i][0]][0] = m[i][2];
+		list[m[i][1] * 6 + m[i][0]][1] = m[i][3];
+
+	}
+	cout << "start" << endl;
+	for (int i = 0; i < 36; i++) {
+		cout << " {" << list[i][0] << ", " << list[i][1] << "}," << endl;
 	}
 	cout << "end" << endl;
 
@@ -1248,7 +1284,7 @@ int main(int argc, char const *argv[])
 
 
 	//fordebug();
-	//writelist();
+	writelist();
 
 	//inf();
 	//sample_triangle_test();

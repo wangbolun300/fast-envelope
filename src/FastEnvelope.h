@@ -37,7 +37,6 @@ namespace fastEnvelope {
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac);
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
-		inline int prism_size() const { return envprism.size(); }
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
 		
@@ -51,6 +50,7 @@ namespace fastEnvelope {
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		Vector3 min, max;
 		int subx, suby, subz;
+		int prism_size;
 	public:
 		std::vector<std::array<Vector3, 8>> envcubic;
 	private:
