@@ -665,14 +665,16 @@ void test_in_wild() {
 
 	timer.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
 	pos2.resize(fn);
-	for (int i = 0; i < fn; i++) {
+	for (int i = 131304; i < fn; i++) {
 
 		pos1[i] = outenvelope[i];
+		fast_envelope.print_prisms(triangles[i]);
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
-
+		cout << "the ith " << i << " " << pos2[i] << endl;
 	}
 	std::cout << "time " << timer.getElapsedTimeInSec() << endl;
 
@@ -1280,11 +1282,11 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	//test_in_wild();
+	test_in_wild();
 
 
 	//fordebug();
-	writelist();
+	//writelist();
 
 	//inf();
 	//sample_triangle_test();
