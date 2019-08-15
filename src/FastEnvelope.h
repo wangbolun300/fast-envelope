@@ -90,7 +90,7 @@ namespace fastEnvelope {
 			//cout << "max = " << max[0] << " " << max[1] << " " << max[2] << endl;
 			//            pausee();
 		}
-		static void  CornerList(const std::vector<std::array<Vector3, 12>>& prism,
+		static void  CornerList_prism(const std::vector<std::array<Vector3, 12>>& prism,
 			std::vector<std::array<Vector3, 2>>& list) {
 			std::vector<Vector3> ver12(12);
 			Vector3 min, max;
@@ -100,6 +100,19 @@ namespace fastEnvelope {
 					ver12[j] = prism[i][j];
 				}
 				get_bb_corners(ver12, min, max);
+				list[i] = { {min,max } };
+			}
+		}
+		static void  CornerList_cubic(const std::vector<std::array<Vector3, 8>>& cubic,
+			std::vector<std::array<Vector3, 2>>& list) {
+			std::vector<Vector3> ver8(8);
+			Vector3 min, max;
+			list.resize(cubic.size());//to be safer
+			for (int i = 0; i < cubic.size(); i++) {
+				for (int j = 0; j < 8; j++) {
+					ver8[j] = cubic[i][j];
+				}
+				get_bb_corners(ver8, min, max);
 				list[i] = { {min,max } };
 			}
 		}

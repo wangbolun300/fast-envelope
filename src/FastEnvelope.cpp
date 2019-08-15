@@ -256,7 +256,10 @@ namespace fastEnvelope {
 		subx = (max[0] - min[0]) / boxlength, suby = (max[1] - min[1]) / boxlength, subz = (max[2] - min[2]) / boxlength;
 
 
-		CornerList(envprism, cornerlist);
+		CornerList_prism(envprism, cornerlist);
+		std::vector<std::array<Vector3, 2>> cubiconors;
+		CornerList_cubic(envcubic, cubiconors);
+		cornerlist.insert(cornerlist.end(), cubiconors.begin(), cubiconors.end());
 		std::vector<int> intercell;
 		int ct = 0, prismsize = envprism.size();
 
