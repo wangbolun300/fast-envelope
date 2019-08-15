@@ -760,6 +760,8 @@ namespace fastEnvelope {
 				//and T
 
 				if (inter_ijk_list[i][0] != inter_ijk_list[j][0]) {//belong to two different prisms
+
+
 					Vector3 t00, t01, t02, t10, t11, t12;
 					int n1, n2, c1m, c2m;
 					if (inter_ijk_list[i][0] < prism_size) {
@@ -843,8 +845,8 @@ namespace fastEnvelope {
 
 					go2++;
 
-					if (inter2 == 1) {
 
+					if (inter2 == 1) {
 
 
 						return 1;//out
@@ -855,10 +857,13 @@ namespace fastEnvelope {
 
 				else {//belong to one same prism
 
+					//TODO here also need check index[j]
 					//find prism_map[list[i][1]*8+list[j][1]][0],prism_map[list[i][1]*8+list[j][1]][1]
-					if (prismindex[i] < prism_size) {mkmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+					
+					if (inter_ijk_list[i][0] < prism_size) {
+						
 						int id = inter_ijk_list[i][1] * 8 + inter_ijk_list[j][1];
-
+						
 						int id0 = prism_map[id][0], id1 = prism_map[id][1];
 
 						if (id0 != -1) {//find map
@@ -874,6 +879,8 @@ namespace fastEnvelope {
 								prismindex, jump1, checker);
 
 							go2++;
+							
+
 							if (inter2 == 1) {
 
 
