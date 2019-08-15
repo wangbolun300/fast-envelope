@@ -59,6 +59,7 @@ namespace fastEnvelope {
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex) const;
 
 		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
+		static int seg_cut_plane(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
 		static int seg_cut_polygon_4(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3);
 		static int seg_cut_polygon_6(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3, const Vector3 &t4, const Vector3 &t5);
 

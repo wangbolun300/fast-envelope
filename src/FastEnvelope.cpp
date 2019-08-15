@@ -11,7 +11,8 @@
 
 
 
-int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0, diff1 = 0, diff2 = 0, diff3 = 0;
+int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0, diff1 = 0, diff2 = 0, diff3 = 0,
+ct1=0,ct2=0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
 int go1 = 0, go2 = 0;
 igl::Timer timer;
@@ -239,8 +240,9 @@ namespace fastEnvelope {
 		/*std::cout << "lpi 1 " << float(after11) / float(after11 + after12 + after10) << " lpi -1 " << after12 / float(after11 + after12 + after10) << " lpi 0 " << after10 / float(after11 + after12 + after10) << " tot  " << after11 + after12 + after10 << std::endl;
 		std::cout << "tpi 1 " << after21 / float(after21 + after22 + after20) << " tpi -1 " << after22 / float(after21 + after22 + after20) << " tpi 0 " << after20 / float(after21 + after22 + after20) << " tot  " << after21 + after22 + after20 << std::endl;
 		std::cout << "go1 " << go1 << " go2 " << go2 << std::endl;*/
-		std::cout << "same " << float(diff1) / float(diff1+diff2) << " diff " << float(diff2) / float(diff1 + diff2) <<  std::endl;
-
+		std::cout << "same " << float(diff1) / float(diff1 + diff2 + diff3) << " diff " << float(diff2) / float(diff1 + diff2 + diff3) << " wrong " << float(diff3) / float(diff1 + diff2 + diff3) << std::endl;
+		std::cout << "cut tri number original " << ct1 << " conservative " << ct2  <<" rate "<<float(ct1)/float(ct2)<< std::endl;
+		std::cout << "total " <<diff1+diff2+diff3 << "   " << ct1 << "  " << ct2 << std::endl;
 
 	}
 
@@ -641,37 +643,46 @@ namespace fastEnvelope {
 				for (int j = 0; j < p_facenumber; j++) {
 
 					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
-
 						tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]]);
-						
-						
-						//////////////////////////////////new intersection based on box-box intersection
-						Vector3 t1min, t1max, t2min, t2max;
-						get_tri_corners(triangle, t1min, t1max);
-						get_tri_corners({ { envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]]} }, t2min, t2max);
-						bool tti1 = box_box_intersection(t1min, t1max, t2min, t2max);
-						if (tti1 == 1 && tti == CUT_FACE) diff1++;
-						if (tti1 == 0 && tti == CUT_COPLANAR) diff1++;
-						if (tti1 == 0 && tti == CUT_EMPTY) diff1++;
 
-						if (tti1 == 1 && tti == CUT_COPLANAR) diff2++;
-						if (tti1 == 1 && tti == CUT_EMPTY) diff2++;
-						if (tti1 == 0 && tti == CUT_FACE) diff2++;
-
-						//////////////////////////////////
-						//TODO can be replaced by box-box intersection
-						if (tti == CUT_COPLANAR) {
-							break;
+						if (tti == CUT_COPLANAR || tti == CUT_FACE) break;
+					}
+					if (tti == CUT_FACE) ct1++;
+					//////////////////////////////////////new intersection based on box-box intersection
+					Vector3 t1min, t1max, t2min, t2max;
+					get_tri_corners(triangle, t1min, t1max);
+					if (j == 0) {
+						get_hex_corners(envprism[prismindex[i]][0], envprism[prismindex[i]][1], envprism[prismindex[i]][2],
+							envprism[prismindex[i]][3], envprism[prismindex[i]][4], envprism[prismindex[i]][5], t2min, t2max);
+						
+					}
+					else {
+						if (j == 1) {
+							get_hex_corners(envprism[prismindex[i]][6], envprism[prismindex[i]][7], envprism[prismindex[i]][8],
+								envprism[prismindex[i]][9], envprism[prismindex[i]][10], envprism[prismindex[i]][11], t2min, t2max);
+							
+						}
+						else {
+							get_sqr_corners(envprism[prismindex[i]][p_facepoint[j][0]], envprism[prismindex[i]][p_facepoint[j][1]],
+								envprism[prismindex[i]][p_facepoint[j][2]], envprism[prismindex[i]][p_facepoint[j][3]], t2min, t2max);
 						}
 
-						if (tti == CUT_EMPTY) {
-							continue;
-						}
+					}
 
+					bool tti1 = box_box_intersection(t1min, t1max, t2min, t2max);
+					if (tti1 == 1 && tti == CUT_FACE) diff1++;
+					if (tti1 == 0 && tti == CUT_COPLANAR) diff1++;
+					if (tti1 == 0 && tti == CUT_EMPTY) diff1++;
+
+					if (tti1 == 1 && tti == CUT_COPLANAR) diff2++;
+					if (tti1 == 1 && tti == CUT_EMPTY) diff2++;
+					if (tti1 == 0 && tti == CUT_FACE) diff3++;
+					if (tti1 == 1) ct2++;
+					//////////////////////////////////////
+					
+					if (tti == CUT_FACE) {
+						//std::cout << "here1 " << std::endl;
 						record1 = 0;
-
-
-
 
 						for (int k = 0; k < 3; k++) {
 							//TODO change to seg-facet cut maybe. we need triangle-facet cut, only way is triangulation.
@@ -701,8 +712,8 @@ namespace fastEnvelope {
 
 						}
 
-						inter_ijk_list.emplace_back(Vector3i(prismindex[i], j, c));
-						break;
+						inter_ijk_list.emplace_back(Vector3i(prismindex[i], j, 0));
+						//break;
 					}
 
 				}
@@ -715,18 +726,14 @@ namespace fastEnvelope {
 
 						tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envcubic[cindex][c_triangle[j][c][0]], envcubic[cindex][c_triangle[j][c][1]], envcubic[cindex][c_triangle[j][c][2]]);
 						//TODO can be replaced by box-box intersection
-						if (tti == CUT_COPLANAR) {
+						if (tti == CUT_COPLANAR||tti==CUT_FACE) {
 							break;
 						}
+					}
 
-						if (tti == CUT_EMPTY) {
-							continue;
-						}
 
+					if (tti == CUT_FACE) {
 						record1 = 0;
-
-
-
 
 						for (int k = 0; k < 3; k++) {
 							//TODO change to seg-facet cut maybe. we need triangle-facet cut, only way is triangulation.
@@ -756,10 +763,12 @@ namespace fastEnvelope {
 
 						}
 
-						inter_ijk_list.emplace_back(Vector3i(prismindex[i], j, c));
-						break;
+						inter_ijk_list.emplace_back(Vector3i(prismindex[i], j, 0));
+						
+
 					}
 
+					
 				}
 			}
 			
@@ -973,12 +982,12 @@ namespace fastEnvelope {
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle0,
 		const Vector3& triangle1, const Vector3& triangle2, const std::vector<int>& prismindex, const int& jump, const std::function<int(T)>& checker) const {
 		int  ori,ori1;
-		//int inter = seg_cut_tri(segpoint0, segpoint1, triangle0, triangle1, triangle2);
+		int inter = seg_cut_plane(segpoint0, segpoint1, triangle0, triangle1, triangle2);
 
-		//if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
-		//							//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
-		//	return NOT_INTERSECTD;//not intersected
-		//}
+		if (inter == CUT_COPLANAR) {// we can not add "CUT_EMPTY" to this, because we use tri-tri intersection, not tri-facet intersection
+									//so even if seg cut tri or next tri, seg_cut_tri may returns cut_empty
+			return NOT_INTERSECTD;//not intersected
+		}
 
 		int tot;
 		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
@@ -1990,6 +1999,18 @@ template<typename T>
 		}
 		return CUT_EMPTY;
 	}
+	int FastEnvelope::seg_cut_plane(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2) {
+		int o1, o2;
+		o1 = Predicates::orient_3d(seg0, t0, t1, t2);
+		o2 = Predicates::orient_3d(seg1, t0, t1, t2);
+		int op = o1 * o2;
+		if (op >= 0) {
+			return CUT_COPLANAR;//in fact, coplanar and not on this plane
+		}
+		return CUT_FACE;
+	}
+
+
 
 	int FastEnvelope::seg_cut_polygon_4(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3) {
 		
