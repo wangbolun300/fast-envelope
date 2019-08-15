@@ -1035,7 +1035,7 @@ namespace fastEnvelope {
 						ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
-						ori1 = orient3D_LPI_filtered_multiprecision(
+						/*ori1 = orient3D_LPI_filtered_multiprecision(
 							Multiprecision(segpoint0[0]), Multiprecision(segpoint0[1]), Multiprecision(segpoint0[2]),
 							Multiprecision(segpoint1[0]), Multiprecision(segpoint1[1]), Multiprecision(segpoint1[2]),
 							Multiprecision(triangle0[0]), Multiprecision(triangle0[1]), Multiprecision(triangle0[2]),
@@ -1047,7 +1047,7 @@ namespace fastEnvelope {
 							check_Multiprecision);
 						if (ori != ori1) {
 							std::cout << "result diff in rat and mul " << ori << " " << ori1 << std::endl;
-						}
+						}*/
 						if (ori == 1) after11++;
 						if (ori == -1) after12++;
 						if (ori == 0) after10++;
@@ -1217,7 +1217,7 @@ namespace fastEnvelope {
 						ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
-						ori1 = orient3D_LPI_filtered_multiprecision(
+						/*ori1 = orient3D_LPI_filtered_multiprecision(
 							Multiprecision(segpoint0[0]), Multiprecision(segpoint0[1]), Multiprecision(segpoint0[2]),
 							Multiprecision(segpoint1[0]), Multiprecision(segpoint1[1]), Multiprecision(segpoint1[2]),
 							Multiprecision(triangle0[0]), Multiprecision(triangle0[1]), Multiprecision(triangle0[2]),
@@ -1229,7 +1229,7 @@ namespace fastEnvelope {
 							check_Multiprecision);
 						if (ori != ori1) {
 							std::cout << "result diff in rat and mul " << ori << " " << ori1 << std::endl;
-						}
+						}*/
 						if (ori == 1) after11++;
 						if (ori == -1) after12++;
 						if (ori == 0) after10++;
