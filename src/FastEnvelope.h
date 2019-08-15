@@ -116,6 +116,7 @@ namespace fastEnvelope {
 				list[i] = { {min,max } };
 			}
 		}
+		
 		static void BoxFindCells(const Vector3& min, const Vector3& max,
 			const Vector3& cellmin, const Vector3& cellmax, const int& subx, const int&suby, const int subz, std::vector<int>& intercell) {
 
@@ -142,7 +143,7 @@ namespace fastEnvelope {
 
 
 		}
-		static void get_triangle_corners(const std::array<Vector3, 3> &triangle, Vector3 &mint, Vector3 &maxt) {
+		static void get_tri_corners(const std::array<Vector3, 3> &triangle, Vector3 &mint, Vector3 &maxt) {
 			mint[0] = std::min(std::min(triangle[0][0], triangle[1][0]), triangle[2][0]);
 			mint[1] = std::min(std::min(triangle[0][1], triangle[1][1]), triangle[2][1]);
 			mint[2] = std::min(std::min(triangle[0][2], triangle[1][2]), triangle[2][2]);
@@ -151,7 +152,31 @@ namespace fastEnvelope {
 			maxt[2] = std::max(std::max(triangle[0][2], triangle[1][2]), triangle[2][2]);
 
 		}
+		static void get_sqr_corners(const Vector3 &s1, const Vector3 &s2, const Vector3 &s3, const Vector3 &s4, Vector3 &mint, Vector3 &maxt) {
+			mint[0] = std::min(std::min(std::min(s1[0], s2[0]), s3[0]),s4[0]);
+			mint[1] = std::min(std::min(std::min(s1[1], s2[1]), s3[1]),s4[1]);
+			mint[2] = std::min(std::min(std::min(s1[2], s2[2]), s3[2]),s4[2]);
+			maxt[0] = std::max(std::max(std::max(s1[0], s2[0]), s3[0]),s4[0]);
+			maxt[1] = std::max(std::max(std::max(s1[1], s2[1]), s3[1]),s4[1]);
+			maxt[2] = std::max(std::max(std::max(s1[2], s2[2]), s3[2]),s4[2]);
 
+		}
+		static void get_hex_corners(const Vector3 &s1, const Vector3 &s2, const Vector3 &s3, const Vector3 &s4, const Vector3 &s5, const Vector3 &s6, Vector3 &mint, Vector3 &maxt) {
+			mint[0] = std::min(std::min(std::min(std::min(std::min(s1[0], s2[0]), s3[0]), s4[0]), s5[0]), s6[0]);
+			mint[1] = std::min(std::min(std::min(std::min(std::min(s1[1], s2[1]), s3[1]), s4[1]), s5[1]), s6[1]);
+			mint[2] = std::min(std::min(std::min(std::min(std::min(s1[2], s2[2]), s3[2]), s4[2]), s5[2]), s6[2]);
+			maxt[0] = std::max(std::max(std::max(std::max(std::max(s1[0], s2[0]), s3[0]), s4[0]), s5[0]), s6[0]);
+			maxt[1] = std::max(std::max(std::max(std::max(std::max(s1[1], s2[1]), s3[1]), s4[1]), s5[1]), s6[1]);
+			maxt[2] = std::max(std::max(std::max(std::max(std::max(s1[2], s2[2]), s3[2]), s4[2]), s5[2]), s6[2]);
+
+		}
+		static bool box_box_intersection(const Vector3 &min1, const Vector3 &max1, const Vector3 &min2, const Vector3 &max2) {
+			if (max1[0] < min2[0] || max1[1] < min2[1] || max1[2] < min2[2]) return 0;
+			if (max2[0] < min1[0] || max2[1] < min1[1] || max2[2] < min1[2]) return 0;
+			return 1;
+		}
+		
+		
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		bool point_out_prism(const Vector3& point, const std::vector<int>& prismindex, const int& jump) const;
 

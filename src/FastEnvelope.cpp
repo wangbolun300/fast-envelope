@@ -11,7 +11,7 @@
 
 
 
-int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0;
+int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0, diff1 = 0, diff2 = 0, diff3 = 0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
 int go1 = 0, go2 = 0;
 igl::Timer timer;
@@ -236,9 +236,11 @@ namespace fastEnvelope {
 		//std::cout << "triangle_intersection filter number " << filternumber1 << " tpi total number " << totalnumber1 << " percentage " << float(filternumber1) / float(totalnumber1) << std::endl;
 		//std::cout << "triangle_intersection filter number lpi -2 " << filternumberlpi2 << " percentage " << float(filternumberlpi2) / float(totalnumberlpi) << std::endl;
 		//std::cout << "triangle_intersection filter number tpi -2 " << filternumbertpi2 << " percentage " << float(filternumbertpi2) / float(totalnumbertpi+ totalnumber1) << std::endl;
-		std::cout << "lpi 1 " << float(after11) / float(after11 + after12 + after10) << " lpi -1 " << after12 / float(after11 + after12 + after10) << " lpi 0 " << after10 / float(after11 + after12 + after10) << " tot  " << after11 + after12 + after10 << std::endl;
+		/*std::cout << "lpi 1 " << float(after11) / float(after11 + after12 + after10) << " lpi -1 " << after12 / float(after11 + after12 + after10) << " lpi 0 " << after10 / float(after11 + after12 + after10) << " tot  " << after11 + after12 + after10 << std::endl;
 		std::cout << "tpi 1 " << after21 / float(after21 + after22 + after20) << " tpi -1 " << after22 / float(after21 + after22 + after20) << " tpi 0 " << after20 / float(after21 + after22 + after20) << " tot  " << after21 + after22 + after20 << std::endl;
-		std::cout << "go1 " << go1 << " go2 " << go2 << std::endl;
+		std::cout << "go1 " << go1 << " go2 " << go2 << std::endl;*/
+		std::cout << "same " << float(diff1) / float(diff1+diff2) << " diff " << float(diff2) / float(diff1 + diff2) <<  std::endl;
+
 
 	}
 
@@ -277,7 +279,7 @@ namespace fastEnvelope {
 		std::vector<int> inumber;
 		std::vector<int> intercell;
 
-		get_triangle_corners(triangle, tmin, tmax);
+		get_tri_corners(triangle, tmin, tmax);
 		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
 
 		for (int j = 0; j < intercell.size(); j++) {
@@ -321,7 +323,7 @@ namespace fastEnvelope {
 		std::vector<int> inumber;
 		std::vector<int> intercell;
 		std::vector<std::array<Vector3, 12>> interenvprism;
-		get_triangle_corners(triangle, tmin, tmax);
+		get_tri_corners(triangle, tmin, tmax);
 		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
 		inumber.clear();
 		for (int j = 0; j < intercell.size(); j++) {
@@ -357,7 +359,7 @@ namespace fastEnvelope {
 		std::vector<int> inumber;
 		std::vector<int> intercell;
 
-		get_triangle_corners(triangle, tmin, tmax);
+		get_tri_corners(triangle, tmin, tmax);
 		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
 		inumber.clear();
 		for (int j = 0; j < intercell.size(); j++) {
@@ -641,6 +643,22 @@ namespace fastEnvelope {
 					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
 
 						tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]]);
+						
+						
+						//////////////////////////////////new intersection based on box-box intersection
+						Vector3 t1min, t1max, t2min, t2max;
+						get_tri_corners(triangle, t1min, t1max);
+						get_tri_corners({ { envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]]} }, t2min, t2max);
+						bool tti1 = box_box_intersection(t1min, t1max, t2min, t2max);
+						if (tti1 == 1 && tti == CUT_FACE) diff1++;
+						if (tti1 == 0 && tti == CUT_COPLANAR) diff1++;
+						if (tti1 == 0 && tti == CUT_EMPTY) diff1++;
+
+						if (tti1 == 1 && tti == CUT_COPLANAR) diff2++;
+						if (tti1 == 1 && tti == CUT_EMPTY) diff2++;
+						if (tti1 == 0 && tti == CUT_FACE) diff2++;
+
+						//////////////////////////////////
 						//TODO can be replaced by box-box intersection
 						if (tti == CUT_COPLANAR) {
 							break;
