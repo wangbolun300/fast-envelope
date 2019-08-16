@@ -612,8 +612,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 }
 
 void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100139\\100139.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100139\\BitDriver.stl";
+	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100729\\100729.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100729\\Diff_Casing_Side_2.A.9.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -1183,23 +1183,43 @@ int main(int argc, char const *argv[])
 	
 	typedef Multiprecision T;
 	//typedef Rational T;
-	double n1 = 1.41414, n2 = 0.76, n3 = 7.6, n4 = 0.1;
-	T a=T(141414)/T(100000);
-	T b=T(76)/T(100);
-	T result(a * b);
+	int prec = 100;
+
+	T a;
+	a.value->_mp_prec = prec;
+	a= T(141414) / T(100000);
+	T b;
+	b.value->_mp_prec = prec;
+	b= T(76) / T(100);
+	T result;
+	result.value->_mp_prec = prec;
+	result = (a * b);
 	cout << "result " << result << endl;
-	T b1=T(76)/T(10);
-	T result1(a * b1);
+	T b1;
+	b1.value->_mp_prec = prec;
+	b1= T(76) / T(10);
+	T result1;
+	result1.value->_mp_prec = prec;
+	result1=(a * b1);
 	cout << "result1 " << result1 << endl;
-	T n5 = T(1) / T(10);
-	T result2 ( result1 *n5);
+	T n5;
+	n5.value->_mp_prec = prec;
+	n5= T(1) / T(10);
+	T result2;
+	result2.value->_mp_prec = prec;
+	result2=(result1 *n5);
 	cout << "result2 " << result2 << endl;
-	T minu(result - result2);
+	T minu;
+	minu.value->_mp_prec = prec;
+	minu=(result - result2);
 	cout << "check " << minu.get_sign() << endl;
 
 	if (minu == 0) {
 		cout << "=0" << endl;
 	}
+	Multiprecision multi;
+	multi.value->_mp_prec = 100;
+
 	/*const std::function<int(double)> check_double = [](double v) {
 
 		if (fabs(v) < 1e-10)

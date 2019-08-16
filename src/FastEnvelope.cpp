@@ -12,7 +12,7 @@
 
 
 int markhf = 0, markhf1 = 0, i_time = 10, after11 = 0, after12 = 0, after10 = 0, after21 = 0, after22 = 0, after20 = 0, diff1 = 0, diff2 = 0, diff3 = 0,
-ct1=0,ct2=0;
+ct1=0,ct2=0,muln=0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
 int go1 = 0, go2 = 0;
 igl::Timer timer;
@@ -1010,6 +1010,8 @@ namespace fastEnvelope {
 				e00, e01, e02,
 				e10, e11, e12,
 				e20, e21, e22;
+			
+
 			s00 = segpoint0[0]; s01 = segpoint0[1]; s02 = segpoint0[2]; s10 = segpoint1[0]; s11 = segpoint1[1]; s12 = segpoint1[2];
 			t00 = triangle0[0]; t01 = triangle0[1]; t02 = triangle0[2];
 			t10 = triangle1[0]; t11 = triangle1[1]; t12 = triangle1[2];
@@ -1035,7 +1037,7 @@ namespace fastEnvelope {
 						ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
-						/*ori1 = orient3D_LPI_filtered_multiprecision(
+						ori1 = orient3D_LPI_filtered_multiprecision(
 							Multiprecision(segpoint0[0]), Multiprecision(segpoint0[1]), Multiprecision(segpoint0[2]),
 							Multiprecision(segpoint1[0]), Multiprecision(segpoint1[1]), Multiprecision(segpoint1[2]),
 							Multiprecision(triangle0[0]), Multiprecision(triangle0[1]), Multiprecision(triangle0[2]),
@@ -1046,8 +1048,8 @@ namespace fastEnvelope {
 							Multiprecision(envprism[prismindex[i]][p_face[j][2]][0]), Multiprecision(envprism[prismindex[i]][p_face[j][2]][1]), Multiprecision(envprism[prismindex[i]][p_face[j][2]][2]),
 							check_Multiprecision);
 						if (ori != ori1) {
-							std::cout << "result diff in rat and mul " << ori << " " << ori1 << std::endl;
-						}*/
+							std::cout << "result diff in rat and mul 1 " << ori << " " << ori1 << std::endl;
+						}
 						if (ori == 1) after11++;
 						if (ori == -1) after12++;
 						if (ori == 0) after10++;
@@ -1217,19 +1219,71 @@ namespace fastEnvelope {
 						ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
-						/*ori1 = orient3D_LPI_filtered_multiprecision(
-							Multiprecision(segpoint0[0]), Multiprecision(segpoint0[1]), Multiprecision(segpoint0[2]),
-							Multiprecision(segpoint1[0]), Multiprecision(segpoint1[1]), Multiprecision(segpoint1[2]),
-							Multiprecision(triangle0[0]), Multiprecision(triangle0[1]), Multiprecision(triangle0[2]),
-							Multiprecision(triangle1[0]), Multiprecision(triangle1[1]), Multiprecision(triangle1[2]),
-							Multiprecision(triangle2[0]), Multiprecision(triangle2[1]), Multiprecision(triangle2[2]),
-							Multiprecision(envprism[in1][p_face[in2][0]][0]), Multiprecision(envprism[in1][p_face[in2][0]][1]), Multiprecision(envprism[in1][p_face[in2][0]][2]),
-							Multiprecision(envprism[in1][p_face[in2][1]][0]), Multiprecision(envprism[in1][p_face[in2][1]][1]), Multiprecision(envprism[in1][p_face[in2][1]][2]),
-							Multiprecision(envprism[in1][p_face[in2][2]][0]), Multiprecision(envprism[in1][p_face[in2][2]][1]), Multiprecision(envprism[in1][p_face[in2][2]][2]),
-							check_Multiprecision);
+
+						int prec = 10000;
+						/*Multiprecision
+							s00m, s01m, s02m,
+							s10m, s11m, s12m,
+							t00m, t01m, t02m,
+							t10m, t11m, t12m,
+							t20m, t21m, t22m,
+							e00m, e01m, e02m,
+							e10m, e11m, e12m,
+							e20m, e21m, e22m;
+
+						    s00m.value->_mp_prec = prec; s01m.value->_mp_prec = prec; s02m.value->_mp_prec = prec;
+							s10m.value->_mp_prec = prec; s11m.value->_mp_prec = prec; s12m.value->_mp_prec = prec;
+							t00m.value->_mp_prec = prec; t01m.value->_mp_prec = prec; t02m.value->_mp_prec = prec;
+							t10m.value->_mp_prec = prec; t11m.value->_mp_prec = prec; t12m.value->_mp_prec = prec;
+							t20m.value->_mp_prec = prec; t21m.value->_mp_prec = prec; t22m.value->_mp_prec = prec;
+							e00m.value->_mp_prec = prec; e01m.value->_mp_prec = prec; e02m.value->_mp_prec = prec;
+							e10m.value->_mp_prec = prec; e11m.value->_mp_prec = prec; e12m.value->_mp_prec = prec;
+							e20m.value->_mp_prec = prec; e21m.value->_mp_prec = prec; e22m.value->_mp_prec = prec;
+
+
+							s00m = segpoint0[0]; s01m = segpoint0[1]; s02m = segpoint0[2];
+							s10m = segpoint1[0]; s11m = segpoint1[1]; s12m = segpoint1[2];
+							t00m = triangle0[0]; t01m = triangle0[1]; t02m = triangle0[2];
+							t10m = triangle1[0]; t11m = triangle1[1]; t12m = triangle1[2];
+							t20m = triangle2[0]; t21m = triangle2[1]; t22m = triangle2[2];
+							e00m = envprism[in1][p_face[in2][0]][0]; e01m = envprism[in1][p_face[in2][0]][1]; e02m = envprism[in1][p_face[in2][0]][2];
+							e10m = envprism[in1][p_face[in2][1]][0]; e11m = envprism[in1][p_face[in2][1]][1]; e12m = envprism[in1][p_face[in2][1]][2];
+							e20m = envprism[in1][p_face[in2][2]][0]; e21m = envprism[in1][p_face[in2][2]][1]; e22m = envprism[in1][p_face[in2][2]][2];
+			
+						ori1 = orient3D_LPI_filtered_multiprecision(
+							s00m, s01m, s02m,
+							s10m, s11m, s12m,
+							t00m, t01m, t02m,
+							t10m, t11m, t12m,
+							t20m, t21m, t22m,
+							e00m, e01m, e02m,
+							e10m, e11m, e12m,
+							e20m, e21m, e22m,
+							check_Multiprecision);*/
+
+						ori1 = orient3D_LPI_filtered_multiprecision_backup(
+
+							Rational(segpoint0[0]), Rational(segpoint0[1]), Rational(segpoint0[2]),
+
+							Rational(segpoint1[0]), Rational(segpoint1[1]), Rational(segpoint1[2]),
+
+							Rational(triangle0[0]), Rational(triangle0[1]), Rational(triangle0[2]),
+
+							Rational(triangle1[0]), Rational(triangle1[1]), Rational(triangle1[2]),
+
+							Rational(triangle2[0]), Rational(triangle2[1]), Rational(triangle2[2]),
+
+							Rational(envprism[in1][p_face[in2][0]][0]), Rational(envprism[in1][p_face[in2][0]][1]), Rational(envprism[in1][p_face[in2][0]][2]),
+
+							Rational(envprism[in1][p_face[in2][1]][0]), Rational(envprism[in1][p_face[in2][1]][1]), Rational(envprism[in1][p_face[in2][1]][2]),
+
+							Rational(envprism[in1][p_face[in2][2]][0]), Rational(envprism[in1][p_face[in2][2]][1]), Rational(envprism[in1][p_face[in2][2]][2]),
+
+							check_Rational);
 						if (ori != ori1) {
-							std::cout << "result diff in rat and mul " << ori << " " << ori1 << std::endl;
-						}*/
+							muln++;
+							std::cout << "result diff in rat and mul 2 " <<muln<<" "<< ori << " " << ori1 << std::endl;
+						}
 						if (ori == 1) after11++;
 						if (ori == -1) after12++;
 						if (ori == 0) after10++;
