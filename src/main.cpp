@@ -1131,6 +1131,21 @@ void writelist() {
 
 }
 
+#include <gmp.h>
+void testM() {
+	mpf_t x;
+	mpf_init2(x,512);
+	
+	cout <<"prec "<<mpf_get_prec(x)<<endl;
+
+	Multiprecision a(3.14);
+	cout << "prec " << a.get_prec_bits() << endl;
+
+	Multiprecision b=3.14;
+	cout << "prec2 " << b.get_prec_bits() << endl;
+
+}
+
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
@@ -1314,6 +1329,7 @@ int main(int argc, char const *argv[])
 	//degen_test();
 	//accurate_vector();
 	//try2();
+	testM();
 	std::cout << "done!" << std::endl;
 
 

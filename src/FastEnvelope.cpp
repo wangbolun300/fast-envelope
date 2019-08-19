@@ -275,6 +275,8 @@ namespace fastEnvelope {
 			}
 		}
 		std::cout << "map size " << prismmap.size() << std::endl;
+		std::cout << "prism size " << prism_size << std::endl;
+		std::cout << "cubic size " << envcubic.size() << std::endl;
 	}
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const {
 		Vector3 tmin, tmax;
@@ -468,7 +470,7 @@ namespace fastEnvelope {
 
 	{
 
-		static const std::function<int(fastEnvelope::Rational)> checker = check_Rational;
+		static const std::function<int(fastEnvelope::Multiprecision)> checker = check_Multiprecision;
 		static const std::function<int(fastEnvelope::Multiprecision)> checker1 = check_Multiprecision;
 		if (prismindex.size() == 0) {
 
@@ -1220,8 +1222,8 @@ namespace fastEnvelope {
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
 
-						int prec = 10000;
-						/*Multiprecision
+						
+						/*static Multiprecision
 							s00m, s01m, s02m,
 							s10m, s11m, s12m,
 							t00m, t01m, t02m,
@@ -1230,16 +1232,6 @@ namespace fastEnvelope {
 							e00m, e01m, e02m,
 							e10m, e11m, e12m,
 							e20m, e21m, e22m;
-
-						    s00m.value->_mp_prec = prec; s01m.value->_mp_prec = prec; s02m.value->_mp_prec = prec;
-							s10m.value->_mp_prec = prec; s11m.value->_mp_prec = prec; s12m.value->_mp_prec = prec;
-							t00m.value->_mp_prec = prec; t01m.value->_mp_prec = prec; t02m.value->_mp_prec = prec;
-							t10m.value->_mp_prec = prec; t11m.value->_mp_prec = prec; t12m.value->_mp_prec = prec;
-							t20m.value->_mp_prec = prec; t21m.value->_mp_prec = prec; t22m.value->_mp_prec = prec;
-							e00m.value->_mp_prec = prec; e01m.value->_mp_prec = prec; e02m.value->_mp_prec = prec;
-							e10m.value->_mp_prec = prec; e11m.value->_mp_prec = prec; e12m.value->_mp_prec = prec;
-							e20m.value->_mp_prec = prec; e21m.value->_mp_prec = prec; e22m.value->_mp_prec = prec;
-
 
 							s00m = segpoint0[0]; s01m = segpoint0[1]; s02m = segpoint0[2];
 							s10m = segpoint1[0]; s11m = segpoint1[1]; s12m = segpoint1[2];
@@ -1261,7 +1253,7 @@ namespace fastEnvelope {
 							e20m, e21m, e22m,
 							check_Multiprecision);*/
 
-						ori1 = orient3D_LPI_filtered_multiprecision_backup(
+						/*ori1 = orient3D_LPI_filtered_multiprecision_backup(
 
 							Rational(segpoint0[0]), Rational(segpoint0[1]), Rational(segpoint0[2]),
 
@@ -1279,11 +1271,11 @@ namespace fastEnvelope {
 
 							Rational(envprism[in1][p_face[in2][2]][0]), Rational(envprism[in1][p_face[in2][2]][1]), Rational(envprism[in1][p_face[in2][2]][2]),
 
-							check_Rational);
-						if (ori != ori1) {
+							check_Rational);*/
+						/*if (ori != ori1) {
 							muln++;
 							std::cout << "result diff in rat and mul 2 " <<muln<<" "<< ori << " " << ori1 << std::endl;
-						}
+						}*/
 						if (ori == 1) after11++;
 						if (ori == -1) after12++;
 						if (ori == 0) after10++;
