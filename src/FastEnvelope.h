@@ -37,7 +37,7 @@ namespace fastEnvelope {
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac);
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
-		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const;
+		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int& pieces) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
 		
 		static Vector3 accurate_normal_vector(const Vector3 & p, const Vector3 & q);
@@ -64,7 +64,10 @@ namespace fastEnvelope {
 		static int seg_cut_polygon_6(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3, const Vector3 &t4, const Vector3 &t5);
 
 	public:
-		static void triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error);
+		//static void triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error);
+		static void triangle_sample_segment(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces,const int & nbr);
+		static void triangle_sample_point(const std::array<Vector3, 3> &triangle, Vector3& ps);
+		static void triangle_sample_normal(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces, const int & nbr1, const int &nbr2);
 		//static void rational_triangle_sample
 		static void print_number();
 	private:

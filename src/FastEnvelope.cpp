@@ -355,11 +355,11 @@ namespace fastEnvelope {
 
 		fout.close();*/
 	}
-	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const Scalar sampleerror) const {
-		std::vector<Vector3> ps;
-		triangle_sample(triangle, ps, sampleerror);//dd is used for sapmling
+	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int& pieces) const {
+
+
 		bool out;
-		Vector3 tmin, tmax;
+		Vector3 tmin, tmax, point;
 		std::vector<int> inumber;
 		std::vector<int> intercell;
 
@@ -374,98 +374,100 @@ namespace fastEnvelope {
 		}
 		sort(inumber.begin(), inumber.end());
 		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
+		int deg = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
 
 		int jump = -1;
-		for (int i = 0; i < ps.size(); i++) {
-			out = point_out_prism(ps[i], inumber, jump);
-
+		if (deg == DEGENERATED_POINT) {
+			out = point_out_prism(triangle[0], inumber, jump);
 			if (out == true) {
 
 				return 1;
 
 			}
+			return 0;
+		}
+		if (deg == DEGENERATED_SEGMENT) {
+			for (int i = 0; i < pieces; i++) {
+				triangle_sample_segment(triangle, point, pieces, i);
+				out = point_out_prism(point, inumber, jump);
+				if (out == true) {
 
+					return 1;
+
+				}
+
+			}
+			return 0;
 		}
 
-		return 0;
 
+		for (int i = 0; i < pieces; i++) {
+			for (int j = 0; j <= i; j++) {
+				triangle_sample_normal(triangle, point, pieces, i, j);
+				out = point_out_prism(point, inumber, jump);
+				if (out == true) {
+
+					return 1;
+
+				}
+
+
+			}
+			
+		}
+		return 0;
 	}
-	void FastEnvelope::triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error) {
-		ps.clear();
-		Scalar l1 = (triangle[1] - triangle[0]).norm(), l2 = (triangle[2] - triangle[0]).norm(), l3 = (triangle[2] - triangle[1]).norm();//length
-		int de = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
-		if (de == DEGENERATED_POINT) {
-			ps.emplace_back(triangle[0]);
+
+	void FastEnvelope::triangle_sample_segment(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces, const int & nbr) {
+		
+		int t = pieces-1;
+		if (triangle[1] - triangle[0] == Vector3(0, 0, 0)) {
+
+			ps = (triangle[0] + (triangle[2] - triangle[0])*nbr / t);
+			
 			return;
 		}
-		if (de == DEGENERATED_SEGMENT) {
-			if (triangle[1] - triangle[0] == Vector3(0, 0, 0)) {
-				//std::cout << "here1 " << std::endl;
-				int t = l2 / error + 1;
+		if (triangle[2] - triangle[0] == Vector3(0, 0, 0)) {
 
-				for (int i = 0; i <= t; i++) {
-					ps.emplace_back(triangle[0] + (triangle[2] - triangle[0])*i / t);
-				}
-				return;
-			}
-			if (triangle[2] - triangle[0] == Vector3(0, 0, 0)) {
-				//std::cout << "here2 " << std::endl;
-				int t = l1 / error + 1;
-
-				for (int i = 0; i <= t; i++) {
-					ps.emplace_back(triangle[0] + (triangle[1] - triangle[0])*i / t);
-				}
-				return;
-			}
-			if (triangle[2] - triangle[1] == Vector3(0, 0, 0)) {
-				//std::cout << "here3 " << std::endl;
-				int t = l1 / error + 1;
-
-				for (int i = 0; i <= t; i++) {
-					ps.emplace_back(triangle[0] + (triangle[1] - triangle[0])*i / t);
-				}
-				return;
-			}
+			
+			ps = (triangle[0] + (triangle[1] - triangle[0])*nbr / t);
+			
+			return;
 		}
-		//std::cout << "here " << std::endl;
-		/*if (l1 == 0 || l2 == 0 || l3 == 0) {
+		if (triangle[2] - triangle[1] == Vector3(0, 0, 0)) {
+			
+			ps = (triangle[0] + (triangle[1] - triangle[0])*nbr / t);
 
-
-
-				return;
-
-		}*/
-		int l1s = l1 / error + 1, l2s = l2 / error + 1, l2sn;//subdivided
-
-		Scalar e1 = l1 / l1s, e2 = l2 / l2s, e3;//length of every piece
-		Vector3 subl1 = (triangle[1] - triangle[0]) / l1s, subl2 = (triangle[2] - triangle[0]) / l2s,//vector of piece
-			temp;
-
-		for (int i = 0; i <= l1s; i++) {
-			//Scalar length = (l1s - i)*e1*l2 / l1;// length of this line
-			//l2sn = length / e2 + 1;// subdivided of this line
-			//Vector3 subl3 = (triangle[2] - triangle[0])*length / l2sn / l2;//vector of each piece
-			//for (int j = 0; j <= l2sn; j++) {
-			//	temp = subl1 * i + triangle[0] + subl3 * j;
-			//	ps.push_back(temp);
-			//}
-
-
-			//segment 0-1 is subdivided into l1s sub-pieces, so is segment 1-2
-			Vector3 p1 = triangle[0] + (triangle[1] - triangle[0])*i / l1s, p2 = triangle[0] + (triangle[2] - triangle[0])*i / l1s;
-			ps.emplace_back(p1);
-			ps.emplace_back(p2);
-			Scalar length = (p1 - p2).norm();
-			l2sn = length / e2 + 1;
-			for (int j = 0; j <= l2sn; j++) {
-				ps.emplace_back(p1 + (p2 - p1)* j / l2sn);
-			}
-
+			return;
 		}
-		return;
+
+		Scalar d1 = (triangle[1] - triangle[0]).norm(), d2 = (triangle[2] - triangle[0]).norm(), d3 = (triangle[1] - triangle[2]).norm();
+		if (d1 >= d2 && d1 >= d3) {
+			ps = (triangle[0] + (triangle[1] - triangle[0])*nbr / t);
+
+			return;
+		}
+		if (d2 >= d1 && d2 >= d3) {
+			ps = (triangle[0] + (triangle[2] - triangle[0])*nbr / t);
+
+			return;
+		}
+		if (d3 >= d1 && d3 >= d2) {
+			ps = (triangle[1] + (triangle[2] - triangle[1])*nbr / t);
+
+			return;
+		}
+	}
+	void  FastEnvelope::triangle_sample_point(const std::array<Vector3, 3> &triangle, Vector3& ps) {
+		ps = triangle[0];
+	}
+	void FastEnvelope::triangle_sample_normal(const std::array<Vector3, 3> &triangle,Vector3& ps, const int &pieces, const int & nbr1, const int &nbr2) {
+		int l1s = pieces - 1;//
+		Vector3 p1 = triangle[0] + (triangle[1] - triangle[0])*nbr1 / l1s, d = (triangle[2] - triangle[1]) / l1s;
+		ps = p1 + d * nbr2;
+		
 	}
 
-	
 	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex)const
 
 	{

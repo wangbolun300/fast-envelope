@@ -713,15 +713,16 @@ void test_in_wild() {
 	pos3.resize(fn);
 	std::array<Vector3, 3> tri;
 	Scalar l1;
+	int pieces;
 	std::vector<std::array<Vector3, 3>> t;
 	std::vector<int> trindex1, trindex2;
 	int insiden_o = 0, insiden_s = 0;
 
 	for (int i = 0; i < fn; i++) {
 		tri = triangles[i];
-		l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
+		pieces = 20;
 		//l1 = (tri[0] - tri[1]).norm() / 30;
-		pos3[i] = fast_envelope.sample_triangle_outside(tri, l1);
+		pos3[i] = fast_envelope.sample_triangle_outside(tri, pieces);
 	}
 
 	int count = 0, count1 = 0, count2 = 0, count3 = 0;
@@ -777,9 +778,9 @@ void test_in_wild() {
 		pos4.resize(ti.size());
 		for (int i = 0; i < ti.size(); i++) {
 			tri = triangles[ti[i]];
-			l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / lth[j];
 
-			pos4[i] = fast_envelope.sample_triangle_outside(tri, l1);
+
+			pos4[i] = fast_envelope.sample_triangle_outside(tri, lth[j]);
 			if (pos4[i] == 0) {
 				howmany++;
 				ti1.push_back(ti[i]);
@@ -798,7 +799,7 @@ void test_in_wild() {
 	}
 
 
-	for (int j = 0; j < irt; j++) {
+	/*for (int j = 0; j < irt; j++) {
 		int howmany = 0;
 		ti1.resize(0);
 		pos4.resize(ti.size());
@@ -806,9 +807,9 @@ void test_in_wild() {
 			tri[0] = triangles[ti[i]][2];
 			tri[1] = triangles[ti[i]][1];
 			tri[2] = triangles[ti[i]][0];
-			l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / lth[j];
+			
 
-			pos4[i] = fast_envelope.sample_triangle_outside(tri, l1);
+			pos4[i] = fast_envelope.sample_triangle_outside(tri, lth[j]);
 			if (pos4[i] == 0) {
 				howmany++;
 				ti1.push_back(ti[i]);
@@ -825,7 +826,7 @@ void test_in_wild() {
 			break;
 		};
 	}
-
+*/
 
 
 
@@ -919,12 +920,12 @@ void fordebug() {
 	int id = 15619;
 	std::array<Vector3, 3> tri;
 	Scalar l1;
+	int pieces=20;
 	tri[0] = triangles[id][0];
 	tri[1] = triangles[id][1];
 	tri[2] = triangles[id][2];
-	l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 20;
 
-	bool out=fast_envelope.sample_triangle_outside(tri, l1);
+	bool out=fast_envelope.sample_triangle_outside(tri, pieces);
 
 	std::cout << "sample out or not " << out << std::endl;
 
@@ -956,7 +957,7 @@ void sample_triangle_test() {
 	std::vector<Vector3> ps;
 	Scalar l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) /10000;
 	cout << "l1 " << l1 << endl;
-	FastEnvelope::triangle_sample(tri, ps, l1);
+	//FastEnvelope::triangle_sample(tri, ps, l1);
 	std::cout <<"ps size "<< ps.size() << endl;
 
 
