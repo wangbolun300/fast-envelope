@@ -611,9 +611,9 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-void test_in_wild() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100339\\100339.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100339\\Stonehenge_Piece1_X1.stl";
+void test_in_wild(string inputFileName,string  input_surface_path1) {
+	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\101249.stl_env.csv";
+	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 
@@ -748,7 +748,7 @@ void test_in_wild() {
 
 	std::cout << "how many different cases in comparison:  " << count << std::endl;
 	std::cout << "1-0 cases in comparison:  " << count1 << std::endl;
-	std::cout << "**0-1 cases in comparison:  " << trindex1.size() << std::endl;
+	std::cout << "!!0-1 cases in comparison:  " << trindex1.size() << std::endl;
 	std::cout << "1-0 case size:  " << trindex2.size() << std::endl;
 	std::cout << "our inside size:  " << insiden_o << std::endl;
 	std::cout << "sap inside size:  " << insiden_s << std::endl;
@@ -828,6 +828,12 @@ void test_in_wild() {
 	}
 */
 
+	if (ti1.size() > 0) {
+		cout << "still have 1-0 cases not finished" << endl;
+		for (int i = 0; i < ti1.size(); i++) {
+			cout << "NO. ith " << ti[i] << endl;
+		}
+	}
 
 
 
@@ -836,8 +842,7 @@ void test_in_wild() {
 
 
 
-
-	if (trindex1.size() > 0) {
+	/*if (trindex1.size() > 0) {
 		std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
 		int idx = 0;
@@ -852,7 +857,7 @@ void test_in_wild() {
 		fast_envelope.print_prisms(triangles[trindex1[idx]]);
 
 	}
-
+*/
 	////for aabb method
 	Vector3 min, max;
 	Parameters params;
@@ -1318,7 +1323,7 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	test_in_wild();
+	test_in_wild(argv[0],argv[1]);
 
 
 	//fordebug();
