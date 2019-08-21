@@ -187,9 +187,9 @@ void BoxFindCellsV1(const Vector3& min, const Vector3& max,
 
 
 void testOrientation() {
-	std::array<Vector2, 3> tri = {{ Vector2(0,0),Vector2(0,0),Vector2(0,0) }};// right hand law
-	Vector3 p = { 0.4,0.4,-1 };
-	int ori = Predicates::orient_2d(tri[0], tri[1], tri[2]);
+	std::array<Vector3, 3> tri = { { Vector3(0,0,0),Vector3(1,0,0),Vector3(0,1,0) } };// right hand law
+	Vector3 p = { 0,0,1 };
+	int ori = Predicates::orient_3d(p,tri[0], tri[1], tri[2]);
 	std::cout << "orientation test : " << ori << std::endl;
 }
 
@@ -611,11 +611,11 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-void test_in_wild(string inputFileName,string  input_surface_path1) {
-	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\101249.stl_env.csv";
-	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
+void test_in_wild() {
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\101249.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
 	vector<int> outenvelope;
-	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
+	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
 	std::vector<Vector3> env_vertices;
 	std::vector<Vector3i> env_faces;
@@ -1323,9 +1323,9 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	test_in_wild(argv[1],argv[2]);
-
-
+	//test_in_wild(argv[1],argv[2]);
+	//test_in_wild();
+	testOrientation();
 	//fordebug();
 	//writelist();
 

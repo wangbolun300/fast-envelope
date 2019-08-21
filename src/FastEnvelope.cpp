@@ -2002,7 +2002,94 @@ template<typename T>
 
 		return true;
 	}
+	
+	template<typename T>
+	bool FastEnvelope::is_segment_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
+		const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid) {
+		bool cut,o1,o2;
+		std::vector<int> cutp;
+		for (int i = 0; i < 8; i++) {
+			o1 = Predicates::orient_3d(seg0, facets[i][0], facets[i][1], facets[i][2]);
+			o2 = Predicates::orient_3d(seg1, facets[i][0], facets[i][1], facets[i][2]);
+			if (o1 + o2 > 0) {
+				return false;
+			}
+			if (o1 == 0 && o2 == 0) {
+				return false;
+			}
 
+			if (o1 + o2 == 0)cutp.push_back(i);
+		}
+		if (cutp.szie() == 0)return false;
+
+		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		
+		for (int i = 0; i < cutp.size(); i++) {
+			bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
+				seg0[0], seg0[1], seg0[2],
+				seg1[0], seg1[1], seg1[2],
+				facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
+				facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
+				facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+				a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+			if (precom == false) {
+				static Multiprecision
+					s00, s01, s02, s10, s11, s12,
+					t00, t01, t02,
+					t10, t11, t12,
+					t20, t21, t22,
+					a11r, a12r, a13r, dr,
+
+					e00, e01, e02,
+					e10, e11, e12,
+					e20, e21, e22;
+
+
+				s00 = seg0[0]; s01 = seg0[1]; s02 = seg0[2]; s10 = seg1[0]; s11 = seg1[1]; s12 = seg1[2];
+				t00 = facets[cutp[i]][0][0]; t01 = facets[cutp[i]][0][1]; t02 = facets[cutp[i]][0][2];
+				t10 = facets[cutp[i]][1][0]; t11 = facets[cutp[i]][1][1]; t12 = facets[cutp[i]][1][2];
+				t20 = facets[cutp[i]][2][0]; t21 = facets[cutp[i]][2][1]; t22 = facets[cutp[i]][2][2];
+
+				bool premulti = orient3D_LPI_prefilter_multiprecision(s00, s01, s02, s10, s11, s12,
+					t00, t01, t02, t10, t11, t12, t20, t21, t22, a11r, a12r, a13r, dr, check_Multiprecision);
+				if (premulti == false) {
+					continue;
+				}
+				int tot = 0;
+				for (int j = 0; j < cutp.size(); j++) {
+					if (i == j) continue;
+					e00 = facets[cutp[j]][0][0]; e01 = facets[cutp[j]][0][1]; e02 = facets[cutp[j]][0][2];
+					e10 = facets[cutp[j]][1][0]; e11 = facets[cutp[j]][1][1]; e12 = facets[cutp[j]][1][2];
+					e20 = facets[cutp[j]][2][0]; e21 = facets[cutp[j]][2][1]; e22 = facets[cutp[j]][2][2];
+					ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
+						e00, e01, e02, e10, e11, e12,
+						e20, e21, e22, checker);
+					if (ori == 1) break;
+
+				}
+				if (ori != 1) {
+					cid.push_back(cutp[i]);
+				}
+
+			}
+			TODO
+
+		}
+
+
+		if (cid.size() > 0) return true;
+
+
+
+
+
+
+
+
+
+
+		return 0
+	}
 	int FastEnvelope::tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
 		const Vector3& q1, const Vector3& q2, const Vector3& q3) {
 		std::array<Scalar, 3> p_1 = { {0, 0, 0} }, q_1 = { {0, 0, 0} }, r_1 = { {0, 0, 0} };
