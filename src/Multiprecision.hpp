@@ -8,8 +8,18 @@ namespace fastEnvelope {
 	class Multiprecision
 	{
 	public:
+		static void set_precision(const int digits)
+		{
+			mpf_set_default_prec(digits);
+		}
+
+		static int get_precision()
+		{
+			return mpf_get_default_prec();
+		}
+
 		mpf_t value;
-		static const int prec = 256;
+
 		int get_sign()
 		{
 			return mpf_sgn(value);
@@ -19,13 +29,19 @@ namespace fastEnvelope {
 		}
 		Multiprecision()
 		{
-			mpf_init2(value, prec);
+			mpf_init(value);
 			mpf_set_d(value, 0);
 		}
 
 		Multiprecision(double d)
 		{
-			mpf_init2(value, prec);
+			mpf_init(value);
+			mpf_set_d(value, d);
+		}
+
+		Multiprecision(double d, int precision)
+		{
+			mpf_init2(value, precision);
 			mpf_set_d(value, d);
 		}
 
@@ -37,7 +53,7 @@ namespace fastEnvelope {
 
 		Multiprecision(const Multiprecision &other)
 		{
-			mpf_init2(value,other.prec);
+			mpf_init2(value, mpf_get_prec(other.value));
 			mpf_set(value, other.value);
 		}
 
@@ -48,28 +64,28 @@ namespace fastEnvelope {
 
 		friend Multiprecision operator+(const Multiprecision &x, const Multiprecision &y)
 		{
-			Multiprecision r_out;
+			static Multiprecision r_out;
 			mpf_add(r_out.value, x.value, y.value);
 			return r_out;
 		}
 
 		friend Multiprecision operator-(const Multiprecision &x, const Multiprecision &y)
 		{
-			Multiprecision r_out;
+			static Multiprecision r_out;
 			mpf_sub(r_out.value, x.value, y.value);
 			return r_out;
 		}
 
 		friend Multiprecision operator*(const Multiprecision &x, const Multiprecision &y)
 		{
-			Multiprecision r_out;
+			static Multiprecision r_out;
 			mpf_mul(r_out.value, x.value, y.value);
 			return r_out;
 		}
 
 		friend Multiprecision operator/(const Multiprecision &x, const Multiprecision &y)
 		{
-			Multiprecision r_out;
+			static Multiprecision r_out;
 			mpf_div(r_out.value, x.value, y.value);
 			return r_out;
 		}

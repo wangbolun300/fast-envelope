@@ -40,7 +40,7 @@ static const std::array<std::array<fastEnvelope::Vector3i,2>, 6> c_triangle = {
 	{fastEnvelope::Vector3i(1,0,4),fastEnvelope::Vector3i(1,4,5)},
 	{fastEnvelope::Vector3i(2,1,5),fastEnvelope::Vector3i(2,5,6)},
 	{fastEnvelope::Vector3i(3,2,6),fastEnvelope::Vector3i(3,6,7)}
-	
+
 		}
 };
 
@@ -193,25 +193,27 @@ static const   std::function<int(double)> check_double = [](double v) {
 };
 
 static const   std::function<int(fastEnvelope::Rational)> check_Rational = [](fastEnvelope::Rational v) {
+	//todo: CHECK
+	return v.get_sign();
+	// if (v > 0)
+	// 	return 1;
 
-	if (v > 0)
-		return 1;
+	// if (v < 0)
+	// 	return -1;
 
-	if (v < 0)
-		return -1;
-
-	return 0;
+	// return 0;
 };
 
 static const   std::function<int(fastEnvelope::Multiprecision)> check_Multiprecision = [](fastEnvelope::Multiprecision v) {
+	//todo: CHECK
+	return v.get_sign();
+	// if (v > 0)
+	// 	return 1;
 
-	if (v > 0)
-		return 1;
+	// if (v < 0)
+	// 	return -1;
 
-	if (v < 0)
-		return -1;
-
-	return 0;
+	// return 0;
 };
 
 
@@ -248,6 +250,9 @@ namespace fastEnvelope {
 
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
 	{
+		//TODO check
+		Multiprecision::set_precision(256);
+
 		get_bb_corners(m_ver, min, max);
 		Scalar bbd = (max - min).norm();
 		Scalar epsilon = bbd * eps; //eps*bounding box diagnal
@@ -295,7 +300,7 @@ namespace fastEnvelope {
 		sort(inumber.begin(), inumber.end());
 		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
 
-		
+
 		return FastEnvelopeTestImplicit(triangle, inumber);
 	}
 
@@ -342,7 +347,7 @@ namespace fastEnvelope {
 		for (int j = 0; j < inumber.size(); j++) {
 			interenvprism.emplace_back(envprism[inumber[j]]);
 		}
-		
+
 		/*std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualprism.txt");
 		for (int i = 0; i < interenvprism.size(); i++) {
@@ -413,29 +418,29 @@ namespace fastEnvelope {
 
 
 			}
-			
+
 		}
 		return 0;
 	}
 
 	void FastEnvelope::triangle_sample_segment(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces, const int & nbr) {
-		
+
 		int t = pieces-1;
 		if (triangle[1] - triangle[0] == Vector3(0, 0, 0)) {
 
 			ps = (triangle[0] + (triangle[2] - triangle[0])*nbr / t);
-			
+
 			return;
 		}
 		if (triangle[2] - triangle[0] == Vector3(0, 0, 0)) {
 
-			
+
 			ps = (triangle[0] + (triangle[1] - triangle[0])*nbr / t);
-			
+
 			return;
 		}
 		if (triangle[2] - triangle[1] == Vector3(0, 0, 0)) {
-			
+
 			ps = (triangle[0] + (triangle[1] - triangle[0])*nbr / t);
 
 			return;
@@ -465,7 +470,7 @@ namespace fastEnvelope {
 		int l1s = pieces - 1;//
 		Vector3 p1 = triangle[0] + (triangle[1] - triangle[0])*nbr1 / l1s, d = (triangle[2] - triangle[1]) / l1s;
 		ps = p1 + d * nbr2;
-		
+
 	}
 
 	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex)const
@@ -481,7 +486,7 @@ namespace fastEnvelope {
 		}
 
 		int jump1, jump2;
-		
+
 		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
 
 		bool out;
@@ -505,7 +510,7 @@ namespace fastEnvelope {
 		}
 
 
-		
+
 
 
 		////////////////////degeneration fix
@@ -628,7 +633,7 @@ namespace fastEnvelope {
 
 						}
 					}
-					
+
 
 				}
 
@@ -658,13 +663,13 @@ namespace fastEnvelope {
 					if (j == 0) {
 						get_hex_corners(envprism[prismindex[i]][0], envprism[prismindex[i]][1], envprism[prismindex[i]][2],
 							envprism[prismindex[i]][3], envprism[prismindex[i]][4], envprism[prismindex[i]][5], t2min, t2max);
-						
+
 					}
 					else {
 						if (j == 1) {
 							get_hex_corners(envprism[prismindex[i]][6], envprism[prismindex[i]][7], envprism[prismindex[i]][8],
 								envprism[prismindex[i]][9], envprism[prismindex[i]][10], envprism[prismindex[i]][11], t2min, t2max);
-							
+
 						}
 						else {
 							get_sqr_corners(envprism[prismindex[i]][p_facepoint[j][0]], envprism[prismindex[i]][p_facepoint[j][1]],
@@ -683,7 +688,7 @@ namespace fastEnvelope {
 					if (tti1 == 0 && tti == CUT_FACE) diff3++;
 					if (tti1 == 1) ct2++;
 					//////////////////////////////////////
-					
+
 					if (tti == CUT_FACE) {
 						//std::cout << "here1 " << std::endl;
 						record1 = 0;
@@ -768,14 +773,14 @@ namespace fastEnvelope {
 						}
 
 						inter_ijk_list.emplace_back(Vector3i(prismindex[i], j, 0));
-						
+
 
 					}
 
-					
+
 				}
 			}
-			
+
 
 		}
 
@@ -815,7 +820,7 @@ namespace fastEnvelope {
 						n2 = c_facenumber;
 						c2m = 2;
 					}
-					
+
 
 					for (int c1 = 0; c1 < c1m; c1++) {
 						for (int c2 = 0; c2 < c2m; c2++) {
@@ -893,11 +898,11 @@ namespace fastEnvelope {
 
 					//TODO here also need check index[j]
 					//find prism_map[list[i][1]*8+list[j][1]][0],prism_map[list[i][1]*8+list[j][1]][1]
-					
+
 					if (inter_ijk_list[i][0] < prism_size) {
-						
+
 						int id = inter_ijk_list[i][1] * 8 + inter_ijk_list[j][1];
-						
+
 						int id0 = prism_map[id][0], id1 = prism_map[id][1];
 
 						if (id0 != -1) {//find map
@@ -913,7 +918,7 @@ namespace fastEnvelope {
 								prismindex, jump1, checker);
 
 							go2++;
-							
+
 
 							if (inter2 == 1) {
 
@@ -953,7 +958,7 @@ namespace fastEnvelope {
 
 						}
 					}
-					
+
 
 
 
@@ -1014,7 +1019,7 @@ namespace fastEnvelope {
 				e00, e01, e02,
 				e10, e11, e12,
 				e20, e21, e22;
-			
+
 
 			s00 = segpoint0[0]; s01 = segpoint0[1]; s02 = segpoint0[2]; s10 = segpoint1[0]; s11 = segpoint1[1]; s12 = segpoint1[2];
 			t00 = triangle0[0]; t01 = triangle0[1]; t02 = triangle0[2];
@@ -1082,7 +1087,7 @@ namespace fastEnvelope {
 						ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
-						
+
 						if (ori == 1) after11++;
 						if (ori == -1) after12++;
 						if (ori == 0) after10++;
@@ -1100,7 +1105,7 @@ namespace fastEnvelope {
 						return IN_PRISM;
 					}
 				}
-				
+
 
 			}
 			return OUT_PRISM;
@@ -1187,7 +1192,7 @@ namespace fastEnvelope {
 					recompute.emplace_back(index);
 				}
 			}
-			
+
 		}
 
 		if (!recompute.empty()) {
@@ -1224,7 +1229,7 @@ namespace fastEnvelope {
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
 
-						
+
 						/*static Multiprecision
 							s00m, s01m, s02m,
 							s10m, s11m, s12m,
@@ -1243,7 +1248,7 @@ namespace fastEnvelope {
 							e00m = envprism[in1][p_face[in2][0]][0]; e01m = envprism[in1][p_face[in2][0]][1]; e02m = envprism[in1][p_face[in2][0]][2];
 							e10m = envprism[in1][p_face[in2][1]][0]; e11m = envprism[in1][p_face[in2][1]][1]; e12m = envprism[in1][p_face[in2][1]][2];
 							e20m = envprism[in1][p_face[in2][2]][0]; e21m = envprism[in1][p_face[in2][2]][1]; e22m = envprism[in1][p_face[in2][2]][2];
-			
+
 						ori1 = orient3D_LPI_filtered_multiprecision(
 							s00m, s01m, s02m,
 							s10m, s11m, s12m,
@@ -1299,7 +1304,7 @@ namespace fastEnvelope {
 						ori = orient3D_LPI_postfilter_multiprecision(a11r, a12r, a13r, dr, s00, s01, s02,
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
-						
+
 						if (ori == 1) after11++;
 						if (ori == -1) after12++;
 						if (ori == 0) after10++;
@@ -1309,7 +1314,7 @@ namespace fastEnvelope {
 
 					if (ori == -1) return IN_PRISM;
 				}
-				
+
 			}
 
 
@@ -1320,7 +1325,7 @@ namespace fastEnvelope {
 	/*
 	int FastEnvelope::Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
 		const std::vector<int>& prismindex, const int& jump) const {
-		
+
 		int  ori;
 		int tot;
 		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
@@ -1593,7 +1598,7 @@ template<typename T>
 						return IN_PRISM;
 					}
 				}
-				
+
 
 			}
 			return OUT_PRISM;
@@ -1674,7 +1679,7 @@ template<typename T>
 				}
 			}
 
-			
+
 		}
 
 		if (recompute.size() > 0) {
@@ -1715,7 +1720,7 @@ template<typename T>
 
 			for (int k = 0; k < recompute.size(); k++) {
 				int in1 = recompute[k].Pi;
-				
+
 				if (in1 < prism_size) {
 					for (int j = 0; j < recompute[k].FACES.size(); j++) {
 						int in2 = recompute[k].FACES[j];
@@ -1762,7 +1767,7 @@ template<typename T>
 
 					if (ori == -1) return IN_PRISM;
 				}
-				
+
 			}
 
 		}
@@ -2061,7 +2066,7 @@ template<typename T>
 
 
 	int FastEnvelope::seg_cut_polygon_4(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3) {
-		
+
 		int o1, o2, o3, o4, o5,o6;
 		o1 = Predicates::orient_3d(seg0, t0, t1, t2);
 		o2 = Predicates::orient_3d(seg1, t0, t1, t2);
@@ -2139,7 +2144,7 @@ template<typename T>
 				for (int j = 0; j < c_facenumber; j++) {
 
 					ori = Predicates::orient_3d(envcubic[boxid][c_face[j][0]], envcubic[boxid][c_face[j][1]], envcubic[boxid][c_face[j][2]], point);
-						
+
 					if (ori == -1 || ori == 0) {
 						break;
 					}
@@ -2218,8 +2223,8 @@ template<typename T>
 			AC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][0]];
 			BC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][1]];
 			de = is_triangle_degenerated(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
-			
-			
+
+
 
 			if (de == DEGENERATED_POINT) {
 				std::cout << "Envelope Triangle Degeneration- Point" << std::endl;
@@ -2322,11 +2327,11 @@ template<typename T>
 	}
 
 	Vector3 FastEnvelope::accurate_normal_vector(const Vector3 & p, const Vector3 & q) {
-		
+
 		const Multiprecision ax = p[0];
 		const Multiprecision ay = p[1];
 		const Multiprecision az = p[2];
-								   
+
 		const Multiprecision bx = q[0];
 		const Multiprecision by = q[1];
 		const Multiprecision bz = q[2];
@@ -2337,13 +2342,13 @@ template<typename T>
 		Multiprecision ssum = x * x + y * y + z * z;
 		const Multiprecision length = ssum.sqrt(ssum);
 		x = x / length; y = y / length; z = z / length;
-		
+
 		Scalar fx = x.to_double(), fy = y.to_double(), fz = z.to_double();
 		return Vector3(fx, fy, fz);
 
 	}
 
-	
+
 
 
 }

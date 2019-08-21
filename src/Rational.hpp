@@ -91,28 +91,28 @@ public:
 
     friend Rational operator+(const Rational &x, const Rational &y)
     {
-        Rational r_out;
+        static Rational r_out;
         mpq_add(r_out.value, x.value, y.value);
         return r_out;
     }
 
     friend Rational operator-(const Rational &x, const Rational &y)
     {
-        Rational r_out;
+        static Rational r_out;
         mpq_sub(r_out.value, x.value, y.value);
         return r_out;
     }
 
     friend Rational operator*(const Rational &x, const Rational &y)
     {
-        Rational r_out;
+        static Rational r_out;
         mpq_mul(r_out.value, x.value, y.value);
         return r_out;
     }
 
     friend Rational operator/(const Rational &x, const Rational &y)
     {
-        Rational r_out;
+        static Rational r_out;
         mpq_div(r_out.value, x.value, y.value);
         return r_out;
     }
