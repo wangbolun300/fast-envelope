@@ -2088,8 +2088,8 @@ template<typename T>
 	bool FastEnvelope::is_triangle_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
 		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid) {
 		
-		bool cut;
-		int o1[8], o2[8], o3[8];
+		bool cut[8];
+		int o1[8], o2[8], o3[8],ori;
 		std::vector<int> cutp;
 
 		for (int i = 0; i < 8; i++) {
@@ -2116,7 +2116,75 @@ template<typename T>
 
 			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)cutp.push_back(i);
 		}
-		
+
+		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		for (int i = 0; i < cutp.size(); i++) {
+			if (o1[cutp[i]] * o2[cutp[i]] == -1) {
+				
+				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
+					tri0[0], tri0[1], tri0[2],
+					tri1[0], tri1[1], tri1[2],
+					facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
+					facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
+					facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+				if (precom == false) {
+					cut[cutp[i]] = true;
+					continue;
+				}
+				for (int j = 0; j < cutp.size(); j++) {
+					if (i == j) continue;
+					ori= ip_filtered::
+						orient3D_LPI_postfilter(
+							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+							tri0[0], tri0[1], tri0[2],
+							facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
+							facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
+							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+					
+					if (ori == 1) break;
+					if (j == cutp.size() - 1) {
+						cut[cutp[i]] = true;
+					}
+					if (i == cutp.size() - 1 && j == cutp.size() - 2) {
+						cut[cutp[i]] = true;
+					}
+
+				}
+			}
+			if (cut[cutp[i]] == true) continue;
+
+			if (o1[cutp[i]] * o3[cutp[i]] == -1) {
+
+				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
+					tri0[0], tri0[1], tri0[2],
+					tri2[0], tri2[1], tri2[2],
+					facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
+					facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
+					facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+				if (precom == false) {
+					cut[cutp[i]] = true;
+					continue;
+				}
+				for (int j = 0; j < cutp.size(); j++) {
+					if (i == j) continue;
+					ori = ip_filtered::
+						orient3D_LPI_postfilter(
+							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+							tri0[0], tri0[1], tri0[2],
+							facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
+							facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
+							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+
+					if (ori == 1) break;
+					if (j == cutp.size() - 1) cut[cutp[i]] = true;
+					if (i == cutp.size() - 1 && j == cutp.size() - 2) cut[cutp[i]] = true;
+				}
+			}
+
+
+		}
 		cid = cutp;
 		return true;
 
