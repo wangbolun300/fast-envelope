@@ -16,12 +16,12 @@ ct1=0,ct2=0,muln=0;
 int recordnumber = 0, recordnumber1 = 0, recordnumber2 = 0, recordnumber3 = 0, recordnumber4 = 0;
 int go1 = 0, go2 = 0;
 igl::Timer timer;
-static const int p_face[8][3] = { {0,1,2},{8,7,6},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
+static const int p_face[8][3] = { {0,1,3},{7,6,9},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const int c_face[6][3] = { {0,1,2},{4,7,6},{0,3,4},{1,0,4},{1,5,2},{2,6,3} };
 static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
 		{
-			{fastEnvelope::Vector3i(0,1,2),fastEnvelope::Vector3i(0,2,5),fastEnvelope::Vector3i(5,2,3),fastEnvelope::Vector3i(5,3,4)},
-	{fastEnvelope::Vector3i(8,7,6),fastEnvelope::Vector3i(8,6,11),fastEnvelope::Vector3i(9,8,11),fastEnvelope::Vector3i(9,11,10)},
+			{fastEnvelope::Vector3i(0,1,3),fastEnvelope::Vector3i(1,2,3),fastEnvelope::Vector3i(0,3,4),fastEnvelope::Vector3i(0,4,5)},
+	{fastEnvelope::Vector3i(7,6,9),fastEnvelope::Vector3i(8,7,9),fastEnvelope::Vector3i(6,10,9),fastEnvelope::Vector3i(6,11,10)},
 	{fastEnvelope::Vector3i(1,0,7),fastEnvelope::Vector3i(7,0,6)},
 	{fastEnvelope::Vector3i(1,7,2),fastEnvelope::Vector3i(2,7,8)},
 	{fastEnvelope::Vector3i(2,8,3),fastEnvelope::Vector3i(3,8,9)},
@@ -571,7 +571,7 @@ namespace fastEnvelope {
 
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
 
-								envprism[prismindex[i]][p_triangle[j][0][0]], envprism[prismindex[i]][p_triangle[j][0][1]], envprism[prismindex[i]][p_triangle[j][0][2]],
+								envprism[prismindex[i]][p_face[j][0]], envprism[prismindex[i]][p_face[j][1]], envprism[prismindex[i]][p_face[j][2]],
 								prismindex, jump1, checker);//rational
 							//inter1 = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
 
@@ -658,7 +658,7 @@ namespace fastEnvelope {
 					}
 					if (tti == CUT_FACE) ct1++;
 					//////////////////////////////////////new intersection based on box-box intersection
-					Vector3 t1min, t1max, t2min, t2max;
+					/*Vector3 t1min, t1max, t2min, t2max;
 					get_tri_corners(triangle, t1min, t1max);
 					if (j == 0) {
 						get_hex_corners(envprism[prismindex[i]][0], envprism[prismindex[i]][1], envprism[prismindex[i]][2],
@@ -686,7 +686,27 @@ namespace fastEnvelope {
 					if (tti1 == 1 && tti == CUT_COPLANAR) diff2++;
 					if (tti1 == 1 && tti == CUT_EMPTY) diff2++;
 					if (tti1 == 0 && tti == CUT_FACE) diff3++;
-					if (tti1 == 1) ct2++;
+					if (tti1 == 1) ct2++;*/
+					std::array<std::array<Vector3, 3>, 8> facets;
+					std::vector<int> cidl;
+					for (int c = 0; c < 8; c++) {
+						facets[c][0] = envprism[prismindex[i]][p_face[c][0]];
+						facets[c][1] = envprism[prismindex[i]][p_face[c][1]];
+						facets[c][2] = envprism[prismindex[i]][p_face[c][2]];
+					}
+					
+					
+ 					bool tti1 = is_triangle_cut_prism(facets,
+						triangle[0], triangle[1], triangle[2], cidl);
+					if (tti1 == false) {
+						if (tti == CUT_FACE) std::cout << "wrong case, there is a bug" << std::endl;
+
+					}
+					for (int d = 0; d < cidl.size(); d++) {
+						if (cidl[d] == j) {
+							ct2++;
+						}
+					}
 					//////////////////////////////////////
 
 					if (tti == CUT_FACE) {
@@ -700,7 +720,7 @@ namespace fastEnvelope {
 								continue;
 							}
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
-								envprism[prismindex[i]][p_triangle[j][0][0]], envprism[prismindex[i]][p_triangle[j][0][1]], envprism[prismindex[i]][p_triangle[j][0][2]],
+								envprism[prismindex[i]][p_face[j][0]], envprism[prismindex[i]][p_face[j][1]], envprism[prismindex[i]][p_face[j][2]],
 								prismindex, jump1, checker);
 
 							go1++;
@@ -2064,7 +2084,41 @@ template<typename T>
 		return CUT_FACE;
 	}
 
+	bool FastEnvelope::is_triangle_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
+		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid) {
+		
+		bool cut, o1[8], o2[8], o3[8];
+		std::vector<int> cutp;
 
+		for (int i = 0; i < 8; i++) {
+
+			o1[i] = Predicates::orient_3d(tri0, facets[i][0], facets[i][1], facets[i][2]);
+			o2[i] = Predicates::orient_3d(tri1, facets[i][0], facets[i][1], facets[i][2]);
+			o3[i] = Predicates::orient_3d(tri2, facets[i][0], facets[i][1], facets[i][2]);
+			if (o1[i] + o2[i] + o3[i] >= 2) {
+				return false;
+			}
+			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 1) {
+				return false;
+			}
+			if (o1[i] == 1 && o2[i] == 0 && o3[i] == 0) {
+				return false;
+			}
+			if (o1[i] == 0 && o2[i] == 1 && o3[i] == 0) {
+				return false;
+			}
+			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 0) {
+				return false;
+			}
+			
+
+			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)cutp.push_back(i);
+		}
+		
+		cid = cutp;
+		return true;
+
+	}
 
 	int FastEnvelope::seg_cut_polygon_4(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3) {
 
@@ -2255,9 +2309,9 @@ template<typename T>
 			if (de == NERLY_DEGENERATED) {
 				std::cout << "Envelope Triangle Degeneration- Nearly" << std::endl;
 
-				//normal = accurate_normal_vector(AB, AC);
-				//vector1= accurate_normal_vector(AB, normal);
-				continue;
+				normal = accurate_normal_vector(AB, AC);
+				vector1= accurate_normal_vector(AB, normal);
+				
 			}
 			else {
 				normal = AB.cross(AC).normalized();

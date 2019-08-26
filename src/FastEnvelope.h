@@ -212,8 +212,9 @@ namespace fastEnvelope {
 		template<typename T>
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, 
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, const std::function<int(T)> &checker);
-		template<typename T>
 		
+		static bool is_triangle_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
+			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid);
 		
 public:
 		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);

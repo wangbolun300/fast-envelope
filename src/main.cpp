@@ -1324,8 +1324,8 @@ int main(int argc, char const *argv[])
 
 
 	//test_in_wild(argv[1],argv[2]);
-	//test_in_wild();
-	testOrientation();
+	test_in_wild();
+	//testOrientation();
 	//fordebug();
 	//writelist();
 
