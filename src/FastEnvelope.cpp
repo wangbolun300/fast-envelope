@@ -251,7 +251,7 @@ namespace fastEnvelope {
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
 	{
 		//TODO check
-		Multiprecision::set_precision(256);
+		//Multiprecision::set_precision(256);
 
 		get_bb_corners(m_ver, min, max);
 		Scalar bbd = (max - min).norm();
@@ -702,6 +702,7 @@ namespace fastEnvelope {
 						if (tti == CUT_FACE) std::cout << "wrong case, there is a bug" << std::endl;
 
 					}
+					
 					for (int d = 0; d < cidl.size(); d++) {
 						if (cidl[d] == j) {
 							ct2++;
@@ -2087,7 +2088,8 @@ template<typename T>
 	bool FastEnvelope::is_triangle_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
 		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid) {
 		
-		bool cut, o1[8], o2[8], o3[8];
+		bool cut;
+		int o1[8], o2[8], o3[8];
 		std::vector<int> cutp;
 
 		for (int i = 0; i < 8; i++) {
@@ -2095,7 +2097,7 @@ template<typename T>
 			o1[i] = Predicates::orient_3d(tri0, facets[i][0], facets[i][1], facets[i][2]);
 			o2[i] = Predicates::orient_3d(tri1, facets[i][0], facets[i][1], facets[i][2]);
 			o3[i] = Predicates::orient_3d(tri2, facets[i][0], facets[i][1], facets[i][2]);
-			if (o1[i] + o2[i] + o3[i] >= 2) {
+			if (o1[i] + o2[i] + o3[i] >= 3) {
 				return false;
 			}
 			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 1) {
@@ -2115,6 +2117,42 @@ template<typename T>
 			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)cutp.push_back(i);
 		}
 		
+		cid = cutp;
+		return true;
+
+	}
+	bool FastEnvelope::is_triangle_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
+		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid) {
+
+		bool cut;
+		int o1[6], o2[6], o3[6];
+		std::vector<int> cutp;
+
+		for (int i = 0; i < 6; i++) {
+
+			o1[i] = Predicates::orient_3d(tri0, facets[i][0], facets[i][1], facets[i][2]);
+			o2[i] = Predicates::orient_3d(tri1, facets[i][0], facets[i][1], facets[i][2]);
+			o3[i] = Predicates::orient_3d(tri2, facets[i][0], facets[i][1], facets[i][2]);
+			if (o1[i] + o2[i] + o3[i] >= 3) {
+				return false;
+			}
+			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 1) {
+				return false;
+			}
+			if (o1[i] == 1 && o2[i] == 0 && o3[i] == 0) {
+				return false;
+			}
+			if (o1[i] == 0 && o2[i] == 1 && o3[i] == 0) {
+				return false;
+			}
+			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 0) {
+				return false;
+			}
+
+
+			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)cutp.push_back(i);
+		}
+
 		cid = cutp;
 		return true;
 

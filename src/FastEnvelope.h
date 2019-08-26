@@ -217,6 +217,8 @@ namespace fastEnvelope {
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid);
 		
 public:
+	static bool is_triangle_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
+		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid);
 		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);
 
 		private:
