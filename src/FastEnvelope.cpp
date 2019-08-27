@@ -2025,6 +2025,45 @@ template<typename T>
 	}
 	
 
+	int FastEnvelope::is_3_triangle_cut_float(const std::array<Vector3, 3>& triangle,
+		const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22) {
+		
+		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
+
+		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0) {
+			std::cout << "Degeneration happens" << std::endl;
+			
+			srand(int(time(0)));
+			n = { {Vector3(rand(),rand(),rand()) } };
+		}
+		Scalar d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7;
+		bool pre = ip_filtered::
+			orient3D_TPI_prefilter(
+				triangle[0][0], triangle[0][1], triangle[0][2],
+				triangle[1][0], triangle[1][1], triangle[1][2],
+				triangle[2][0], triangle[2][1], triangle[2][2],
+				facet10[0], facet10[1], facet10[2], facet11[0], facet11[1], facet11[2], facet12[0], facet12[1], facet12[2],
+				facet20[0], facet20[1], facet20[2], facet21[0], facet21[1], facet21[2], facet22[0], facet22[1], facet22[2],
+				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
+
+		if (pre == false) return 2;// means we dont know
+		int o1 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
+			triangle[0][0], triangle[0][1], triangle[0][2],
+			triangle[1][0], triangle[1][1], triangle[1][2]);
+		int o2 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
+			triangle[1][0], triangle[1][1], triangle[1][2],
+			triangle[2][0], triangle[2][1], triangle[2][2]);
+		if (o1*o2 == -1) return 0;
+		int o3 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
+			triangle[2][0], triangle[2][1], triangle[2][2],
+			triangle[0][0], triangle[0][1], triangle[0][2]);
+		if (o1*o3 == -1 || o2 * o3 == -1) return 0;
+		if (o1*o2*o3 == 0) return 2;// means we dont know
+		return 1;
+	
+	}
+
+
 	int FastEnvelope::tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
 		const Vector3& q1, const Vector3& q2, const Vector3& q3) {
 		std::array<Scalar, 3> p_1 = { {0, 0, 0} }, q_1 = { {0, 0, 0} }, r_1 = { {0, 0, 0} };
@@ -2184,7 +2223,51 @@ template<typename T>
 			}
 
 
+			if (cut[cutp[i]] == true) continue;
+
+			if (o2[cutp[i]] * o3[cutp[i]] == -1) {
+
+				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
+					tri1[0], tri1[1], tri1[2],
+					tri2[0], tri2[1], tri2[2],
+					facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
+					facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
+					facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+				if (precom == false) {
+					cut[cutp[i]] = true;
+					continue;
+				}
+				for (int j = 0; j < cutp.size(); j++) {
+					if (i == j) continue;
+					ori = ip_filtered::
+						orient3D_LPI_postfilter(
+							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+							tri1[0], tri1[1], tri1[2],
+							facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
+							facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
+							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+
+					if (ori == 1) break;
+					if (j == cutp.size() - 1) cut[cutp[i]] = true;
+					if (i == cutp.size() - 1 && j == cutp.size() - 2) cut[cutp[i]] = true;
+				}
+			}
+
 		}
+		// triangle-facet-facet intersection
+		for (int i = 1; i < cutp.size(); i++) {
+			for (int j = 0; j < i; j++) {
+				if (cut[cutp[i]] == true || cut[cutp[j]] == true) continue;
+
+
+
+
+			}
+		}
+
+
+
 		cid = cutp;
 		return true;
 

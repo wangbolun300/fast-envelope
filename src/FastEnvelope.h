@@ -210,12 +210,15 @@ namespace fastEnvelope {
 
 
 		template<typename T>
-		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle, 
+		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, const std::function<int(T)> &checker);
-		
+
+		static int is_3_triangle_cut_float(const std::array<Vector3, 3>& triangle,
+			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
+
 		static bool is_triangle_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid);
-		
+
 public:
 	static bool is_triangle_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
 		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid);
