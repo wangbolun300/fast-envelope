@@ -702,12 +702,22 @@ namespace fastEnvelope {
 						if (tti == CUT_FACE) std::cout << "wrong case, there is a bug" << std::endl;
 
 					}
+					bool flag = false;
+					if (tti == CUT_FACE) {
+						for (int d = 0; d < cidl.size(); d++) {
+							if (cidl[d] == j) {
+								flag = true;
+							}
+						}
+						if(flag==false)  std::cout << "wrong case again, there is a bug" << std::endl;
+					}
 					
 					for (int d = 0; d < cidl.size(); d++) {
 						if (cidl[d] == j) {
 							ct2++;
 						}
 					}
+
 					//////////////////////////////////////
 
 					if (tti == CUT_FACE) {
@@ -2025,13 +2035,15 @@ template<typename T>
 	}
 	
 
-	int FastEnvelope::is_3_triangle_cut_float(const std::array<Vector3, 3>& triangle,
-		const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22) {
+	int FastEnvelope::is_3_triangle_cut_float(
+		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2,
+		const Vector3& facet10, const Vector3& facet11, const Vector3& facet12,
+		const Vector3& facet20, const Vector3& facet21, const Vector3& facet22) {
 		
-		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
+		Vector3 n = (tri0 - tri1).cross(tri0 - tri2) + tri0;
 
-		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0) {
-			std::cout << "Degeneration happens" << std::endl;
+		if (Predicates::orient_3d(n, tri0, tri1, tri2) == 0) {
+			std::cout << "Degeneration happens !" << std::endl;
 			
 			srand(int(time(0)));
 			n = { {Vector3(rand(),rand(),rand()) } };
@@ -2039,24 +2051,24 @@ template<typename T>
 		Scalar d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7;
 		bool pre = ip_filtered::
 			orient3D_TPI_prefilter(
-				triangle[0][0], triangle[0][1], triangle[0][2],
-				triangle[1][0], triangle[1][1], triangle[1][2],
-				triangle[2][0], triangle[2][1], triangle[2][2],
+				tri0[0], tri0[1], tri0[2],
+				tri1[0], tri1[1], tri1[2],
+				tri2[0], tri2[1], tri2[2],
 				facet10[0], facet10[1], facet10[2], facet11[0], facet11[1], facet11[2], facet12[0], facet12[1], facet12[2],
 				facet20[0], facet20[1], facet20[2], facet21[0], facet21[1], facet21[2], facet22[0], facet22[1], facet22[2],
 				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
 
 		if (pre == false) return 2;// means we dont know
 		int o1 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
-			triangle[0][0], triangle[0][1], triangle[0][2],
-			triangle[1][0], triangle[1][1], triangle[1][2]);
+			tri0[0], tri0[1], tri0[2],
+			tri1[0], tri1[1], tri1[2]);
 		int o2 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
-			triangle[1][0], triangle[1][1], triangle[1][2],
-			triangle[2][0], triangle[2][1], triangle[2][2]);
+			tri1[0], tri1[1], tri1[2],
+			tri2[0], tri2[1], tri2[2]);
 		if (o1*o2 == -1) return 0;
 		int o3 = ip_filtered::orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
-			triangle[2][0], triangle[2][1], triangle[2][2],
-			triangle[0][0], triangle[0][1], triangle[0][2]);
+			tri2[0], tri2[1], tri2[2],
+			tri0[0], tri0[1], tri0[2]);
 		if (o1*o3 == -1 || o2 * o3 == -1) return 0;
 		if (o1*o2*o3 == 0) return 2;// means we dont know
 		return 1;
@@ -2128,7 +2140,10 @@ template<typename T>
 		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid) {
 		
 		bool cut[8];
-		int o1[8], o2[8], o3[8],ori;
+		for (int i = 0; i < 8; i++) {
+			cut[i] = false;
+		}
+		int o1[8], o2[8], o3[8],ori=0;
 		std::vector<int> cutp;
 
 		for (int i = 0; i < 8; i++) {
@@ -2153,9 +2168,12 @@ template<typename T>
 			}
 			
 
-			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)cutp.push_back(i);
+			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1) cutp.push_back(i);
 		}
-
+		if (cutp.size() ==0) {
+			return false;
+		}
+		
 		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
 		for (int i = 0; i < cutp.size(); i++) {
 			if (o1[cutp[i]] * o2[cutp[i]] == -1) {
@@ -2182,17 +2200,15 @@ template<typename T>
 							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
 					
 					if (ori == 1) break;
-					if (j == cutp.size() - 1) {
-						cut[cutp[i]] = true;
-					}
-					if (i == cutp.size() - 1 && j == cutp.size() - 2) {
-						cut[cutp[i]] = true;
-					}
-
+					
 				}
+				if (ori != 1) {
+					cut[cutp[i]] = true;
+				}
+
 			}
 			if (cut[cutp[i]] == true) continue;
-
+			ori = 0;
 			if (o1[cutp[i]] * o3[cutp[i]] == -1) {
 
 				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
@@ -2217,14 +2233,16 @@ template<typename T>
 							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
 
 					if (ori == 1) break;
-					if (j == cutp.size() - 1) cut[cutp[i]] = true;
-					if (i == cutp.size() - 1 && j == cutp.size() - 2) cut[cutp[i]] = true;
+					
+				}
+				if (ori != 1) {
+					cut[cutp[i]] = true;
 				}
 			}
 
 
 			if (cut[cutp[i]] == true) continue;
-
+			ori = 0;
 			if (o2[cutp[i]] * o3[cutp[i]] == -1) {
 
 				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
@@ -2249,26 +2267,83 @@ template<typename T>
 							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
 
 					if (ori == 1) break;
-					if (j == cutp.size() - 1) cut[cutp[i]] = true;
-					if (i == cutp.size() - 1 && j == cutp.size() - 2) cut[cutp[i]] = true;
+					
+				}
+				if (ori != 1) {
+					cut[cutp[i]] = true;
 				}
 			}
 
 		}
+
+		if (cutp.size() <= 2) {
+			for (int i = 0; i < 8; i++) {
+				if (cut[i] == true) cid.push_back(i);
+			}
+			return true;
+		}
 		// triangle-facet-facet intersection
-		for (int i = 1; i < cutp.size(); i++) {
-			for (int j = 0; j < i; j++) {
-				if (cut[cutp[i]] == true || cut[cutp[j]] == true) continue;
+		Scalar  n1, n2, n3, max3, max4, max6, max7;
+		for (int i = 0; i < cutp.size(); i++) {
+			for (int j = i + 1; j < cutp.size(); j++) {
+				if (cut[cutp[i]] == true && cut[cutp[j]] == true) continue;
+				
+				int id = cutp[i] * 8 + cutp[j];
+				int id0 = prism_map[id][0];
+				if (id0 == -1) continue;
+				int inter = is_3_triangle_cut_float(
+					tri0, tri1, tri2,
+					facets[cutp[i]][0],
+					facets[cutp[i]][1],
+					facets[cutp[i]][2],
+					facets[cutp[j]][0],
+					facets[cutp[j]][1],
+					facets[cutp[j]][2]);
+				if (inter == 2) {//we dont know if point exist or if inside of triangle
+					cut[cutp[i]] == true;
+					cut[cutp[j]] == true;
+					continue;
+				}
+				if (inter == 0) continue;// sure not inside
+				
+				bool pre = ip_filtered::
+					orient3D_TPI_prefilter(
+						tri0[0], tri0[1], tri0[2],
+						tri1[0], tri1[1], tri1[2],
+						tri2[0], tri2[1], tri2[2],
+						facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
+						facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
+						facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+						facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
+						facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
+						facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2],
+						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
+				
+				for (int k = 0; k < cutp.size(); k++) {
 
+					if (k == i || k == j) continue;
+					
+					ori = ip_filtered::
+						orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
+							facets[cutp[k]][0][0], facets[cutp[k]][0][1], facets[cutp[k]][0][2],
+							facets[cutp[k]][1][0], facets[cutp[k]][1][1], facets[cutp[k]][1][2],
+							facets[cutp[k]][2][0], facets[cutp[k]][2][1], facets[cutp[k]][2][2]);
+					
+					if (ori == 1) break;
+					
+				}
 
-
-
+				if (ori != 1) {
+					cut[cutp[i]] = true;
+					cut[cutp[j]] = true;
+				}
 			}
 		}
 
+		for (int i = 0; i < 8; i++) {
+			if (cut[i] == true) cid.push_back(i);
+		}
 
-
-		cid = cutp;
 		return true;
 
 	}
