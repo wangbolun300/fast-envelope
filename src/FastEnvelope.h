@@ -220,7 +220,11 @@ namespace fastEnvelope {
 
 		static bool is_triangle_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid);
-
+		
+		static bool is_seg_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
+			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid);
+		static bool is_seg_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
+			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid);
 public:
 	static bool is_triangle_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
 		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid);

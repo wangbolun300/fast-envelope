@@ -2136,6 +2136,7 @@ template<typename T>
 		return CUT_FACE;
 	}
 	//TODO facets can be replaced by new definition of envprism
+	
 	bool FastEnvelope::is_triangle_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
 		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid) {
 		
@@ -2346,6 +2347,75 @@ template<typename T>
 
 		return true;
 
+	}
+
+	bool FastEnvelope::is_seg_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
+		const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid) {
+		bool cut[8];
+		for (int i = 0; i < 8; i++) {
+			cut[i] = false;
+		}
+		int o1[8], o2[8], ori = 0;
+		std::vector<int> cutp;
+
+		for (int i = 0; i < 8; i++) {
+
+			o1[i] = Predicates::orient_3d(seg0, facets[i][0], facets[i][1], facets[i][2]);
+			o2[i] = Predicates::orient_3d(seg1, facets[i][0], facets[i][1], facets[i][2]);
+
+			if (o1[i] + o2[i] >= 1) {
+				return false;
+			}
+
+			if (o1[i] == 0 && o2[i] == 0) {
+				return false;
+			}
+
+			if (o1[i] * o2[i] == -1) cutp.push_back(i);
+		}
+		if (cutp.size() == 0) {
+			return false;
+		}
+
+		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		for (int i = 0; i < cutp.size(); i++) {
+
+
+			bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
+				seg0[0], seg0[1], seg0[2],
+				seg1[0], seg1[1], seg1[2],
+				facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
+				facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
+				facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+				a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+			if (precom == false) {
+				cut[cutp[i]] = true;
+				continue;
+			}
+			for (int j = 0; j < cutp.size(); j++) {
+				if (i == j) continue;
+				ori = ip_filtered::
+					orient3D_LPI_postfilter(
+						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						seg0[0], seg0[1], seg0[2],
+						facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
+						facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
+						facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+
+				if (ori == 1) break;
+
+			}
+			if (ori != 1) {
+				cut[cutp[i]] = true;
+			}
+
+		}
+
+		for (int i = 0; i < 8; i++) {
+			if (cut[i] == true) cid.push_back(i);
+		}
+
+		return true;
 	}
 	bool FastEnvelope::is_triangle_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
 		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid) {
@@ -2558,7 +2628,73 @@ template<typename T>
 		return true;
 
 	}
+	bool FastEnvelope::is_seg_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
+		const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid) {
+		bool cut[6];
+		for (int i = 0; i < 6; i++) {
+			cut[i] = false;
+		}
+		int o1[6], o2[6], ori = 0;
+		std::vector<int> cutp;
 
+		for (int i = 0; i < 6; i++) {
+
+			o1[i] = Predicates::orient_3d(seg0, facets[i][0], facets[i][1], facets[i][2]);
+			o2[i] = Predicates::orient_3d(seg1, facets[i][0], facets[i][1], facets[i][2]);
+
+			if (o1[i] + o2[i] >= 1) {
+				return false;
+			}
+
+			if (o1[i] == 0 && o2[i] == 0) {
+				return false;
+			}
+
+			if (o1[i] * o2[i] == -1) cutp.push_back(i);
+		}
+		if (cutp.size() == 0) {
+			return false;
+		}
+
+		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		for (int i = 0; i < cutp.size(); i++) {
+
+
+			bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
+				seg0[0], seg0[1], seg0[2],
+				seg1[0], seg1[1], seg1[2],
+				facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
+				facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
+				facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+				a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+			if (precom == false) {
+				cut[cutp[i]] = true;
+				continue;
+			}
+			for (int j = 0; j < cutp.size(); j++) {
+				if (i == j) continue;
+				ori = ip_filtered::
+					orient3D_LPI_postfilter(
+						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						seg0[0], seg0[1], seg0[2],
+						facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
+						facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
+						facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+
+				if (ori == 1) break;
+
+			}
+			if (ori != 1) {
+				cut[cutp[i]] = true;
+			}
+		}
+		for (int i = 0; i < 6; i++) {
+			if (cut[i] == true) cid.push_back(i);
+		}
+
+		return true;
+
+	}
 	int FastEnvelope::seg_cut_polygon_4(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3) {
 
 		int o1, o2, o3, o4, o5,o6;
