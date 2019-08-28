@@ -18,31 +18,6 @@ int go1 = 0, go2 = 0;
 igl::Timer timer;
 static const int p_face[8][3] = { {0,1,3},{7,6,9},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const int c_face[6][3] = { {0,1,2},{4,7,6},{0,3,4},{1,0,4},{1,5,2},{2,6,3} };
-static const std::array<std::vector<fastEnvelope::Vector3i>, 8> p_triangle = {
-		{
-			{fastEnvelope::Vector3i(0,1,3),fastEnvelope::Vector3i(1,2,3),fastEnvelope::Vector3i(0,3,4),fastEnvelope::Vector3i(0,4,5)},
-	{fastEnvelope::Vector3i(7,6,9),fastEnvelope::Vector3i(8,7,9),fastEnvelope::Vector3i(6,10,9),fastEnvelope::Vector3i(6,11,10)},
-	{fastEnvelope::Vector3i(1,0,7),fastEnvelope::Vector3i(7,0,6)},
-	{fastEnvelope::Vector3i(1,7,2),fastEnvelope::Vector3i(2,7,8)},
-	{fastEnvelope::Vector3i(2,8,3),fastEnvelope::Vector3i(3,8,9)},
-	{fastEnvelope::Vector3i(3,9,4),fastEnvelope::Vector3i(4,9,10)},
-	{fastEnvelope::Vector3i(4,10,11),fastEnvelope::Vector3i(5,4,11)},
-	{fastEnvelope::Vector3i(0,5,6),fastEnvelope::Vector3i(5,11,6)}
-
-		}
-};
-
-static const std::array<std::array<fastEnvelope::Vector3i,2>, 6> c_triangle = {
-		{
-			{fastEnvelope::Vector3i(0,1,2),fastEnvelope::Vector3i(0,2,3)},
-	{fastEnvelope::Vector3i(4,7,6),fastEnvelope::Vector3i(4,6,5)},
-	{fastEnvelope::Vector3i(4,0,3),fastEnvelope::Vector3i(4,3,7)},
-	{fastEnvelope::Vector3i(1,0,4),fastEnvelope::Vector3i(1,4,5)},
-	{fastEnvelope::Vector3i(2,1,5),fastEnvelope::Vector3i(2,5,6)},
-	{fastEnvelope::Vector3i(3,2,6),fastEnvelope::Vector3i(3,6,7)}
-
-		}
-};
 
 static const std::array<std::vector<int>, 8> p_facepoint = {
 		{
@@ -250,7 +225,7 @@ namespace fastEnvelope {
 
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
 	{
-		//TODO check
+		
 		//Multiprecision::set_precision(256);
 
 		get_bb_corners(m_ver, min, max);
@@ -261,7 +236,7 @@ namespace fastEnvelope {
 		prism_size = envprism.size();
 
 
-		const Scalar boxlength = std::min(std::min(max[0] - min[0], max[1] - min[1]), max[2] - min[2]) / spac;//TODO a better strategy?
+		const Scalar boxlength = std::min(std::min(max[0] - min[0], max[1] - min[1]), max[2] - min[2]) / spac;
 		subx = (max[0] - min[0]) / boxlength, suby = (max[1] - min[1]) / boxlength, subz = (max[2] - min[2]) / boxlength;
 
 
@@ -483,7 +458,7 @@ namespace fastEnvelope {
 
 			return 1;
 
-		}
+		}//TODO think about what happens when size==1
 
 		int jump1, jump2;
 
@@ -593,24 +568,20 @@ namespace fastEnvelope {
 					triangle[0], triangle[1], triangle[2], cidl);
 				for (int j = 0; j < cidl.size(); j++) {
 					for (int k = 0; k < 3; k++) {
-						tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
+
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(
+							triangle[triseg[k][0]], triangle[triseg[k][1]],
 							envprism[prismindex[i]][p_face[cidl[j]][0]],
 							envprism[prismindex[i]][p_face[cidl[j]][1]],
-							envprism[prismindex[i]][p_face[cidl[j]][2]]);
-						if (tti == CUT_FACE) {
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(
-								triangle[triseg[k][0]], triangle[triseg[k][1]],
-								envprism[prismindex[i]][p_face[cidl[j]][0]],
-								envprism[prismindex[i]][p_face[cidl[j]][1]],
-								envprism[prismindex[i]][p_face[cidl[j]][2]],
-								prismindex, jump1, checker);
-							if (inter == 1) {
+							envprism[prismindex[i]][p_face[cidl[j]][2]],
+							prismindex, jump1, checker);
+						if (inter == 1) {
 
-								return 1;
-
-							}
+							return 1;
 
 						}
+
+
 
 					}
 					inter_ijk_list.push_back({ {prismindex[i],cidl[j]} });
@@ -656,7 +627,8 @@ namespace fastEnvelope {
 		int listsize = inter_ijk_list.size();
 
 
-
+	
+		int id, id0 = 0;
 		for (int i = 0; i < listsize; i++) {
 			jump1 = inter_ijk_list[i][0];
 			for (int j = i + 1; j < listsize; j++) {
@@ -664,83 +636,67 @@ namespace fastEnvelope {
 				//check triangle{ { envprism[list[i][0]][p_triangle[list[i][1]][list[i][2]][0]], ...[1],...[2] } } and triangle{ { envprism[list[j][0]][p_triangle[list[j][1]][list[j][2]][0]], ...[1],...[2] } }
 
 				//and T
+				if (inter_ijk_list[i][0] == inter_ijk_list[j][0]) {
+					if (inter_ijk_list[i][0] < prism_size) {
+						id = inter_ijk_list[i][1] * 8 + inter_ijk_list[j][1];
+						id0 = prism_map[id][0];
+						
+					}
+					else {
+						id = inter_ijk_list[i][1] * 6 + inter_ijk_list[j][1];
 
-				if (inter_ijk_list[i][0] != inter_ijk_list[j][0]) {//belong to two different prisms
+						id0 = cubic_map[id][0];
+					}
+					if (id0 == -1) continue;
+				}
+				
+			
+					//find prism_map[list[i][1]*8+list[j][1]][0],prism_map[list[i][1]*8+list[j][1]][1]
+
+
+				
 
 
 					Vector3 t00, t01, t02, t10, t11, t12;
-					int n1, n2, c1m, c2m;
+					int n1, n2;
 					if (inter_ijk_list[i][0] < prism_size) {
 						n1 = p_facenumber;
-						c1m= p_triangle[inter_ijk_list[i][1]].size();
 					}
 					else {
 						n1 = c_facenumber;
-						c1m = 2;
 					}
 					if (inter_ijk_list[j][0] < prism_size) {
 						n2 = p_facenumber;
-						c2m = p_triangle[inter_ijk_list[j][1]].size();
-
 					}
 					else {
 						n2 = c_facenumber;
-						c2m = 2;
 					}
 
 
-					for (int c1 = 0; c1 < c1m; c1++) {
-						for (int c2 = 0; c2 < c2m; c2++) {
-							if (n1 == p_facenumber) {
-								t00 = envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][c1][0]];
-								t01 = envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][c1][1]];
-								t02 = envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][c1][2]];
-							}
-							else {
-								t00 = envcubic[inter_ijk_list[i][0]-prism_size][c_triangle[inter_ijk_list[i][1]][c1][0]];
-								t01 = envcubic[inter_ijk_list[i][0]-prism_size][c_triangle[inter_ijk_list[i][1]][c1][1]];
-								t02 = envcubic[inter_ijk_list[i][0]-prism_size][c_triangle[inter_ijk_list[i][1]][c1][2]];
-							}
-							if (n2 == p_facenumber) {
-								t10 = envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][c2][0]];
-								t11 = envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][c2][1]];
-								t12 = envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][c2][2]];
-							}
-							else {
-								t10 = envcubic[inter_ijk_list[j][0]-prism_size][c_triangle[inter_ijk_list[j][1]][c2][0]];
-								t11 = envcubic[inter_ijk_list[j][0]-prism_size][c_triangle[inter_ijk_list[j][1]][c2][1]];
-								t12 = envcubic[inter_ijk_list[j][0]-prism_size][c_triangle[inter_ijk_list[j][1]][c2][2]];
-							}
-							tti = tri_cut_tri_simple(t00, t01, t02, t10, t11, t12);
-							if (tti == CUT_FACE || tti == CUT_COPLANAR) break;
-						}
-						if (tti == CUT_FACE || tti == CUT_COPLANAR) break;
-					}
-					if (tti == CUT_COPLANAR || tti == CUT_EMPTY) continue;
 					//TODO can use box box intersection
 
 
 					jump2 = inter_ijk_list[j][0];
 
 					if (n1 == p_facenumber) {
-						t00 = envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][0][0]];
-						t01 = envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][0][1]];
-						t02 = envprism[inter_ijk_list[i][0]][p_triangle[inter_ijk_list[i][1]][0][2]];
+						t00 = envprism[inter_ijk_list[i][0]][p_face[inter_ijk_list[i][1]][0]];
+						t01 = envprism[inter_ijk_list[i][0]][p_face[inter_ijk_list[i][1]][1]];
+						t02 = envprism[inter_ijk_list[i][0]][p_face[inter_ijk_list[i][1]][2]];
 					}
 					else {
-						t00 = envcubic[inter_ijk_list[i][0] - prism_size][c_triangle[inter_ijk_list[i][1]][0][0]];
-						t01 = envcubic[inter_ijk_list[i][0] - prism_size][c_triangle[inter_ijk_list[i][1]][0][1]];
-						t02 = envcubic[inter_ijk_list[i][0] - prism_size][c_triangle[inter_ijk_list[i][1]][0][2]];
+						t00 = envcubic[inter_ijk_list[i][0] - prism_size][c_face[inter_ijk_list[i][1]][0]];
+						t01 = envcubic[inter_ijk_list[i][0] - prism_size][c_face[inter_ijk_list[i][1]][1]];
+						t02 = envcubic[inter_ijk_list[i][0] - prism_size][c_face[inter_ijk_list[i][1]][2]];
 					}
 					if (n2 == p_facenumber) {
-						t10 = envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][0][0]];
-						t11 = envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][0][1]];
-						t12 = envprism[inter_ijk_list[j][0]][p_triangle[inter_ijk_list[j][1]][0][2]];
+						t10 = envprism[inter_ijk_list[j][0]][p_face[inter_ijk_list[j][1]][0]];
+						t11 = envprism[inter_ijk_list[j][0]][p_face[inter_ijk_list[j][1]][1]];
+						t12 = envprism[inter_ijk_list[j][0]][p_face[inter_ijk_list[j][1]][2]];
 					}
 					else {
-						t10 = envcubic[inter_ijk_list[j][0] - prism_size][c_triangle[inter_ijk_list[j][1]][0][0]];
-						t11 = envcubic[inter_ijk_list[j][0] - prism_size][c_triangle[inter_ijk_list[j][1]][0][1]];
-						t12 = envcubic[inter_ijk_list[j][0] - prism_size][c_triangle[inter_ijk_list[j][1]][0][2]];
+						t10 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][0]];
+						t11 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][1]];
+						t12 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][2]];
 					}
 
 					int inter2 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(triangle,
@@ -749,7 +705,7 @@ namespace fastEnvelope {
 
 						prismindex, jump1, jump2, checker);
 
-					go2++;
+					
 
 
 					if (inter2 == 1) {
@@ -759,80 +715,7 @@ namespace fastEnvelope {
 
 					}
 
-				}
-
-				else {//belong to one same prism
-
-					//TODO here also need check index[j]
-					//find prism_map[list[i][1]*8+list[j][1]][0],prism_map[list[i][1]*8+list[j][1]][1]
-
-					if (inter_ijk_list[i][0] < prism_size) {
-
-						int id = inter_ijk_list[i][1] * 8 + inter_ijk_list[j][1];
-
-						int id0 = prism_map[id][0], id1 = prism_map[id][1];
-
-						if (id0 != -1) {//find map
-
-							tti = seg_cut_tri(envprism[inter_ijk_list[i][0]][id0], envprism[inter_ijk_list[i][0]][id1], triangle[0], triangle[1], triangle[2]);
-
-							if (tti == CUT_COPLANAR || tti == CUT_EMPTY) {
-								continue;//not intersected
-							}
-							//the segment is envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][0]],envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][1]]
-
-							int inter2 = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(envprism[inter_ijk_list[i][0]][id0], envprism[inter_ijk_list[i][0]][id1], triangle[0], triangle[1], triangle[2],
-								prismindex, jump1, checker);
-
-							go2++;
-
-
-							if (inter2 == 1) {
-
-
-
-								return 1;//out
-
-							}
-
-						}
-					}
-					else {
-						int id = inter_ijk_list[i][1] * 6 + inter_ijk_list[j][1];
-
-						int id0 = cubic_map[id][0], id1 = cubic_map[id][1];
-
-						if (id0 != -1) {//find map
-
-							tti = seg_cut_tri(envcubic[inter_ijk_list[i][0]- prism_size][id0], envcubic[inter_ijk_list[i][0]- prism_size][id1], triangle[0], triangle[1], triangle[2]);
-
-							if (tti == CUT_COPLANAR || tti == CUT_EMPTY) {
-								continue;//not intersected
-							}
-							//the segment is envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][0]],envprism[inter_ijk_list[i][0]][prism_map[list[i][1]*8+list[j][1]][1]]
-
-							int inter2 = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(envcubic[inter_ijk_list[i][0] - prism_size][id0], envcubic[inter_ijk_list[i][0] - prism_size][id1], triangle[0], triangle[1], triangle[2],
-								prismindex, jump1, checker);
-
-							go2++;
-							if (inter2 == 1) {
-
-
-
-								return 1;//out
-
-							}
-
-						}
-					}
-
-
-
-
-				}
-
-
-
+				
 
 
 			}
@@ -1971,7 +1854,7 @@ template<typename T>
 		}
 		return CUT_FACE;
 	}
-	//TODO facets can be replaced by new definition of envprism
+
 	
 	bool FastEnvelope::is_triangle_cut_prism(const int&pindex,
 		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const{
