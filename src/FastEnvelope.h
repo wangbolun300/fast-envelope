@@ -218,16 +218,16 @@ namespace fastEnvelope {
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, 
 			const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
 
-		static bool is_triangle_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
-			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid);
+		bool is_triangle_cut_prism(const int&pindex,
+			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const ;
 		
-		static bool is_seg_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
-			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid);
-		static bool is_seg_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
-			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid);
+		 bool is_seg_cut_prism(const int&pindex,
+			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
+		 bool is_seg_cut_cube(const int&cindex,
+			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
 public:
-	static bool is_triangle_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
-		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid);
+	 bool is_triangle_cut_cube(const int&cindex,
+		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const;
 		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);
 
 		private:

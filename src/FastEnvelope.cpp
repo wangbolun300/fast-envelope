@@ -487,9 +487,9 @@ namespace fastEnvelope {
 
 		int jump1, jump2;
 
-		std::vector<Vector3i> inter_ijk_list;//list of intersected triangle
+		std::vector<std::array<int,2>> inter_ijk_list;//list of intersected triangle
 
-		bool out;
+		bool out,cut;
 
 		int inter, inter1, record1, record2,
 
@@ -534,104 +534,42 @@ namespace fastEnvelope {
 				for (int i = 0; i < prismindex.size(); i++) {
 					jump1 = prismindex[i];
 					if (prismindex[i] < prism_size) {
-						for (int j = 0; j < p_facenumber; j++) {
+						std::vector<int>cid;
+						cut = is_seg_cut_prism(jump1, triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
+						if (cut == true) {
+							for (int j = 0; j < cid.size(); j++) {
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
 
+									envprism[prismindex[i]][p_face[cid[j]][0]], envprism[prismindex[i]][p_face[cid[j]][1]], envprism[prismindex[i]][p_face[cid[j]][2]],
+									prismindex, jump1, checker);//rational
+								if (inter == 1) {
 
-							if (j == 0) {
-								tti = seg_cut_polygon_6(triangle[triseg[we][0]], triangle[triseg[we][1]],
-									envprism[prismindex[i]][0], envprism[prismindex[i]][1], envprism[prismindex[i]][2],
-									envprism[prismindex[i]][3], envprism[prismindex[i]][4], envprism[prismindex[i]][5]);
-							}
-							else {
-								if (j == 1) {
-									tti = seg_cut_polygon_6(triangle[triseg[we][0]], triangle[triseg[we][1]],
-										envprism[prismindex[i]][6], envprism[prismindex[i]][7], envprism[prismindex[i]][8],
-										envprism[prismindex[i]][9], envprism[prismindex[i]][10], envprism[prismindex[i]][11]);
+									return 1;
+
 								}
-								else {
-									tti = seg_cut_polygon_4(triangle[triseg[we][0]], triangle[triseg[we][1]],
-										envprism[prismindex[i]][p_facepoint[j][0]], envprism[prismindex[i]][p_facepoint[j][1]],
-										envprism[prismindex[i]][p_facepoint[j][2]], envprism[prismindex[i]][p_facepoint[j][3]]);
-								}
-
 							}
-
-
-							if (tti == CUT_COPLANAR) {
-
-								continue;
-
-							}
-
-							if (tti == CUT_EMPTY) {//this is not redundant
-
-								continue;
-
-							}
-
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
-
-								envprism[prismindex[i]][p_face[j][0]], envprism[prismindex[i]][p_face[j][1]], envprism[prismindex[i]][p_face[j][2]],
-								prismindex, jump1, checker);//rational
-							//inter1 = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
-
-							//	envprism[prismindex[i]][p_triangle[j][0][0]], envprism[prismindex[i]][p_triangle[j][0][1]], envprism[prismindex[i]][p_triangle[j][0][2]],
-							//	prismindex, jump1, checker1);//multi
-							//if (inter != inter1) {
-							//	std::cout << "different happens between rational and multi" << inter << " " << inter1 << std::endl;
-							//}
-							//TODO can be replaced by box box intersection
-
-							if (inter == 1) {
-
-								return 1;
-
-							}
-
-							break;
-
 						}
 					}
 					else {
 						int cindex = prismindex[i] - prism_size;
-						for (int j = 0; j < c_facenumber; j++) {
+						std::vector<int>cid;
+						cut = is_seg_cut_cube(cindex, triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
+						if (cut == true) {
+							for (int j = 0; j < cid.size(); j++) {
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
+									envcubic[cindex][c_face[cid[j]][0]], envcubic[cindex][c_face[cid[j]][1]], envcubic[cindex][c_face[cid[j]][2]],
+									prismindex, jump1, checker);//rational
 
-							tti = seg_cut_polygon_4(triangle[triseg[we][0]], triangle[triseg[we][1]],
-								envcubic[cindex][c_facepoint[j][0]], envcubic[cindex][c_facepoint[j][1]],
-								envcubic[cindex][c_facepoint[j][2]], envcubic[cindex][c_facepoint[j][3]]);
+								
+								if (inter == 1) {
 
-							if (tti == CUT_COPLANAR) {
+									return 1;
 
-								continue;
-
+								}
 							}
-							if (tti == CUT_EMPTY) {//this is not redundant
-
-								continue;
-
-							}
-
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
-								envcubic[cindex][c_triangle[j][0][0]], envcubic[cindex][c_triangle[j][0][1]], envcubic[cindex][c_triangle[j][0][2]],
-								prismindex, jump1, checker);//rational
-							//inter1 = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[we][0]], triangle[triseg[we][1]],
-
-							//	envprism[prismindex[i]][p_triangle[j][0][0]], envprism[prismindex[i]][p_triangle[j][0][1]], envprism[prismindex[i]][p_triangle[j][0][2]],
-							//	prismindex, jump1, checker1);//multi
-							//if (inter != inter1) {
-							//	std::cout << "different happens between rational and multi" << inter << " " << inter1 << std::endl;
-							//}
-							//TODO can be replaced by box box intersection
-
-							if (inter == 1) {
-
-								return 1;
-
-							}
-
-							break;
-
 						}
+						
+						
 					}
 
 
@@ -649,167 +587,65 @@ namespace fastEnvelope {
 		for (int i = 0; i < prismindex.size(); i++) {
 			jump1 = prismindex[i];
 			if (prismindex[i] < prism_size) {
-				for (int j = 0; j < p_facenumber; j++) {
-
-					for (int c = 0; c < p_triangle[j].size(); c++) {//each triangle of the facet
-						tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envprism[prismindex[i]][p_triangle[j][c][0]], envprism[prismindex[i]][p_triangle[j][c][1]], envprism[prismindex[i]][p_triangle[j][c][2]]);
-
-						if (tti == CUT_COPLANAR || tti == CUT_FACE) break;
-					}
-					if (tti == CUT_FACE) ct1++;
-					//////////////////////////////////////new intersection based on box-box intersection
-					/*Vector3 t1min, t1max, t2min, t2max;
-					get_tri_corners(triangle, t1min, t1max);
-					if (j == 0) {
-						get_hex_corners(envprism[prismindex[i]][0], envprism[prismindex[i]][1], envprism[prismindex[i]][2],
-							envprism[prismindex[i]][3], envprism[prismindex[i]][4], envprism[prismindex[i]][5], t2min, t2max);
-
-					}
-					else {
-						if (j == 1) {
-							get_hex_corners(envprism[prismindex[i]][6], envprism[prismindex[i]][7], envprism[prismindex[i]][8],
-								envprism[prismindex[i]][9], envprism[prismindex[i]][10], envprism[prismindex[i]][11], t2min, t2max);
-
-						}
-						else {
-							get_sqr_corners(envprism[prismindex[i]][p_facepoint[j][0]], envprism[prismindex[i]][p_facepoint[j][1]],
-								envprism[prismindex[i]][p_facepoint[j][2]], envprism[prismindex[i]][p_facepoint[j][3]], t2min, t2max);
-						}
-
-					}
-
-					bool tti1 = box_box_intersection(t1min, t1max, t2min, t2max);
-					if (tti1 == 1 && tti == CUT_FACE) diff1++;
-					if (tti1 == 0 && tti == CUT_COPLANAR) diff1++;
-					if (tti1 == 0 && tti == CUT_EMPTY) diff1++;
-
-					if (tti1 == 1 && tti == CUT_COPLANAR) diff2++;
-					if (tti1 == 1 && tti == CUT_EMPTY) diff2++;
-					if (tti1 == 0 && tti == CUT_FACE) diff3++;
-					if (tti1 == 1) ct2++;*/
-					std::array<std::array<Vector3, 3>, 8> facets;
-					std::vector<int> cidl;
-					for (int c = 0; c < 8; c++) {
-						facets[c][0] = envprism[prismindex[i]][p_face[c][0]];
-						facets[c][1] = envprism[prismindex[i]][p_face[c][1]];
-						facets[c][2] = envprism[prismindex[i]][p_face[c][2]];
-					}
-					
-					
- 					bool tti1 = is_triangle_cut_prism(facets,
-						triangle[0], triangle[1], triangle[2], cidl);
-					if (tti1 == false) {
-						if (tti == CUT_FACE) std::cout << "wrong case, there is a bug" << std::endl;
-
-					}
-					bool flag = false;
-					if (tti == CUT_FACE) {
-						for (int d = 0; d < cidl.size(); d++) {
-							if (cidl[d] == j) {
-								flag = true;
-							}
-						}
-						if(flag==false)  std::cout << "wrong case again, there is a bug" << std::endl;
-					}
-					
-					for (int d = 0; d < cidl.size(); d++) {
-						if (cidl[d] == j) {
-							ct2++;
-						}
-					}
-
-					//////////////////////////////////////
-
-					if (tti == CUT_FACE) {
-						//std::cout << "here1 " << std::endl;
-						record1 = 0;
-
-						for (int k = 0; k < 3; k++) {
-							//TODO change to seg-facet cut maybe. we need triangle-facet cut, only way is triangulation.
-							tti = seg_cut_tri(triangle[triseg[k][0]], triangle[triseg[k][1]], envprism[prismindex[i]][p_triangle[j][0][0]], envprism[prismindex[i]][p_triangle[j][0][1]], envprism[prismindex[i]][p_triangle[j][0][2]]);
-							if (tti == CUT_COPLANAR) {
-								continue;
-							}
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
-								envprism[prismindex[i]][p_face[j][0]], envprism[prismindex[i]][p_face[j][1]], envprism[prismindex[i]][p_face[j][2]],
+				
+				std::vector<int> cidl;
+				cut = is_triangle_cut_prism(prismindex[i],
+					triangle[0], triangle[1], triangle[2], cidl);
+				for (int j = 0; j < cidl.size(); j++) {
+					for (int k = 0; k < 3; k++) {
+						tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
+							envprism[prismindex[i]][p_face[cidl[j]][0]],
+							envprism[prismindex[i]][p_face[cidl[j]][1]],
+							envprism[prismindex[i]][p_face[cidl[j]][2]]);
+						if (tti == CUT_FACE) {
+							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(
+								triangle[triseg[k][0]], triangle[triseg[k][1]],
+								envprism[prismindex[i]][p_face[cidl[j]][0]],
+								envprism[prismindex[i]][p_face[cidl[j]][1]],
+								envprism[prismindex[i]][p_face[cidl[j]][2]],
 								prismindex, jump1, checker);
-
-							go1++;
-
 							if (inter == 1) {
 
 								return 1;
 
 							}
 
-							record1 = record1 + inter;
-
 						}
 
-						if (record1 >= 4) {
-
-							std::cout << "intersection predicate wrong1, record " << record1 << std::endl;
-
-						}
-
-						inter_ijk_list.emplace_back(Vector3i(prismindex[i], j, 0));
-						//break;
 					}
-
+					inter_ijk_list.push_back({ {prismindex[i],cidl[j]} });
 				}
+				
 			}
 			else {
 				int cindex = prismindex[i] - prism_size;
-				for (int j = 0; j < c_facenumber; j++) {
-
-					for (int c = 0; c < 2; c++) {//each triangle of the facet
-
-						tti = tri_cut_tri_simple(triangle[0], triangle[1], triangle[2], envcubic[cindex][c_triangle[j][c][0]], envcubic[cindex][c_triangle[j][c][1]], envcubic[cindex][c_triangle[j][c][2]]);
-						//TODO can be replaced by box-box intersection
-						if (tti == CUT_COPLANAR||tti==CUT_FACE) {
-							break;
-						}
-					}
-
-
-					if (tti == CUT_FACE) {
-						record1 = 0;
-
-						for (int k = 0; k < 3; k++) {
-							//TODO change to seg-facet cut maybe. we need triangle-facet cut, only way is triangulation.
-							tti = seg_cut_tri(triangle[triseg[k][0]], triangle[triseg[k][1]], envcubic[cindex][c_triangle[j][0][0]], envcubic[cindex][c_triangle[j][0][1]], envcubic[cindex][c_triangle[j][0][2]]);
-							if (tti == CUT_COPLANAR) {
-								continue;
-							}
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(triangle[triseg[k][0]], triangle[triseg[k][1]],
-								envcubic[cindex][c_triangle[j][0][0]], envcubic[cindex][c_triangle[j][0][1]], envcubic[cindex][c_triangle[j][0][2]],
+				std::vector<int> cidl;
+				cut = is_triangle_cut_cube(cindex,
+					triangle[0], triangle[1], triangle[2], cidl);
+				for (int j = 0; j < cidl.size(); j++) {
+					for (int k = 0; k < 3; k++) {
+						tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
+							envcubic[cindex][c_face[cidl[j]][0]],
+							envcubic[cindex][c_face[cidl[j]][1]],
+							envcubic[cindex][c_face[cidl[j]][2]]);
+						if (tti == CUT_FACE) {
+							inter = Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(
+								triangle[triseg[k][0]], triangle[triseg[k][1]],
+								envcubic[cindex][c_face[cidl[j]][0]],
+								envcubic[cindex][c_face[cidl[j]][1]],
+								envcubic[cindex][c_face[cidl[j]][2]],
 								prismindex, jump1, checker);
-
-							go1++;
-
 							if (inter == 1) {
 
 								return 1;
 
 							}
 
-							record1 = record1 + inter;
-
 						}
-
-						if (record1 >= 4) {
-
-							std::cout << "intersection predicate wrong1, record " << record1 << std::endl;
-
-						}
-
-						inter_ijk_list.emplace_back(Vector3i(prismindex[i], j, 0));
-
-
 					}
-
-
+					inter_ijk_list.push_back({ {prismindex[i],cidl[j]} });
 				}
+				
 			}
 
 
@@ -2137,8 +1973,9 @@ template<typename T>
 	}
 	//TODO facets can be replaced by new definition of envprism
 	
-	bool FastEnvelope::is_triangle_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
-		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid) {
+	bool FastEnvelope::is_triangle_cut_prism(const int&pindex,
+		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const{
+		
 		
 		bool cut[8];
 		for (int i = 0; i < 8; i++) {
@@ -2149,9 +1986,9 @@ template<typename T>
 
 		for (int i = 0; i < 8; i++) {
 
-			o1[i] = Predicates::orient_3d(tri0, facets[i][0], facets[i][1], facets[i][2]);
-			o2[i] = Predicates::orient_3d(tri1, facets[i][0], facets[i][1], facets[i][2]);
-			o3[i] = Predicates::orient_3d(tri2, facets[i][0], facets[i][1], facets[i][2]);
+			o1[i] = Predicates::orient_3d(tri0, envprism[pindex][p_face[i][0]], envprism[pindex][p_face[i][1]], envprism[pindex][p_face[i][2]]);
+			o2[i] = Predicates::orient_3d(tri1, envprism[pindex][p_face[i][0]], envprism[pindex][p_face[i][1]], envprism[pindex][p_face[i][2]]);
+			o3[i] = Predicates::orient_3d(tri2, envprism[pindex][p_face[i][0]], envprism[pindex][p_face[i][1]], envprism[pindex][p_face[i][2]]);
 			if (o1[i] + o2[i] + o3[i] >= 3) {
 				return false;
 			}
@@ -2182,9 +2019,10 @@ template<typename T>
 				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 					tri0[0], tri0[1], tri0[2],
 					tri1[0], tri1[1], tri1[2],
-					facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-					facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-					facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+					
+					envprism[pindex][p_face[cutp[i]][0]][0], envprism[pindex][p_face[cutp[i]][0]][1], envprism[pindex][p_face[cutp[i]][0]][2],
+					envprism[pindex][p_face[cutp[i]][1]][0], envprism[pindex][p_face[cutp[i]][1]][1], envprism[pindex][p_face[cutp[i]][1]][2], 
+					envprism[pindex][p_face[cutp[i]][2]][0], envprism[pindex][p_face[cutp[i]][2]][1], envprism[pindex][p_face[cutp[i]][2]][2], 
 					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 				if (precom == false) {
 					cut[cutp[i]] = true;
@@ -2196,9 +2034,9 @@ template<typename T>
 						orient3D_LPI_postfilter(
 							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 							tri0[0], tri0[1], tri0[2],
-							facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-							facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+							envprism[pindex][p_face[cutp[j]][0]][0], envprism[pindex][p_face[cutp[j]][0]][1], envprism[pindex][p_face[cutp[j]][0]][2], 
+							envprism[pindex][p_face[cutp[j]][1]][0], envprism[pindex][p_face[cutp[j]][1]][1], envprism[pindex][p_face[cutp[j]][1]][2],
+							envprism[pindex][p_face[cutp[j]][2]][0], envprism[pindex][p_face[cutp[j]][2]][1], envprism[pindex][p_face[cutp[j]][2]][2]);
 					
 					if (ori == 1) break;
 					
@@ -2215,9 +2053,9 @@ template<typename T>
 				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 					tri0[0], tri0[1], tri0[2],
 					tri2[0], tri2[1], tri2[2],
-					facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-					facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-					facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+					envprism[pindex][p_face[cutp[i]][0]][0], envprism[pindex][p_face[cutp[i]][0]][1], envprism[pindex][p_face[cutp[i]][0]][2],
+					envprism[pindex][p_face[cutp[i]][1]][0], envprism[pindex][p_face[cutp[i]][1]][1], envprism[pindex][p_face[cutp[i]][1]][2],
+					envprism[pindex][p_face[cutp[i]][2]][0], envprism[pindex][p_face[cutp[i]][2]][1], envprism[pindex][p_face[cutp[i]][2]][2],
 					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 				if (precom == false) {
 					cut[cutp[i]] = true;
@@ -2229,9 +2067,9 @@ template<typename T>
 						orient3D_LPI_postfilter(
 							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 							tri0[0], tri0[1], tri0[2],
-							facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-							facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+							envprism[pindex][p_face[cutp[j]][0]][0], envprism[pindex][p_face[cutp[j]][0]][1], envprism[pindex][p_face[cutp[j]][0]][2],
+							envprism[pindex][p_face[cutp[j]][1]][0], envprism[pindex][p_face[cutp[j]][1]][1], envprism[pindex][p_face[cutp[j]][1]][2],
+							envprism[pindex][p_face[cutp[j]][2]][0], envprism[pindex][p_face[cutp[j]][2]][1], envprism[pindex][p_face[cutp[j]][2]][2]);
 
 					if (ori == 1) break;
 					
@@ -2249,9 +2087,9 @@ template<typename T>
 				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 					tri1[0], tri1[1], tri1[2],
 					tri2[0], tri2[1], tri2[2],
-					facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-					facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-					facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+					envprism[pindex][p_face[cutp[i]][0]][0], envprism[pindex][p_face[cutp[i]][0]][1], envprism[pindex][p_face[cutp[i]][0]][2],
+					envprism[pindex][p_face[cutp[i]][1]][0], envprism[pindex][p_face[cutp[i]][1]][1], envprism[pindex][p_face[cutp[i]][1]][2],
+					envprism[pindex][p_face[cutp[i]][2]][0], envprism[pindex][p_face[cutp[i]][2]][1], envprism[pindex][p_face[cutp[i]][2]][2],
 					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 				if (precom == false) {
 					cut[cutp[i]] = true;
@@ -2263,9 +2101,9 @@ template<typename T>
 						orient3D_LPI_postfilter(
 							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 							tri1[0], tri1[1], tri1[2],
-							facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-							facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+							envprism[pindex][p_face[cutp[j]][0]][0], envprism[pindex][p_face[cutp[j]][0]][1], envprism[pindex][p_face[cutp[j]][0]][2],
+							envprism[pindex][p_face[cutp[j]][1]][0], envprism[pindex][p_face[cutp[j]][1]][1], envprism[pindex][p_face[cutp[j]][1]][2],
+							envprism[pindex][p_face[cutp[j]][2]][0], envprism[pindex][p_face[cutp[j]][2]][1], envprism[pindex][p_face[cutp[j]][2]][2]);
 
 					if (ori == 1) break;
 					
@@ -2294,12 +2132,12 @@ template<typename T>
 				if (id0 == -1) continue;
 				int inter = is_3_triangle_cut_float(
 					tri0, tri1, tri2,
-					facets[cutp[i]][0],
-					facets[cutp[i]][1],
-					facets[cutp[i]][2],
-					facets[cutp[j]][0],
-					facets[cutp[j]][1],
-					facets[cutp[j]][2]);
+					envprism[pindex][p_face[cutp[i]][0]],
+					envprism[pindex][p_face[cutp[i]][1]],
+					envprism[pindex][p_face[cutp[i]][2]],
+					envprism[pindex][p_face[cutp[j]][0]],
+					envprism[pindex][p_face[cutp[j]][1]],
+					envprism[pindex][p_face[cutp[j]][2]]);
 				if (inter == 2) {//we dont know if point exist or if inside of triangle
 					cut[cutp[i]] == true;
 					cut[cutp[j]] == true;
@@ -2312,12 +2150,12 @@ template<typename T>
 						tri0[0], tri0[1], tri0[2],
 						tri1[0], tri1[1], tri1[2],
 						tri2[0], tri2[1], tri2[2],
-						facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-						facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-						facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
-						facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-						facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-						facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2],
+						envprism[pindex][p_face[cutp[i]][0]][0], envprism[pindex][p_face[cutp[i]][0]][1], envprism[pindex][p_face[cutp[i]][0]][2],
+						envprism[pindex][p_face[cutp[i]][1]][0], envprism[pindex][p_face[cutp[i]][1]][1], envprism[pindex][p_face[cutp[i]][1]][2],
+						envprism[pindex][p_face[cutp[i]][2]][0], envprism[pindex][p_face[cutp[i]][2]][1], envprism[pindex][p_face[cutp[i]][2]][2],
+						envprism[pindex][p_face[cutp[j]][0]][0], envprism[pindex][p_face[cutp[j]][0]][1], envprism[pindex][p_face[cutp[j]][0]][2],
+						envprism[pindex][p_face[cutp[j]][1]][0], envprism[pindex][p_face[cutp[j]][1]][1], envprism[pindex][p_face[cutp[j]][1]][2],
+						envprism[pindex][p_face[cutp[j]][2]][0], envprism[pindex][p_face[cutp[j]][2]][1], envprism[pindex][p_face[cutp[j]][2]][2],
 						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
 				
 				for (int k = 0; k < cutp.size(); k++) {
@@ -2326,9 +2164,9 @@ template<typename T>
 					
 					ori = ip_filtered::
 						orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
-							facets[cutp[k]][0][0], facets[cutp[k]][0][1], facets[cutp[k]][0][2],
-							facets[cutp[k]][1][0], facets[cutp[k]][1][1], facets[cutp[k]][1][2],
-							facets[cutp[k]][2][0], facets[cutp[k]][2][1], facets[cutp[k]][2][2]);
+							envprism[pindex][p_face[cutp[k]][0]][0], envprism[pindex][p_face[cutp[k]][0]][1], envprism[pindex][p_face[cutp[k]][0]][2],
+							envprism[pindex][p_face[cutp[k]][1]][0], envprism[pindex][p_face[cutp[k]][1]][1], envprism[pindex][p_face[cutp[k]][1]][2],
+							envprism[pindex][p_face[cutp[k]][2]][0], envprism[pindex][p_face[cutp[k]][2]][1], envprism[pindex][p_face[cutp[k]][2]][2]);
 					
 					if (ori == 1) break;
 					
@@ -2349,8 +2187,8 @@ template<typename T>
 
 	}
 
-	bool FastEnvelope::is_seg_cut_prism(const std::array<std::array<Vector3, 3>, 8>& facets,
-		const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid) {
+	bool FastEnvelope::is_seg_cut_prism(const int&pindex,
+		const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const {
 		bool cut[8];
 		for (int i = 0; i < 8; i++) {
 			cut[i] = false;
@@ -2360,8 +2198,8 @@ template<typename T>
 
 		for (int i = 0; i < 8; i++) {
 
-			o1[i] = Predicates::orient_3d(seg0, facets[i][0], facets[i][1], facets[i][2]);
-			o2[i] = Predicates::orient_3d(seg1, facets[i][0], facets[i][1], facets[i][2]);
+			o1[i] = Predicates::orient_3d(seg0, envprism[pindex][p_face[i][0]], envprism[pindex][p_face[i][1]], envprism[pindex][p_face[i][2]]);
+			o2[i] = Predicates::orient_3d(seg1, envprism[pindex][p_face[i][0]], envprism[pindex][p_face[i][1]], envprism[pindex][p_face[i][2]]);
 
 			if (o1[i] + o2[i] >= 1) {
 				return false;
@@ -2384,9 +2222,9 @@ template<typename T>
 			bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 				seg0[0], seg0[1], seg0[2],
 				seg1[0], seg1[1], seg1[2],
-				facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-				facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-				facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+				envprism[pindex][p_face[cutp[i]][0]][0], envprism[pindex][p_face[cutp[i]][0]][1], envprism[pindex][p_face[cutp[i]][0]][2],
+				envprism[pindex][p_face[cutp[i]][1]][0], envprism[pindex][p_face[cutp[i]][1]][1], envprism[pindex][p_face[cutp[i]][1]][2],
+				envprism[pindex][p_face[cutp[i]][2]][0], envprism[pindex][p_face[cutp[i]][2]][1], envprism[pindex][p_face[cutp[i]][2]][2], 
 				a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 			if (precom == false) {
 				cut[cutp[i]] = true;
@@ -2398,9 +2236,9 @@ template<typename T>
 					orient3D_LPI_postfilter(
 						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 						seg0[0], seg0[1], seg0[2],
-						facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-						facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-						facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+						envprism[pindex][p_face[cutp[j]][0]][0], envprism[pindex][p_face[cutp[j]][0]][1], envprism[pindex][p_face[cutp[j]][0]][2],
+						envprism[pindex][p_face[cutp[j]][1]][0], envprism[pindex][p_face[cutp[j]][1]][1], envprism[pindex][p_face[cutp[j]][1]][2],
+						envprism[pindex][p_face[cutp[j]][2]][0], envprism[pindex][p_face[cutp[j]][2]][1], envprism[pindex][p_face[cutp[j]][2]][2]);
 
 				if (ori == 1) break;
 
@@ -2417,8 +2255,8 @@ template<typename T>
 
 		return true;
 	}
-	bool FastEnvelope::is_triangle_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
-		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid) {
+	bool FastEnvelope::is_triangle_cut_cube(const int&cindex,
+		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const {
 
 		bool cut[6];
 		for (int i = 0; i < 6; i++) {
@@ -2429,9 +2267,9 @@ template<typename T>
 
 		for (int i = 0; i < 6; i++) {
 
-			o1[i] = Predicates::orient_3d(tri0, facets[i][0], facets[i][1], facets[i][2]);
-			o2[i] = Predicates::orient_3d(tri1, facets[i][0], facets[i][1], facets[i][2]);
-			o3[i] = Predicates::orient_3d(tri2, facets[i][0], facets[i][1], facets[i][2]);
+			o1[i] = Predicates::orient_3d(tri0, envcubic[cindex][c_face[i][0]], envcubic[cindex][c_face[i][1]], envcubic[cindex][c_face[i][2]]);
+			o2[i] = Predicates::orient_3d(tri1, envcubic[cindex][c_face[i][0]], envcubic[cindex][c_face[i][1]], envcubic[cindex][c_face[i][2]]);
+			o3[i] = Predicates::orient_3d(tri2, envcubic[cindex][c_face[i][0]], envcubic[cindex][c_face[i][1]], envcubic[cindex][c_face[i][2]]);
 			if (o1[i] + o2[i] + o3[i] >= 3) {
 				return false;
 			}
@@ -2462,9 +2300,10 @@ template<typename T>
 				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 					tri0[0], tri0[1], tri0[2],
 					tri1[0], tri1[1], tri1[2],
-					facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-					facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-					facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+
+					envcubic[cindex][c_face[cutp[i]][0]][0], envcubic[cindex][c_face[cutp[i]][0]][1], envcubic[cindex][c_face[cutp[i]][0]][2],
+					envcubic[cindex][c_face[cutp[i]][1]][0], envcubic[cindex][c_face[cutp[i]][1]][1], envcubic[cindex][c_face[cutp[i]][1]][2],
+					envcubic[cindex][c_face[cutp[i]][2]][0], envcubic[cindex][c_face[cutp[i]][2]][1], envcubic[cindex][c_face[cutp[i]][2]][2],
 					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 				if (precom == false) {
 					cut[cutp[i]] = true;
@@ -2476,9 +2315,10 @@ template<typename T>
 						orient3D_LPI_postfilter(
 							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 							tri0[0], tri0[1], tri0[2],
-							facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-							facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+							envcubic[cindex][c_face[cutp[j]][0]][0], envcubic[cindex][c_face[cutp[j]][0]][1], envcubic[cindex][c_face[cutp[j]][0]][2],
+							envcubic[cindex][c_face[cutp[j]][1]][0], envcubic[cindex][c_face[cutp[j]][1]][1], envcubic[cindex][c_face[cutp[j]][1]][2],
+							envcubic[cindex][c_face[cutp[j]][2]][0], envcubic[cindex][c_face[cutp[j]][2]][1], envcubic[cindex][c_face[cutp[j]][2]][2]
+						);
 
 					if (ori == 1) break;
 
@@ -2495,9 +2335,9 @@ template<typename T>
 				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 					tri0[0], tri0[1], tri0[2],
 					tri2[0], tri2[1], tri2[2],
-					facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-					facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-					facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+					envcubic[cindex][c_face[cutp[i]][0]][0], envcubic[cindex][c_face[cutp[i]][0]][1], envcubic[cindex][c_face[cutp[i]][0]][2],
+					envcubic[cindex][c_face[cutp[i]][1]][0], envcubic[cindex][c_face[cutp[i]][1]][1], envcubic[cindex][c_face[cutp[i]][1]][2],
+					envcubic[cindex][c_face[cutp[i]][2]][0], envcubic[cindex][c_face[cutp[i]][2]][1], envcubic[cindex][c_face[cutp[i]][2]][2],
 					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 				if (precom == false) {
 					cut[cutp[i]] = true;
@@ -2509,9 +2349,9 @@ template<typename T>
 						orient3D_LPI_postfilter(
 							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 							tri0[0], tri0[1], tri0[2],
-							facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-							facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+							envcubic[cindex][c_face[cutp[j]][0]][0], envcubic[cindex][c_face[cutp[j]][0]][1], envcubic[cindex][c_face[cutp[j]][0]][2],
+							envcubic[cindex][c_face[cutp[j]][1]][0], envcubic[cindex][c_face[cutp[j]][1]][1], envcubic[cindex][c_face[cutp[j]][1]][2],
+							envcubic[cindex][c_face[cutp[j]][2]][0], envcubic[cindex][c_face[cutp[j]][2]][1], envcubic[cindex][c_face[cutp[j]][2]][2]);
 
 					if (ori == 1) break;
 
@@ -2529,9 +2369,9 @@ template<typename T>
 				bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 					tri1[0], tri1[1], tri1[2],
 					tri2[0], tri2[1], tri2[2],
-					facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-					facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-					facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+					envcubic[cindex][c_face[cutp[i]][0]][0], envcubic[cindex][c_face[cutp[i]][0]][1], envcubic[cindex][c_face[cutp[i]][0]][2],
+					envcubic[cindex][c_face[cutp[i]][1]][0], envcubic[cindex][c_face[cutp[i]][1]][1], envcubic[cindex][c_face[cutp[i]][1]][2],
+					envcubic[cindex][c_face[cutp[i]][2]][0], envcubic[cindex][c_face[cutp[i]][2]][1], envcubic[cindex][c_face[cutp[i]][2]][2],
 					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 				if (precom == false) {
 					cut[cutp[i]] = true;
@@ -2543,9 +2383,9 @@ template<typename T>
 						orient3D_LPI_postfilter(
 							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 							tri1[0], tri1[1], tri1[2],
-							facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-							facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-							facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+							envcubic[cindex][c_face[cutp[j]][0]][0], envcubic[cindex][c_face[cutp[j]][0]][1], envcubic[cindex][c_face[cutp[j]][0]][2],
+							envcubic[cindex][c_face[cutp[j]][1]][0], envcubic[cindex][c_face[cutp[j]][1]][1], envcubic[cindex][c_face[cutp[j]][1]][2],
+							envcubic[cindex][c_face[cutp[j]][2]][0], envcubic[cindex][c_face[cutp[j]][2]][1], envcubic[cindex][c_face[cutp[j]][2]][2]);
 
 					if (ori == 1) break;
 
@@ -2574,12 +2414,12 @@ template<typename T>
 				if (id0 == -1) continue;
 				int inter = is_3_triangle_cut_float(
 					tri0, tri1, tri2,
-					facets[cutp[i]][0],
-					facets[cutp[i]][1],
-					facets[cutp[i]][2],
-					facets[cutp[j]][0],
-					facets[cutp[j]][1],
-					facets[cutp[j]][2]);
+					envcubic[cindex][c_face[cutp[i]][0]],
+					envcubic[cindex][c_face[cutp[i]][1]],
+					envcubic[cindex][c_face[cutp[i]][2]],
+					envcubic[cindex][c_face[cutp[j]][0]],
+					envcubic[cindex][c_face[cutp[j]][1]],
+					envcubic[cindex][c_face[cutp[j]][2]]);
 				if (inter == 2) {//we dont know if point exist or if inside of triangle
 					cut[cutp[i]] == true;
 					cut[cutp[j]] == true;
@@ -2592,12 +2432,12 @@ template<typename T>
 						tri0[0], tri0[1], tri0[2],
 						tri1[0], tri1[1], tri1[2],
 						tri2[0], tri2[1], tri2[2],
-						facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-						facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-						facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
-						facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-						facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-						facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2],
+						envcubic[cindex][c_face[cutp[i]][0]][0], envcubic[cindex][c_face[cutp[i]][0]][1], envcubic[cindex][c_face[cutp[i]][0]][2],
+						envcubic[cindex][c_face[cutp[i]][1]][0], envcubic[cindex][c_face[cutp[i]][1]][1], envcubic[cindex][c_face[cutp[i]][1]][2],
+						envcubic[cindex][c_face[cutp[i]][2]][0], envcubic[cindex][c_face[cutp[i]][2]][1], envcubic[cindex][c_face[cutp[i]][2]][2],
+						envcubic[cindex][c_face[cutp[j]][0]][0], envcubic[cindex][c_face[cutp[j]][0]][1], envcubic[cindex][c_face[cutp[j]][0]][2],
+						envcubic[cindex][c_face[cutp[j]][1]][0], envcubic[cindex][c_face[cutp[j]][1]][1], envcubic[cindex][c_face[cutp[j]][1]][2],
+						envcubic[cindex][c_face[cutp[j]][2]][0], envcubic[cindex][c_face[cutp[j]][2]][1], envcubic[cindex][c_face[cutp[j]][2]][2],
 						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
 
 				for (int k = 0; k < cutp.size(); k++) {
@@ -2606,9 +2446,9 @@ template<typename T>
 
 					ori = ip_filtered::
 						orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
-							facets[cutp[k]][0][0], facets[cutp[k]][0][1], facets[cutp[k]][0][2],
-							facets[cutp[k]][1][0], facets[cutp[k]][1][1], facets[cutp[k]][1][2],
-							facets[cutp[k]][2][0], facets[cutp[k]][2][1], facets[cutp[k]][2][2]);
+							envcubic[cindex][c_face[cutp[k]][0]][0], envcubic[cindex][c_face[cutp[k]][0]][1], envcubic[cindex][c_face[cutp[k]][0]][2],
+							envcubic[cindex][c_face[cutp[k]][1]][0], envcubic[cindex][c_face[cutp[k]][1]][1], envcubic[cindex][c_face[cutp[k]][1]][2],
+							envcubic[cindex][c_face[cutp[k]][2]][0], envcubic[cindex][c_face[cutp[k]][2]][1], envcubic[cindex][c_face[cutp[k]][2]][2]);
 
 					if (ori == 1) break;
 
@@ -2626,10 +2466,9 @@ template<typename T>
 		}
 
 		return true;
-
 	}
-	bool FastEnvelope::is_seg_cut_cube(const std::array<std::array<Vector3, 3>, 6>& facets,
-		const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid) {
+	bool FastEnvelope::is_seg_cut_cube(const int&cindex,
+		const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid) const{
 		bool cut[6];
 		for (int i = 0; i < 6; i++) {
 			cut[i] = false;
@@ -2639,8 +2478,8 @@ template<typename T>
 
 		for (int i = 0; i < 6; i++) {
 
-			o1[i] = Predicates::orient_3d(seg0, facets[i][0], facets[i][1], facets[i][2]);
-			o2[i] = Predicates::orient_3d(seg1, facets[i][0], facets[i][1], facets[i][2]);
+			o1[i] = Predicates::orient_3d(seg0, envcubic[cindex][c_face[i][0]], envcubic[cindex][c_face[i][1]], envcubic[cindex][c_face[i][2]]);
+			o2[i] = Predicates::orient_3d(seg1, envcubic[cindex][c_face[i][0]], envcubic[cindex][c_face[i][1]], envcubic[cindex][c_face[i][2]]);
 
 			if (o1[i] + o2[i] >= 1) {
 				return false;
@@ -2663,9 +2502,9 @@ template<typename T>
 			bool precom = ip_filtered::orient3D_LPI_prefilter(// it is boolean maybe need considering
 				seg0[0], seg0[1], seg0[2],
 				seg1[0], seg1[1], seg1[2],
-				facets[cutp[i]][0][0], facets[cutp[i]][0][1], facets[cutp[i]][0][2],
-				facets[cutp[i]][1][0], facets[cutp[i]][1][1], facets[cutp[i]][1][2],
-				facets[cutp[i]][2][0], facets[cutp[i]][2][1], facets[cutp[i]][2][2],
+				envcubic[cindex][c_face[cutp[i]][0]][0], envcubic[cindex][c_face[cutp[i]][0]][1], envcubic[cindex][c_face[cutp[i]][0]][2],
+				envcubic[cindex][c_face[cutp[i]][1]][0], envcubic[cindex][c_face[cutp[i]][1]][1], envcubic[cindex][c_face[cutp[i]][1]][2],
+				envcubic[cindex][c_face[cutp[i]][2]][0], envcubic[cindex][c_face[cutp[i]][2]][1], envcubic[cindex][c_face[cutp[i]][2]][2],
 				a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 			if (precom == false) {
 				cut[cutp[i]] = true;
@@ -2677,9 +2516,9 @@ template<typename T>
 					orient3D_LPI_postfilter(
 						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 						seg0[0], seg0[1], seg0[2],
-						facets[cutp[j]][0][0], facets[cutp[j]][0][1], facets[cutp[j]][0][2],
-						facets[cutp[j]][1][0], facets[cutp[j]][1][1], facets[cutp[j]][1][2],
-						facets[cutp[j]][2][0], facets[cutp[j]][2][1], facets[cutp[j]][2][2]);
+						envcubic[cindex][c_face[cutp[j]][0]][0], envcubic[cindex][c_face[cutp[j]][0]][1], envcubic[cindex][c_face[cutp[j]][0]][2],
+						envcubic[cindex][c_face[cutp[j]][1]][0], envcubic[cindex][c_face[cutp[j]][1]][1], envcubic[cindex][c_face[cutp[j]][1]][2],
+						envcubic[cindex][c_face[cutp[j]][2]][0], envcubic[cindex][c_face[cutp[j]][2]][1], envcubic[cindex][c_face[cutp[j]][2]][2]);
 
 				if (ori == 1) break;
 
@@ -2687,13 +2526,14 @@ template<typename T>
 			if (ori != 1) {
 				cut[cutp[i]] = true;
 			}
+
 		}
+
 		for (int i = 0; i < 6; i++) {
 			if (cut[i] == true) cid.push_back(i);
 		}
 
 		return true;
-
 	}
 	int FastEnvelope::seg_cut_polygon_4(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3) {
 
