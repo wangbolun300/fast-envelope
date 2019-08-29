@@ -15,14 +15,12 @@ namespace fastEnvelope {
 	class FastEnvelope
 	{
 	private:
-		static const int ORI_POSITIVE = 1;
-		static const int ORI_ZERO = 0;
-		static const int ORI_NEGATIVE = -1;
-		static const int NOT_INTERSECTD = 2;
+
+		static const int NOT_INTERSECTED = 2;
+		static const int INTERSECTED = 1;
 		static const int OUT_PRISM = 1;
 		static const int IN_PRISM = 0;
 		static const int CUT_COPLANAR = 4;
-		static const int CUT_COPLANAR_OR_ABOVE = 4;
 		static const int CUT_EMPTY = -1;
 		static const int CUT_FACE = 3;
 
@@ -39,8 +37,8 @@ namespace fastEnvelope {
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int& pieces) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
-		
-		static Vector3 accurate_normal_vector(const Vector3 & p, const Vector3 & q);
+		static void print_number();
+		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);
 
 	private:
 		
@@ -51,27 +49,18 @@ namespace fastEnvelope {
 		Vector3 min, max;
 		int subx, suby, subz;
 		int prism_size;
-	public:
 		std::vector<std::array<Vector3, 8>> envcubic;
-	private:
-		//static bool FastEnvelopeTest(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
-		//static bool FastEnvelopeTestTemp(const std::array<Vector3, 3> &triangle, const std::vector<std::array<Vector3, 12>>& envprism);
+
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex) const;
 
-		static int seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
 		static int seg_cut_plane(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
-		static int seg_cut_polygon_4(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3);
-		static int seg_cut_polygon_6(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3, const Vector3 &t4, const Vector3 &t5);
+		static Vector3 accurate_normal_vector(const Vector3 & p, const Vector3 & q);
 
-	public:
-		//static void triangle_sample(const std::array<Vector3, 3> &triangle, std::vector<Vector3>& ps, const Scalar &error);
 		static void triangle_sample_segment(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces,const int & nbr);
 		static void triangle_sample_point(const std::array<Vector3, 3> &triangle, Vector3& ps);
 		static void triangle_sample_normal(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces, const int & nbr1, const int &nbr2);
-		//static void rational_triangle_sample
-		static void print_number();
-	private:
-		//static void seg_tri_cut_on_tir()()
+
+
 		static void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {
 			min = vertices.front();
 			max = vertices.front();
@@ -90,9 +79,6 @@ namespace fastEnvelope {
 				max[j] += dis;
 			}
 
-			//cout << "min = " << min[0] << " " << min[1] << " " << min[2] << endl;
-			//cout << "max = " << max[0] << " " << max[1] << " " << max[2] << endl;
-			//            pausee();
 		}
 		static void  CornerList_prism(const std::vector<std::array<Vector3, 12>>& prism,
 			std::vector<std::array<Vector3, 2>>& list) {
@@ -192,26 +178,18 @@ namespace fastEnvelope {
 		 int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle1, 
 			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<int>& prismindex, const int& jump, const std::function<int(T)> &checker)const;
 
-		/* int Implicit_prism_edge_triangle_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const std::array<Vector3, 3>& triangle,
-			const std::vector<int>& prismindex, const int& jump)const;*/
-
-
-
+	
 		 template<typename T>
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, 
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22, 
 			const std::vector<int>& prismindex, const int& jump1,const int &jump2, const std::function<int(T)> &checker) const;
 
-
-
-
-
-
-
 		template<typename T>
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, const std::function<int(T)> &checker);
-
+		template<typename T>
+		int Implicit_Seg_Facet_intersection_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle0,
+			const Vector3& triangle1, const Vector3& triangle2, const std::vector<int>& prismindex, const int& jump, const std::function<int(T)>& checker)const;
 		static int is_3_triangle_cut_float(
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, 
@@ -219,23 +197,17 @@ namespace fastEnvelope {
 
 		bool is_triangle_cut_prism(const int&pindex,
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const ;
-		
+		 bool is_triangle_cut_cube(const int&cindex,
+			 const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const;
 		 bool is_seg_cut_prism(const int&pindex,
 			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
 		 bool is_seg_cut_cube(const int&cindex,
 			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
-public:
-	 bool is_triangle_cut_cube(const int&cindex,
-		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const;
-		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);
-
-		private:
+		
 		static Vector2 to_2d(const Vector3 &p, int t) {
 			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
 		}
 
-		static arbitrary_precision::interval<arbitrary_precision::float_precision> converting_Scalar_to_arbitary(const Scalar &a, const int &i);
-		public:
 		template<typename T>
 		static bool orient3D_LPI_prefilter_multiprecision(
 			const T& px, const T& py, const T& pz, const T& qx, const T& qy, const T& qz,
@@ -270,200 +242,60 @@ public:
 			a13 = a13 * n;
 			return true;
 		}
-
-		
 		template<typename T>
-		static int orient3D_LPI_filtered_multiprecision(
-			T px, T py, T pz, T qx, T qy, T qz,
-			T rx, T ry, T rz, T sx, T sy, T sz, T tx, T ty, T tz,
-			T ax, T ay, T az, T bx, T by, T bz, T cx, T cy, T cz, const std::function<int(T)> &checker) {
+		static int orient3D_LPI_postfilter_multiprecision(
+			const T& a11, const T& a12, const T& a13, const T& d,
+			const T& px, const T& py, const T& pz,
+			const T& ax, const T& ay, const T& az,
+			const T& bx, const T& by, const T& bz,
+			const T& cx, const T& cy, const T& cz, const std::function<int(T)> &checker) {
 
-			int prec = 1000000;
-			T a11;
-			
-			a11=(px - qx);
+			T px_cx(px - cx);
+			T py_cy(py - cy);
+			T pz_cz(pz - cz);
 
-			T a12;
-			
-			a12=(py - qy);
+			T d11((d * px_cx) + (a11));
+			T d21(ax - cx);
+			T d31(bx - cx);
+			T d12((d * py_cy) + (a12));
+			T d22(ay - cy);
+			T d32(by - cy);
+			T d13((d * pz_cz) + (a13));
+			T d23(az - cz);
+			T d33(bz - cz);
 
-			T a13;
-			a13=(pz - qz);
+			T d2233(d22 * d33);
+			T d2332(d23 * d32);
+			T d2133(d21 * d33);
+			T d2331(d23 * d31);
+			T d2132(d21 * d32);
+			T d2231(d22 * d31);
 
-			T a21;
-			a21=(sx - rx);
-
-			T a22;
-			a22=(sy - ry);
-
-			T a23;
-			a23=(sz - rz);
-
-			T a31;
-			a31=(tx - rx);
-
-			T a32;
-			a32=(ty - ry);
-
-			T a33;
-			a33=(tz - rz);
-
-			T a2233;
-			a2233=((a22 * a33) - (a23 * a32));
-
-			T a2133;
-			a2133=((a21 * a33) - (a23 * a31));
-
-			T a2132;
-			a2132=((a21 * a32) - (a22 * a31));
-
-			T d;
-			d=(((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
-
-			//std::cout << "d digits " << d.ref_lower()->precision() << std::endl;
-
-			//std::cout << "d  " << d << std::endl;
-
-			int flag1 = checker(d);
-
-			if (flag1 == -2) {
-
-				return 100;// not enough precision
-
-			}
-
-			if (flag1 == 0) {
-
-				return -2;// not exist
-
-			}
-
-			// The almost static filter for 'd' might be moved here
-
-			T px_rx;
-			px_rx=(px - rx);
-
-			T py_ry;
-			py_ry=(py - ry);
-
-			T pz_rz;
-			pz_rz=(pz - rz);
-
-			T n;
-			n=((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
-
-
-
-			T px_cx;
-			px_cx=(px - cx);
-
-			T py_cy;
-			py_cy=(py - cy);
-
-			T pz_cz;
-			pz_cz=(pz - cz);
-
-
-
-			T d11;
-			d11=((d * px_cx) + (a11 * n));
-
-			T d21;
-			d21=(ax - cx);
-
-			T d31;
-			d31=(bx - cx);
-
-			T d12;
-			d12=((d * py_cy) + (a12 * n));
-
-			T d22;
-			d22=(ay - cy);
-
-			T d32;
-			d32=(by - cy);
-
-			T d13;
-			d13=((d * pz_cz) + (a13 * n));
-
-			T d23;
-			d23=(az - cz);
-
-			T d33;
-			d33=(bz - cz);
-
-
-
-			T d2233;
-			d2233=(d22 * d33);
-
-			T d2332;
-			d2332=(d23 * d32);
-
-			T d2133;
-			d2133=(d21 * d33);
-
-			T d2331;
-			d2331=(d23 * d31);
-
-			T d2132;
-			d2132=(d21 * d32);
-
-			T d2231;
-			d2231=(d22 * d31);
-
-
-			T det;
-			det=(d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231));
+			T det(d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231));
 
 			int flag2 = checker(det);
-
 			if (flag2 == -2) {
-
 				return 100;// not enough precision
-
 			}
-
 			if (flag2 == 1) {
-
-				if (flag1 == 1) {
-
+				if (d > 0) {
 					return 1;
-
 				}
-
-				if (flag1 == -1) {
-
+				if (d < 0) {
 					return -1;
-
 				}
-
 			}
-
 			if (flag2 == -1) {
-
-				if (flag1 == 1) {
-
+				if (d > 0) {
 					return -1;
-
 				}
-
-				if (flag1 == -1) {
-
+				if (d < 0) {
 					return 1;
-
 				}
-
 			}
-
 			return 0;
-
-
-
 		}
-
 		template<typename T>
-
 		static int orient3D_LPI_filtered_multiprecision_backup(
 
 			T px, T py, T pz, T qx, T qy, T qz,
@@ -845,61 +677,6 @@ public:
 		}
 
 		template<typename T>
-		static int orient3D_LPI_postfilter_multiprecision(
-			const T& a11, const T& a12, const T& a13, const T& d,
-			const T& px, const T& py, const T& pz,
-			const T& ax, const T& ay, const T& az,
-			const T& bx, const T& by, const T& bz,
-			const T& cx, const T& cy, const T& cz, const std::function<int(T)> &checker) {
-			
-			T px_cx(px - cx);
-			T py_cy(py - cy);
-			T pz_cz(pz - cz);
-
-			T d11((d * px_cx) + (a11));
-			T d21(ax - cx);
-			T d31(bx - cx);
-			T d12((d * py_cy) + (a12));
-			T d22(ay - cy);
-			T d32(by - cy);
-			T d13((d * pz_cz) + (a13));
-			T d23(az - cz);
-			T d33(bz - cz);
-
-			T d2233(d22 * d33);
-			T d2332(d23 * d32);
-			T d2133(d21 * d33);
-			T d2331(d23 * d31);
-			T d2132(d21 * d32);
-			T d2231(d22 * d31);
- 
-			T det(d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231));
-
-			int flag2 = checker(det);
-			if (flag2 == -2) {
-				return 100;// not enough precision
-			}
-			if (flag2 == 1) {
-				if (d > 0) {
-					return 1;
-				}
-				if (d < 0) {
-					return -1;
-				}
-			}
-			if (flag2 == -1) {
-				if (d > 0) {
-					return -1;
-				}
-				if (d < 0) {
-					return 1;
-				}
-			}
-			return 0;
-		}
-		public:
-		template<typename T>
-
 		static int orient3D_TPI_filtered_multiprecision(
 			T v1x, T v1y, T v1z, T v2x, T v2y, T v2z, T v3x, T v3y, T v3z,
 			T w1x, T w1y, T w1z, T w2x, T w2y, T w2z, T w3x, T w3y, T w3z,
