@@ -200,10 +200,7 @@ static const std::array<std::array<int, 2>, 3> triseg = {
 
 };
 
-extern "C++" int tri_tri_intersection_test_3d(fastEnvelope::Scalar p1[3], fastEnvelope::Scalar q1[3], fastEnvelope::Scalar r1[3],
-	fastEnvelope::Scalar p2[3], fastEnvelope::Scalar q2[3], fastEnvelope::Scalar r2[3],
-	int * coplanar,
-	fastEnvelope::Scalar source[3], fastEnvelope::Scalar target[3]);
+
 
 namespace fastEnvelope {
 	//using namespace std;
@@ -279,28 +276,6 @@ namespace fastEnvelope {
 		return FastEnvelopeTestImplicit(triangle, inumber);
 	}
 
-	/*bool FastEnvelope::is_outside_signal(const std::array<Vector3, 3> &triangle, int &signal) const {
-		Vector3 tmin, tmax;
-		std::vector<int> inumber;
-		std::vector<int> intercell;
-		std::vector<std::array<Vector3, 12>> interenvprism;
-		get_triangle_corners(triangle, tmin, tmax);
-		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
-		inumber.clear();
-		for (int j = 0; j < intercell.size(); j++) {
-			auto search = prismmap.find(intercell[j]);
-			if (search != prismmap.end()) {
-				inumber.insert(inumber.end(), search->second.begin(), search->second.end());
-			}
-		}
-		sort(inumber.begin(), inumber.end());
-		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
-		interenvprism.reserve(inumber.size());
-		for (int j = 0; j < inumber.size(); j++) {
-			interenvprism.emplace_back(envprism[inumber[j]]);
-		}
-		return FastEnvelope::FastEnvelopeTestImplicit_signal(triangle, interenvprism, signal);
-	}*/
 	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
 
 		Vector3 tmin, tmax;
@@ -1795,55 +1770,9 @@ template<typename T>
 	}
 
 
-	int FastEnvelope::tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3,//even if only edge connected, regarded as intersected
-		const Vector3& q1, const Vector3& q2, const Vector3& q3) {
-		std::array<Scalar, 3> p_1 = { {0, 0, 0} }, q_1 = { {0, 0, 0} }, r_1 = { {0, 0, 0} };
-		std::array<Scalar, 3> p_2 = { {0, 0, 0} }, q_2 = { {0, 0, 0} }, r_2 = { {0, 0, 0} };
-		int coplanar = 0;
-		std::array<Scalar, 3> s = { {0,0,0} }, t = { {0,0,0} };
-		for (int j = 0; j < 3; j++) {
-			p_1[j] = p1[j];
-			q_1[j] = p2[j];
-			r_1[j] = p3[j];
-			p_2[j] = q1[j];
-			q_2[j] = q2[j];
-			r_2[j] = q3[j];
-		}
 
-		if (!tri_tri_intersection_test_3d(&p_1[0], &q_1[0], &r_1[0], &p_2[0], &q_2[0], &r_2[0], &coplanar, &s[0], &t[0]))
-			return CUT_EMPTY;
 
-		if (coplanar == 1) {
-			return CUT_COPLANAR;
-		}
-
-		if (s[0] == t[0] && s[1] == t[1] && s[2] == t[2])
-			return CUT_EMPTY;
-
-		return CUT_FACE;
-	}
-
-	int FastEnvelope::seg_cut_tri(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2) {
-		int o1, o2, o3, o4, o5;
-		o1 = Predicates::orient_3d(seg0, t0, t1, t2);
-		o2 = Predicates::orient_3d(seg1, t0, t1, t2);
-		int op = o1 * o2;
-		if (op >= 0) {
-			return CUT_COPLANAR;//in fact, coplanar and not on this plane
-		}
-
-		//s0,t0,t1; s0,t1,t2;s0,t2,t0;
-		o3 = Predicates::orient_3d(seg1, seg0, t0, t1);
-		o4 = Predicates::orient_3d(seg1, seg0, t1, t2);
-		o5 = Predicates::orient_3d(seg1, seg0, t2, t0);
-		/*if (o3*o4 == 1 && o3*o5 == 1) {
-			return CUT_FACE;
-		}*/
-		if (o3 + o4 + o5 >= 2 || o3 + o4 + o5 <= -2) {// in fact, cut through triangle or segment cut triangle edge
-			return CUT_FACE;
-		}
-		return CUT_EMPTY;
-	}
+	
 	int FastEnvelope::seg_cut_plane(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2) {
 		int o1, o2;
 		o1 = Predicates::orient_3d(seg0, t0, t1, t2);
@@ -2418,58 +2347,8 @@ template<typename T>
 
 		return true;
 	}
-	int FastEnvelope::seg_cut_polygon_4(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3) {
-
-		int o1, o2, o3, o4, o5,o6;
-		o1 = Predicates::orient_3d(seg0, t0, t1, t2);
-		o2 = Predicates::orient_3d(seg1, t0, t1, t2);
-		int op = o1 * o2;
-		if (op >= 0) {
-			return CUT_COPLANAR;//in fact, coplanar and not on this plane
-		}
-		//now cutted
-		//s0,t0,t1; s0,t1,t2;s0,t2,t0;
-		o3 = Predicates::orient_3d(seg1, seg0, t0, t1);
-		o4 = Predicates::orient_3d(seg1, seg0, t1, t2);
-		o5 = Predicates::orient_3d(seg1, seg0, t2, t3);
-		o6 = Predicates::orient_3d(seg1, seg0, t3, t0);
-		/*if (o3*o4 == 1 && o3*o5 == 1) {
-			return CUT_FACE;
-		}*/
-		if (o3 + o4 + o5 + o6 >= 3 || o3 + o4 + o5 + o6 <= -3) {// in fact, cut through triangle or segment cut triangle edge
-			return CUT_FACE;
-		}
-		return CUT_EMPTY;
-	}
 
 
-	int FastEnvelope::seg_cut_polygon_6(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2, const Vector3 &t3, const Vector3 &t4, const Vector3 &t5) {
-
-		int o1, o2, o3, o4, o5, o6,o7,o8;
-		o1 = Predicates::orient_3d(seg0, t0, t1, t2);
-		o2 = Predicates::orient_3d(seg1, t0, t1, t2);
-		int op = o1 * o2;
-		if (op >= 0) {
-			return CUT_COPLANAR;//in fact, coplanar and not on this plane
-		}
-		//now cutted
-		//s0,t0,t1; s0,t1,t2;s0,t2,t0;
-		o3 = Predicates::orient_3d(seg1, seg0, t0, t1);
-		o4 = Predicates::orient_3d(seg1, seg0, t1, t2);
-		o5 = Predicates::orient_3d(seg1, seg0, t2, t3);
-		o6 = Predicates::orient_3d(seg1, seg0, t3, t4);
-		o7 = Predicates::orient_3d(seg1, seg0, t4, t5);
-		o8 = Predicates::orient_3d(seg1, seg0, t5, t0);
-
-
-		/*if (o3*o4 == 1 && o3*o5 == 1) {
-			return CUT_FACE;
-		}*/
-		if (o3 + o4 + o5 + o6 + o7 + o8 >= 5 || o3 + o4 + o5 + o6 + o7 + o8 <= -5) {// in fact, cut through triangle or segment cut triangle edge
-			return CUT_FACE;
-		}
-		return CUT_EMPTY;
-	}
 
 
 	bool FastEnvelope::point_out_prism(const Vector3 & point, const std::vector<int>& prismindex, const int& jump)const

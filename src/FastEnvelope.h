@@ -204,7 +204,6 @@ namespace fastEnvelope {
 
 
 
-		static int tri_cut_tri_simple(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& q1, const Vector3& q2, const Vector3& q3);
 
 
 
