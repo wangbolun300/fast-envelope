@@ -254,7 +254,7 @@ namespace fastEnvelope {
 		std::vector<int> inumber;
 		std::vector<int> intercell;
 
-		get_tri_corners(triangle, tmin, tmax);
+		get_tri_corners(triangle[0],triangle[1],triangle[2], tmin, tmax);
 		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
 
 		for (int j = 0; j < intercell.size(); j++) {
@@ -276,7 +276,7 @@ namespace fastEnvelope {
 		std::vector<int> inumber;
 		std::vector<int> intercell;
 		std::vector<std::array<Vector3, 12>> interenvprism;
-		get_tri_corners(triangle, tmin, tmax);
+		get_tri_corners(triangle[0], triangle[1], triangle[2], tmin, tmax);
 		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
 		inumber.clear();
 		for (int j = 0; j < intercell.size(); j++) {
@@ -312,7 +312,7 @@ namespace fastEnvelope {
 		std::vector<int> inumber;
 		std::vector<int> intercell;
 
-		get_tri_corners(triangle, tmin, tmax);
+		get_tri_corners(triangle[0], triangle[1], triangle[2], tmin, tmax);
 		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
 		inumber.clear();
 		for (int j = 0; j < intercell.size(); j++) {
@@ -2092,7 +2092,12 @@ template<typename T>
 		return true;
 	}
 
-
+	bool FastEnvelope::is_triangle_cut_bounding_box(
+		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, const Vector3 &bmin, const Vector3 &bmax) {
+		Vector3 tmin, tmax;
+		get_tri_corners(tri0, tri1, tri2, tmin, tmax);
+		return box_box_intersection(tmin, tmax, bmin, bmax);
+	}
 
 
 	bool FastEnvelope::point_out_prism(const Vector3 & point, const std::vector<int>& prismindex, const int& jump)const

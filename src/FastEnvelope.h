@@ -39,13 +39,15 @@ namespace fastEnvelope {
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
 		static void print_number();
 		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);
-
+		static bool is_triangle_cut_bounding_box(
+			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, const Vector3 &bmin, const Vector3 &bmax);
+		std::vector<std::array<Vector3, 2>> cornerlist;
 	private:
 		
 
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::unordered_map<int, std::vector<int>> prismmap;
-		std::vector<std::array<Vector3, 2>> cornerlist;
+		
 		Vector3 min, max;
 		int subx, suby, subz;
 		int prism_size;
@@ -133,13 +135,13 @@ namespace fastEnvelope {
 
 
 		}
-		static void get_tri_corners(const std::array<Vector3, 3> &triangle, Vector3 &mint, Vector3 &maxt) {
-			mint[0] = std::min(std::min(triangle[0][0], triangle[1][0]), triangle[2][0]);
-			mint[1] = std::min(std::min(triangle[0][1], triangle[1][1]), triangle[2][1]);
-			mint[2] = std::min(std::min(triangle[0][2], triangle[1][2]), triangle[2][2]);
-			maxt[0] = std::max(std::max(triangle[0][0], triangle[1][0]), triangle[2][0]);
-			maxt[1] = std::max(std::max(triangle[0][1], triangle[1][1]), triangle[2][1]);
-			maxt[2] = std::max(std::max(triangle[0][2], triangle[1][2]), triangle[2][2]);
+		static void get_tri_corners(const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2 , Vector3 &mint, Vector3 &maxt) {
+			mint[0] = std::min(std::min(triangle0[0], triangle1[0]), triangle2[0]);
+			mint[1] = std::min(std::min(triangle0[1], triangle1[1]), triangle2[1]);
+			mint[2] = std::min(std::min(triangle0[2], triangle1[2]), triangle2[2]);
+			maxt[0] = std::max(std::max(triangle0[0], triangle1[0]), triangle2[0]);
+			maxt[1] = std::max(std::max(triangle0[1], triangle1[1]), triangle2[1]);
+			maxt[2] = std::max(std::max(triangle0[2], triangle1[2]), triangle2[2]);
 
 		}
 		static void get_sqr_corners(const Vector3 &s1, const Vector3 &s2, const Vector3 &s3, const Vector3 &s4, Vector3 &mint, Vector3 &maxt) {
@@ -187,21 +189,22 @@ namespace fastEnvelope {
 		template<typename T>
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, const std::function<int(T)> &checker);
-		template<typename T>
-		int Implicit_Seg_Facet_intersection_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle0,
-			const Vector3& triangle1, const Vector3& triangle2, const std::vector<int>& prismindex, const int& jump, const std::function<int(T)>& checker)const;
+		
 		static int is_3_triangle_cut_float(
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, 
 			const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
-
+		//not accurate but conservative
 		bool is_triangle_cut_prism(const int&pindex,
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const ;
-		 bool is_triangle_cut_cube(const int&cindex,
+		//not accurate but conservative
+		bool is_triangle_cut_cube(const int&cindex,
 			 const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const;
-		 bool is_seg_cut_prism(const int&pindex,
+		//not accurate but conservative 
+		bool is_seg_cut_prism(const int&pindex,
 			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
-		 bool is_seg_cut_cube(const int&cindex,
+		//not accurate but conservative 
+		bool is_seg_cut_cube(const int&cindex,
 			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
 		
 		static Vector2 to_2d(const Vector3 &p, int t) {

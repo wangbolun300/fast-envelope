@@ -664,6 +664,7 @@ void test_in_wild() {
 
 
 	timer.start();
+
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
 	vector<bool> pos1, pos2;
@@ -677,9 +678,7 @@ void test_in_wild() {
 		
 	}
 	std::cout << "time " << timer.getElapsedTimeInSec() << endl;
-
-
-
+	
 
 	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
 	for (int i = 0; i < fn; i++) {
@@ -952,7 +951,81 @@ void fordebug() {
 	fast_envelope.print_prisms(triangles[id]);
 
 }
+void test_tree() {
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
+	vector<int> outenvelope;
+	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
+	std::vector<Vector3> env_vertices;
+	std::vector<Vector3i> env_faces;
+	GEO::Mesh envmesh;
+
+	///////////////////////////////////////////////////////
+	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
+	if (!ok1) {
+		std::cout << ("Unable to load mesh") << std::endl;
+		return;
+	}
+	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
+
+
+
+	Scalar shrink = 1;
+	Scalar eps = 1e-3;
+	const int spac = 10;// space subdivision parameter
+	const int fn = triangles.size();//test face number
+	//////////////////////////////////////////////////////////////
+
+
+
+	eps = eps / shrink;
+	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
+	igl::Timer timer;
+
+
+
+	timer.start();
+
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
+	vector<bool> pos1, pos2;
+	pos1.resize(fn);
+	pos2.resize(fn);
+	for (int i = 0; i < fn; i++) {
+
+		pos1[i] = outenvelope[i];
+		fast_envelope.print_prisms(triangles[i]);
+		pos2[i] = fast_envelope.is_outside(triangles[i]);
+
+	}
+	std::cout << "time " << timer.getElapsedTimeInSec() << endl;
+	std::cout <<"\ntest tree begins" << endl;
+	fast_envelope.cornerlist;
+	std::vector<std::array<fastEnvelope::Vector3, 2>> boxlist;
+	std::vector<int> querylist;
+	
+	
+	boxlist.resize(
+		OUR_AABB::envelope_max_node_index(
+			1, 0, fast_envelope.cornerlist.size()
+		) + 1 // <-- this is because size == max_index + 1 !!!
+	);
+	std::cout << "\nbefore call function, cornerlist size "<< fast_envelope.cornerlist.size() << endl;
+	
+	OUR_AABB::init_envelope_boxes_recursive(fast_envelope.cornerlist, boxlist, 1, 0, fast_envelope.cornerlist.size());
+	
+	timer.start();
+	std::cout << "\nbuild tree successful" << endl;
+	std::cout << "fn "<<fn << endl;
+	for (int i = 0; i < fn; i++) {
+		querylist.clear();
+		OUR_AABB::facet_in_envelope_recursive(triangles[i][0], triangles[i][1], triangles[i][2], querylist, 1, 0,
+			fast_envelope.cornerlist.size(),boxlist);
+		std::cout  << i << " succeed,size "<< querylist.size() << endl;
+	}
+	std::cout << "\ntest tree over " << timer.getElapsedTimeInSec() << endl;
+}
 void sample_triangle_test() {
 	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
 	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
@@ -1152,6 +1225,7 @@ void testM() {
 
 }
 
+
 int main(int argc, char const *argv[])
 {
 	GEO::initialize();
@@ -1241,10 +1315,7 @@ int main(int argc, char const *argv[])
 	Multiprecision multi;
 	multi.value->_mp_prec = 100;
 	
-	bool tes;
-	if (tes == false) {
-	cout << "test bool " << tes << endl;
-	}
+	//init_envelope_boxes_recursive()
 
 	/*const std::function<int(double)> check_double = [](double v) {
 
@@ -1329,11 +1400,11 @@ int main(int argc, char const *argv[])
 
 
 	//test_in_wild(argv[1],argv[2]);
-	test_in_wild();
+	//test_in_wild();
 	//testOrientation();
 	//fordebug();
 	//writelist();
-
+	test_tree();
 	//inf();
 	//sample_triangle_test();
 	//multyprecision();

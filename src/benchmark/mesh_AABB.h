@@ -55,7 +55,7 @@
 #include <geogram/basic/common.h>
 #include <geogram/mesh/mesh.h>
 #include <geogram/basic/geometry.h>
-
+#include <fastenvelope/FastEnvelope.h>
 namespace GEO {
 
     /**
@@ -101,6 +101,7 @@ namespace GEO {
         }
 
 
+		
         /**
          * \brief Computes all the intersections between a given
          *  box and the bounding boxes of all the facets.
@@ -186,11 +187,7 @@ namespace GEO {
         ) const {
             index_t nearest_facet;
             get_nearest_facet_hint(p, nearest_facet, nearest_point, sq_dist);
-            facet_in_envelope_recursive(
-                p, sq_epsilon,
-                nearest_facet, nearest_point, sq_dist,
-                1, 0, mesh_.facets.nb()
-            );
+ 
             return nearest_facet;
         }
 
@@ -207,11 +204,7 @@ namespace GEO {
                     p, nearest_facet, nearest_point, sq_dist
                 );
             }
-            facet_in_envelope_recursive(
-                p, sq_epsilon,
-                nearest_facet, nearest_point, sq_dist,
-                1, 0, mesh_.facets.nb()
-            );
+        
         }
 
         /**
@@ -398,12 +391,7 @@ namespace GEO {
          * Same as before, but stops early if a point within a given distance
          * is found.
          */
-        void facet_in_envelope_recursive(
-            const vec3& p, double sq_epsilon,
-            index_t& nearest_facet, vec3& nearest_point, double& sq_dist,
-            index_t n, index_t b, index_t e
-        ) const;
-
+     
         /**
          * \brief The recursive function used by the implementation
          *  of segment_intersection()
@@ -416,16 +404,98 @@ namespace GEO {
 	bool segment_intersection_recursive(
 	    const vec3& q1, const vec3& q2, index_t n, index_t b, index_t e
 	) const;
-
+	
+	
     protected:
         vector<Box> bboxes_;
         const Mesh& mesh_;
+		std::vector<std::array<fastEnvelope::Vector3, 2>> bounding_boxes;
     };
 
 }
 
 namespace floatTetWild {
+	class OUR_AABB {
+	public:
+		static void init_envelope_boxes_recursive(
+			const std::vector<std::array<fastEnvelope::Vector3, 2>> cornerlist,
+			std::vector<std::array<fastEnvelope::Vector3, 2>>& boxlist,
+			int node_index,
+			int b, int e) {
+			if (b == e) std::cout << "assert here 1" << std::endl;
+			geo_debug_assert(b != e);
+			if (node_index >= boxlist.size()) std::cout << "assert here 2" << std::endl;
+			geo_debug_assert(node_index < boxlist.size());
+			
+			if (b + 1 == e) {
+				boxlist[node_index] = cornerlist[b];
 
+				return;
+			}
+			int m = b + (e - b) / 2;
+			int childl = 2 * node_index;
+			int childr = 2 * node_index + 1;
+			if (childl >= boxlist.size()) std::cout << "assert here 3" << std::endl;
+			geo_debug_assert(childl <  boxlist.size());
+			if (childr >= boxlist.size()) std::cout << "assert here 4" << std::endl;
+			geo_debug_assert(childr <  boxlist.size());
+			init_envelope_boxes_recursive(cornerlist, boxlist, childl, b, m);
+			init_envelope_boxes_recursive(cornerlist, boxlist, childr, m, e);
+
+			//envelope_bbox_union(boxlist[node_index], boxlist[childl], boxlist[childr]);
+			if (childr >= boxlist.size()|| childl >= boxlist.size()) std::cout << "assert here 4" << std::endl;
+
+			geo_debug_assert(childl < boxlist.size());
+			geo_debug_assert(childr < boxlist.size());
+			for (int c = 0; c < 3; ++c) {
+				boxlist[node_index][0][c] = std::min(boxlist[childl][0][c], boxlist[childr][0][c]);
+				boxlist[node_index][1][c] = std::max(boxlist[childl][1][c], boxlist[childr][1][c]);
+
+			}
+		}
+		static void facet_in_envelope_recursive(
+			const fastEnvelope::Vector3& triangle0, const fastEnvelope::Vector3& triangle1, const fastEnvelope::Vector3& triangle2,
+			std::vector<int>& list,
+			int n, int b, int e, const std::vector<std::array<fastEnvelope::Vector3, 2>> cornerlist
+		) {
+			geo_debug_assert(e > b);
+			bool cut = fastEnvelope::FastEnvelope::is_triangle_cut_bounding_box(triangle0, triangle1, triangle2, cornerlist[n][0], cornerlist[n][1]);
+			if (cut == false) return;
+
+			list.emplace_back(n);
+
+			int m = b + (e - b) / 2;
+			int childl = 2 * n;
+			int childr = 2 * n + 1;
+
+
+
+			// Traverse the "nearest" child first, so that it has more chances
+			// to prune the traversal of the other child.
+			facet_in_envelope_recursive(
+				triangle0, triangle1, triangle2, list,
+				childl, b, m, cornerlist
+			);
+			facet_in_envelope_recursive(
+				triangle0, triangle1, triangle2, list,
+				childr, m, e, cornerlist
+			);
+		}
+		static int envelope_max_node_index(int node_index, int b, int e) {
+			geo_debug_assert(e > b);
+			if (b + 1 == e) {
+				return node_index;
+			}
+			int m = b + (e - b) / 2;
+			int childl = 2 * node_index;
+			int childr = 2 * node_index + 1;
+			return std::max(
+				envelope_max_node_index(childl, b, m),
+				envelope_max_node_index(childr, m, e)
+			);
+		}
+
+	};
 inline void get_point_facet_nearest_point(
     const GEO::Mesh& M,
     const GEO::vec3& p,
