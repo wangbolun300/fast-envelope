@@ -287,11 +287,11 @@ namespace fastEnvelope {
 		}
 		sort(inumber.begin(), inumber.end());
 		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
-		interenvprism.reserve(inumber.size());
+		/*interenvprism.reserve(inumber.size());
 		for (int j = 0; j < inumber.size(); j++) {
 			interenvprism.emplace_back(envprism[inumber[j]]);
-		}
-
+		}*/
+		std::cout << inumber.size() << std::endl;
 		/*std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualprism.txt");
 		for (int i = 0; i < interenvprism.size(); i++) {

@@ -1022,7 +1022,9 @@ void test_tree() {
 		querylist.clear();
 		OUR_AABB::facet_in_envelope_recursive(triangles[i][0], triangles[i][1], triangles[i][2], querylist, 1, 0,
 			fast_envelope.cornerlist.size(),boxlist);
+		
 		std::cout  << i << " succeed,size "<< querylist.size() << endl;
+		fast_envelope.print_prisms(triangles[i]);
 	}
 	std::cout << "\ntest tree over " << timer.getElapsedTimeInSec() << endl;
 }
