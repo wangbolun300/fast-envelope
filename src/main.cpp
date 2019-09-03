@@ -995,7 +995,7 @@ void test_tree() {
 	for (int i = 0; i < fn; i++) {
 
 		pos1[i] = outenvelope[i];
-		fast_envelope.print_prisms(triangles[i]);
+		//fast_envelope.print_prisms(triangles[i]);
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
 
 	}
@@ -1024,7 +1024,7 @@ void test_tree() {
 			fast_envelope.cornerlist.size(),boxlist);
 		
 		std::cout  << i << " succeed,size "<< querylist.size() << endl;
-		fast_envelope.print_prisms(triangles[i]);
+		//fast_envelope.print_prisms(triangles[i]);
 	}
 	std::cout << "\ntest tree over " << timer.getElapsedTimeInSec() << endl;
 }

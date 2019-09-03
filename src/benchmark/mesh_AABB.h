@@ -462,7 +462,11 @@ namespace floatTetWild {
 			bool cut = fastEnvelope::FastEnvelope::is_triangle_cut_bounding_box(triangle0, triangle1, triangle2, cornerlist[n][0], cornerlist[n][1]);
 			if (cut == false) return;
 
-			list.emplace_back(n);
+			// Leaf case
+			if (e == b + 1) {
+				list.emplace_back(n);
+				return;
+			}
 
 			int m = b + (e - b) / 2;
 			int childl = 2 * n;
