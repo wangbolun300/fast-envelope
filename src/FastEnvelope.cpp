@@ -6,9 +6,9 @@
 #include <igl/Timer.h>
 #include <fastenvelope/ip_filtered.h>
 #include <arbitraryprecision/fprecision.h>
-#include <fastenvelope/Rational.hpp>
+//#include <fastenvelope/Rational.hpp>
 #include <igl/Timer.h>
-
+#include<fastenvelope/mesh_AABB.h>
 
 static const int p_face[8][3] = { {0,1,3},{7,6,9},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const int c_face[6][3] = { {0,1,2},{4,7,6},{0,3,4},{1,0,4},{1,5,2},{2,6,3} };
@@ -236,98 +236,47 @@ namespace fastEnvelope {
 		CornerList_cubic(envcubic, cubiconors);
 		cornerlist.insert(cornerlist.end(), cubiconors.begin(), cubiconors.end());
 		std::vector<int> intercell;
-		int ct = 0, prismsize = envprism.size();
+		boxlist.resize(
+			floatTetWild::OUR_AABB::envelope_max_node_index(
+				1, 0, cornerlist.size()
+			) + 1 // <-- this is because size == max_index + 1 !!!
+		);
+		floatTetWild::OUR_AABB::init_envelope_boxes_recursive(cornerlist, boxlist, 1, 0,cornerlist.size());
 
-		prismmap.reserve(spac*spac*spac / 10);
-		for (int i = 0; i < cornerlist.size(); i++) {
-			BoxFindCells(cornerlist[i][0], cornerlist[i][1], min, max, subx, suby, subz, intercell);
-			for (int j = 0; j < intercell.size(); j++) {
-				prismmap[intercell[j]].emplace_back(i);
-			}
-		}
-		std::cout << "map size " << prismmap.size() << std::endl;
 		std::cout << "prism size " << prism_size << std::endl;
 		std::cout << "cubic size " << envcubic.size() << std::endl;
 	}
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const {
-		Vector3 tmin, tmax;
-		std::vector<int> inumber;
-		std::vector<int> intercell;
-
-		get_tri_corners(triangle[0],triangle[1],triangle[2], tmin, tmax);
-		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
-
-		for (int j = 0; j < intercell.size(); j++) {
-			auto search = prismmap.find(intercell[j]);
-			if (search != prismmap.end()) {
-				inumber.insert(inumber.end(), search->second.begin(), search->second.end());
-			}
-		}
-		sort(inumber.begin(), inumber.end());
-		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
-
-
-		return FastEnvelopeTestImplicit(triangle, inumber);
+		
+		std::vector<int> querylist;
+		floatTetWild::OUR_AABB::facet_in_envelope_recursive(triangle[0], triangle[1], triangle[2], querylist, 1, 0,
+			cornerlist.size(), boxlist);
+	
+		return FastEnvelopeTestImplicit(triangle, querylist);
 	}
 
 	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
 
-		Vector3 tmin, tmax;
-		std::vector<int> inumber;
-		std::vector<int> intercell;
-		std::vector<std::array<Vector3, 12>> interenvprism;
-		get_tri_corners(triangle[0], triangle[1], triangle[2], tmin, tmax);
-		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
-		inumber.clear();
-		for (int j = 0; j < intercell.size(); j++) {
-			auto search = prismmap.find(intercell[j]);
-			if (search != prismmap.end()) {
-				inumber.insert(inumber.end(), search->second.begin(), search->second.end());
-			}
-		}
-		sort(inumber.begin(), inumber.end());
-		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
-		/*interenvprism.reserve(inumber.size());
-		for (int j = 0; j < inumber.size(); j++) {
-			interenvprism.emplace_back(envprism[inumber[j]]);
-		}*/
-		std::cout << inumber.size() << std::endl;
-		/*std::ofstream fout;
-		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualprism.txt");
-		for (int i = 0; i < interenvprism.size(); i++) {
-			for (int j = 0; j < 12; j++) {
-
-				fout << std::setprecision(17) << interenvprism[i][j][0] << " " << interenvprism[i][j][1] << " " << interenvprism[i][j][2] << std::endl;
-
-			}
-		}
-
-		fout.close();*/
+		std::vector<int> querylist;
+		floatTetWild::OUR_AABB::facet_in_envelope_recursive(triangle[0], triangle[1], triangle[2], querylist, 1, 0,
+			cornerlist.size(), boxlist);
+		
 	}
 	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int& pieces) const {
 
 
 		bool out;
-		Vector3 tmin, tmax, point;
-		std::vector<int> inumber;
-		std::vector<int> intercell;
+		Vector3  point;
+		std::vector<int> querylist;
+		floatTetWild::OUR_AABB::facet_in_envelope_recursive(triangle[0], triangle[1], triangle[2], querylist, 1, 0,
+			cornerlist.size(), boxlist);
 
-		get_tri_corners(triangle[0], triangle[1], triangle[2], tmin, tmax);
-		BoxFindCells(tmin, tmax, min, max, subx, suby, subz, intercell);
-		inumber.clear();
-		for (int j = 0; j < intercell.size(); j++) {
-			auto search = prismmap.find(intercell[j]);
-			if (search != prismmap.end()) {
-				inumber.insert(inumber.end(), search->second.begin(), search->second.end());
-			}
-		}
-		sort(inumber.begin(), inumber.end());
-		inumber.erase(unique(inumber.begin(), inumber.end()), inumber.end());
+		
 		int deg = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
 
 		int jump = -1;
 		if (deg == DEGENERATED_POINT) {
-			out = point_out_prism(triangle[0], inumber, jump);
+			out = point_out_prism(triangle[0], querylist, jump);
 			if (out == true) {
 
 				return 1;
@@ -338,7 +287,7 @@ namespace fastEnvelope {
 		if (deg == DEGENERATED_SEGMENT) {
 			for (int i = 0; i < pieces; i++) {
 				triangle_sample_segment(triangle, point, pieces, i);
-				out = point_out_prism(point, inumber, jump);
+				out = point_out_prism(point, querylist, jump);
 				if (out == true) {
 
 					return 1;
@@ -353,7 +302,7 @@ namespace fastEnvelope {
 		for (int i = 0; i < pieces; i++) {
 			for (int j = 0; j <= i; j++) {
 				triangle_sample_normal(triangle, point, pieces, i, j);
-				out = point_out_prism(point, inumber, jump);
+				out = point_out_prism(point, querylist, jump);
 				if (out == true) {
 
 					return 1;

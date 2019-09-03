@@ -1402,11 +1402,11 @@ int main(int argc, char const *argv[])
 
 
 	//test_in_wild(argv[1],argv[2]);
-	//test_in_wild();
+	test_in_wild();
 	//testOrientation();
 	//fordebug();
 	//writelist();
-	test_tree();
+	//test_tree();
 	//inf();
 	//sample_triangle_test();
 	//multyprecision();

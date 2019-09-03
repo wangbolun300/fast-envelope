@@ -42,11 +42,11 @@ namespace fastEnvelope {
 		static bool is_triangle_cut_bounding_box(
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, const Vector3 &bmin, const Vector3 &bmax);
 		std::vector<std::array<Vector3, 2>> cornerlist;
-	private:
 		
+	private:
+		std::vector<std::array<fastEnvelope::Vector3, 2>> boxlist;
 
 		std::vector<std::array<Vector3, 12>> envprism;
-		std::unordered_map<int, std::vector<int>> prismmap;
 		
 		Vector3 min, max;
 		int subx, suby, subz;
