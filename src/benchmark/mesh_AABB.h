@@ -422,9 +422,9 @@ namespace floatTetWild {
 			std::vector<std::array<fastEnvelope::Vector3, 2>>& boxlist,
 			int node_index,
 			int b, int e) {
-			if (b == e) std::cout << "assert here 1" << std::endl;
+			
 			geo_debug_assert(b != e);
-			if (node_index >= boxlist.size()) std::cout << "assert here 2" << std::endl;
+			
 			geo_debug_assert(node_index < boxlist.size());
 			
 			if (b + 1 == e) {
@@ -435,15 +435,12 @@ namespace floatTetWild {
 			int m = b + (e - b) / 2;
 			int childl = 2 * node_index;
 			int childr = 2 * node_index + 1;
-			if (childl >= boxlist.size()) std::cout << "assert here 3" << std::endl;
+			
 			geo_debug_assert(childl <  boxlist.size());
-			if (childr >= boxlist.size()) std::cout << "assert here 4" << std::endl;
+			
 			geo_debug_assert(childr <  boxlist.size());
 			init_envelope_boxes_recursive(cornerlist, boxlist, childl, b, m);
 			init_envelope_boxes_recursive(cornerlist, boxlist, childr, m, e);
-
-			//envelope_bbox_union(boxlist[node_index], boxlist[childl], boxlist[childr]);
-			if (childr >= boxlist.size()|| childl >= boxlist.size()) std::cout << "assert here 4" << std::endl;
 
 			geo_debug_assert(childl < boxlist.size());
 			geo_debug_assert(childr < boxlist.size());
@@ -464,7 +461,7 @@ namespace floatTetWild {
 
 			// Leaf case
 			if (e == b + 1) {
-				list.emplace_back(n);
+				list.emplace_back(b);
 				return;
 			}
 
