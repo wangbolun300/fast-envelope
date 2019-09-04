@@ -2,8 +2,8 @@ set(SOURCES
 	MeshIO.hpp
 	MeshIO.cpp
 
-	EnvelopeTest.cpp
-	EnvelopeTest.h
+	#EnvelopeTest.cpp
+	#EnvelopeTest.h
 
 	mesh_AABB.h
 	mesh_AABB.cpp

@@ -11,7 +11,7 @@
 #include <igl/Timer.h>
 #include <ctime>
 #include <cstdlib>
-#include<fastenvelope/EnvelopeTest.h>
+//#include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
 #include <arbitraryprecision/fprecision.h>
 #include <arbitraryprecision/intervalprecision.h>
@@ -64,28 +64,28 @@ void unordered_map_try() {
 	}
 	std::cout << "Found or not " << search->first << " size " << search->second.size() << '\n';
 }
-void get_bb_corners(const Parameters &params, const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {
-	min = vertices.front();
-	max = vertices.front();
-
-	for (size_t j = 0; j < vertices.size(); j++) {
-		for (int i = 0; i < 3; i++) {
-			min(i) = std::min(min(i), vertices[j](i));
-			max(i) = std::max(max(i), vertices[j](i));
-		}
-	}
-
-	const Scalar dis = (max - min).minCoeff() * params.box_scale;
-
-	for (int j = 0; j < 3; j++) {
-		min[j] -= dis;
-		max[j] += dis;
-	}
-
-	//cout << "min = " << min[0] << " " << min[1] << " " << min[2] << endl;
-	//cout << "max = " << max[0] << " " << max[1] << " " << max[2] << endl;
-	//            pausee();
-}
+//void get_bb_corners(const Parameters &params, const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {
+//	min = vertices.front();
+//	max = vertices.front();
+//
+//	for (size_t j = 0; j < vertices.size(); j++) {
+//		for (int i = 0; i < 3; i++) {
+//			min(i) = std::min(min(i), vertices[j](i));
+//			max(i) = std::max(max(i), vertices[j](i));
+//		}
+//	}
+//
+//	const Scalar dis = (max - min).minCoeff() * params.box_scale;
+//
+//	for (int j = 0; j < 3; j++) {
+//		min[j] -= dis;
+//		max[j] += dis;
+//	}
+//
+//	//cout << "min = " << min[0] << " " << min[1] << " " << min[2] << endl;
+//	//cout << "max = " << max[0] << " " << max[1] << " " << max[2] << endl;
+//	//            pausee();
+//}
 void get_triangle_corners(const std::array<Vector3,3> &triangle, Vector3 &min, Vector3 &max) {
 	min[0] = std::min(std::min(triangle[0][0], triangle[1][0]), triangle[2][0]);
 	min[1] = std::min(std::min(triangle[0][1], triangle[1][1]), triangle[2][1]);
@@ -95,45 +95,45 @@ void get_triangle_corners(const std::array<Vector3,3> &triangle, Vector3 &min, V
 	max[2] = std::max(std::max(triangle[0][2], triangle[1][2]), triangle[2][2]);
 
 }
-void CornerList(const Parameters& params, const std::vector<std::array<Vector3, 12>>& prism,
-	std::vector<std::array<Vector3, 2>>& list) {
-	std::vector<Vector3> ver12(12);
-	Vector3 min, max;
-	list.resize(prism.size());//to be safer
-	for (int i = 0; i < prism.size(); i++) {
-		for (int j = 0; j < 12; j++) {
-			ver12[j] = prism[i][j];
-		}
-		get_bb_corners(params, ver12, min, max);
-		list[i] = { {min,max } };
-	}
-}
+//void CornerList(const Parameters& params, const std::vector<std::array<Vector3, 12>>& prism,
+//	std::vector<std::array<Vector3, 2>>& list) {
+//	std::vector<Vector3> ver12(12);
+//	Vector3 min, max;
+//	list.resize(prism.size());//to be safer
+//	for (int i = 0; i < prism.size(); i++) {
+//		for (int j = 0; j < 12; j++) {
+//			ver12[j] = prism[i][j];
+//		}
+//		get_bb_corners(params, ver12, min, max);
+//		list[i] = { {min,max } };
+//	}
+//}
 
-void BondingBoxIntersectionFinding(Parameters& params, const std::array<Vector3, 3>& triangle,
-	const std::vector<std::array<Vector3, 2>>& list, std::vector<int>& inumber) {
-	inumber.clear();
-	std::vector<Vector3> ver(3);
-	inumber.reserve(list.size());
-	Vector3 tmin, tmax;
-	int rcd = 0;
-	ver[0] = triangle[0];
-	ver[1] = triangle[1];
-	ver[2] = triangle[2];
-	get_bb_corners(params, ver, tmin, tmax);
-	for (int i = 0; i < list.size(); i++) {
-		rcd = 0;
-		for (int j = 0; j < 3; j++) {
-			if (tmax[j] <= list[i][0][j] || tmin[j] >= list[i][1][j]) {
-				rcd = 1;
-				break;
-			}
-
-		}
-		if (rcd == 0) {
-			inumber.push_back(i);
-		}
-	}
-}
+//void BondingBoxIntersectionFinding(Parameters& params, const std::array<Vector3, 3>& triangle,
+//	const std::vector<std::array<Vector3, 2>>& list, std::vector<int>& inumber) {
+//	inumber.clear();
+//	std::vector<Vector3> ver(3);
+//	inumber.reserve(list.size());
+//	Vector3 tmin, tmax;
+//	int rcd = 0;
+//	ver[0] = triangle[0];
+//	ver[1] = triangle[1];
+//	ver[2] = triangle[2];
+//	get_bb_corners(params, ver, tmin, tmax);
+//	for (int i = 0; i < list.size(); i++) {
+//		rcd = 0;
+//		for (int j = 0; j < 3; j++) {
+//			if (tmax[j] <= list[i][0][j] || tmin[j] >= list[i][1][j]) {
+//				rcd = 1;
+//				break;
+//			}
+//
+//		}
+//		if (rcd == 0) {
+//			inumber.push_back(i);
+//		}
+//	}
+//}
 
 //void BoxFindCells(const Vector3& min,const Vector3& max,
 //	const Vector3& cellmin, const Vector3& cellmax, const int& sub, std::vector<int>& intercell) {
@@ -224,153 +224,153 @@ bool is_out_function(const std::array<Vector3, 3>& triangle, const Scalar& dd, A
 
 
 
-void add_hashing() {
-	igl::Timer timer1, timer2, timer3, timer4, timer5;
-	Scalar time1 = 0, time2 = 0, time3 = 0, time4 = 0, time5 = 0;
-	const std::string input_surface_path1 = "D:\\vs\\float project\\data\\Roal10.stl";
-	std::vector<Vector3> env_vertices;
-	std::vector<Vector3i> env_faces;
-	GEO::Mesh envmesh;
-
-	///////////////////////////////////////////////////////
-	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
-	if (!ok1) {
-		std::cout << ("Unable to load mesh") << std::endl;
-		return;
-	}
-	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
-	/////////////////////////////////////////////////////////////
-
-	////////////////////////////////////////////////////////
-	//for aabb method
-	Vector3 min, max;
-	Parameters params;
-	Scalar dd;
-	get_bb_corners(params, env_vertices, min, max);
-	///////////////////////////////////////////////////////
-
-	Scalar shrink = 10;
-	Scalar eps = 1e-3;
-	const int spac = 100;// space subdivision parameter
-	const int fn = 80000;//test face number
-	//////////////////////////////////////////////////////////////
-	eps = eps / shrink;
-	eps=eps*sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
-
-	dd = ((max - min).norm()) / 1000 / shrink;
-	std::vector<GEO::vec3> ps;
-	int cnt = 0;
-	double sq_distg;
-	GEO::vec3 nearest_point;
-	unsigned int ps_size;
-	AABBWrapper sf_tree(envmesh);
-
-
-	//////////////////////////generation of noised points
-	/*
-		std::ofstream fout;
-	fout.open("D:\\vs\\float project\\data\\GenerateVer.obj");
-	for (int i = 0; i < env_faces.size()*3; i++) {
-		unsigned int time(0);
-			fout <<"v " <<env_vertices[i][0] + dd * (rand() % 50-25)/shrink << " " << env_vertices[i][1]+ dd*(rand() % 50-25)/shrink << " " << env_vertices[i][2]+ dd*(rand() % 50-25)/shrink << endl;
-
-	}
-	for (int i = 0; i < env_faces.size(); i++) {
-
-		fout << "f " << env_faces[i][0]+1 << " " << env_faces[i][1]+1 << " " << env_faces[i][2]+1 << endl;
-
-	}
-	fout.close();
-	*/
-
-
-
-	//////////////////////////generation of noised points finished
-
-
-	const std::string input_surface_path2 = "D:\\vs\\float project\\data\\GenerateVer.obj";
-	std::vector<Vector3> testvertices;
-	std::vector<Vector3i> testfaces;
-	GEO::Mesh testmesh;
-	bool ok2 = MeshIO::load_mesh(input_surface_path2, testvertices, testfaces, testmesh);
-	if (!ok2) {
-		std::cout<<("Unable to load mesh")<<std::endl;
-			return;
-	}
-
-	/////////////////////////////////
-
-	bool pos1[fn], pos2[fn];
-	std::vector<std::array<Vector3, 3>> triangle(fn);
-
-	for (int i = 0; i < fn; i++) {
-		triangle[i] = { testvertices[testfaces[i][0]],testvertices[testfaces[i][1]],    testvertices[testfaces[i][2]] };
-	}
-	/////////////////////////////////////////
-	timer1.start();
-	for (int i = 0; i < fn; i++) {
-
-		pos1[i] = is_out_function(triangle[i], dd, sf_tree);	;
-	}
-	time1 = time1 + timer1.getElapsedTimeInSec();
-	std::cout << "TEST ONE FINISHED  " << std::endl;
-	//////////////////////////////
-
-
-
-
-	timer2.start();
-
-	for (int i = 0; i < fn; i++) {
-
-
-
-		timer4.start();//function time
-
-		pos2[i] = fast_envelope.is_outside(triangle[i]);
-		time5 = time5 + timer4.getElapsedTimeInSec();//function time
-
-
-	}
-	time2 = time2 + timer2.getElapsedTimeInSec();
-
-	std::cout << "TEST TWO FINISHED  " << std::endl;
-	/////////////////////////////////
-	/////////////////////////////////
-
-	int rcd = 0,eq0=0,eq02=0;
-	for (int i = 0; i < fn; i++) {
-		if (pos1[i] - pos2[i] != 0) {
-			//if (pos1[i]== 0) {
-			rcd = rcd + 1;
-			std::cout << "envelope test different! different face NO. " << i << " the difference: " << pos1[i] - pos2[i] << std::endl;
-			//std::cout << "envelope test same! same face NO. " << i << "the in and out : " <<pos1[i] <<","<<pos2[i] << std::endl;
-		}
-		if (pos1[i] == 0) {
-			eq0 = eq0 + 1;
-		}
-		if (pos2[i] == 0) {
-			eq02 = eq02 + 1;
-		}
-	}
-	std::cout << "aabb inside triangle number:  " << eq0 << std::endl;
-	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
-	std::cout << "how many different cases:  " << rcd << std::endl;
-	std::cout << "time1 and time2:  " << time1 << "," << time2 << std::endl;
-	std::cout << "dd:  " << dd << std::endl;
-	std::cout << "shrink size:  " << shrink << std::endl;
-	//std::cout << "all the prism size:  " << fast_envelope.prism_size() << std::endl;
-	std::cout << "\ngetbbcorners time:  " << time3 << std::endl;
-	std::cout << "intersection element finding time:  " << time4 << std::endl;
-	std::cout << "function time:  " << time5 << std::endl;
-	//FastEnvelope::timerecord();
-
-	//13962,shrink 10
-
-	///////////////
-}
+//void add_hashing() {
+//	igl::Timer timer1, timer2, timer3, timer4, timer5;
+//	Scalar time1 = 0, time2 = 0, time3 = 0, time4 = 0, time5 = 0;
+//	const std::string input_surface_path1 = "D:\\vs\\float project\\data\\Roal10.stl";
+//	std::vector<Vector3> env_vertices;
+//	std::vector<Vector3i> env_faces;
+//	GEO::Mesh envmesh;
+//
+//	///////////////////////////////////////////////////////
+//	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
+//	if (!ok1) {
+//		std::cout << ("Unable to load mesh") << std::endl;
+//		return;
+//	}
+//	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
+//	/////////////////////////////////////////////////////////////
+//
+//	////////////////////////////////////////////////////////
+//	//for aabb method
+//	Vector3 min, max;
+//	Parameters params;
+//	Scalar dd;
+//	get_bb_corners(params, env_vertices, min, max);
+//	///////////////////////////////////////////////////////
+//
+//	Scalar shrink = 10;
+//	Scalar eps = 1e-3;
+//	const int spac = 100;// space subdivision parameter
+//	const int fn = 80000;//test face number
+//	//////////////////////////////////////////////////////////////
+//	eps = eps / shrink;
+//	eps=eps*sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
+//
+//	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+//
+//	dd = ((max - min).norm()) / 1000 / shrink;
+//	std::vector<GEO::vec3> ps;
+//	int cnt = 0;
+//	double sq_distg;
+//	GEO::vec3 nearest_point;
+//	unsigned int ps_size;
+//	AABBWrapper sf_tree(envmesh);
+//
+//
+//	//////////////////////////generation of noised points
+//	/*
+//		std::ofstream fout;
+//	fout.open("D:\\vs\\float project\\data\\GenerateVer.obj");
+//	for (int i = 0; i < env_faces.size()*3; i++) {
+//		unsigned int time(0);
+//			fout <<"v " <<env_vertices[i][0] + dd * (rand() % 50-25)/shrink << " " << env_vertices[i][1]+ dd*(rand() % 50-25)/shrink << " " << env_vertices[i][2]+ dd*(rand() % 50-25)/shrink << endl;
+//
+//	}
+//	for (int i = 0; i < env_faces.size(); i++) {
+//
+//		fout << "f " << env_faces[i][0]+1 << " " << env_faces[i][1]+1 << " " << env_faces[i][2]+1 << endl;
+//
+//	}
+//	fout.close();
+//	*/
+//
+//
+//
+//	//////////////////////////generation of noised points finished
+//
+//
+//	const std::string input_surface_path2 = "D:\\vs\\float project\\data\\GenerateVer.obj";
+//	std::vector<Vector3> testvertices;
+//	std::vector<Vector3i> testfaces;
+//	GEO::Mesh testmesh;
+//	bool ok2 = MeshIO::load_mesh(input_surface_path2, testvertices, testfaces, testmesh);
+//	if (!ok2) {
+//		std::cout<<("Unable to load mesh")<<std::endl;
+//			return;
+//	}
+//
+//	/////////////////////////////////
+//
+//	bool pos1[fn], pos2[fn];
+//	std::vector<std::array<Vector3, 3>> triangle(fn);
+//
+//	for (int i = 0; i < fn; i++) {
+//		triangle[i] = { testvertices[testfaces[i][0]],testvertices[testfaces[i][1]],    testvertices[testfaces[i][2]] };
+//	}
+//	/////////////////////////////////////////
+//	timer1.start();
+//	for (int i = 0; i < fn; i++) {
+//
+//		pos1[i] = is_out_function(triangle[i], dd, sf_tree);	;
+//	}
+//	time1 = time1 + timer1.getElapsedTimeInSec();
+//	std::cout << "TEST ONE FINISHED  " << std::endl;
+//	//////////////////////////////
+//
+//
+//
+//
+//	timer2.start();
+//
+//	for (int i = 0; i < fn; i++) {
+//
+//
+//
+//		timer4.start();//function time
+//
+//		pos2[i] = fast_envelope.is_outside(triangle[i]);
+//		time5 = time5 + timer4.getElapsedTimeInSec();//function time
+//
+//
+//	}
+//	time2 = time2 + timer2.getElapsedTimeInSec();
+//
+//	std::cout << "TEST TWO FINISHED  " << std::endl;
+//	/////////////////////////////////
+//	/////////////////////////////////
+//
+//	int rcd = 0,eq0=0,eq02=0;
+//	for (int i = 0; i < fn; i++) {
+//		if (pos1[i] - pos2[i] != 0) {
+//			//if (pos1[i]== 0) {
+//			rcd = rcd + 1;
+//			std::cout << "envelope test different! different face NO. " << i << " the difference: " << pos1[i] - pos2[i] << std::endl;
+//			//std::cout << "envelope test same! same face NO. " << i << "the in and out : " <<pos1[i] <<","<<pos2[i] << std::endl;
+//		}
+//		if (pos1[i] == 0) {
+//			eq0 = eq0 + 1;
+//		}
+//		if (pos2[i] == 0) {
+//			eq02 = eq02 + 1;
+//		}
+//	}
+//	std::cout << "aabb inside triangle number:  " << eq0 << std::endl;
+//	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
+//	std::cout << "how many different cases:  " << rcd << std::endl;
+//	std::cout << "time1 and time2:  " << time1 << "," << time2 << std::endl;
+//	std::cout << "dd:  " << dd << std::endl;
+//	std::cout << "shrink size:  " << shrink << std::endl;
+//	//std::cout << "all the prism size:  " << fast_envelope.prism_size() << std::endl;
+//	std::cout << "\ngetbbcorners time:  " << time3 << std::endl;
+//	std::cout << "intersection element finding time:  " << time4 << std::endl;
+//	std::cout << "function time:  " << time5 << std::endl;
+//	//FastEnvelope::timerecord();
+//
+//	//13962,shrink 10
+//
+//	///////////////
+//}
 void calculation() {
 	Eigen::Matrix<Scalar,4, 4> biga,bigb;
 	Eigen::Matrix<Scalar, 3, 3> a;
@@ -858,7 +858,7 @@ void test_in_wild() {
 	}
 */
 	////for aabb method
-	Vector3 min, max;
+	/*Vector3 min, max;
 	Parameters params;
 	Scalar dd;
 	get_bb_corners(params, env_vertices, min, max);
@@ -869,7 +869,7 @@ void test_in_wild() {
 
 		is_out_function(triangles[i], dd, sf_tree); ;
 	}
-	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
+	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;*/
 
 	std::cout << "TEST aabb FINISHED  " << std::endl;
 	//////////////////////////////
