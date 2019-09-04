@@ -80,7 +80,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     		target_link_libraries(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS})
 	endif()
 
-	target_link_libraries(FloatTetwild PUBLIC OpenMP::OpenMP_CXX)
+	target_link_libraries(FastEnvelope PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
 ################################################################################
