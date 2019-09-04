@@ -63,7 +63,7 @@ namespace fastEnvelope {
 		static void triangle_sample_normal(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces, const int & nbr1, const int &nbr2);
 
 
-		static void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {
+		static void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one 
 			min = vertices.front();
 			max = vertices.front();
 
@@ -74,7 +74,7 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO it used to be Parameters::box_scale
+			const Scalar dis = (max - min).minCoeff() * 0.1;
 
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
@@ -86,26 +86,36 @@ namespace fastEnvelope {
 			std::vector<std::array<Vector3, 2>>& list) {
 			std::vector<Vector3> ver12(12);
 			Vector3 min, max;
+			Vector3 eps;
+			eps[0] = SCALAR_ZERO;
+			eps[1] = SCALAR_ZERO;
+			eps[2] = SCALAR_ZERO;
 			list.resize(prism.size());//to be safer
 			for (int i = 0; i < prism.size(); i++) {
 				for (int j = 0; j < 12; j++) {
 					ver12[j] = prism[i][j];
 				}
 				get_bb_corners(ver12, min, max);
-				list[i] = { {min,max } };
+				list[i][0] = min - eps;//to be conservative
+				list[i][1] = max + eps;
 			}
 		}
 		static void  CornerList_cubic(const std::vector<std::array<Vector3, 8>>& cubic,
 			std::vector<std::array<Vector3, 2>>& list) {
 			std::vector<Vector3> ver8(8);
 			Vector3 min, max;
+			Vector3 eps;
+			eps[0] = SCALAR_ZERO;
+			eps[1] = SCALAR_ZERO;
+			eps[2] = SCALAR_ZERO;
 			list.resize(cubic.size());//to be safer
 			for (int i = 0; i < cubic.size(); i++) {
 				for (int j = 0; j < 8; j++) {
 					ver8[j] = cubic[i][j];
 				}
 				get_bb_corners(ver8, min, max);
-				list[i] = { {min,max } };
+				list[i][0] = min - eps;
+				list[i][1] = max + eps;
 			}
 		}
 		
@@ -217,7 +227,7 @@ namespace fastEnvelope {
 			const T& rx, const T& ry, const T& rz, const T& sx, const T& sy, const T& sz, const T& tx, const T& ty, const T& tz,
 			T& a11, T& a12, T& a13, T& d, const std::function<int(T)> &checker) {
 			
-			a11 = (px - qx);// TODO is that ok?
+			a11 = (px - qx);
 			a12 = (py - qy);
 			a13 = (pz - qz);
 			T a21(sx - rx);
@@ -229,7 +239,7 @@ namespace fastEnvelope {
 			T a2233((a22 * a33) - (a23 * a32));
 			T a2133((a21 * a33) - (a23 * a31));
 			T a2132((a21 * a32) - (a22 * a31));
-			d = (((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));//TODO maybe not safe
+			d = (((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
 			int flag1 = checker(d);
 			if (flag1 == -2 || flag1 == 0) {
 				return false;// not enough precision

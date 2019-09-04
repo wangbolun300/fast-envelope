@@ -162,7 +162,7 @@ static const   std::function<int(double)> check_double = [](double v) {
 };
 
 static const   std::function<int(fastEnvelope::Rational)> check_Rational = [](fastEnvelope::Rational v) {
-	//todo: CHECK
+	
 	return v.get_sign();
 	// if (v > 0)
 	// 	return 1;
@@ -174,7 +174,7 @@ static const   std::function<int(fastEnvelope::Rational)> check_Rational = [](fa
 };
 
 static const   std::function<int(fastEnvelope::Multiprecision)> check_Multiprecision = [](fastEnvelope::Multiprecision v) {
-	//todo: CHECK
+	
 	return v.get_sign();
 	// if (v > 0)
 	// 	return 1;
