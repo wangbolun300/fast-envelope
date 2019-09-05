@@ -6,13 +6,13 @@
 #include <igl/Timer.h>
 #include <fastenvelope/ip_filtered.h>
 #include <arbitraryprecision/fprecision.h>
-//#include <fastenvelope/Rational.hpp>
+
 #include <igl/Timer.h>
 #include<fastenvelope/mesh_AABB.h>
 
 static const int p_face[8][3] = { {0,1,3},{7,6,9},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const int c_face[6][3] = { {0,1,2},{4,7,6},{0,3,4},{1,0,4},{1,5,2},{2,6,3} };
-
+static const fastEnvelope::Vector3 origin = fastEnvelope::Vector3(0, 0, 0);
 static const std::array<std::vector<int>, 8> p_facepoint = {
 		{
 			{0,1,2,3,4,5},
@@ -2183,10 +2183,15 @@ template<typename T>
 			}
 			if (de == NERLY_DEGENERATED) {
 				std::cout << "Envelope Triangle Degeneration- Nearly" << std::endl;
+				//std::cout << std::setprecision(17) <<m_ver[m_faces[i][0]][0] << " " << m_ver[m_faces[i][0]][1] << " " << m_ver[m_faces[i][0]][2] << std::endl;
+				//std::cout << std::setprecision(17) <<m_ver[m_faces[i][1]][0] << " " << m_ver[m_faces[i][1]][1] << " " << m_ver[m_faces[i][1]][2] << std::endl;
+				//std::cout << std::setprecision(17) <<m_ver[m_faces[i][2]][0] << " " << m_ver[m_faces[i][2]][1] << " " << m_ver[m_faces[i][2]][2] << std::endl;
+					
+				normal = accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][0]], m_ver[m_faces[i][2]]);
+				//std::cout << "pass1" << std::endl;
+				vector1 = accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], origin, normal);
+				//std::cout << "pass2" << std::endl;
 
-				normal = accurate_normal_vector(AB, AC);
-				vector1= accurate_normal_vector(AB, normal);
-				
 			}
 			else {
 				normal = AB.cross(AC).normalized();
@@ -2256,21 +2261,43 @@ template<typename T>
 		envbox[7] = p1 + width * (-v + v1 - v2);//right hand in direction
 	}
 
-	Vector3 FastEnvelope::accurate_normal_vector(const Vector3 & p, const Vector3 & q) {
+	Vector3 FastEnvelope::accurate_normal_vector(const Vector3 & p0, const Vector3 & p1,
+		const Vector3 & q0, const Vector3 & q1) {
 
-		const Multiprecision ax = p[0];
-		const Multiprecision ay = p[1];
-		const Multiprecision az = p[2];
+		const Multiprecision ax = p1[0] - p0[0];
+		const Multiprecision ay = p1[1] - p0[1];
+		const Multiprecision az = p1[2] - p0[2];
 
-		const Multiprecision bx = q[0];
-		const Multiprecision by = q[1];
-		const Multiprecision bz = q[2];
+		const Multiprecision bx = q1[0] - q0[0];
+		const Multiprecision by = q1[1] - q0[1];
+		const Multiprecision bz = q1[2] - q0[2];
 
 		Multiprecision x = ay * bz - az * by;
 		Multiprecision y = az * bx - ax * bz;
 		Multiprecision z = ax * by - ay * bx;
 		Multiprecision ssum = x * x + y * y + z * z;
+		if (ssum == 0) {
+			std::cout << "divided by zero in accuratexxx" << std::endl;
+			/*std::cout << std::setprecision(17) << p[0] << " " << p[1] << " " << p[2] << std::endl;
+			std::cout << std::setprecision(17) << q[0] << " " << q[1] << " " << q[2] << std::endl;*/
+			Rational p00r(p0[0]), p01r(p0[1]), p02r(p0[2]),
+				p10r(p1[0]), p11r(p1[1]), p12r(p1[2]),
+				q00r(q0[0]), q01r(q0[1]), q02r(q0[2]),
+				q10r(q1[0]), q11r(q1[1]), q12r(q1[2]);
+			Rational axr(p10r - p00r), ayr(p11r - p01r), azr(p12r - p02r),
+				bxr(q10r - q00r), byr(q11r - q01r), bzr(q12r - q02r);
+			Rational xr = ayr * bzr - azr * byr;
+			Rational yr = azr * bxr - axr * bzr;
+			Rational zr = axr * byr - ayr * bxr;
+			Rational ssumr = xr * xr + yr * yr + zr * zr;
+			Scalar sum = ssumr.to_double();
+			Scalar l = sqrt(sum);
+			Scalar xd = xr.to_double(), yd = yr.to_double(), zd = zr.to_double();
+			Scalar fx = xd / l, fy = yd / l, fz = zd / l;
+			return Vector3(fx, fy, fz);
+		}
 		const Multiprecision length = ssum.sqrt(ssum);
+		
 		x = x / length; y = y / length; z = z / length;
 
 		Scalar fx = x.to_double(), fy = y.to_double(), fz = z.to_double();

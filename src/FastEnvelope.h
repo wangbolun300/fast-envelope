@@ -3,10 +3,10 @@
 #include <vector>
 #include <array>
 #include <fenv.h>
-#include <unordered_map>
+//#include <unordered_map>
 #include<iostream>
-#include<arbitraryprecision/fprecision.h>
-#include<arbitraryprecision/intervalprecision.h>
+//#include<arbitraryprecision/fprecision.h>
+//#include<arbitraryprecision/intervalprecision.h>
 #include <fastenvelope/Multiprecision.hpp>
 #include <fastenvelope/Rational.hpp>
 namespace fastEnvelope {
@@ -56,7 +56,8 @@ namespace fastEnvelope {
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex) const;
 
 		static int seg_cut_plane(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
-		static Vector3 accurate_normal_vector(const Vector3 & p, const Vector3 & q);
+		static Vector3 accurate_normal_vector(const Vector3 & p0, const Vector3 & p1,
+			const Vector3 & q0, const Vector3 & q1);
 
 		static void triangle_sample_segment(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces,const int & nbr);
 		static void triangle_sample_point(const std::array<Vector3, 3> &triangle, Vector3& ps);

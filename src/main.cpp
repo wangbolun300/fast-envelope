@@ -611,9 +611,9 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-void test_in_wild(string inputFileName1, string input_surface_path1) {
-	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
-	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
+void test_in_wild() {
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\problems\\108000.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\stlfiles\\108000.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
@@ -1401,8 +1401,8 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	test_in_wild(argv[1],argv[2]);
-	//test_in_wild();
+	//test_in_wild(argv[1],argv[2]);
+	test_in_wild();
 	//testOrientation();
 	//fordebug();
 	//writelist();
