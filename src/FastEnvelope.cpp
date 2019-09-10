@@ -8,7 +8,7 @@
 #include <arbitraryprecision/fprecision.h>
 
 #include <igl/Timer.h>
-#include<fastenvelope/mesh_AABB.h>
+
 
 static const int p_face[8][3] = { {0,1,3},{7,6,9},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const int c_face[6][3] = { {0,1,2},{4,7,6},{0,3,4},{1,0,4},{1,5,2},{2,6,3} };
@@ -222,6 +222,10 @@ namespace fastEnvelope {
 		get_bb_corners(m_ver, min, max);
 		Scalar bbd = (max - min).norm();
 		Scalar epsilon = bbd * eps; //eps*bounding box diagnal
+		//to_geogram_mesh(
+
+
+
 		BoxGeneration(m_ver, m_faces, envprism, envcubic, epsilon);
 		//build a  hash function
 		prism_size = envprism.size();

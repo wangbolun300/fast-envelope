@@ -9,6 +9,7 @@
 //#include<arbitraryprecision/intervalprecision.h>
 #include <fastenvelope/Multiprecision.hpp>
 #include <fastenvelope/Rational.hpp>
+#include<fastenvelope/mesh_AABB.h>
 namespace fastEnvelope {
 
 
@@ -75,7 +76,7 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() * 0.1;
+			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
 
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
@@ -387,7 +388,56 @@ namespace fastEnvelope {
 			return 0;
 		}
 
-		
+		static void to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M) {
+
+			M.clear();
+
+			// Setup vertices
+
+			M.vertices.create_vertices((int)V.rows());
+
+			for (int i = 0; i < (int)M.vertices.nb(); ++i) {
+
+				GEO::vec3 &p = M.vertices.point(i);
+
+				p[0] = V(i, 0);
+
+				p[1] = V(i, 1);
+
+				p[2] = V.cols() >= 3 ? V(i, 2) : 0;
+
+			}
+
+			// Setup faces
+
+			if (F.cols() == 3) {
+
+				M.facets.create_triangles((int)F.rows());
+
+			}
+			else if (F.cols() == 4) {
+
+				M.facets.create_quads((int)F.rows());
+
+			}
+			else {
+
+				throw std::runtime_error("Mesh format not supported");
+
+			}
+
+			for (int c = 0; c < (int)M.facets.nb(); ++c) {
+
+				for (int lv = 0; lv < F.cols(); ++lv) {
+
+					M.facets.set_vertex(c, lv, F(c, lv));
+
+				}
+
+			}
+
+		}
+
 
 	};
 	
