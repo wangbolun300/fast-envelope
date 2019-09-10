@@ -611,9 +611,10 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-void test_in_wild(string inputFileName1, string input_surface_path1) {
-	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\problems\\108000.stl_env.csv";
-	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\stlfiles\\108000.stl";
+//void test_in_wild(string inputFileName1, string input_surface_path1) {
+void test_in_wild() {
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
@@ -1214,24 +1215,6 @@ void writelist() {
 
 #include <gmp.h>
 void testM() {
-	mpf_t x;
-	mpf_init2(x,512);
-	
-	cout <<"prec "<<mpf_get_prec(x)<<endl;
-
-	Multiprecision a(3.14);
-	cout << "prec " << a.get_prec_bits() << endl;
-
-	Multiprecision b=3.14;
-	cout << "prec2 " << b.get_prec_bits() << endl;
-
-}
-
-
-int main(int argc, char const *argv[])
-{
-	GEO::initialize();
-
 	//{
 	//Rational r1(1);
 	//Rational r3(3);
@@ -1251,64 +1234,64 @@ int main(int argc, char const *argv[])
 	//}
 
 	{
-	Multiprecision r1(1);
-	Multiprecision r3(3);
+		Multiprecision r1(1);
+		Multiprecision r3(3);
 
-	Multiprecision rr = r1 / r3 / r3;
-	Multiprecision rrr = r3 * rr * r3;
-	
-	std::cout << rrr << std::endl;
-	Scalar p = 1.473;
-	Multiprecision pr(p);
-	pr = pr * pr;//9 6
-	pr = pr * pr;//1 12
-	pr = Multiprecision(p) * pr;//3 15
-	//pr = pr * pr;
-	
-	//std::cout << "mp " << pr << std::endl;
-	//std::cout << "mp " << std::setprecision(17) << pr << std::endl;
+		Multiprecision rr = r1 / r3 / r3;
+		Multiprecision rrr = r3 * rr * r3;
+
+		std::cout << rrr << std::endl;
+		Scalar p = 1.473;
+		Multiprecision pr(p);
+		pr = pr * pr;//9 6
+		pr = pr * pr;//1 12
+		pr = Multiprecision(p) * pr;//3 15
+		//pr = pr * pr;
+
+		//std::cout << "mp " << pr << std::endl;
+		//std::cout << "mp " << std::setprecision(17) << pr << std::endl;
 	}
 
-	Rational r=double(1.473);
+	Rational r = double(1.473);
 	r = r * r;
 	r = r * r;
 	r = 1.473 * r;
-	
+
 	//std::cout << "r  " << std::setprecision(16) << r << std::endl;
-	
-	
-	
+
+
+
 	typedef Multiprecision T;
 	//typedef Rational T;
 	int prec = 100;
 
 	T a;
 	a.value->_mp_prec = prec;
-	a= T(141414) / T(100000);
+	a = T(141414) / T(100000);
 	T b;
 	b.value->_mp_prec = prec;
-	b= T(76) / T(100);
+	b = T(76) / T(100);
 	T result;
 	result.value->_mp_prec = prec;
 	result = (a * b);
 	cout << "result " << result << endl;
 	T b1;
 	b1.value->_mp_prec = prec;
-	b1= T(76) / T(10);
+	b1 = T(76) / T(10);
 	T result1;
 	result1.value->_mp_prec = prec;
-	result1=(a * b1);
+	result1 = (a * b1);
 	cout << "result1 " << result1 << endl;
 	T n5;
 	n5.value->_mp_prec = prec;
-	n5= T(1) / T(10);
+	n5 = T(1) / T(10);
 	T result2;
 	result2.value->_mp_prec = prec;
-	result2=(result1 *n5);
+	result2 = (result1 *n5);
 	cout << "result2 " << result2 << endl;
 	T minu;
 	minu.value->_mp_prec = prec;
-	minu=(result - result2);
+	minu = (result - result2);
 	cout << "check " << minu.get_sign() << endl;
 
 	if (minu == 0) {
@@ -1316,6 +1299,33 @@ int main(int argc, char const *argv[])
 	}
 	Multiprecision multi;
 	multi.value->_mp_prec = 100;
+
+	mpf_t x;
+	mpf_init2(x,512);
+	
+	cout <<"prec "<<mpf_get_prec(x)<<endl;
+
+	Multiprecision a1(3.14);
+	cout << "prec " << a1.get_prec_bits() << endl;
+
+	Multiprecision b2=3.14;
+	cout << "prec2 " << b2.get_prec_bits() << endl;
+
+}
+void try_eigen() {
+	Vector3 u;
+	u[0] = 0;
+	u[1] = 0;
+	u[2] = 0;
+	Eigen::MatrixXd V = u;
+	cout << "row of v " << V.rows() << endl;
+}
+
+
+int main(int argc, char const *argv[])
+{
+	GEO::initialize();
+
 	
 	//init_envelope_boxes_recursive()
 
@@ -1401,8 +1411,8 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	test_in_wild(argv[1],argv[2]);
-	//test_in_wild();
+	//test_in_wild(argv[1],argv[2]);
+	test_in_wild();
 	//testOrientation();
 	//fordebug();
 	//writelist();
@@ -1413,7 +1423,8 @@ int main(int argc, char const *argv[])
 	//degen_test();
 	//accurate_vector();
 	//try2();
-	testM();
+	//testM();
+	try_eigen();
 	std::cout << "done!" << std::endl;
 
 

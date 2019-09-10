@@ -6,7 +6,8 @@
 #include <igl/Timer.h>
 #include <fastenvelope/ip_filtered.h>
 #include <arbitraryprecision/fprecision.h>
-
+#include<fastenvelope/mesh_AABB.h>
+#include <geogram/mesh/mesh_reorder.h>
 #include <igl/Timer.h>
 
 
@@ -222,11 +223,14 @@ namespace fastEnvelope {
 		get_bb_corners(m_ver, min, max);
 		Scalar bbd = (max - min).norm();
 		Scalar epsilon = bbd * eps; //eps*bounding box diagnal
-		//to_geogram_mesh(
+		GEO::Mesh M;
+		to_geogram_mesh(m_ver, m_faces, M);
+		GEO::mesh_reorder(M, GEO::MESH_ORDER_MORTON);
+		std::vector<Vector3> ver_new;
+		std::vector<Vector3i> faces_new;
+		from_geogram_mesh(M, ver_new, faces_new);
 
-
-
-		BoxGeneration(m_ver, m_faces, envprism, envcubic, epsilon);
+		BoxGeneration(ver_new, faces_new, envprism, envcubic, epsilon);
 		//build a  hash function
 		prism_size = envprism.size();
 

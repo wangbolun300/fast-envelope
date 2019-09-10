@@ -457,6 +457,7 @@ namespace floatTetWild {
 		) {
 			geo_debug_assert(e > b);
 			bool cut = fastEnvelope::FastEnvelope::is_triangle_cut_bounding_box(triangle0, triangle1, triangle2, cornerlist[n][0], cornerlist[n][1]);
+		
 			if (cut == false) return;
 
 			// Leaf case

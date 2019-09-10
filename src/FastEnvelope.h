@@ -9,7 +9,7 @@
 //#include<arbitraryprecision/intervalprecision.h>
 #include <fastenvelope/Multiprecision.hpp>
 #include <fastenvelope/Rational.hpp>
-#include<fastenvelope/mesh_AABB.h>
+#include <geogram/mesh/mesh.h>
 namespace fastEnvelope {
 
 
@@ -388,55 +388,75 @@ namespace fastEnvelope {
 			return 0;
 		}
 
-		static void to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M) {
+		static void to_geogram_mesh(const std::vector<Vector3>& V, const std::vector<Vector3i>& F, GEO::Mesh &M) {
 
 			M.clear();
 
 			// Setup vertices
 
-			M.vertices.create_vertices((int)V.rows());
+			M.vertices.create_vertices(V.size());
 
 			for (int i = 0; i < (int)M.vertices.nb(); ++i) {
 
 				GEO::vec3 &p = M.vertices.point(i);
 
-				p[0] = V(i, 0);
-
-				p[1] = V(i, 1);
-
-				p[2] = V.cols() >= 3 ? V(i, 2) : 0;
+				p[0] = V[i][0];
+				p[1] = V[i][1];
+				p[2] = V[i][2];
 
 			}
 
 			// Setup faces
 
-			if (F.cols() == 3) {
+	
+			M.facets.create_triangles(F.size());
 
-				M.facets.create_triangles((int)F.rows());
-
-			}
-			else if (F.cols() == 4) {
-
-				M.facets.create_quads((int)F.rows());
-
-			}
-			else {
-
-				throw std::runtime_error("Mesh format not supported");
-
-			}
+			
+			
 
 			for (int c = 0; c < (int)M.facets.nb(); ++c) {
 
-				for (int lv = 0; lv < F.cols(); ++lv) {
+				for (int lv = 0; lv < 3; ++lv) {
 
-					M.facets.set_vertex(c, lv, F(c, lv));
+					M.facets.set_vertex(c, lv, F[c][lv]);
 
 				}
 
 			}
 
 		}
+		static void from_geogram_mesh(const GEO::Mesh &M, std::vector<Vector3>& V, std::vector<Vector3i>& F) {
+
+			V.resize(M.vertices.nb());
+
+			for (int i = 0; i < (int)M.vertices.nb(); ++i) {
+
+				GEO::vec3 p = M.vertices.point(i);
+
+				V[i][0] = p[0];
+				V[i][1] = p[1];
+				V[i][2] = p[2];
+
+			}
+
+			assert(M.facets.are_simplices());
+
+			F.resize(M.facets.nb());
+
+			for (int c = 0; c < (int)M.facets.nb(); ++c) {
+
+				for (int lv = 0; lv < 3; ++lv) {
+
+					F[c][lv] = M.facets.vertex(c, lv);
+
+				}
+
+			}
+
+			assert(M.cells.are_simplices());
+
+		}
+
 
 
 	};
