@@ -41,7 +41,7 @@ static const std::array<std::array<int, 4>, 6> c_facepoint = {
 };
 static const int p_facenumber = 8;
 static const int c_facenumber = 6;
-
+static const double conserve_number = 1e-2;
 static const int prism_map[64][2] = {
 {-1, -1},
  {-1, -1},
@@ -219,7 +219,7 @@ namespace fastEnvelope {
 	{
 		
 		//Multiprecision::set_precision(256);
-
+		Vector3 min, max;
 		get_bb_corners(m_ver, min, max);
 		Scalar bbd = (max - min).norm();
 		Scalar epsilon = bbd * eps; //eps*bounding box diagnal
@@ -233,11 +233,6 @@ namespace fastEnvelope {
 		BoxGeneration(ver_new, faces_new, envprism, envcubic, epsilon);
 		//build a  hash function
 		prism_size = envprism.size();
-
-
-		const Scalar boxlength = std::min(std::min(max[0] - min[0], max[1] - min[1]), max[2] - min[2]) / spac;
-		subx = (max[0] - min[0]) / boxlength, suby = (max[1] - min[1]) / boxlength, subz = (max[2] - min[2]) / boxlength;
-
 
 		CornerList_prism(envprism, cornerlist);
 		std::vector<std::array<Vector3, 2>> cubiconors;
@@ -2209,11 +2204,11 @@ template<typename T>
 			ABn = AB.normalized();
 			polygon[0] = m_ver[m_faces[i][0]] + (vector1 - ABn) * tolerance;
 			polygon[1] = m_ver[m_faces[i][1]] + (vector1 + ABn) * tolerance;
-			if (AB.dot(BC) < 0) {
+			if (dot_sign(AB,BC) < 0) {
 				polygon[2] = m_ver[m_faces[i][1]] + (-vector1 + ABn) * tolerance;
 				polygon[3] = m_ver[m_faces[i][2]] + (-vector1 + ABn) * tolerance;
 				polygon[4] = m_ver[m_faces[i][2]] + (-vector1 - ABn) * tolerance;
-				if (AB.dot(AC) < 0) {
+				if (dot_sign(AB, AC) < 0) {
 					polygon[5] = m_ver[m_faces[i][2]] + (vector1 - ABn) * tolerance;
 				}
 				else {
@@ -2236,8 +2231,6 @@ template<typename T>
 			envprism.emplace_back(polygonoff);
 
 		}
-
-
 
 	}
 	void FastEnvelope::seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar& width, std::array<Vector3, 8>& envbox) {
@@ -2313,8 +2306,126 @@ template<typename T>
 
 	}
 
+	void FastEnvelope::prism_bbox(const std::array<Vector3, 12>&prism, Vector3 &min, Vector3& max) {
+		int id ;
+		int id0;
+		bool flag = 0;
+		Vector3 p;
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (i == j) continue;
+				id = i * 8 + j;
+				id0 = prism_map[id][0];
+				if (id0 == -1) continue;
 
+				for (int k = 0; k < 8; k++) {
+					if (k == i || k == j) continue;
+					id = i * 8 + k;
+					id0 = prism_map[id][0];
+					if (id0 == -1) continue;
+					id = j * 8 + k;
+					id0 = prism_map[id][0];
+					if (id0 == -1) continue;
+					three_facets_inter_point(
+						prism[p_face[i][0]], prism[p_face[i][1]], prism[p_face[i][2]],
+						prism[p_face[j][0]], prism[p_face[j][1]], prism[p_face[j][2]],
+						prism[p_face[k][0]], prism[p_face[k][1]], prism[p_face[k][2]],
+						p);
+					if (flag == 0) {
+						min = p;
+						max = p;
+					}
+					else {
+						for (int t = 0; t < 3; t++) {
+							min[t] = std::min(min[t], p[t]);
+							max[t] = std::max(max[t], p[t]);
+						}
+					}
+					flag = 1;
+				}
+			}
+		}
+		min[0] -= conserve_number;
+		min[1] -= conserve_number;
+		min[2] -= conserve_number;
+		max[0] += conserve_number;
+		max[1] += conserve_number;
+		max[2] += conserve_number;
+	}
 
+	void FastEnvelope::cubic_bbox(const std::array<Vector3, 8>&cubic, Vector3 &min, Vector3& max) {
+		int id;
+		int id0;
+		bool flag = 0;
+		Vector3 p;
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 6; j++) {
+				if (i == j) continue;
+				id = i * 6 + j;
+				id0 = cubic_map[id][0];
+				if (id0 == -1) continue;
+
+				for (int k = 0; k < 6; k++) {
+					if (k == i || k == j) continue;
+					id = i * 6 + k;
+					id0 = cubic_map[id][0];
+					if (id0 == -1) continue;
+					id = j * 6 + k;
+					id0 = cubic_map[id][0];
+					if (id0 == -1) continue;
+					three_facets_inter_point(
+						cubic[c_face[i][0]], cubic[c_face[i][1]], cubic[c_face[i][2]],
+						cubic[c_face[j][0]], cubic[c_face[j][1]], cubic[c_face[j][2]],
+						cubic[c_face[k][0]], cubic[c_face[k][1]], cubic[c_face[k][2]],
+						p);
+					if (flag == 0) {
+						min = p;
+						max = p;
+					}
+					else {
+						for (int t = 0; t < 3; t++) {
+							min[t] = std::min(min[t], p[t]);
+							max[t] = std::max(max[t], p[t]);
+						}
+					}
+					flag = 1;
+				}
+			}
+		}
+		min[0] -= conserve_number;
+		min[1] -= conserve_number;
+		min[2] -= conserve_number;
+		max[0] += conserve_number;
+		max[1] += conserve_number;
+		max[2] += conserve_number;
+	}
+	void  FastEnvelope::three_facets_inter_point(const Vector3& a0, const Vector3& a1, const Vector3& a2, const Vector3& b0, const Vector3& b1,
+		const Vector3& b2, const Vector3& c0, const Vector3& c1, const Vector3& c2, Vector3& p) {
+		Matrix3 A;
+		Vector3 B;
+		Vector3 ae1, ae2, be1, be2, ce1, ce2;
+		ae1 = a1 - a0;
+		ae2 = a2 - a0;
+		be1 = b1 - b0;
+		be2 = b2 - b0;
+		ce1 = c1 - c0;
+		ce2 = c2 - c0;
+		A(0,0) = ae1[1] * ae2[2] - ae1[2] * ae2[1];
+		A(0,1) = -ae1[0] * ae2[2] + ae1[2] * ae2[0];
+		A(0,2) = ae1[0] * ae2[1] - ae1[1] * ae2[0];
+		
+		A(1, 0) = be1[1] * be2[2] - be1[2] * be2[1];
+		A(1, 1) = -be1[0] * be2[2] + be1[2] * be2[0];
+		A(1, 2) = be1[0] * be2[1] - be1[1] * be2[0];
+		
+		A(2, 0) = ce1[1] * ce2[2] - ce1[2] * ce2[1];
+		A(2, 1) = -ce1[0] * ce2[2] + ce1[2] * ce2[0];
+		A(2, 2) = ce1[0] * ce2[1] - ce1[1] * ce2[0];
+		B[0] = A(0, 0)*a0[0] + A(0, 1)*a0[1] + A(0, 2)*a0[2];
+		B[1] = A(1, 0)*b0[0] + A(1, 1)*b0[1] + A(1, 2)*b0[2];
+		B[2] = A(2, 0)*c0[0] + A(2, 1)*c0[1] + A(2, 2)*c0[2];
+		p = A.inverse()*B;
+	}
 
 }
 

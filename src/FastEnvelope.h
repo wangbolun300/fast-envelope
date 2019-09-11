@@ -49,7 +49,7 @@ namespace fastEnvelope {
 
 		std::vector<std::array<Vector3, 12>> envprism;
 		
-		Vector3 min, max;
+		
 		int subx, suby, subz;
 		int prism_size;
 		std::vector<std::array<Vector3, 8>> envcubic;
@@ -76,15 +76,18 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
-
+			const Scalar dis = (max - min).minCoeff() *3;//TODO  change to 1e-5 or sth
+			//const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
 				max[j] += dis;
 			}
 
 		}
-
+		static void prism_bbox(const std::array<Vector3, 12>&prism, Vector3 &min, Vector3& max);
+		static void cubic_bbox(const std::array<Vector3, 8>&cubic, Vector3 &min, Vector3& max);
+		static void three_facets_inter_point(const Vector3& a0, const Vector3& a1, const Vector3& a2, const Vector3& b0, const Vector3& b1,
+			const Vector3& b2, const Vector3& c0, const Vector3& c1, const Vector3& c2,  Vector3& p);
 		static void get_bb_corners_12(const std::array<Vector3,12> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one 
 			min = vertices[0];
 			max = vertices[0];
@@ -96,8 +99,8 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
-
+			const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
+			//const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
 				max[j] += dis;
@@ -115,8 +118,8 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
-
+			const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
+			//const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
 				max[j] += dis;
@@ -129,8 +132,8 @@ namespace fastEnvelope {
 			list.resize(prism.size());//to be safer
 			for (int i = 0; i < prism.size(); i++) {
 				
-				get_bb_corners_12(prism[i], list[i][0], list[i][1]);
-				
+				//get_bb_corners_12(prism[i], list[i][0], list[i][1]);
+				prism_bbox(prism[i], list[i][0], list[i][1]);
 			}
 		}
 		static void  CornerList_cubic(const std::vector<std::array<Vector3, 8>>& cubic,
@@ -139,8 +142,8 @@ namespace fastEnvelope {
 			list.resize(cubic.size());//to be safer
 			for (int i = 0; i < cubic.size(); i++) {
 				
-				get_bb_corners_8(cubic[i], list[i][0], list[i][1]);
-				
+				//get_bb_corners_8(cubic[i], list[i][0], list[i][1]);
+				cubic_bbox(cubic[i], list[i][0], list[i][1]);
 			}
 		}
 		
@@ -410,7 +413,17 @@ namespace fastEnvelope {
 			}
 			return 0;
 		}
+		static int dot_sign(const Vector3& a, const Vector3& b) {
+			Scalar t = a.dot(b);
+			if (t > SCALAR_ZERO) return 1;
+			if (t < -1*SCALAR_ZERO) return -1;
+			Multiprecision a0(a[0]), a1(a[1]), a2(a[2]), b0(b[0]), b1(b[1]), b2(b[2]), dot;
+			dot = a0 * b0 + a1 * b1 + a2 * b2;
+			if (dot.get_sign() > 0) return 1;
+			if (dot.get_sign() < 0) return -1;
+			return 0;
 
+		}
 		static void to_geogram_mesh(const std::vector<Vector3>& V, const std::vector<Vector3i>& F, GEO::Mesh &M) {
 
 			M.clear();
