@@ -84,40 +84,63 @@ namespace fastEnvelope {
 			}
 
 		}
+
+		static void get_bb_corners_12(const std::array<Vector3,12> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one 
+			min = vertices[0];
+			max = vertices[0];
+
+			for (size_t j = 0; j < 12; j++) {
+				for (int i = 0; i < 3; i++) {
+					min[i] = std::min(min[i], vertices[j][i]);
+					max[i] = std::max(max[i], vertices[j][i]);
+				}
+			}
+
+			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
+
+			for (int j = 0; j < 3; j++) {
+				min[j] -= dis;
+				max[j] += dis;
+			}
+
+		}
+		static void get_bb_corners_8(const std::array<Vector3, 8> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one 
+			min = vertices[0];
+			max = vertices[0];
+
+			for (size_t j = 0; j < 8; j++) {
+				for (int i = 0; i < 3; i++) {
+					min[i] = std::min(min[i], vertices[j][i]);
+					max[i] = std::max(max[i], vertices[j][i]);
+				}
+			}
+
+			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
+
+			for (int j = 0; j < 3; j++) {
+				min[j] -= dis;
+				max[j] += dis;
+			}
+
+		}
 		static void  CornerList_prism(const std::vector<std::array<Vector3, 12>>& prism,
 			std::vector<std::array<Vector3, 2>>& list) {
-			std::vector<Vector3> ver12(12);
-			Vector3 min, max;
-			Vector3 eps;
-			eps[0] = SCALAR_ZERO;
-			eps[1] = SCALAR_ZERO;
-			eps[2] = SCALAR_ZERO;
+
 			list.resize(prism.size());//to be safer
 			for (int i = 0; i < prism.size(); i++) {
-				for (int j = 0; j < 12; j++) {
-					ver12[j] = prism[i][j];
-				}
-				get_bb_corners(ver12, min, max);
-				list[i][0] = min - eps;//to be conservative
-				list[i][1] = max + eps;
+				
+				get_bb_corners_12(prism[i], list[i][0], list[i][1]);
+				
 			}
 		}
 		static void  CornerList_cubic(const std::vector<std::array<Vector3, 8>>& cubic,
 			std::vector<std::array<Vector3, 2>>& list) {
-			std::vector<Vector3> ver8(8);
-			Vector3 min, max;
-			Vector3 eps;
-			eps[0] = SCALAR_ZERO;
-			eps[1] = SCALAR_ZERO;
-			eps[2] = SCALAR_ZERO;
+
 			list.resize(cubic.size());//to be safer
 			for (int i = 0; i < cubic.size(); i++) {
-				for (int j = 0; j < 8; j++) {
-					ver8[j] = cubic[i][j];
-				}
-				get_bb_corners(ver8, min, max);
-				list[i][0] = min - eps;
-				list[i][1] = max + eps;
+				
+				get_bb_corners_8(cubic[i], list[i][0], list[i][1]);
+				
 			}
 		}
 		
