@@ -41,7 +41,7 @@ static const std::array<std::array<int, 4>, 6> c_facepoint = {
 };
 static const int p_facenumber = 8;
 static const int c_facenumber = 6;
-static const double conserve_number = 0.7;
+static const double conserve_number = 0;
 static const int prism_map[64][2] = {
 {-1, -1},
  {-1, -1},
@@ -491,6 +491,7 @@ namespace fastEnvelope {
 				std::vector<int> cidl;
 				cut = is_triangle_cut_prism(prismindex[i],
 					triangle[0], triangle[1], triangle[2], cidl);
+				if (cut == false) continue;
 				for (int j = 0; j < cidl.size(); j++) {
 					for (int k = 0; k < 3; k++) {
 
@@ -518,6 +519,7 @@ namespace fastEnvelope {
 				std::vector<int> cidl;
 				cut = is_triangle_cut_cube(cindex,
 					triangle[0], triangle[1], triangle[2], cidl);
+				if (cut == false) continue;
 				for (int j = 0; j < cidl.size(); j++) {
 					for (int k = 0; k < 3; k++) {
 						tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],

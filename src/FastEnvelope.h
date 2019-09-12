@@ -76,7 +76,7 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() *3;//TODO  change to 1e-5 or sth
+			const Scalar dis = (max - min).minCoeff() *0;//TODO  change to 1e-5 or sth
 			//const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
@@ -99,7 +99,7 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
+			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
 			//const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
@@ -118,7 +118,7 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
+			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
 			//const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
