@@ -41,7 +41,7 @@ static const std::array<std::array<int, 4>, 6> c_facepoint = {
 };
 static const int p_facenumber = 8;
 static const int c_facenumber = 6;
-static const double conserve_number = 1e-2;
+static const double conserve_number = 0.7;
 static const int prism_map[64][2] = {
 {-1, -1},
  {-1, -1},
