@@ -76,7 +76,7 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() *3;//TODO  change to 1e-5 or sth
+			const Scalar dis = (max - min).minCoeff() *0;//TODO  change to 1e-5 or sth
 			//const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
@@ -99,7 +99,7 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
+			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
 			//const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
@@ -118,7 +118,7 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
+			const Scalar dis = (max - min).minCoeff() * 0.1;//TODO  change to 1e-5 or sth
 			//const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				min[j] -= dis;
@@ -132,8 +132,8 @@ namespace fastEnvelope {
 			list.resize(prism.size());//to be safer
 			for (int i = 0; i < prism.size(); i++) {
 				
-				//get_bb_corners_12(prism[i], list[i][0], list[i][1]);
-				prism_bbox(prism[i], list[i][0], list[i][1]);
+				get_bb_corners_12(prism[i], list[i][0], list[i][1]);
+				//prism_bbox(prism[i], list[i][0], list[i][1]);
 			}
 		}
 		static void  CornerList_cubic(const std::vector<std::array<Vector3, 8>>& cubic,
@@ -142,8 +142,8 @@ namespace fastEnvelope {
 			list.resize(cubic.size());//to be safer
 			for (int i = 0; i < cubic.size(); i++) {
 				
-				//get_bb_corners_8(cubic[i], list[i][0], list[i][1]);
-				cubic_bbox(cubic[i], list[i][0], list[i][1]);
+				get_bb_corners_8(cubic[i], list[i][0], list[i][1]);
+				//cubic_bbox(cubic[i], list[i][0], list[i][1]);
 			}
 		}
 		
