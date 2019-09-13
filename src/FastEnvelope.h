@@ -188,6 +188,15 @@ namespace fastEnvelope {
 			const std::vector<int>& prismindex, const int& jump1,const int &jump2, const std::function<int(T)> &checker) const;
 
 		template<typename T>
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(
+			const Scalar& d, const Scalar& n1d, const Scalar& n2d, const Scalar& n3d, 
+			const Scalar& max1, const Scalar& max2, const Scalar& max3, const Scalar& max4, const Scalar& max5, const Scalar&max6, const Scalar& max7,
+			const std::array<Vector3, 3>& triangle,
+			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22,
+			const std::vector<int>& prismindex, const int& jump1, const int &jump2, const bool & multiflag, const std::function<int(T)> &checker,
+			const T dr, const T  n1r, const T  n2r, const T n3r) const;
+
+		template<typename T>
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, const std::function<int(T)> &checker);
 		template<typename T>
@@ -198,7 +207,7 @@ namespace fastEnvelope {
 			const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, 
 			bool & multiflag,
-			const std::function<int(T)> &checker);
+			const std::function<int(T)> &checker, T &dr, T & n1r, T &n2r, T & n3r);
 
 		
 		static int is_3_triangle_cut_float(
