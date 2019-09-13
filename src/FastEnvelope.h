@@ -10,6 +10,7 @@
 #include <fastenvelope/Multiprecision.hpp>
 #include <fastenvelope/Rational.hpp>
 #include <geogram/mesh/mesh.h>
+
 namespace fastEnvelope {
 
 

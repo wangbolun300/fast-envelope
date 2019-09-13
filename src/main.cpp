@@ -613,8 +613,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 
 //void test_in_wild(string inputFileName1, string input_surface_path1) {
 void test_in_wild() {
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\101249.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\101249\\Gripper_v5.stl";
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
@@ -642,7 +642,7 @@ void test_in_wild() {
 
 	eps = eps / shrink;
 	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-	igl::Timer timer;
+	igl::Timer timer,timer1,timer2;
 
 
 	/////////////////////////////////
@@ -665,19 +665,22 @@ void test_in_wild() {
 
 
 	timer.start();
-
+	timer1.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
+	std::cout << "time in initialization " << timer1.getElapsedTimeInSec() << endl;
+	timer2.start();
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
 	pos2.resize(fn);
 	for (int i = 0; i < fn; i++) {
 
 		pos1[i] = outenvelope[i];
-		fast_envelope.print_prisms(triangles[i]);
+		//fast_envelope.print_prisms(triangles[i]);
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
 		
 	}
+	std::cout << "time in checking " << timer2.getElapsedTimeInSec() << endl;
 	std::cout << "time " << timer.getElapsedTimeInSec() << endl;
 	
 
