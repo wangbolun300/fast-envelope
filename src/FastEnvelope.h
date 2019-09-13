@@ -76,12 +76,12 @@ namespace fastEnvelope {
 				}
 			}
 
-			const Scalar dis = (max - min).minCoeff() *0;//TODO  change to 1e-5 or sth
-			//const Scalar dis = 1e-4;
-			for (int j = 0; j < 3; j++) {
-				min[j] -= dis;
-				max[j] += dis;
-			}
+			//const Scalar dis = (max - min).minCoeff() *0;//TODO  change to 1e-5 or sth
+			////const Scalar dis = 1e-4;
+			//for (int j = 0; j < 3; j++) {
+			//	min[j] -= dis;
+			//	max[j] += dis;
+			//}
 
 		}
 		static void prism_bbox(const std::array<Vector3, 12>&prism, Vector3 &min, Vector3& max);

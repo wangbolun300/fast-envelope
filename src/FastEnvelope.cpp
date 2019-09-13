@@ -473,7 +473,7 @@ namespace fastEnvelope {
 									datalpi.prismid = prismindex[i];
 									datalpi.facetid = cid[j];
 									datalpi.jump1 = jump1;
-									lpi_list.push_back(datalpi);
+									lpi_list.emplace_back(datalpi);
 								}
 								
 								
@@ -509,7 +509,7 @@ namespace fastEnvelope {
 									datalpi.prismid = prismindex[i];
 									datalpi.facetid = cid[j];
 									datalpi.jump1 = jump1;
-									lpi_list.push_back(datalpi);
+									lpi_list.emplace_back(datalpi);
 								}
 							
 								
@@ -575,7 +575,7 @@ namespace fastEnvelope {
 							datalpi.prismid = prismindex[i];
 							datalpi.facetid = cidl[j];
 							datalpi.jump1 = jump1;
-							lpi_list.push_back(datalpi);
+							lpi_list.emplace_back(datalpi);
 						}
 
 					}
@@ -619,7 +619,7 @@ namespace fastEnvelope {
 							datalpi.prismid = prismindex[i];
 							datalpi.facetid = cidl[j];
 							datalpi.jump1 = jump1;
-							lpi_list.push_back(datalpi);
+							lpi_list.emplace_back(datalpi);
 						}
 
 					}
@@ -719,7 +719,7 @@ namespace fastEnvelope {
 						t12[0], t12[1], t12[2],
 						d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7);
 					if (pre == true) {
-						Multiprecision dr, n1r, n2r, n3r;
+						static Multiprecision dr, n1r, n2r, n3r;
 						cut =is_3_triangle_cut_double(d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
 							triangle, t00, t01, t02, t10, t11, t12, multiflag, check_Multiprecision, dr, n1r, n2r, n3r);
 						if (cut == false) continue;
@@ -739,7 +739,7 @@ namespace fastEnvelope {
 						datatpi.facetid2 = inter_ijk_list[j][1];
 						datatpi.jump1 = jump1;
 						datatpi.jump2 = jump2;
-						tpilist.push_back(datatpi);
+						tpilist.emplace_back(datatpi);
 					}
 
 			}
@@ -2403,7 +2403,7 @@ template<typename T>
 			}
 			
 
-			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1) cutp.push_back(i);
+			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1) cutp.emplace_back(i);
 		}
 		if (cutp.size() ==0) {
 			return false;
@@ -2514,7 +2514,7 @@ template<typename T>
 
 		if (cutp.size() <= 2) {
 			for (int i = 0; i < 8; i++) {
-				if (cut[i] == true) cid.push_back(i);
+				if (cut[i] == true) cid.emplace_back(i);
 			}
 			return true;
 		}
@@ -2577,7 +2577,7 @@ template<typename T>
 		}
 
 		for (int i = 0; i < 8; i++) {
-			if (cut[i] == true) cid.push_back(i);
+			if (cut[i] == true) cid.emplace_back(i);
 		}
 
 		return true;
@@ -2606,7 +2606,7 @@ template<typename T>
 				return false;
 			}
 
-			if (o1[i] * o2[i] == -1) cutp.push_back(i);
+			if (o1[i] * o2[i] == -1) cutp.emplace_back(i);
 		}
 		if (cutp.size() == 0) {
 			return false;
@@ -2647,7 +2647,7 @@ template<typename T>
 		}
 
 		for (int i = 0; i < 8; i++) {
-			if (cut[i] == true) cid.push_back(i);
+			if (cut[i] == true) cid.emplace_back(i);
 		}
 
 		return true;
@@ -2684,7 +2684,7 @@ template<typename T>
 			}
 
 
-			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1) cutp.push_back(i);
+			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1) cutp.emplace_back(i);
 		}
 		if (cutp.size() == 0) {
 			return false;
@@ -2796,7 +2796,7 @@ template<typename T>
 
 		if (cutp.size() <= 2) {
 			for (int i = 0; i < 6; i++) {
-				if (cut[i] == true) cid.push_back(i);
+				if (cut[i] == true) cid.emplace_back(i);
 			}
 			return true;
 		}
@@ -2859,7 +2859,7 @@ template<typename T>
 		}
 
 		for (int i = 0; i < 6; i++) {
-			if (cut[i] == true) cid.push_back(i);
+			if (cut[i] == true) cid.emplace_back(i);
 		}
 
 		return true;
@@ -2886,7 +2886,7 @@ template<typename T>
 				return false;
 			}
 
-			if (o1[i] * o2[i] == -1) cutp.push_back(i);
+			if (o1[i] * o2[i] == -1) cutp.emplace_back(i);
 		}
 		if (cutp.size() == 0) {
 			return false;
@@ -2927,7 +2927,7 @@ template<typename T>
 		}
 
 		for (int i = 0; i < 6; i++) {
-			if (cut[i] == true) cid.push_back(i);
+			if (cut[i] == true) cid.emplace_back(i);
 		}
 
 		return true;
@@ -3053,7 +3053,7 @@ template<typename T>
 				for (int j = 0; j < 8; j++) {
 					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
 				}
-				envbox.push_back(box);
+				envbox.emplace_back(box);
 				continue;
 			}
 			if (de == DEGENERATED_SEGMENT) {
@@ -3061,15 +3061,15 @@ template<typename T>
 				Scalar length1 = AB.norm(), length2 = AC.norm(), length3 = BC.norm();
 				if (length1 >= length2 && length1 >= length3) {
 					seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], tolerance, box);
-					envbox.push_back(box);
+					envbox.emplace_back(box);
 				}
 				if (length2 >= length1 && length2 >= length3) {
 					seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][2]], tolerance, box);
-					envbox.push_back(box);
+					envbox.emplace_back(box);
 				}
 				if (length3 >= length1 && length3 >= length2) {
 					seg_cube(m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tolerance, box);
-					envbox.push_back(box);
+					envbox.emplace_back(box);
 				}
 				continue;
 			}
