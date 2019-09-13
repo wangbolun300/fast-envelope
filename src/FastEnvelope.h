@@ -204,6 +204,8 @@ namespace fastEnvelope {
 		};
 		template<typename T>
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI& datatpi, const std::array<Vector3, 3>&triangle, const std::vector<int>& prismindex, const std::function<int(T)> &checker)const;
+		
+		
 		template<typename T>
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(
 			const Scalar& d, const Scalar& n1d, const Scalar& n2d, const Scalar& n3d, 
@@ -216,6 +218,9 @@ namespace fastEnvelope {
 		template<typename T>
 		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, const std::function<int(T)> &checker);
+		
+		template<typename T>
+		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3>& triangle, const T& dr, const T& n1r, const T& n2r, const T& n3r, const std::function<int(T)> &checker);
 		template<typename T>
 		static bool is_3_triangle_cut_double(
 			const Scalar &d, const Scalar & n1d, const Scalar &n2d, const Scalar & n3d, 
@@ -227,7 +232,7 @@ namespace fastEnvelope {
 			const std::function<int(T)> &checker, T &dr, T & n1r, T &n2r, T & n3r);
 
 		
-		static int is_3_triangle_cut_float(
+		static int is_3_triangle_cut_float_fast(
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, 
 			const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);

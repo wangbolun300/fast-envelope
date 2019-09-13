@@ -1580,9 +1580,11 @@ template<typename T>
 	}
 
 	template<typename T>
-	int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI& datatpi, const std::array<Vector3, 3>&triangle, const std::vector<int>& prismindex, const std::function<int(T)> &checker)const {
+	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI& datatpi, const std::array<Vector3, 3>&triangle, const std::vector<int>& prismindex, const std::function<int(T)> &checker)const {
 		
 		
+		int tot,ori;
+		int jump1 = datatpi.jump1, jump2 = datatpi.jump2;
 		
 		static T
 			t00, t01, t02,
@@ -1600,23 +1602,68 @@ template<typename T>
 
 			e00, e01, e02,
 			e10, e11, e12,
-			e20, e21, e22;;
+			e20, e21, e22;
 		t00 = (triangle[0][0]); t01 = (triangle[0][1]); t02 = (triangle[0][2]);
 		t10 = (triangle[1][0]); t11 = (triangle[1][1]); t12 = (triangle[1][2]);
 		t20 = (triangle[2][0]); t21 = (triangle[2][1]); t22 = (triangle[2][2]);
 
-		f100 = (facet10[0]); f101 = (facet10[1]); f102 = (facet10[2]);
-		f110 = (facet11[0]); f111 = (facet11[1]); f112 = (facet11[2]);
-		f120 = (facet12[0]); f121 = (facet12[1]); f122 = (facet12[2]);
+		if (datatpi.prismid1 < prism_size) {
+			f100 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][0]][0];
+			f101 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][0]][1];
+			f102 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][0]][2];
 
-		f200 = (facet20[0]); f201 = (facet20[1]); f202 = (facet20[2]);
-		f210 = (facet21[0]); f211 = (facet21[1]); f212 = (facet21[2]);
-		f220 = (facet22[0]); f221 = (facet22[1]); f222 = (facet22[2]);
+			f110 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][1]][0];
+			f111 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][1]][1];
+			f112 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][1]][2];
+
+			f120 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][2]][0];
+			f121 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][2]][1];
+			f122 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][2]][2];
+		}
+		else {
+			f100 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][0]][0];
+			f101 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][0]][1];
+			f102 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][0]][2];
+					  
+			f110 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][1]][0];
+			f111 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][1]][1];
+			f112 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][1]][2];
+					  
+			f120 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][2]][0];
+			f121 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][2]][1];
+			f122 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][2]][2];
+		}
+		if (datatpi.prismid2 < prism_size) {
+			f200 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][0]][0];
+			f201 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][0]][1];
+			f202 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][0]][2];
+			f210 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][1]][0];
+			f211 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][1]][1];
+			f212 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][1]][2];
+			f220 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][2]][0];
+			f221 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][2]][1];
+			f222 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][2]][2];
+		}
+		else {
+			f200 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][0]][0];
+			f201 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][0]][1];
+			f202 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][0]][2];
+			f210 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][1]][0];
+			f211 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][1]][1];
+			f212 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][1]][2];
+			f220 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][2]][0];
+			f221 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][2]][1];
+			f222 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][2]][2];
+		}
+
+		
 		bool premulti = orient3D_TPI_prefilter_multiprecision(t00, t01, t02, t10, t11, t12, t20, t21, t22,
 			f100, f101, f102, f110, f111, f112, f120, f121, f122,
 			f200, f201, f202, f210, f211, f212, f220, f221, f222,
 			dr, n1r, n2r, n3r, checker);
-
+		if (premulti == false) return 2;//means have parallel facets
+		bool cut = is_3_triangle_cut_pure_multiprecision(triangle, dr, n1r, n2r, n3r, checker);
+		if (cut == false) return 2;
 		for (int i = 0; i < prismindex.size(); i++) {
 			if (prismindex[i] == jump1 || prismindex[i] == jump2) continue;
 			if (prismindex[i] < prism_size) {
@@ -2072,6 +2119,57 @@ template<typename T>
 
 		return true;
 	}
+	
+	template<typename T>
+	bool FastEnvelope::is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3>& triangle, const T& dr, const T& n1r, const T& n2r, const T& n3r, const std::function<int(T)> &checker) {
+		int o1, o2, o3;
+		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
+
+		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0) {
+			std::cout << "Degeneration happens" << std::endl;
+			//move this guy in constructor and use fixed seed
+			srand(int(time(0)));
+			n = { {Vector3(rand(),rand(),rand()) } };
+		}
+		static T nr0, nr1, nr2,
+			t00, t01, t02,
+			t10, t11, t12,
+			t20, t21, t22;
+		nr0 = n[0];
+		nr1 = n[1];
+		nr2 = n[2];
+		t00 = triangle[0][0];
+		t01 = triangle[0][1];
+		t02 = triangle[0][2];
+		t10 = triangle[1][0];
+		t11 = triangle[1][1];
+		t12 = triangle[1][2];
+		t20 = triangle[2][0];
+		t21 = triangle[2][1];
+		t22 = triangle[2][2];
+
+		o1 = orient3D_TPI_postfilter_multiprecision(
+			dr, n1r, n2r, n3r,
+			nr0, nr1, nr2,
+			t00, t01, t02,
+			t10, t11, t12, checker);
+		if (o1 == 0) return false;
+
+		o2 = orient3D_TPI_postfilter_multiprecision(
+			dr, n1r, n2r, n3r,
+			nr0, nr1, nr2,
+			t10, t11, t12,
+			t20, t21, t22, checker);
+		if (o2 == 0 || o1 + o2 == 0) return false;
+		o3 = orient3D_TPI_postfilter_multiprecision(
+			dr, n1r, n2r, n3r,
+			nr0, nr1, nr2,
+			t20, t21, t22,
+			t00, t01, t02, checker);
+		if (o3 == 0 || o1 + o3 == 0 || o2 + o3 == 0) return false;
+		return true;
+	}
+	
 	template<typename T>
 	static bool FastEnvelope::is_3_triangle_cut_double(
 		const Scalar &d, const Scalar & n1, const Scalar &n2, const Scalar & n3,
@@ -2216,7 +2314,7 @@ template<typename T>
 		if (premulti == true) multiflag = true;
 		return true;
 	}
-	int FastEnvelope::is_3_triangle_cut_float(
+	int FastEnvelope::is_3_triangle_cut_float_fast(
 		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2,
 		const Vector3& facet10, const Vector3& facet11, const Vector3& facet12,
 		const Vector3& facet20, const Vector3& facet21, const Vector3& facet22) {
@@ -2429,7 +2527,7 @@ template<typename T>
 				int id = cutp[i] * 8 + cutp[j];
 				int id0 = prism_map[id][0];
 				if (id0 == -1) continue;
-				int inter = is_3_triangle_cut_float(
+				int inter = is_3_triangle_cut_float_fast(
 					tri0, tri1, tri2,
 					envprism[pindex][p_face[cutp[i]][0]],
 					envprism[pindex][p_face[cutp[i]][1]],
@@ -2711,7 +2809,7 @@ template<typename T>
 				int id = cutp[i] * 6 + cutp[j];
 				int id0 = prism_map[id][0];
 				if (id0 == -1) continue;
-				int inter = is_3_triangle_cut_float(
+				int inter = is_3_triangle_cut_float_fast(
 					tri0, tri1, tri2,
 					envcubic[cindex][c_face[cutp[i]][0]],
 					envcubic[cindex][c_face[cutp[i]][1]],
