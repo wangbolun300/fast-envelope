@@ -254,9 +254,14 @@ namespace fastEnvelope {
 	}
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const {
 		timer_s.start();
-		std::vector<int> querylist;
-		floatTetWild::OUR_AABB::facet_in_envelope_recursive(triangle[0], triangle[1], triangle[2], querylist, 1, 0,
-			cornerlist.size(), boxlist);
+		 std::vector<int> querylist;
+		/*floatTetWild::OUR_AABB::facet_in_envelope_recursive(triangle[0], triangle[1], triangle[2], querylist, 1, 0,
+			cornerlist.size(), boxlist);*/
+		 Vector3 tmin, tmax;
+		 get_tri_corners(triangle[0], triangle[1], triangle[2], tmin, tmax);
+		 for (int i = 0; i < cornerlist.size(); i++) {
+			 if (box_box_intersection(tmin, tmax, cornerlist[i][0], cornerlist[i][1])) querylist.emplace_back(i);
+		 }
 		time_searching += timer_s.getElapsedTimeInSec();
 	
 		return FastEnvelopeTestImplicit(triangle, querylist);
@@ -278,7 +283,7 @@ namespace fastEnvelope {
 		floatTetWild::OUR_AABB::facet_in_envelope_recursive(triangle[0], triangle[1], triangle[2], querylist, 1, 0,
 			cornerlist.size(), boxlist);
 
-		
+		if (querylist.size() == 0) return 1;
 		int deg = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
 
 		int jump = -1;
