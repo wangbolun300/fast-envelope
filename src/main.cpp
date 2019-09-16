@@ -47,8 +47,17 @@ void tri_tri_cutting_try() {
 	//FastEnvelope::test_tri_tri_cut( p1, p2, p3, q1, q2, q3 );
 
 }
+void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one 
+	min = vertices.front();
+	max = vertices.front();
 
-
+	for (size_t j = 0; j < vertices.size(); j++) {
+		for (int i = 0; i < 3; i++) {
+			min(i) = std::min(min(i), vertices[j](i));
+			max(i) = std::max(max(i), vertices[j](i));
+		}
+	}
+}
 void unordered_map_try() {
 	std::vector<int> a, b;
 	a.push_back(0);
@@ -611,10 +620,10 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-void test_in_wild(string inputFileName1, string input_surface_path1) {
-//void test_in_wild() {
-//	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
-//	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
+//void test_in_wild(string inputFileName1, string input_surface_path1) {
+void test_in_wild() {
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
@@ -862,18 +871,18 @@ void test_in_wild(string inputFileName1, string input_surface_path1) {
 	}
 */
 	////for aabb method
-	/*Vector3 min, max;
-	Parameters params;
+	Vector3 min, max;
+	
 	Scalar dd;
-	get_bb_corners(params, env_vertices, min, max);
-	dd = ((max - min).norm()) / 1000 / shrink;
+	get_bb_corners(env_vertices, min, max);
+	dd = ((max - min).norm()) *eps;
 	timer.start();
 	AABBWrapper sf_tree(envmesh);
 	for (int i = 0; i < fn; i++) {
 
 		is_out_function(triangles[i], dd, sf_tree); ;
 	}
-	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;*/
+	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
 
 	std::cout << "TEST aabb FINISHED  " << std::endl;
 	//////////////////////////////
@@ -1414,8 +1423,8 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	test_in_wild(argv[1],argv[2]);
-	//test_in_wild();
+	//test_in_wild(argv[1],argv[2]);
+	test_in_wild();
 	//testOrientation();
 	//fordebug();
 	//writelist();

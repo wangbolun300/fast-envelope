@@ -532,7 +532,7 @@ namespace fastEnvelope {
 				}
 
 			}//case 2 case 2 degenerated as a segment
-			//TODO add a test of the list
+			
 			for (int i = 0; i < lpi_list.size(); i++) {
 				inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(lpi_list[i], triangle, prismindex,checker);
 				if (inter == 1) return 1;
@@ -670,6 +670,9 @@ namespace fastEnvelope {
 						id0 = cubic_map[id][0];
 					}
 					if (id0 == -1) continue;
+					//TODO temp change
+					continue;
+
 				}
 				
 			
@@ -755,7 +758,7 @@ namespace fastEnvelope {
 
 		}
 
-		//TODO deal with the multi precision
+		
 		for (int i = 0; i < tpilist.size(); i++) {
 			inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(tpilist[i], triangle, prismindex, checker);//is_3_intersection is already in it
 			if (inter == 1) return 1;
@@ -1212,7 +1215,7 @@ namespace fastEnvelope {
 
 		INDEX index;
 		std::vector<INDEX> recompute;
-		//TODO remember jump should add to the pipline list
+		
 		for (int i = 0; i < prismindex.size(); i++) {
 			if (prismindex[i] == jump1 || prismindex[i] == jump2) continue;
 			if (prismindex[i] < prism_size) {

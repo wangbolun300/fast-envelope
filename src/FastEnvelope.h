@@ -173,9 +173,7 @@ namespace fastEnvelope {
 		static void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar& width, std::array<Vector3, 8>& envbox);
 
 		
-		template<typename T>
-		 int Implicit_Seg_Facet_interpoint_Out_Prism_multi_precision(const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle1, 
-			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<int>& prismindex, const int& jump, const std::function<int(T)> &checker)const;
+		
 		 struct DATA_LPI {
 			 int segid;
 			 int prismid;
@@ -191,10 +189,8 @@ namespace fastEnvelope {
 			 const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle1,
 			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<int>& prismindex, const int& jump, const std::function<int(T)> &checker)const;
 	
-		 template<typename T>
-		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_multi_precision(const std::array<Vector3, 3>& triangle, 
-			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22, 
-			const std::vector<int>& prismindex, const int& jump1,const int &jump2, const std::function<int(T)> &checker) const;
+		
+
 		struct DATA_TPI {
 			int prismid1;
 			int facetid1;
@@ -216,9 +212,6 @@ namespace fastEnvelope {
 			const std::vector<int>& prismindex, const int& jump1, const int &jump2, const bool & multiflag, const std::function<int(T)> &checker,
 			T& dr, T&  n1r, T&  n2r, T& n3r) const;
 
-		template<typename T>
-		static bool is_3_triangle_cut(const std::array<Vector3, 3>& triangle,
-			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, const std::function<int(T)> &checker);
 		
 		template<typename T>
 		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3>& triangle, const T& dr, const T& n1r, const T& n2r, const T& n3r, const std::function<int(T)> &checker);
