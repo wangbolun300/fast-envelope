@@ -95,7 +95,7 @@ void unordered_map_try() {
 //	//cout << "max = " << max[0] << " " << max[1] << " " << max[2] << endl;
 //	//            pausee();
 //}
-void get_triangle_corners(const std::array<Vector3,3> &triangle, Vector3 &min, Vector3 &max) {
+void get_triangle_corners(const std::array<Vector3, 3> &triangle, Vector3 &min, Vector3 &max) {
 	min[0] = std::min(std::min(triangle[0][0], triangle[1][0]), triangle[2][0]);
 	min[1] = std::min(std::min(triangle[0][1], triangle[1][1]), triangle[2][1]);
 	min[2] = std::min(std::min(triangle[0][2], triangle[1][2]), triangle[2][2]);
@@ -168,10 +168,10 @@ void get_triangle_corners(const std::array<Vector3,3> &triangle, Vector3 &min, V
 //
 //}
 void BoxFindCellsV1(const Vector3& min, const Vector3& max,
-	const Vector3& cellmin, const Vector3& cellmax, const int& subx,const int&suby, const int subz, std::vector<int>& intercell) {
+	const Vector3& cellmin, const Vector3& cellmax, const int& subx, const int&suby, const int subz, std::vector<int>& intercell) {
 
 	Vector3 delta;
-	delta[0]= (cellmax - cellmin)[0] / subx;
+	delta[0] = (cellmax - cellmin)[0] / subx;
 	delta[1] = (cellmax - cellmin)[1] / suby;
 	delta[2] = (cellmax - cellmin)[2] / subz;
 	//intercell.reserve(int((max - min)[0] / delta[0])*int((max - min)[1] / delta[1])*int((max - min)[2] / delta[2]));
@@ -186,7 +186,7 @@ void BoxFindCellsV1(const Vector3& min, const Vector3& max,
 	for (int i = location[0][0]; i <= location[1][0]; i++) {
 		for (int j = location[0][1]; j <= location[1][1]; j++) {
 			for (int k = location[0][2]; k <= location[1][2]; k++) {
-				intercell.emplace_back(k*subx*suby+j*subx+i);
+				intercell.emplace_back(k*subx*suby + j * subx + i);
 			}
 		}
 	}
@@ -198,7 +198,7 @@ void BoxFindCellsV1(const Vector3& min, const Vector3& max,
 void testOrientation() {
 	std::array<Vector3, 3> tri = { { Vector3(0,0,0),Vector3(1,0,0),Vector3(0,1,0) } };// right hand law
 	Vector3 p = { 0,0,1 };
-	int ori = Predicates::orient_3d(p,tri[0], tri[1], tri[2]);
+	int ori = Predicates::orient_3d(p, tri[0], tri[1], tri[2]);
 	std::cout << "orientation test : " << ori << std::endl;
 }
 
@@ -381,7 +381,7 @@ bool is_out_function(const std::array<Vector3, 3>& triangle, const Scalar& dd, A
 //	///////////////
 //}
 void calculation() {
-	Eigen::Matrix<Scalar,4, 4> biga,bigb;
+	Eigen::Matrix<Scalar, 4, 4> biga, bigb;
 	Eigen::Matrix<Scalar, 3, 3> a;
 	Eigen::Matrix<Scalar, 3, 4> b;
 	Eigen::Matrix<Scalar, 3, 1> c0;
@@ -414,12 +414,12 @@ void calculation() {
 		(triangle0[0] - triangle0[1]).cross(triangle0[0] - triangle0[2]);
 	bigc << a, a,
 		1, 1, 1, 1, 1, 1;
-	std::cout << a  << "\n" << std::endl;
+	std::cout << a << "\n" << std::endl;
 	std::cout << bigc << "\n" << std::endl;
 }
 
 void test_ttt() {
-	std::array<Vector3, 3> triangle,facet1,facet2,facet3;
+	std::array<Vector3, 3> triangle, facet1, facet2, facet3;
 	Eigen::Matrix<Scalar, 3, 3> A, AT, ATA;
 	Eigen::Matrix<Scalar, 3, 1> B;
 	Eigen::Matrix<Scalar, 4, 4> C;
@@ -570,10 +570,10 @@ void test_diff() {
 
 
 
-std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName,vector<int>& inenvelope) {
+std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName, vector<int>& inenvelope) {
 
 
-	std::vector<std::array<Vector3,3>> triangle;
+	std::vector<std::array<Vector3, 3>> triangle;
 
 	ifstream infile;
 	infile.open(inputFileName);
@@ -591,14 +591,14 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 		if (!getline(infile, s)) break;
 		if (s[0] != '#') {
 			istringstream ss(s);
-			array<double,10> record;
+			array<double, 10> record;
 			int c = 0;
 			while (ss) {
 				string line;
 				if (!getline(ss, line, ','))
 					break;
 				try {
-					record[c]=stof(line);
+					record[c] = stof(line);
 					c++;
 				}
 				catch (const std::invalid_argument e) {
@@ -622,8 +622,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 
 //void test_in_wild(string inputFileName1, string input_surface_path1) {
 void test_in_wild() {
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
@@ -651,7 +651,7 @@ void test_in_wild() {
 
 	eps = eps / shrink;
 	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-	igl::Timer timer,timer1,timer2;
+	igl::Timer timer, timer1, timer2;
 
 
 	/////////////////////////////////
@@ -687,11 +687,11 @@ void test_in_wild() {
 		pos1[i] = outenvelope[i];
 		//fast_envelope.print_prisms(triangles[i]);
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		
+
 	}
 	std::cout << "time in checking " << timer2.getElapsedTimeInSec() << endl;
 	std::cout << "time " << timer.getElapsedTimeInSec() << endl;
-	
+
 
 	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
 	for (int i = 0; i < fn; i++) {
@@ -819,7 +819,7 @@ void test_in_wild() {
 			tri[0] = triangles[ti[i]][2];
 			tri[1] = triangles[ti[i]][1];
 			tri[2] = triangles[ti[i]][0];
-			
+
 
 			pos4[i] = fast_envelope.sample_triangle_outside(tri, lth[j]);
 			if (pos4[i] == 0) {
@@ -870,9 +870,9 @@ void test_in_wild() {
 
 	}
 */
-	////for aabb method
+////for aabb method
 	Vector3 min, max;
-	
+
 	Scalar dd;
 	get_bb_corners(env_vertices, min, max);
 	dd = ((max - min).norm()) *eps;
@@ -937,12 +937,12 @@ void fordebug() {
 	int id = 15619;
 	std::array<Vector3, 3> tri;
 	Scalar l1;
-	int pieces=20;
+	int pieces = 20;
 	tri[0] = triangles[id][0];
 	tri[1] = triangles[id][1];
 	tri[2] = triangles[id][2];
 
-	bool out=fast_envelope.sample_triangle_outside(tri, pieces);
+	bool out = fast_envelope.sample_triangle_outside(tri, pieces);
 
 	std::cout << "sample out or not " << out << std::endl;
 
@@ -1002,41 +1002,33 @@ void test_tree() {
 
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
-	vector<bool> pos1, pos2;
-	pos1.resize(fn);
-	pos2.resize(fn);
-	for (int i = 0; i < fn; i++) {
+	//vector<bool> pos1, pos2;
+	//pos1.resize(fn);
+	//pos2.resize(fn);
+	//for (int i = 0; i < fn; i++) {
 
-		pos1[i] = outenvelope[i];
-		//fast_envelope.print_prisms(triangles[i]);
-		pos2[i] = fast_envelope.is_outside(triangles[i]);
+	//	pos1[i] = outenvelope[i];
+	//	//fast_envelope.print_prisms(triangles[i]);
+	//	pos2[i] = fast_envelope.is_outside(triangles[i]);
 
-	}
-	std::cout << "time " << timer.getElapsedTimeInSec() << endl;
-	std::cout <<"\ntest tree begins" << endl;
-	fast_envelope.cornerlist;
-	std::vector<std::array<fastEnvelope::Vector3, 2>> boxlist;
+	//}
+	//std::cout << "time " << timer.getElapsedTimeInSec() << endl;
+	//std::cout << "\ntest tree begins" << endl;
+	
 	std::vector<int> querylist;
-	
-	
-	boxlist.resize(
-		OUR_AABB::envelope_max_node_index(
-			1, 0, fast_envelope.cornerlist.size()
-		) + 1 // <-- this is because size == max_index + 1 !!!
-	);
-	std::cout << "\nbefore call function, cornerlist size "<< fast_envelope.cornerlist.size() << endl;
-	
-	OUR_AABB::init_envelope_boxes_recursive(fast_envelope.cornerlist, boxlist, 1, 0, fast_envelope.cornerlist.size());
-	
+
+	std::cout << "\nbefore call function, cornerlist size " << fast_envelope.cornerlist.size() << endl;
+	AABB tree;
+	tree.init_envelope(fast_envelope.cornerlist);
+
 	timer.start();
 	std::cout << "\nbuild tree successful" << endl;
-	std::cout << "fn "<<fn << endl;
+	std::cout << "fn " << fn << endl;
 	for (int i = 0; i < fn; i++) {
 		querylist.clear();
-		OUR_AABB::facet_in_envelope_recursive(triangles[i][0], triangles[i][1], triangles[i][2], querylist, 1, 0,
-			fast_envelope.cornerlist.size(),boxlist);
-		
-		std::cout  << i << " succeed,size "<< querylist.size() << endl;
+		tree.facet_in_envelope(triangles[i][0], triangles[i][1], triangles[i][2], querylist);
+
+		std::cout << i << " succeed,size " << querylist.size() << endl;
 		//fast_envelope.print_prisms(triangles[i]);
 	}
 	std::cout << "\ntest tree over " << timer.getElapsedTimeInSec() << endl;
@@ -1048,17 +1040,17 @@ void sample_triangle_test() {
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
 	std::array<Vector3, 3> tri = triangles[10000];
 	std::vector<Vector3> ps;
-	Scalar l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) /10000;
+	Scalar l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 10000;
 	cout << "l1 " << l1 << endl;
 	//FastEnvelope::triangle_sample(tri, ps, l1);
-	std::cout <<"ps size "<< ps.size() << endl;
+	std::cout << "ps size " << ps.size() << endl;
 
 
 	std::ofstream fout;
 	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\triangle.txt");
 	for (int i = 0; i < 3; i++) {
 
-		fout <<std::setprecision(17) << tri[i][0]<<" "<< tri[i][1]<<" "<< tri[i][2] <<endl;
+		fout << std::setprecision(17) << tri[i][0] << " " << tri[i][1] << " " << tri[i][2] << endl;
 
 	}
 	fout.close();
@@ -1066,7 +1058,7 @@ void sample_triangle_test() {
 	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\points.txt");
 	for (int i = 0; i < ps.size(); i++) {
 
-		fout << std::setprecision(17)<< ps[i][0] << " " << ps[i][1] << " " << ps[i][2] << endl;
+		fout << std::setprecision(17) << ps[i][0] << " " << ps[i][1] << " " << ps[i][2] << endl;
 
 	}
 	fout.close();
@@ -1084,7 +1076,7 @@ T multyprecision(const T &num1, const T &num2) {
 	T res = num1 / num2 * T(2) - T(2) / T(3);
 
 	return res;
-//#include<arbitraryprecision/intervalprecision.h>
+	//#include<arbitraryprecision/intervalprecision.h>
 
 }
 
@@ -1099,24 +1091,24 @@ void interval_try() {
 
 	interval<float_precision> itfp(float_precision(0, digit));
 	auto xxx = (float_precision(0, digit) + float_precision(1.3, 16));
-	std::cout <<"xxx pre "<< xxx.precision() << std::endl;
-	std::cout <<"666 "<< xxx << std::endl;
-	interval<float_precision> a( xxx);
+	std::cout << "xxx pre " << xxx.precision() << std::endl;
+	std::cout << "666 " << xxx << std::endl;
+	interval<float_precision> a(xxx);
 	interval<float_precision> b(float_precision(2.6, 16) + float_precision(0, digit));
 
 	itfp = (a * 2 - b)*(a * 2 - b);
-	cout << "a "<<a<<"\nb "<< b <<" \nmultiply "<< itfp<<"\n is class "<<itfp.is_class() << "\nprecision "<<b.ref_lower()->precision() << endl;
+	cout << "a " << a << "\nb " << b << " \nmultiply " << itfp << "\n is class " << itfp.is_class() << "\nprecision " << b.ref_lower()->precision() << endl;
 	double m1 = 7.2;
 	interval<float_precision> tmp;
 	tmp.ref_lower()->precision(digit);
 	tmp.ref_upper()->precision(digit);
 	tmp = float_precision(m1, 16);
 	cout << tmp << endl;
-	cout << "pre "<<tmp.operator arbitrary_precision::float_precision() << endl;
+	cout << "pre " << tmp.operator arbitrary_precision::float_precision() << endl;
 
 
 	cout << "lambda try" << endl;
-	auto check= [=]()->int {
+	auto check = [=]()->int {
 
 		return 00; };
 
@@ -1127,7 +1119,7 @@ int test1(T a, T b, const std::function<int(T)> &checker) {
 
 	T c(a*b);
 
-	cout <<"precision "<< c.ref_lower()->precision() << endl;
+	cout << "precision " << c.ref_lower()->precision() << endl;
 	if (flag == 0)
 		std::cout << "same!" << std::endl;
 	std::cout << b << std::endl;
@@ -1135,7 +1127,7 @@ int test1(T a, T b, const std::function<int(T)> &checker) {
 	return 0;
 }
 void try2() {
-	int axxy= 0;
+	int axxy = 0;
 	assert(axxy == 1);
 	cout << "here ！@！！！！！！！！！！" << endl;
 }
@@ -1313,14 +1305,14 @@ void testM() {
 	multi.value->_mp_prec = 100;
 
 	mpf_t x;
-	mpf_init2(x,512);
-	
-	cout <<"prec "<<mpf_get_prec(x)<<endl;
+	mpf_init2(x, 512);
+
+	cout << "prec " << mpf_get_prec(x) << endl;
 
 	Multiprecision a1(3.14);
 	cout << "prec " << a1.get_prec_bits() << endl;
 
-	Multiprecision b2=3.14;
+	Multiprecision b2 = 3.14;
 	cout << "prec2 " << b2.get_prec_bits() << endl;
 
 }
@@ -1338,7 +1330,7 @@ int main(int argc, char const *argv[])
 {
 	GEO::initialize();
 
-	
+
 	//init_envelope_boxes_recursive()
 
 	/*const std::function<int(double)> check_double = [](double v) {

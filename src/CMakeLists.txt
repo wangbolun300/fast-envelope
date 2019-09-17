@@ -1,4 +1,6 @@
 set(SOURCES
+        AABB.h
+        AABB.cpp
         FastEnvelope.cpp
         FastEnvelope.h
         Logger.hpp

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <fastenvelope/Types.hpp>
+#include <fastenvelope/AABB.h>
 #include <vector>
 #include <array>
 #include <fenv.h>
@@ -12,7 +13,7 @@
 #include <geogram/mesh/mesh.h>
 
 namespace fastEnvelope {
-
+	class AABB;
 
 	class FastEnvelope
 	{
@@ -46,7 +47,7 @@ namespace fastEnvelope {
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		
 	private:
-		std::vector<std::array<fastEnvelope::Vector3, 2>> boxlist;
+		AABB tree;
 
 		std::vector<std::array<Vector3, 12>> envprism;
 		

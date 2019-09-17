@@ -10,8 +10,9 @@
 #include <geogram/mesh/mesh_reorder.h>
 #include <igl/Timer.h>
 
-static igl::Timer timer, timer_bigpart,timer_s,timerc;
-static double time_multi = 0.0,time_p1=0.0, time_p2=0.0, time_p3 = 0.0, time_pm = 0.0, time_searching=0.0,time_checking=0.0 ;
+static igl::Timer timer, timer_bigpart,timer_s,timerc,timerdetail,timer_u,timer_a;
+static double time_multi = 0.0, time_p1 = 0.0, time_p2 = 0.0, time_p3 = 0.0, time_pm = 0.0, time_searching = 0.0, time_checking = 0.0,
+time_p3d = 0,time_p3m=0,timein1=0,timein2=0,timein3=0,timein4=0,timetpp1=0,timetpp2 = 0,timetpp3 = 0,timetpp4 = 0;
 static const int p_face[8][3] = { {0,1,3},{7,6,9},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const int c_face[6][3] = { {0,1,2},{4,7,6},{0,3,4},{1,0,4},{1,5,2},{2,6,3} };
 static const fastEnvelope::Vector3 origin = fastEnvelope::Vector3(0, 0, 0);
@@ -216,6 +217,10 @@ namespace fastEnvelope {
 		std::cout << "time in multi " << time_multi << std::endl;
 		std::cout << "time part 1 2 3 " << time_p1<<" "<<time_p2<<" "<<time_p3 << std::endl;
 		std::cout << "time searching " << time_searching << std::endl;
+		std::cout << "time detail in part 3 " << time_p3d << " " << time_p3m <<  std::endl;
+		std::cout << "time in part 3 which part " << timein1 << " " << timein2 << " " << timein3 << " " << timein4 << " " << std::endl;
+		std::cout << "time in part 3 doubt double " << timetpp1 <<" "<< timetpp2 << " " << std::endl;
+
 	}
 
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
@@ -241,22 +246,17 @@ namespace fastEnvelope {
 		std::vector<std::array<Vector3, 2>> cubiconors;
 		CornerList_cubic(envcubic, cubiconors);
 		cornerlist.insert(cornerlist.end(), cubiconors.begin(), cubiconors.end());
-		std::vector<int> intercell;
-		boxlist.resize(
-			floatTetWild::OUR_AABB::envelope_max_node_index(
-				1, 0, cornerlist.size()
-			) + 1 // <-- this is because size == max_index + 1 !!!
-		);
-		floatTetWild::OUR_AABB::init_envelope_boxes_recursive(cornerlist, boxlist, 1, 0,cornerlist.size());
+		
+		tree.init_envelope(cornerlist);
 
 		std::cout << "prism size " << prism_size << std::endl;
 		std::cout << "cubic size " << envcubic.size() << std::endl;
 	}
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const {
 		timer_s.start();
+		 
 		 std::vector<int> querylist;
-		/*floatTetWild::OUR_AABB::facet_in_envelope_recursive(triangle[0], triangle[1], triangle[2], querylist, 1, 0,
-			cornerlist.size(), boxlist);*/
+		 //tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
 		 Vector3 tmin, tmax;
 		 get_tri_corners(triangle[0], triangle[1], triangle[2], tmin, tmax);
 		 for (int i = 0; i < cornerlist.size(); i++) {
@@ -270,8 +270,7 @@ namespace fastEnvelope {
 	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
 
 		std::vector<int> querylist;
-		floatTetWild::OUR_AABB::facet_in_envelope_recursive(triangle[0], triangle[1], triangle[2], querylist, 1, 0,
-			cornerlist.size(), boxlist);
+		tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
 		
 	}
 	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int& pieces) const {
@@ -280,8 +279,7 @@ namespace fastEnvelope {
 		bool out;
 		Vector3  point;
 		std::vector<int> querylist;
-		floatTetWild::OUR_AABB::facet_in_envelope_recursive(triangle[0], triangle[1], triangle[2], querylist, 1, 0,
-			cornerlist.size(), boxlist);
+		tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
 
 		if (querylist.size() == 0) return 1;
 		int deg = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
@@ -646,9 +644,11 @@ namespace fastEnvelope {
 		
 		time_p2 += timer_bigpart.getElapsedTimeInSec();
 		timer_bigpart.start();
+		timerdetail.start();
 		int listsize = inter_ijk_list.size();
 		DATA_TPI datatpi;
 		std::vector<DATA_TPI> tpilist;
+		tpilist.reserve(listsize/5);
 
 	
 		int id, id0 = 0;
@@ -660,7 +660,7 @@ namespace fastEnvelope {
 
 				//and T
 				if (inter_ijk_list[i][0] == inter_ijk_list[j][0]) {
-					if (inter_ijk_list[i][0] < prism_size) {
+					/*if (inter_ijk_list[i][0] < prism_size) {
 						id = inter_ijk_list[i][1] * 8 + inter_ijk_list[j][1];
 						id0 = prism_map[id][0];
 						
@@ -669,7 +669,7 @@ namespace fastEnvelope {
 						id = inter_ijk_list[i][1] * 6 + inter_ijk_list[j][1];
 						id0 = cubic_map[id][0];
 					}
-					if (id0 == -1) continue;
+					if (id0 == -1) continue;*/
 					//TODO temp change
 					continue;
 
@@ -677,7 +677,7 @@ namespace fastEnvelope {
 				
 			
 					//find prism_map[list[i][1]*8+list[j][1]][0],prism_map[list[i][1]*8+list[j][1]][1]
-
+					timer_u.start();
 					Vector3 t00, t01, t02, t10, t11, t12;
 					int n1, n2;
 					if (inter_ijk_list[i][0] < prism_size) {
@@ -718,6 +718,9 @@ namespace fastEnvelope {
 						t11 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][1]];
 						t12 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][2]];
 					}
+
+					timein1 += timer_u.getElapsedTimeInSec();
+					timer_u.start();
 					Scalar d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7;
 					bool multiflag;
 					
@@ -730,21 +733,27 @@ namespace fastEnvelope {
 						t11[0], t11[1], t11[2],
 						t12[0], t12[1], t12[2],
 						d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7);
+					timein2 += timer_u.getElapsedTimeInSec();
 					if (pre == true) {
+						
 						static Multiprecision dr, n1r, n2r, n3r;
 						cut =is_3_triangle_cut_double(d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
 							triangle, t00, t01, t02, t10, t11, t12, multiflag, check_Multiprecision, dr, n1r, n2r, n3r);
 						if (cut == false) continue;
-						inter= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(
+						timer_u.start();
+						inter= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(//TODO takes most of time
 							d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
 							triangle, t00, t01, t02, t10, t11, t12,
 							prismindex, jump1, jump2, multiflag, check_Multiprecision, dr, n1r, n2r, n3r);
+						timein3 += timer_u.getElapsedTimeInSec();
 						if (inter == 1) {
 
 							return 1;
 						}
+						
 					}
 					else {
+						timer_u.start();
 						datatpi.prismid1 = inter_ijk_list[i][0];
 						datatpi.facetid1 = inter_ijk_list[i][1];
 						datatpi.prismid2 = inter_ijk_list[j][0];
@@ -752,17 +761,19 @@ namespace fastEnvelope {
 						datatpi.jump1 = jump1;
 						datatpi.jump2 = jump2;
 						tpilist.emplace_back(datatpi);
+						timein4 += timer_u.getElapsedTimeInSec();
 					}
 
 			}
 
 		}
-
-		
+		time_p3d += timerdetail.getElapsedTimeInSec();
+		timerdetail.start();
 		for (int i = 0; i < tpilist.size(); i++) {
 			inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(tpilist[i], triangle, prismindex, checker);//is_3_intersection is already in it
 			if (inter == 1) return 1;
 		}
+		time_p3m += timerdetail.getElapsedTimeInSec();
 		time_p3 += timer_bigpart.getElapsedTimeInSec();
 
 		return 0;
@@ -1215,14 +1226,14 @@ namespace fastEnvelope {
 
 		INDEX index;
 		std::vector<INDEX> recompute;
-		
+		timer_a.start();
 		for (int i = 0; i < prismindex.size(); i++) {
 			if (prismindex[i] == jump1 || prismindex[i] == jump2) continue;
 			if (prismindex[i] < prism_size) {
 				index.FACES.clear();
 				tot = 0;
 				for (int j = 0; j < p_facenumber; j++) {
-					//ftimer2.start();
+					
 					ori = ip_filtered::
 						orient3D_TPI_postfilter(
 							d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
@@ -1291,7 +1302,8 @@ namespace fastEnvelope {
 
 
 		}
-
+		timetpp1 += timer_a.getElapsedTimeInSec();
+		timer_a.start();
 		if (recompute.size() > 0) {
 			static T
 				t00, t01, t02,
@@ -1378,7 +1390,7 @@ namespace fastEnvelope {
 
 		}
 
-
+		timetpp2 += timer_a.getElapsedTimeInSec();
 
 		return OUT_PRISM;
 	}
