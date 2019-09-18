@@ -10,7 +10,7 @@ namespace fastEnvelope {
 		assert(b != e);
 		assert(node_index < boxlist.size());
 
-		
+
 		if (b + 1 == e) {
 			boxlist[node_index] = cornerlist[b];
 			return;
@@ -33,14 +33,13 @@ namespace fastEnvelope {
 		}
 	}
 
-
 	void AABB::facet_in_envelope_recursive(
-		const fastEnvelope::Vector3& triangle0, const fastEnvelope::Vector3& triangle1, const fastEnvelope::Vector3& triangle2,
-		std::vector<int>& list,
-		int n, int b, int e
-	) const {
+		const fastEnvelope::Vector3 &triangle0, const fastEnvelope::Vector3 &triangle1, const fastEnvelope::Vector3 &triangle2,
+		std::vector<unsigned int> &list,
+		int n, int b, int e) const
+	{
 		assert(e != b);
-		
+
 		assert(n < boxlist.size());
 		bool cut = fastEnvelope::FastEnvelope::is_triangle_cut_bounding_box(triangle0, triangle1, triangle2, boxlist[n][0], boxlist[n][1]);
 
@@ -87,17 +86,37 @@ namespace fastEnvelope {
 		);
 	}
 
-	void AABB::init_envelope(const std::vector<std::array<fastEnvelope::Vector3, 2>> &cornerlist)
+	void AABB::init_envelope(const std::vector<std::array<fastEnvelope::Vector3, 2>> &cornerlist, bool use_aabbcc)
 	{
-		n_corners = cornerlist.size();
+		use_aabbcc_ = use_aabbcc;
+		aabb.reset(nullptr);
+		if (use_aabbcc_)
+		{
+			//dim, skinThickness, nels, touchIsOverlap
+			aabb = std::make_unique<aabb::Tree>(3, 0, cornerlist.size(), true);
 
-		boxlist.resize(
-			envelope_max_node_index(
-				1, 0, n_corners
-			) + 1 // <-- this is because size == max_index + 1 !!!
-		);
+			for(size_t i = 0; i < cornerlist.size(); ++i)
+			{
+				const auto &box = cornerlist[i];
+				std::vector<double> minv = {box[0][0], box[0][1], box[0][2]};
+				std::vector<double> maxv = {box[1][0], box[1][1], box[1][2]};
 
+				aabb->insertParticle(i, minv, maxv);
+			}
 
-		init_envelope_boxes_recursive(cornerlist, 1, 0, n_corners);
+			aabb->rebuild();
+		}
+		else
+		{
+			n_corners = cornerlist.size();
+
+			boxlist.resize(
+				envelope_max_node_index(
+					1, 0, n_corners) +
+				1 // <-- this is because size == max_index + 1 !!!
+			);
+
+			init_envelope_boxes_recursive(cornerlist, 1, 0, n_corners);
+		}
 	}
 }

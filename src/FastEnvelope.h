@@ -31,9 +31,9 @@ namespace fastEnvelope {
 		static const int NERLY_DEGENERATED = 1;
 		static const int DEGENERATED_SEGMENT = 2;
 		static const int DEGENERATED_POINT = 3;
-		
-		
-		
+
+
+
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac);
@@ -45,18 +45,18 @@ namespace fastEnvelope {
 		static bool is_triangle_cut_bounding_box(
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, const Vector3 &bmin, const Vector3 &bmax);
 		std::vector<std::array<Vector3, 2>> cornerlist;
-		
+
 	private:
 		AABB tree;
 
 		std::vector<std::array<Vector3, 12>> envprism;
-		
-		
+
+
 		int subx, suby, subz;
 		int prism_size;
 		std::vector<std::array<Vector3, 8>> envcubic;
 
-		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<int>& prismindex) const;
+		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
 
 		static int seg_cut_plane(const Vector3 & seg0, const Vector3 &seg1, const Vector3&t0, const Vector3&t1, const Vector3 &t2);
 		static Vector3 accurate_normal_vector(const Vector3 & p0, const Vector3 & p1,
@@ -67,7 +67,7 @@ namespace fastEnvelope {
 		static void triangle_sample_normal(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces, const int & nbr1, const int &nbr2);
 
 
-		static void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one 
+		static void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
 			min = vertices.front();
 			max = vertices.front();
 
@@ -90,7 +90,7 @@ namespace fastEnvelope {
 		static void cubic_bbox(const std::array<Vector3, 8>&cubic, Vector3 &min, Vector3& max);
 		static void three_facets_inter_point(const Vector3& a0, const Vector3& a1, const Vector3& a2, const Vector3& b0, const Vector3& b1,
 			const Vector3& b2, const Vector3& c0, const Vector3& c1, const Vector3& c2,  Vector3& p);
-		static void get_bb_corners_12(const std::array<Vector3,12> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one 
+		static void get_bb_corners_12(const std::array<Vector3,12> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
 			min = vertices[0];
 			max = vertices[0];
 
@@ -109,7 +109,7 @@ namespace fastEnvelope {
 			}
 
 		}
-		static void get_bb_corners_8(const std::array<Vector3, 8> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one 
+		static void get_bb_corners_8(const std::array<Vector3, 8> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
 			min = vertices[0];
 			max = vertices[0];
 
@@ -133,7 +133,7 @@ namespace fastEnvelope {
 
 			list.resize(prism.size());//to be safer
 			for (int i = 0; i < prism.size(); i++) {
-				
+
 				get_bb_corners_12(prism[i], list[i][0], list[i][1]);
 				//prism_bbox(prism[i], list[i][0], list[i][1]);
 			}
@@ -143,13 +143,13 @@ namespace fastEnvelope {
 
 			list.resize(cubic.size());//to be safer
 			for (int i = 0; i < cubic.size(); i++) {
-				
+
 				get_bb_corners_8(cubic[i], list[i][0], list[i][1]);
 				//cubic_bbox(cubic[i], list[i][0], list[i][1]);
 			}
 		}
-		
-		
+
+
 		static void get_tri_corners(const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2 , Vector3 &mint, Vector3 &maxt) {
 			mint[0] = std::min(std::min(triangle0[0], triangle1[0]), triangle2[0]);
 			mint[1] = std::min(std::min(triangle0[1], triangle1[1]), triangle2[1]);
@@ -159,22 +159,22 @@ namespace fastEnvelope {
 			maxt[2] = std::max(std::max(triangle0[2], triangle1[2]), triangle2[2]);
 
 		}
-		
+
 		static bool box_box_intersection(const Vector3 &min1, const Vector3 &max1, const Vector3 &min2, const Vector3 &max2) {
 			if (max1[0] < min2[0] || max1[1] < min2[1] || max1[2] < min2[2]) return 0;
 			if (max2[0] < min1[0] || max2[1] < min1[1] || max2[2] < min1[2]) return 0;
 			return 1;
 		}
-		
-		
+
+
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
-		bool point_out_prism(const Vector3& point, const std::vector<int>& prismindex, const int& jump) const;
+		bool point_out_prism(const Vector3& point, const std::vector<unsigned int>& prismindex, const int& jump) const;
 
 		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism,  std::vector<std::array<Vector3, 8>>& envbox, const Scalar& epsilon);
 		static void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar& width, std::array<Vector3, 8>& envbox);
 
-		
-		
+
+
 		 struct DATA_LPI {
 			 int segid;
 			 int prismid;
@@ -182,15 +182,15 @@ namespace fastEnvelope {
 			 int jump1;
 		 };
 		 template<typename T>
-		 int Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_LPI& datalpi,const std::array<Vector3,3>&triangle, const std::vector<int>& prismindex, const std::function<int(T)> &checker)const;
+		 int Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_LPI& datalpi,const std::array<Vector3,3>&triangle, const std::vector<unsigned int>& prismindex, const std::function<int(T)> &checker)const;
 		 template<typename T>
 		 int Implicit_Seg_Facet_interpoint_Out_Prism_double(
 			 const Scalar& a11, const Scalar&a12, const Scalar& a13, const Scalar& d, const Scalar& fa11,
 			 const Scalar& fa12, const Scalar& fa13, const Scalar& max1, const Scalar&max2, const Scalar& max5,
 			 const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle1,
-			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<int>& prismindex, const int& jump, const std::function<int(T)> &checker)const;
-	
-		
+			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<unsigned int>& prismindex, const int& jump, const std::function<int(T)> &checker)const;
+
+
 
 		struct DATA_TPI {
 			int prismid1;
@@ -201,35 +201,35 @@ namespace fastEnvelope {
 			int jump2;
 		};
 		template<typename T>
-		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI& datatpi, const std::array<Vector3, 3>&triangle, const std::vector<int>& prismindex, const std::function<int(T)> &checker)const;
-		
-		
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI& datatpi, const std::array<Vector3, 3>&triangle, const std::vector<unsigned int>& prismindex, const std::function<int(T)> &checker)const;
+
+
 		template<typename T>
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(
-			const Scalar& d, const Scalar& n1d, const Scalar& n2d, const Scalar& n3d, 
+			const Scalar& d, const Scalar& n1d, const Scalar& n2d, const Scalar& n3d,
 			const Scalar& max1, const Scalar& max2, const Scalar& max3, const Scalar& max4, const Scalar& max5, const Scalar&max6, const Scalar& max7,
 			const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22,
-			const std::vector<int>& prismindex, const int& jump1, const int &jump2, const bool & multiflag, const std::function<int(T)> &checker,
+			const std::vector<unsigned int>& prismindex, const int& jump1, const int &jump2, const bool & multiflag, const std::function<int(T)> &checker,
 			T& dr, T&  n1r, T&  n2r, T& n3r) const;
 
-		
+
 		template<typename T>
 		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3>& triangle, const T& dr, const T& n1r, const T& n2r, const T& n3r, const std::function<int(T)> &checker);
 		template<typename T>
 		static bool is_3_triangle_cut_double(
-			const Scalar &d, const Scalar & n1d, const Scalar &n2d, const Scalar & n3d, 
-			const Scalar & max1, const Scalar &max2, const Scalar &max3, const Scalar & max4, const Scalar & max5, 
+			const Scalar &d, const Scalar & n1d, const Scalar &n2d, const Scalar & n3d,
+			const Scalar & max1, const Scalar &max2, const Scalar &max3, const Scalar & max4, const Scalar & max5,
 			const Scalar & max6, const Scalar &max7,
 			const std::array<Vector3, 3>& triangle,
-			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2, 
+			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2,
 			bool & multiflag,
 			const std::function<int(T)> &checker, T &dr, T & n1r, T &n2r, T & n3r);
 
-		
+
 		static int is_3_triangle_cut_float_fast(
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2,
-			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, 
+			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12,
 			const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
 		//not accurate but conservative
 		bool is_triangle_cut_prism(const int&pindex,
@@ -237,13 +237,13 @@ namespace fastEnvelope {
 		//not accurate but conservative
 		bool is_triangle_cut_cube(const int&cindex,
 			 const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const;
-		//not accurate but conservative 
+		//not accurate but conservative
 		bool is_seg_cut_prism(const int&pindex,
 			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
-		//not accurate but conservative 
+		//not accurate but conservative
 		bool is_seg_cut_cube(const int&cindex,
 			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
-		
+
 		static Vector2 to_2d(const Vector3 &p, int t) {
 			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
 		}
@@ -253,7 +253,7 @@ namespace fastEnvelope {
 			const T& px, const T& py, const T& pz, const T& qx, const T& qy, const T& qz,
 			const T& rx, const T& ry, const T& rz, const T& sx, const T& sy, const T& sz, const T& tx, const T& ty, const T& tz,
 			T& a11, T& a12, T& a13, T& d, const std::function<int(T)> &checker) {
-			
+
 			a11 = (px - qx);
 			a12 = (py - qy);
 			a13 = (pz - qz);
@@ -364,7 +364,7 @@ namespace fastEnvelope {
 			T u2x(ou2x - ou1x);
 			T u2y(ou2y - ou1y);
 			T u2z(ou2z - ou1z);
-			
+
 			T nvx(v2y * v3z - v2z * v3y);
 			T nvy(v3x * v2z - v3z * v2x);
 			T nvz(v2x * v3y - v2y * v3x);
@@ -372,26 +372,26 @@ namespace fastEnvelope {
 			T nwx(w2y * w3z - w2z * w3y);
 			T nwy(w3x * w2z - w3z * w2x);
 			T nwz(w2x * w3y - w2y * w3x);
-			
+
 			T nux(u2y * u3z - u2z * u3y);
 			T nuy(u3x * u2z - u3z * u2x);
 			T nuz(u2x * u3y - u2y * u3x);
-			
+
 			T nwyuz(nwy * nuz - nwz * nuy);
 			T nwxuz(nwx * nuz - nwz * nux);
 			T nwxuy(nwx * nuy - nwy * nux);
-			
+
 			T nvyuz(nvy * nuz - nvz * nuy);
 			T nvxuz(nvx * nuz - nvz * nux);
 			T nvxuy(nvx * nuy - nvy * nux);
-			
+
 			T nvywz(nvy * nwz - nvz * nwy);
 			T nvxwz(nvx * nwz - nvz * nwx);
 			T nvxwy(nvx * nwy - nvy * nwx);
 
 			d = (nvx * nwyuz - nvy * nwxuz + nvz * nwxuy);
-			
-			
+
+
 
 			int flag1 = checker(d);
 			if (flag1 == -2 || flag1 == 0) {
@@ -485,11 +485,11 @@ namespace fastEnvelope {
 
 			// Setup faces
 
-	
+
 			M.facets.create_triangles(F.size());
 
-			
-			
+
+
 
 			for (int c = 0; c < (int)M.facets.nb(); ++c) {
 
@@ -537,5 +537,5 @@ namespace fastEnvelope {
 
 
 	};
-	
+
 }

@@ -125,6 +125,10 @@ include(geogram)
 target_link_libraries(${PROJECT_NAME} PUBLIC geogram)
 
 
+# aabbcc
+target_link_libraries(${PROJECT_NAME} PUBLIC aabbcc)
+
+
 if(FAST_ENVELOPE_WITH_SANITIZERS)
 	add_sanitizers(${PROJECT_NAME})
 endif()
