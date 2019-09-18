@@ -622,8 +622,12 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 
 //void test_in_wild(string inputFileName1, string input_surface_path1) {
 void test_in_wild() {
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
+	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl";
+
+
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
@@ -677,7 +681,7 @@ void test_in_wild() {
 	timer1.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
-	std::cout << "time in initialization " << timer1.getElapsedTimeInSec() << endl;
+	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
 	timer2.start();
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
@@ -689,8 +693,8 @@ void test_in_wild() {
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
 
 	}
-	std::cout << "time in checking " << timer2.getElapsedTimeInSec() << endl;
-	std::cout << "time " << timer.getElapsedTimeInSec() << endl;
+	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
+	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
 
 
 	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
@@ -761,6 +765,7 @@ void test_in_wild() {
 	std::cout << "how many different cases in comparison:  " << count << std::endl;
 	std::cout << "1-0 cases in comparison:  " << count1 << std::endl;
 	std::cout << "!!0-1 cases in comparison:  " << trindex1.size() << std::endl;
+	for (int i = 0; i < trindex1.size(); i++) cout << "NO. " << trindex1[i] << endl;
 	std::cout << "1-0 case size:  " << trindex2.size() << std::endl;
 	std::cout << "our inside size:  " << insiden_o << std::endl;
 	std::cout << "sap inside size:  " << insiden_s << std::endl;
@@ -890,12 +895,14 @@ void test_in_wild() {
 
 }
 void fordebug() {
+	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl";
 
 
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
 	vector<int> outenvelope;
-	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
+	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
 	std::vector<Vector3> env_vertices;
 	std::vector<Vector3i> env_faces;
@@ -911,62 +918,234 @@ void fordebug() {
 
 
 
-	Scalar shrink = 10;
+	Scalar shrink = 1;
 	Scalar eps = 1e-3;
-	const int spac = 30;// space subdivision parameter
+	const int spac = 10;// space subdivision parameter
 	const int fn = triangles.size();//test face number
+	const int query = 18724;
 	//////////////////////////////////////////////////////////////
 
 
 
 	eps = eps / shrink;
 	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-	igl::Timer timer;
+	igl::Timer timer, timer1, timer2;
 
 
 
-
+	timer.start();
+	timer1.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	
+	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
+	timer2.start();
+	vector<bool> pos1, pos2;
+	pos1.resize(fn);
+	pos2.resize(fn);
+	for (int i = query; i < query+1; i++) {
 
-	//std::cout << "cube size  " <<fast_envelope.envcubic.size() << std::endl;
-
-
-
-
-	//////////
-	int id = 15619;
-	std::array<Vector3, 3> tri;
-	Scalar l1;
-	int pieces = 20;
-	tri[0] = triangles[id][0];
-	tri[1] = triangles[id][1];
-	tri[2] = triangles[id][2];
-
-	bool out = fast_envelope.sample_triangle_outside(tri, pieces);
-
-	std::cout << "sample out or not " << out << std::endl;
-
-	out = fast_envelope.is_outside(tri);
-	std::cout << "our out or not " << out << std::endl;
-	////////////////////////////////////////////////////////////////////////////////////////
-
-
-	std::ofstream fout;
-	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-
-	for (int i = 0; i < 3; i++) {
-
-		fout << std::setprecision(17) << triangles[id][i][0] << " " << triangles[id][i][1] << " " << triangles[id][i][2] << endl;
+		pos1[i] = outenvelope[i];
+		fast_envelope.print_prisms(triangles[i]);
+		pos2[i] = fast_envelope.is_outside(triangles[i]);
 
 	}
-	fout.close();
+	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
+	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
 
-	fast_envelope.print_prisms(triangles[id]);
+
+	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
+	for (int i = 0; i < fn; i++) {
+		if (pos1[i] - pos2[i] != 0) {
+			//if (pos1[i]== 0) {
+			rcd = rcd + 1;
+			//std::cout << "envelope test different! different face NO. " << i << " the difference: " << pos1[i] - pos2[i] << std::endl;
+			//std::cout << "envelope test same! same face NO. " << i << "the in and out : " <<pos1[i] <<","<<pos2[i] << std::endl;
+		}
+		if (pos1[i] == 0) {
+			eq0 = eq0 + 1;
+		}
+		if (pos2[i] == 0) {
+			eq02 = eq02 + 1;
+		}
+		if (pos1[i] == 0 && pos2[i] == 1) {
+			rmk++;
+		}
+	}
+
+	std::cout << "how many different cases:  " << rcd << std::endl;
+	std::cout << "aabb inside triangle number:  " << eq0 << std::endl;
+	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
+	std::cout << "0-1 cases number " << rmk << std::endl;
+	cout << endl;
+	FastEnvelope::print_number();
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	std::vector<bool> pos3;
+	pos3.resize(fn);
+	std::array<Vector3, 3> tri;
+	Scalar l1;
+	int pieces;
+	std::vector<std::array<Vector3, 3>> t;
+	std::vector<int> trindex1, trindex2;
+	int insiden_o = 0, insiden_s = 0;
+
+	for (int i = query; i < query +1; i++) {
+		tri = triangles[i];
+		pieces = 20;
+		//l1 = (tri[0] - tri[1]).norm() / 30;
+		pos3[i] = fast_envelope.sample_triangle_outside(tri, pieces);
+	}
+
+	int count = 0, count1 = 0, count2 = 0, count3 = 0;
+	for (int i = 0; i < fn; i++) {
+		if (pos2[i] - pos3[i] != 0) {
+			count++;
+		}
+		if (pos2[i] - pos3[i] == 1) {
+			count1++;
+			trindex2.push_back(i);
+		}
+		if (pos2[i] - pos3[i] == -1) {
+			trindex1.push_back(i);
+		}
+		if (pos2[i] == 0) {
+			insiden_o++;
+		}
+		if (pos3[i] == 0) {
+			insiden_s++;
+		}
+
+	}
+	cout << "comparison " << pos2[query] << " " << pos3[query] << endl;
+	
+	int nbr = 0;
+	for (int i = 0; i < trindex2.size(); i++) {
+
+		if (FastEnvelope::is_triangle_degenerated(triangles[trindex2[i]][0], triangles[trindex2[i]][1], triangles[trindex2[i]][2]) != 0) {
+			nbr++;
+		}
+
+	}
+	cout << "\ndegeneration counting: " << nbr << endl;
+
+	////////////////////////////////////////////////////////////////////////////////////////
+
+	cout << "\nstarting iteration: " << endl;
+
+	const int irt = 12;
+	std::vector<bool> pos4;
+	vector<int> ti, ti1;//triangle index
+	ti = trindex2;
+	int lth[irt] = { 60,100,200,400,600,800,1000,2000,2500,5000,10000,20000 };
+	for (int j = 0; j < irt; j++) {
+		int howmany = 0;
+		ti1.resize(0);
+		pos4.resize(ti.size());
+		for (int i = 0; i < ti.size(); i++) {
+			tri = triangles[ti[i]];
+
+
+			pos4[i] = fast_envelope.sample_triangle_outside(tri, lth[j]);
+			if (pos4[i] == 0) {
+				howmany++;
+				ti1.push_back(ti[i]);
+			}
+
+		}
+		if (ti1.size() != 0) {
+			cout << "the ith iteration " << j << endl;
+			cout << "how many differences " << howmany << endl;
+			ti = ti1;
+		}
+		else {
+			cout << "kill all the different cases";
+			break;
+		};
+	}
+
+
+	/*for (int j = 0; j < irt; j++) {
+		int howmany = 0;
+		ti1.resize(0);
+		pos4.resize(ti.size());
+		for (int i = 0; i < ti.size(); i++) {
+			tri[0] = triangles[ti[i]][2];
+			tri[1] = triangles[ti[i]][1];
+			tri[2] = triangles[ti[i]][0];
+
+
+			pos4[i] = fast_envelope.sample_triangle_outside(tri, lth[j]);
+			if (pos4[i] == 0) {
+				howmany++;
+				ti1.push_back(ti[i]);
+			}
+
+		}
+		if (ti1.size() != 0) {
+			cout << "the ith iteration " << j << endl;
+			cout << "how many differences " << howmany << endl;
+			ti = ti1;
+		}
+		else {
+			cout << "kill all the different cases";
+			break;
+		};
+	}
+*/
+
+	if (ti1.size() > 0) {
+		cout << "still have 1-0 cases not finished" << endl;
+		for (int i = 0; i < ti1.size(); i++) {
+			cout << "NO. ith " << ti[i] << endl;
+		}
+	}
+
+
+
+
+
+
+
+
+	/*if (trindex1.size() > 0) {
+		std::ofstream fout;
+		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
+		int idx = 0;
+		std::cout << "output NO. " << trindex1[idx] << endl;
+		for (int i = 0; i < 3; i++) {
+
+			fout << std::setprecision(17) << triangles[trindex1[idx]][i][0] << " " << triangles[trindex1[idx]][i][1] << " " << triangles[trindex1[idx]][i][2] << endl;
+
+		}
+		fout.close();
+
+		fast_envelope.print_prisms(triangles[trindex1[idx]]);
+
+	}
+*/
+////for aabb method
+	Vector3 min, max;
+
+	Scalar dd;
+	get_bb_corners(env_vertices, min, max);
+	dd = ((max - min).norm()) *eps;
+	timer.start();
+	AABBWrapper sf_tree(envmesh);
+	for (int i = 0; i < fn; i++) {
+
+		is_out_function(triangles[i], dd, sf_tree); ;
+	}
+	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
+
+	std::cout << "TEST aabb FINISHED  " << std::endl;
+	//////////////////////////////
+	//////////
 
 }
 void test_tree() {
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
 
@@ -1029,7 +1208,7 @@ void test_tree() {
 		querylist.clear();
 		tree.facet_in_envelope(triangles[i][0], triangles[i][1], triangles[i][2], querylist);
 
-		std::cout << i << " succeed,size " << querylist.size() << endl;
+		//std::cout << i << " succeed,size " << querylist.size() << endl;
 		//fast_envelope.print_prisms(triangles[i]);
 	}
 	std::cout << "\ntest tree over " << timer.getElapsedTimeInSec() << endl;
@@ -1417,9 +1596,9 @@ int main(int argc, char const *argv[])
 
 
 	//test_in_wild(argv[1],argv[2]);
-	test_in_wild();
+	//test_in_wild();
 	//testOrientation();
-	//fordebug();
+	fordebug();
 	//writelist();
 	//test_tree();
 	//inf();
@@ -1429,7 +1608,7 @@ int main(int argc, char const *argv[])
 	//accurate_vector();
 	//try2();
 	//testM();
-	try_eigen();
+	//try_eigen();
 	std::cout << "done!" << std::endl;
 
 

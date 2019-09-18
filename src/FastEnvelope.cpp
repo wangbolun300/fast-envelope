@@ -214,12 +214,13 @@ namespace fastEnvelope {
 		//std::cout << "same " << float(diff1) / float(diff1 + diff2 + diff3) << " diff " << float(diff2) / float(diff1 + diff2 + diff3) << " wrong " << float(diff3) / float(diff1 + diff2 + diff3) << std::endl;
 	//	std::cout << "cut tri number original " << ct1 << " conservative " << ct2  <<" rate "<<float(ct1)/float(ct2)<< std::endl;
 		//std::cout << "total " <<diff1+diff2+diff3 << "   " << ct1 << "  " << ct2 << std::endl;
-		std::cout << "time in multi " << time_multi << std::endl;
-		std::cout << "time part 1 2 3 " << time_p1<<" "<<time_p2<<" "<<time_p3 << std::endl;
-		std::cout << "time searching " << time_searching << std::endl;
-		std::cout << "time detail in part 3 " << time_p3d << " " << time_p3m <<  std::endl;
-		std::cout << "time in part 3 which part " << timein1 << " " << timein2 << " " << timein3 << " " << timein4 << " " << std::endl;
-		std::cout << "time in part 3 doubt double " << timetpp1 <<" "<< timetpp2 << " " << std::endl;
+		std::cout << "time in multi, " << time_multi << std::endl;
+		std::cout << "time part 1, " << time_p1<<"\ntime part 2, "<<time_p2<<"\ntime part 3, "<<time_p3 << std::endl;
+		std::cout << "time searching, " << time_searching << std::endl;
+		std::cout << "time detail in part 3_1, " << time_p3d << "\ntime detail in part 3_2, " << time_p3m <<  std::endl;
+		std::cout << "time in part 3 which part? 1, " << timein1 << "\ntime in part 3 which part? 2, " << timein2 << "\ntime in part 3 which part? 3, "
+			<< timein3 << "\ntime in part 3 which part? 4, " << timein4 << " " << std::endl;
+		std::cout << "time in part 3 doubt double_1, " << timetpp1 <<"\ntime in part 3 doubt double_2, "<< timetpp2 << " " << std::endl;
 
 	}
 
@@ -268,10 +269,36 @@ namespace fastEnvelope {
 	}
 
 	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
-
+		bool flagc = 0;
 		std::vector<unsigned int> querylist;
 		tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
+		std::ofstream fout;
+		fout.open("D:\\vs\\fast_envelope_csv\\problems\\visualtriangle.txt");
+		
+		for (int i = 0; i < 3; i++) {
 
+			fout << std::setprecision(17) << triangle[i][0] << " " << triangle[i][1] << " " << triangle[i][2] << std::endl;
+
+		}
+		fout.close();
+		fout.open("D:\\vs\\fast_envelope_csv\\problems\\prisms.txt");
+		for (int i = 0; i < querylist.size(); i++) {
+			if (querylist[i] >= prism_size)   continue;
+			for (int j = 0; j < 12; j++) {
+				fout << std::setprecision(17) << envprism[querylist[i]][j][0] << " " << envprism[querylist[i]][j][1] << " " << envprism[querylist[i]][j][2] << std::endl;
+
+			}
+		}
+		fout.close();
+		fout.open("D:\\vs\\fast_envelope_csv\\problems\\cubes.txt");
+		for (int i = 0; i < querylist.size(); i++) {
+			if (querylist[i] < prism_size) continue;
+			for (int j = 0; j < 8; j++) {
+				fout << std::setprecision(17) << envcubic[querylist[i]][j][0] << " " << envcubic[querylist[i]][j][1] << " " << envcubic[querylist[i]][j][2] << std::endl;
+
+			}
+		}
+		fout.close();
 	}
 	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int& pieces) const {
 
