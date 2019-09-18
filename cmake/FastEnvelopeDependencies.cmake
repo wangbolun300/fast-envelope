@@ -35,3 +35,10 @@ if(NOT TARGET spdlog::spdlog)
 	add_subdirectory(${FAST_ENVELOPE_EXTERNAL}/spdlog)
 endif()
 
+
+if(NOT TARGET aabbcc)
+    fast_envelope_download_aabbcc()
+    add_library(aabbcc ${FAST_ENVELOPE_EXTERNAL}/aabbcc/src/AABB.cc ${FAST_ENVELOPE_EXTERNAL}/aabbcc/src/AABB.h)
+    target_include_directories(aabbcc PUBLIC ${FAST_ENVELOPE_EXTERNAL}/aabbcc/src/)
+endif()
+

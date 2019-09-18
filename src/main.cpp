@@ -47,7 +47,7 @@ void tri_tri_cutting_try() {
 	//FastEnvelope::test_tri_tri_cut( p1, p2, p3, q1, q2, q3 );
 
 }
-void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one 
+void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
 	min = vertices.front();
 	max = vertices.front();
 
@@ -1014,12 +1014,13 @@ void test_tree() {
 	//}
 	//std::cout << "time " << timer.getElapsedTimeInSec() << endl;
 	//std::cout << "\ntest tree begins" << endl;
-	
-	std::vector<int> querylist;
+
+	std::vector<unsigned int> querylist;
+	bool use_aabbcc = true;
 
 	std::cout << "\nbefore call function, cornerlist size " << fast_envelope.cornerlist.size() << endl;
 	AABB tree;
-	tree.init_envelope(fast_envelope.cornerlist);
+	tree.init_envelope(fast_envelope.cornerlist, use_aabbcc);
 
 	timer.start();
 	std::cout << "\nbuild tree successful" << endl;
