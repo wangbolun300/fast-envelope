@@ -66,7 +66,7 @@ namespace fastEnvelope {
 		static void triangle_sample_point(const std::array<Vector3, 3> &triangle, Vector3& ps);
 		static void triangle_sample_normal(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces, const int & nbr1, const int &nbr2);
 
-
+		static void triangle_sample_normal_rational(const std::array<Vector3, 3> &triangle, Rational& ps0, Rational& ps1, Rational& ps2, const int &pieces, const int & nbr1, const int &nbr2);
 		static void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
 			min = vertices.front();
 			max = vertices.front();
@@ -169,7 +169,17 @@ namespace fastEnvelope {
 
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		bool point_out_prism(const Vector3& point, const std::vector<unsigned int>& prismindex, const int& jump) const;
-
+		bool point_out_prism_rational(const Rational& point0, const Rational& point1, const Rational& point2, const std::vector<unsigned int>& prismindex, const int& jump) const;
+		static int orient_3d_rational(const Rational& a11, const Rational& a12, const Rational& a13,
+			const Vector3& a, const Vector3& b, const Vector3& c ) {
+			Rational a21(a[0]), a22(a[1]), a23(a[2]), a31(b[0]), a32(b[1]), a33(b[2]), a41(c[0]), a42(c[1]), a43(c[2]);
+			Rational number = a11 * a22*a33 - a12 * a23*a41 + a13 * a31*a42 - a21 * a32*a43 + a41 * a32*a23 - a42 * a33*a11
+				+ a43 * a21*a12 - a31 * a22*a13 + a11 * a23*a42 - a13 * a32*a41 + a22 * a31*a43 - a12 * a21*a33
+				+ a41 * a33*a12 - a43 * a22*a11 + a32 * a21*a13 - a42 * a31*a23 + a11 * a32*a43 - a22 * a33 * a41
+				+ a12 * a23*a31 - a13 * a21*a42 + a41 * a22*a13 - a32 * a23*a11 + a42 * a33*a21 - a43 * a31*a12;
+			return number.get_sign();
+		}
+		
 		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism,  std::vector<std::array<Vector3, 8>>& envbox, const Scalar& epsilon);
 		static void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar& width, std::array<Vector3, 8>& envbox);
 

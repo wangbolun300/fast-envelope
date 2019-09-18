@@ -922,7 +922,7 @@ void fordebug() {
 	Scalar eps = 1e-3;
 	const int spac = 10;// space subdivision parameter
 	const int fn = triangles.size();//test face number
-	const int query = 18724;
+	const int query = 18724;//18724,22651
 	//////////////////////////////////////////////////////////////
 
 
@@ -1596,9 +1596,9 @@ int main(int argc, char const *argv[])
 
 
 	//test_in_wild(argv[1],argv[2]);
-	//test_in_wild();
+	test_in_wild();
 	//testOrientation();
-	fordebug();
+	//fordebug();
 	//writelist();
 	//test_tree();
 	//inf();

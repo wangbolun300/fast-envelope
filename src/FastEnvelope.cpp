@@ -302,53 +302,77 @@ namespace fastEnvelope {
 	}
 	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int& pieces) const {
 
-
+		bool flagr = 1;
 		bool out;
 		Vector3  point;
 		std::vector<unsigned int> querylist;
 		tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
-
-		if (querylist.size() == 0) return 1;
-		int deg = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
-
 		int jump = -1;
-		if (deg == DEGENERATED_POINT) {
-			out = point_out_prism(triangle[0], querylist, jump);
-			if (out == true) {
+		if (querylist.size() == 0) return 1;
+		if (flagr == 0) {
+			int deg = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
 
-				return 1;
+			
+			if (deg == DEGENERATED_POINT) {
+				out = point_out_prism(triangle[0], querylist, jump);
+				if (out == true) {
 
+					return 1;
+
+				}
+				return 0;
 			}
-			return 0;
-		}
-		if (deg == DEGENERATED_SEGMENT) {
+			if (deg == DEGENERATED_SEGMENT) {
+				for (int i = 0; i < pieces; i++) {
+					triangle_sample_segment(triangle, point, pieces, i);
+					out = point_out_prism(point, querylist, jump);
+					if (out == true) {
+
+						return 1;
+
+					}
+
+				}
+				return 0;
+			}
+
+
 			for (int i = 0; i < pieces; i++) {
-				triangle_sample_segment(triangle, point, pieces, i);
-				out = point_out_prism(point, querylist, jump);
-				if (out == true) {
+				for (int j = 0; j <= i; j++) {
+					triangle_sample_normal(triangle, point, pieces, i, j);
+					out = point_out_prism(point, querylist, jump);
+					if (out == true) {
 
-					return 1;
+						return 1;
+
+					}
+
 
 				}
 
 			}
-			return 0;
 		}
+		else {
+			//std::cout << "*     using rational" << std::endl;
+			Rational ps0, ps1, ps2;
+			for (int i = 0; i < pieces; i++) {
+				for (int j = 0; j <= i; j++) {
+					triangle_sample_normal_rational(triangle, ps0, ps1, ps2,
+						pieces, i, j);
+					out = point_out_prism_rational( ps0, ps1, ps2, querylist, jump);
+					if (out == true) {
 
+						return 1;
 
-		for (int i = 0; i < pieces; i++) {
-			for (int j = 0; j <= i; j++) {
-				triangle_sample_normal(triangle, point, pieces, i, j);
-				out = point_out_prism(point, querylist, jump);
-				if (out == true) {
+					}
 
-					return 1;
 
 				}
 
-
 			}
 
+
+			
 		}
 		return 0;
 	}
@@ -400,6 +424,19 @@ namespace fastEnvelope {
 		int l1s = pieces - 1;//
 		Vector3 p1 = triangle[0] + (triangle[1] - triangle[0])*nbr1 / l1s, d = (triangle[2] - triangle[1]) / l1s;
 		ps = p1 + d * nbr2;
+
+	}
+	void FastEnvelope::triangle_sample_normal_rational(const std::array<Vector3, 3> &triangle, Rational& ps0, Rational& ps1, Rational& ps2, const int &pieces, const int & nbr1, const int &nbr2) {
+		int l1s = pieces - 1;//
+		Rational t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]), t10(triangle[1][0]), t11(triangle[1][1]), 
+			t12(triangle[1][2]), t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]), nbr1r(nbr1), nbr2r(nbr2), l1sr(l1s);
+		
+		Rational  p0 = t00 + (t10 - t00)*nbr1r / l1sr, d0 = (t20 - t10) / l1sr;
+		Rational  p1 = t01 + (t11 - t01)*nbr1r / l1sr, d1 = (t21 - t11) / l1sr;
+		Rational  p2 = t02 + (t12 - t02)*nbr1r / l1sr, d2 = (t22 - t12) / l1sr;
+		ps0 = p0 + d0 * nbr2;
+		ps1 = p1 + d1 * nbr2;
+		ps2 = p2 + d2 * nbr2;
 
 	}
 	struct DATA_LPI {
@@ -577,6 +614,7 @@ namespace fastEnvelope {
 				std::vector<int> cidl;
 				cut = is_triangle_cut_prism(prismindex[i],
 					triangle[0], triangle[1], triangle[2], cidl);
+				//if (cut) std::cout << "cut_id from 1: "<<i+1<<" out of "<< prismindex.size() << std::endl;
 				if (cut == false) continue;
 
 				for (int j = 0; j < cidl.size(); j++) {
@@ -2314,7 +2352,46 @@ namespace fastEnvelope {
 
 		return true;
 	}
+	bool FastEnvelope::point_out_prism_rational(const Rational& point0, const Rational& point1, const Rational& point2,  const std::vector<unsigned int>& prismindex, const int& jump)const
+	{
 
+		int  ori;
+		int psize = envprism.size();
+		for (int i = 0; i < prismindex.size(); i++) {
+			if (prismindex[i] == jump) continue;
+			if (prismindex[i] < psize) {
+				for (int j = 0; j < p_facenumber; j++) {
+
+					ori = orient_3d_rational(point0,point1,point2,envprism[prismindex[i]][p_face[j][0]], envprism[prismindex[i]][p_face[j][1]], envprism[prismindex[i]][p_face[j][2]]);
+					if (ori == 1 || ori == 0) {
+						break;
+					}
+					if (j == 7) {
+
+						return false;
+					}
+				}
+			}
+			else {
+				int boxid = prismindex[i] - psize;
+				for (int j = 0; j < c_facenumber; j++) {
+
+					ori = orient_3d_rational(point0, point1, point2, envcubic[boxid][c_face[j][0]], envcubic[boxid][c_face[j][1]], envcubic[boxid][c_face[j][2]]);
+
+					if (ori == 1 || ori == 0) {
+						break;
+					}
+					if (j == 5) {
+
+						return false;
+					}
+				}
+			}
+
+		}
+
+		return true;
+	}
 	int FastEnvelope::is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2) {
 
 		Vector3 a = triangle0 - triangle1, b = triangle0 - triangle2;
