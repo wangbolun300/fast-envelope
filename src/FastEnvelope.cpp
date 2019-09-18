@@ -1226,21 +1226,21 @@ namespace fastEnvelope {
 
 		INDEX index;
 		std::vector<INDEX> recompute;
-		timer_a.start();
+		
 		for (int i = 0; i < prismindex.size(); i++) {
 			if (prismindex[i] == jump1 || prismindex[i] == jump2) continue;
 			if (prismindex[i] < prism_size) {
 				index.FACES.clear();
 				tot = 0;
 				for (int j = 0; j < p_facenumber; j++) {
-					
+					timer_a.start();
 					ori = ip_filtered::
 						orient3D_TPI_postfilter(
 							d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
 							envprism[prismindex[i]][p_face[j][0]][0], envprism[prismindex[i]][p_face[j][0]][1], envprism[prismindex[i]][p_face[j][0]][2],
 							envprism[prismindex[i]][p_face[j][1]][0], envprism[prismindex[i]][p_face[j][1]][1], envprism[prismindex[i]][p_face[j][1]][2],
 							envprism[prismindex[i]][p_face[j][2]][0], envprism[prismindex[i]][p_face[j][2]][1], envprism[prismindex[i]][p_face[j][2]][2]);
-
+					timetpp1 += timer_a.getElapsedTimeInSec();
 
 					if (ori == 1) {
 						break;
@@ -1252,6 +1252,7 @@ namespace fastEnvelope {
 					else if (ori == -1) {
 						tot++;
 					}
+					
 
 				}
 				if (tot == p_facenumber) {
@@ -1260,21 +1261,25 @@ namespace fastEnvelope {
 				}
 
 				if (ori != 1) {
+					timer_a.start();
 					index.Pi = prismindex[i];
 					recompute.emplace_back(index);
+					timetpp1 += timer_a.getElapsedTimeInSec();
 				}
 			}
 			else {
 				index.FACES.clear();
 				tot = 0;
 				for (int j = 0; j < c_facenumber; j++) {
-					//ftimer2.start();
+					
+					timer_a.start();
 					ori = ip_filtered::
 						orient3D_TPI_postfilter(
 							d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
 							envcubic[prismindex[i] - prism_size][c_face[j][0]][0], envcubic[prismindex[i] - prism_size][c_face[j][0]][1], envcubic[prismindex[i] - prism_size][c_face[j][0]][2],
 							envcubic[prismindex[i] - prism_size][c_face[j][1]][0], envcubic[prismindex[i] - prism_size][c_face[j][1]][1], envcubic[prismindex[i] - prism_size][c_face[j][1]][2],
 							envcubic[prismindex[i] - prism_size][c_face[j][2]][0], envcubic[prismindex[i] - prism_size][c_face[j][2]][1], envcubic[prismindex[i] - prism_size][c_face[j][2]][2]);
+					timetpp1 += timer_a.getElapsedTimeInSec();
 
 
 					if (ori == 1) {
@@ -1295,16 +1300,19 @@ namespace fastEnvelope {
 				}
 
 				if (ori != 1) {
+					timer_a.start();
 					index.Pi = prismindex[i];
 					recompute.emplace_back(index);
+					timetpp1 += timer_a.getElapsedTimeInSec();
 				}
 			}
 
 
 		}
-		timetpp1 += timer_a.getElapsedTimeInSec();
-		timer_a.start();
+		
+		
 		if (recompute.size() > 0) {
+			timer_a.start();
 			static T
 				t00, t01, t02,
 				t10, t11, t12,
@@ -1342,7 +1350,7 @@ namespace fastEnvelope {
 					dr, n1r, n2r, n3r, checker);
 				time_multi += timer.getElapsedTimeInSec();
 			}
-			
+			timetpp2 += timer_a.getElapsedTimeInSec();
 
 			for (int k = 0; k < recompute.size(); k++) {
 				int in1 = recompute[k].Pi;
@@ -1350,7 +1358,7 @@ namespace fastEnvelope {
 				if (in1 < prism_size) {
 					for (int j = 0; j < recompute[k].FACES.size(); j++) {
 						int in2 = recompute[k].FACES[j];
-
+						timer_a.start();
 						e00 = (envprism[in1][p_face[in2][0]][0]); e01 = (envprism[in1][p_face[in2][0]][1]); e02 = (envprism[in1][p_face[in2][0]][2]);
 						e10 = (envprism[in1][p_face[in2][1]][0]); e11 = (envprism[in1][p_face[in2][1]][1]); e12 = (envprism[in1][p_face[in2][1]][2]);
 						e20 = (envprism[in1][p_face[in2][2]][0]); e21 = (envprism[in1][p_face[in2][2]][1]); e22 = (envprism[in1][p_face[in2][2]][2]);
@@ -1359,6 +1367,7 @@ namespace fastEnvelope {
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
 						time_multi += timer.getElapsedTimeInSec();
+						timetpp2 += timer_a.getElapsedTimeInSec();
 						if (ori == 1 || ori == 0) break;
 					}
 
@@ -1367,7 +1376,7 @@ namespace fastEnvelope {
 				else {
 					for (int j = 0; j < recompute[k].FACES.size(); j++) {
 						int in2 = recompute[k].FACES[j];
-
+						timer_a.start();
 
 						e00 = (envcubic[in1 - prism_size][c_face[in2][0]][0]); e01 = (envcubic[in1 - prism_size][c_face[in2][0]][1]); e02 = (envcubic[in1 - prism_size][c_face[in2][0]][2]);
 						e10 = (envcubic[in1 - prism_size][c_face[in2][1]][0]); e11 = (envcubic[in1 - prism_size][c_face[in2][1]][1]); e12 = (envcubic[in1 - prism_size][c_face[in2][1]][2]);
@@ -1377,7 +1386,7 @@ namespace fastEnvelope {
 							e00, e01, e02, e10, e11, e12,
 							e20, e21, e22, checker);
 						time_multi += timer.getElapsedTimeInSec();
-
+						timetpp2 += timer_a.getElapsedTimeInSec();
 
 						//if (ori == -2) std::cout << "impossible thing happens in lpi" << std::endl;
 						if (ori == 1 || ori == 0) break;
@@ -1390,7 +1399,7 @@ namespace fastEnvelope {
 
 		}
 
-		timetpp2 += timer_a.getElapsedTimeInSec();
+		
 
 		return OUT_PRISM;
 	}
