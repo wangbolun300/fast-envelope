@@ -41,6 +41,8 @@ namespace fastEnvelope {
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int& pieces) const;
 		void print_prisms(const std::array<Vector3, 3> &triangle) const;
 		static void print_number();
+		static void print_ini_number();
+
 		static int is_triangle_degenerated(const Vector3& triangle0, const Vector3& triangle1, const Vector3& triangle2);
 		static bool is_triangle_cut_bounding_box(
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, const Vector3 &bmin, const Vector3 &bmax);
@@ -182,7 +184,7 @@ namespace fastEnvelope {
 		
 		static void BoxGeneration(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, std::vector<std::array<Vector3, 12>>& envprism,  std::vector<std::array<Vector3, 8>>& envbox, const Scalar& epsilon);
 		static void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar& width, std::array<Vector3, 8>& envbox);
-
+		
 
 
 		 struct DATA_LPI {

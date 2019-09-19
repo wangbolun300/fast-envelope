@@ -620,13 +620,13 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-//void test_in_wild(string inputFileName1, string input_surface_path1) {
-void test_in_wild() {
+void test_in_wild(string inputFileName1, string input_surface_path1) {
+//void test_in_wild() {
 	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
 	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl";
-
+	///string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl_env.csv";
+	///string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl";
+	///
 
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
@@ -648,9 +648,16 @@ void test_in_wild() {
 	Scalar shrink = 1;
 	Scalar eps = 1e-3;
 	const int spac = 10;// space subdivision parameter
-	const int fn = triangles.size();//test face number
+	int ft;
+	// if there are over one million triangles, then test maximal one million triangles
+	if (triangles.size() > 1000000) {
+		ft=1000000;
+	}
+	else {
+		ft = triangles.size();//test face number
+	}
 	//////////////////////////////////////////////////////////////
-
+	const int fn = ft;//test face number
 
 
 	eps = eps / shrink;
@@ -682,15 +689,18 @@ void test_in_wild() {
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
 	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
+	fast_envelope.print_ini_number();
 	timer2.start();
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
 	pos2.resize(fn);
+	
 	for (int i = 0; i < fn; i++) {
 
 		pos1[i] = outenvelope[i];
 		//fast_envelope.print_prisms(triangles[i]);
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
+		//if (i - i / 1000*1000 == 0) cout << "ten thousand test over " << i / 1000 << endl;
 
 	}
 	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
@@ -810,7 +820,7 @@ void test_in_wild() {
 			ti = ti1;
 		}
 		else {
-			cout << "kill all the different cases";
+			cout << "kill all the different cases"<<endl;
 			break;
 		};
 	}
@@ -897,8 +907,8 @@ void test_in_wild() {
 void fordebug() {
 	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
 	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl";
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl";
 
 
 	vector<int> outenvelope;
@@ -922,7 +932,7 @@ void fordebug() {
 	Scalar eps = 1e-3;
 	const int spac = 10;// space subdivision parameter
 	const int fn = triangles.size();//test face number
-	const int query = 18724;//18724,22651
+	const int query = 22651;//18724,22651
 	//////////////////////////////////////////////////////////////
 
 
@@ -1595,8 +1605,8 @@ int main(int argc, char const *argv[])
 	//test_diff();
 
 
-	//test_in_wild(argv[1],argv[2]);
-	test_in_wild();
+	test_in_wild(argv[1],argv[2]);
+	//test_in_wild();
 	//testOrientation();
 	//fordebug();
 	//writelist();

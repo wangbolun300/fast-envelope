@@ -12,7 +12,8 @@
 
 static igl::Timer timer, timer_bigpart,timer_s,timerc,timerdetail,timer_u,timer_a;
 static double time_multi = 0.0, time_p1 = 0.0, time_p2 = 0.0, time_p3 = 0.0, time_pm = 0.0, time_searching = 0.0, time_checking = 0.0,
-time_p3d = 0,time_p3m=0,timein1=0,timein2=0,timein3=0,timein4=0,timetpp1=0,timetpp2 = 0,timetpp3 = 0,timetpp4 = 0;
+time_p3d = 0,time_p3m=0,timein1=0,timein2=0,timein3=0,timein4=0,timetpp1=0,timetpp2 = 0,timetpp3 = 0,timetpp4 = 0,
+timeinit1 = 0,timeinit2 = 0,timeinit3 = 0,timeinit4 = 0,timeinit5=0;
 static const int p_face[8][3] = { {0,1,3},{7,6,9},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const int c_face[6][3] = { {0,1,2},{4,7,6},{0,3,4},{1,0,4},{1,5,2},{2,6,3} };
 static const fastEnvelope::Vector3 origin = fastEnvelope::Vector3(0, 0, 0);
@@ -223,33 +224,48 @@ namespace fastEnvelope {
 		std::cout << "time in part 3 doubt double_1, " << timetpp1 <<"\ntime in part 3 doubt double_2, "<< timetpp2 << " " << std::endl;
 
 	}
-
+	void FastEnvelope::print_ini_number() {
+		std::cout << "init time 1, " << timeinit1 << "\ninit time 2, " << timeinit2 << "\ninit time 3, "<<
+			timeinit3<< "\ninit time 4, " << timeinit4 << "\ninit time 5, " << timeinit5<< std::endl;
+	}
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
 	{
 
 		//Multiprecision::set_precision(256);
+		timer.start();
 		Vector3 min, max;
 		get_bb_corners(m_ver, min, max);
+		timeinit1 += timer.getElapsedTimeInSec();
 		Scalar bbd = (max - min).norm();
 		Scalar epsilon = bbd * eps; //eps*bounding box diagnal
+		timer.start();
 		GEO::Mesh M;
+		
 		to_geogram_mesh(m_ver, m_faces, M);
 		GEO::mesh_reorder(M, GEO::MESH_ORDER_MORTON);
+		
 		std::vector<Vector3> ver_new;
-		std::vector<Vector3i> faces_new;
-		from_geogram_mesh(M, ver_new, faces_new);
+		ver_new.resize(m_ver.size());
 
+		std::vector<Vector3i> faces_new;
+		faces_new.resize(m_faces.size());
+
+		from_geogram_mesh(M, ver_new, faces_new);
+		timeinit2 += timer.getElapsedTimeInSec();
+		timer.start();
 		BoxGeneration(ver_new, faces_new, envprism, envcubic, epsilon);
+		timeinit3 += timer.getElapsedTimeInSec();
 		//build a  hash function
 		prism_size = envprism.size();
-
+		timer.start();
 		CornerList_prism(envprism, cornerlist);
 		std::vector<std::array<Vector3, 2>> cubiconors;
 		CornerList_cubic(envcubic, cubiconors);
 		cornerlist.insert(cornerlist.end(), cubiconors.begin(), cubiconors.end());
-
+		timeinit4 += timer.getElapsedTimeInSec();
+		timer.start();
 		tree.init_envelope(cornerlist, false);
-
+		timeinit5 += timer.getElapsedTimeInSec();
 		std::cout << "prism size " << prism_size << std::endl;
 		std::cout << "cubic size " << envcubic.size() << std::endl;
 	}
@@ -269,7 +285,7 @@ namespace fastEnvelope {
 	}
 
 	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
-		bool flagc = 0;
+		
 		std::vector<unsigned int> querylist;
 		tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
 		std::ofstream fout;
@@ -302,7 +318,7 @@ namespace fastEnvelope {
 	}
 	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int& pieces) const {
 
-		bool flagr = 1;
+		bool flagr = 0;
 		bool out;
 		Vector3  point;
 		std::vector<unsigned int> querylist;
