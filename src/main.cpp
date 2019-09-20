@@ -620,10 +620,10 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-void test_in_wild(string inputFileName1, string input_surface_path1) {
-//void test_in_wild() {
-	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
+//void test_in_wild(string inputFileName1, string input_surface_path1) {
+void test_in_wild() {
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
 	///string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl_env.csv";
 	///string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl";
 	///
@@ -885,6 +885,141 @@ void test_in_wild(string inputFileName1, string input_surface_path1) {
 
 	}
 */
+////for aabb method
+	Vector3 min, max;
+
+	Scalar dd;
+	get_bb_corners(env_vertices, min, max);
+	dd = ((max - min).norm()) *eps;
+	timer.start();
+	AABBWrapper sf_tree(envmesh);
+	for (int i = 0; i < fn; i++) {
+
+		is_out_function(triangles[i], dd, sf_tree); ;
+	}
+	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
+
+	std::cout << "TEST aabb FINISHED  " << std::endl;
+	//////////////////////////////
+	//////////
+
+}
+
+
+
+void test_without_sampling(string inputFileName1, string input_surface_path1) {
+//void test_without_sampling() {
+//	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+//	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
+	///string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl_env.csv";
+	///string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl";
+	///
+
+	vector<int> outenvelope;
+	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
+
+	std::vector<Vector3> env_vertices;
+	std::vector<Vector3i> env_faces;
+	GEO::Mesh envmesh;
+
+	///////////////////////////////////////////////////////
+	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
+	if (!ok1) {
+		std::cout << ("Unable to load mesh") << std::endl;
+		return;
+	}
+	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
+
+
+
+	Scalar shrink = 1;
+	Scalar eps = 1e-3;
+	const int spac = 10;// space subdivision parameter
+	int ft;
+	// if there are over one million triangles, then test maximal one million triangles
+	if (triangles.size() > 1000000) {
+		ft = 1000000;
+	}
+	else {
+		ft = triangles.size();//test face number
+	}
+	//////////////////////////////////////////////////////////////
+	const int fn = ft;//test face number
+
+
+	eps = eps / shrink;
+	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
+	igl::Timer timer, timer1, timer2;
+
+
+	/////////////////////////////////
+	////for aabb method
+	//Vector3 min, max;
+	//Parameters params;
+	//Scalar dd;
+	//get_bb_corners(params, env_vertices, min, max);
+	//dd = ((max - min).norm()) / 1000 / shrink;
+	//timer.start();
+	//AABBWrapper sf_tree(envmesh);
+	//for (int i = 0; i < fn; i++) {
+
+	//	is_out_function(triangles[i], dd, sf_tree); ;
+	//}
+	//cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
+
+	//std::cout << "TEST aabb FINISHED  " << std::endl;
+	//////////////////////////////
+
+
+	timer.start();
+	timer1.start();
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
+	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
+	fast_envelope.print_ini_number();
+	timer2.start();
+	vector<bool> pos1, pos2;
+	pos1.resize(fn);
+	pos2.resize(fn);
+
+	for (int i = 0; i < fn; i++) {
+
+		pos1[i] = outenvelope[i];
+		//fast_envelope.print_prisms(triangles[i]);
+		pos2[i] = fast_envelope.is_outside(triangles[i]);
+		//if (i - i / 1000*1000 == 0) cout << "ten thousand test over " << i / 1000 << endl;
+
+	}
+	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
+	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
+
+
+	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
+	for (int i = 0; i < fn; i++) {
+		if (pos1[i] - pos2[i] != 0) {
+			//if (pos1[i]== 0) {
+			rcd = rcd + 1;
+			//std::cout << "envelope test different! different face NO. " << i << " the difference: " << pos1[i] - pos2[i] << std::endl;
+			//std::cout << "envelope test same! same face NO. " << i << "the in and out : " <<pos1[i] <<","<<pos2[i] << std::endl;
+		}
+		if (pos1[i] == 0) {
+			eq0 = eq0 + 1;
+		}
+		if (pos2[i] == 0) {
+			eq02 = eq02 + 1;
+		}
+		if (pos1[i] == 0 && pos2[i] == 1) {
+			rmk++;
+		}
+	}
+
+	std::cout << "how many different cases:  " << rcd << std::endl;
+	std::cout << "aabb inside triangle number:  " << eq0 << std::endl;
+	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
+	std::cout << "0-1 cases number " << rmk << std::endl;
+	cout << endl;
+	FastEnvelope::print_number();
+
 ////for aabb method
 	Vector3 min, max;
 
@@ -1583,42 +1718,26 @@ int main(int argc, char const *argv[])
 	cout << rand()<<"," << rand() <<","<< rand() << endl;*/
 	//assert(false);
 
-	//EnvelopPrism();
-	//PrismCutTriangle();
-	//bool b= booltest();
-	//std::cout << "bool test :" << b << std::endl;
-	//TriangleInEnvelope();
-	//RealModelEnvelopeTest();
-	//testOrientation();
-	//bunnytest();
-	//change_model();
-	//orient3D_LPITest();
-	//change_model_with_prediction();
-	//EnvelopeWithTree();
-	//comparison();
-	//unordered_map_try();
-	//add_hashing();
-	//tri_tri_cutting_try();
-	//FastEnvelope::timerecord();
-	//calculation();
-	//test_ttt();
-	//test_diff();
 
 
-	test_in_wild(argv[1],argv[2]);
+	//test_in_wild(argv[1],argv[2]);
 	//test_in_wild();
-	//testOrientation();
+	//test_without_sampling();
+	test_without_sampling(argv[1], argv[2]);
+	
+	
+	
+
 	//fordebug();
-	//writelist();
-	//test_tree();
-	//inf();
-	//sample_triangle_test();
-	//multyprecision();
-	//degen_test();
-	//accurate_vector();
-	//try2();
-	//testM();
-	//try_eigen();
+
+
+
+
+
+
+
+
+
 	std::cout << "done!" << std::endl;
 
 
