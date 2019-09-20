@@ -1738,7 +1738,7 @@ int main(int argc, char const *argv[])
 
 
 
-	std::cout << "128 done!" << std::endl;
+	std::cout << "512 done!" << std::endl;
 
 
 	return 0;

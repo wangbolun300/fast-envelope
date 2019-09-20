@@ -20,7 +20,7 @@ namespace fastEnvelope {
 
 		mpf_t value;
 
-		static const int prec = 128;
+		static const int prec = 512;
 
 		int get_sign()
 
