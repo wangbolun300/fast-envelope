@@ -10,10 +10,10 @@
 #include <geogram/mesh/mesh_reorder.h>
 #include <igl/Timer.h>
 
-static igl::Timer timer, timer_bigpart,timer_s,timerc,timerdetail,timer_u,timer_a;
+static igl::Timer timer, timer_bigpart, timer_s, timerc, timerdetail, timer_u, timer_a;
 static double time_multi = 0.0, time_p1 = 0.0, time_p2 = 0.0, time_p3 = 0.0, time_pm = 0.0, time_searching = 0.0, time_checking = 0.0,
-time_p3d = 0,time_p3m=0,timein1=0,timein2=0,timein3=0,timein4=0,timetpp1=0,timetpp2 = 0,timetpp3 = 0,timetpp4 = 0,
-timeinit1 = 0,timeinit2 = 0,timeinit3 = 0,timeinit4 = 0,timeinit5=0;
+time_p3d = 0, time_p3m = 0, timein1 = 0, timein2 = 0, timein3 = 0, timein4 = 0, timetpp1 = 0, timetpp2 = 0, timetpp3 = 0, timetpp4 = 0,
+timeinit1 = 0, timeinit2 = 0, timeinit3 = 0, timeinit4 = 0, timeinit5 = 0;
 static const int p_face[8][3] = { {0,1,3},{7,6,9},{1,0,7},{2,1,7},{3,2,8},{3,9,10},{5,4,11},{0,5,6} };//prism triangle index. all with orientation.
 static const int c_face[6][3] = { {0,1,2},{4,7,6},{0,3,4},{1,0,4},{1,5,2},{2,6,3} };
 static const fastEnvelope::Vector3 origin = fastEnvelope::Vector3(0, 0, 0);
@@ -216,22 +216,22 @@ namespace fastEnvelope {
 	//	std::cout << "cut tri number original " << ct1 << " conservative " << ct2  <<" rate "<<float(ct1)/float(ct2)<< std::endl;
 		//std::cout << "total " <<diff1+diff2+diff3 << "   " << ct1 << "  " << ct2 << std::endl;
 		std::cout << "time in multi, " << time_multi << std::endl;
-		std::cout << "time part 1, " << time_p1<<"\ntime part 2, "<<time_p2<<"\ntime part 3, "<<time_p3 << std::endl;
+		std::cout << "time part 1, " << time_p1 << "\ntime part 2, " << time_p2 << "\ntime part 3, " << time_p3 << std::endl;
 		std::cout << "time searching, " << time_searching << std::endl;
-		std::cout << "time detail in part 3_1, " << time_p3d << "\ntime detail in part 3_2, " << time_p3m <<  std::endl;
+		std::cout << "time detail in part 3_1, " << time_p3d << "\ntime detail in part 3_2, " << time_p3m << std::endl;
 		std::cout << "time in part 3 which part? 1, " << timein1 << "\ntime in part 3 which part? 2, " << timein2 << "\ntime in part 3 which part? 3, "
 			<< timein3 << "\ntime in part 3 which part? 4, " << timein4 << " " << std::endl;
-		std::cout << "time in part 3 doubt double_1, " << timetpp1 <<"\ntime in part 3 doubt double_2, "<< timetpp2 << " " << std::endl;
+		std::cout << "time in part 3 doubt double_1, " << timetpp1 << "\ntime in part 3 doubt double_2, " << timetpp2 << " " << std::endl;
 
 	}
 	void FastEnvelope::print_ini_number() {
-		std::cout << "init time 1, " << timeinit1 << "\ninit time 2, " << timeinit2 << "\ninit time 3, "<<
-			timeinit3<< "\ninit time 4, " << timeinit4 << "\ninit time 5, " << timeinit5<< std::endl;
+		std::cout << "init time 1, " << timeinit1 << "\ninit time 2, " << timeinit2 << "\ninit time 3, " <<
+			timeinit3 << "\ninit time 4, " << timeinit4 << "\ninit time 5, " << timeinit5 << std::endl;
 	}
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
 	{
 
-		
+		//Multiprecision::set_precision(256);
 		timer.start();
 		Vector3 min, max;
 		get_bb_corners(m_ver, min, max);
@@ -240,10 +240,10 @@ namespace fastEnvelope {
 		Scalar epsilon = bbd * eps; //eps*bounding box diagnal
 		timer.start();
 		GEO::Mesh M;
-		
+
 		to_geogram_mesh(m_ver, m_faces, M);
 		GEO::mesh_reorder(M, GEO::MESH_ORDER_MORTON);
-		
+
 		std::vector<Vector3> ver_new;
 		ver_new.resize(m_ver.size());
 
@@ -272,25 +272,25 @@ namespace fastEnvelope {
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const {
 		timer_s.start();
 
-		 std::vector<unsigned int> querylist;
-		 //tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
-		 Vector3 tmin, tmax;
-		 get_tri_corners(triangle[0], triangle[1], triangle[2], tmin, tmax);
-		 for (int i = 0; i < cornerlist.size(); i++) {
-			 if (box_box_intersection(tmin, tmax, cornerlist[i][0], cornerlist[i][1])) querylist.emplace_back(i);
-		 }
+		std::vector<unsigned int> querylist;
+		//tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
+		Vector3 tmin, tmax;
+		get_tri_corners(triangle[0], triangle[1], triangle[2], tmin, tmax);
+		for (int i = 0; i < cornerlist.size(); i++) {
+			if (box_box_intersection(tmin, tmax, cornerlist[i][0], cornerlist[i][1])) querylist.emplace_back(i);
+		}
 		time_searching += timer_s.getElapsedTimeInSec();
 
 		return FastEnvelopeTestImplicit(triangle, querylist);
 	}
 
 	void FastEnvelope::print_prisms(const std::array<Vector3, 3> &triangle) const {
-		
+
 		std::vector<unsigned int> querylist;
 		tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
 		std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\problems\\visualtriangle.txt");
-		
+
 		for (int i = 0; i < 3; i++) {
 
 			fout << std::setprecision(17) << triangle[i][0] << " " << triangle[i][1] << " " << triangle[i][2] << std::endl;
@@ -328,7 +328,7 @@ namespace fastEnvelope {
 		if (flagr == 0) {
 			int deg = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
 
-			
+
 			if (deg == DEGENERATED_POINT) {
 				out = point_out_prism(triangle[0], querylist, jump);
 				if (out == true) {
@@ -375,7 +375,7 @@ namespace fastEnvelope {
 				for (int j = 0; j <= i; j++) {
 					triangle_sample_normal_rational(triangle, ps0, ps1, ps2,
 						pieces, i, j);
-					out = point_out_prism_rational( ps0, ps1, ps2, querylist, jump);
+					out = point_out_prism_rational(ps0, ps1, ps2, querylist, jump);
 					if (out == true) {
 
 						return 1;
@@ -388,14 +388,14 @@ namespace fastEnvelope {
 			}
 
 
-			
+
 		}
 		return 0;
 	}
 
 	void FastEnvelope::triangle_sample_segment(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces, const int & nbr) {
 
-		int t = pieces-1;
+		int t = pieces - 1;
 		if (triangle[1] - triangle[0] == Vector3(0, 0, 0)) {
 
 			ps = (triangle[0] + (triangle[2] - triangle[0])*nbr / t);
@@ -436,7 +436,7 @@ namespace fastEnvelope {
 	void  FastEnvelope::triangle_sample_point(const std::array<Vector3, 3> &triangle, Vector3& ps) {
 		ps = triangle[0];
 	}
-	void FastEnvelope::triangle_sample_normal(const std::array<Vector3, 3> &triangle,Vector3& ps, const int &pieces, const int & nbr1, const int &nbr2) {
+	void FastEnvelope::triangle_sample_normal(const std::array<Vector3, 3> &triangle, Vector3& ps, const int &pieces, const int & nbr1, const int &nbr2) {
 		int l1s = pieces - 1;//
 		Vector3 p1 = triangle[0] + (triangle[1] - triangle[0])*nbr1 / l1s, d = (triangle[2] - triangle[1]) / l1s;
 		ps = p1 + d * nbr2;
@@ -444,9 +444,9 @@ namespace fastEnvelope {
 	}
 	void FastEnvelope::triangle_sample_normal_rational(const std::array<Vector3, 3> &triangle, Rational& ps0, Rational& ps1, Rational& ps2, const int &pieces, const int & nbr1, const int &nbr2) {
 		int l1s = pieces - 1;//
-		Rational t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]), t10(triangle[1][0]), t11(triangle[1][1]), 
+		Rational t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]), t10(triangle[1][0]), t11(triangle[1][1]),
 			t12(triangle[1][2]), t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]), nbr1r(nbr1), nbr2r(nbr2), l1sr(l1s);
-		
+
 		Rational  p0 = t00 + (t10 - t00)*nbr1r / l1sr, d0 = (t20 - t10) / l1sr;
 		Rational  p1 = t01 + (t11 - t01)*nbr1r / l1sr, d1 = (t21 - t11) / l1sr;
 		Rational  p2 = t02 + (t12 - t02)*nbr1r / l1sr, d2 = (t22 - t12) / l1sr;
@@ -473,9 +473,8 @@ namespace fastEnvelope {
 
 	{
 
-		static const std::function<int(fastEnvelope::Rational)> checker = check_Rational;
+		static const std::function<int(fastEnvelope::Multiprecision)> checker = check_Multiprecision;
 		static const std::function<int(fastEnvelope::Multiprecision)> checker1 = check_Multiprecision;
-		
 		if (prismindex.size() == 0) {
 
 			return 1;
@@ -484,9 +483,9 @@ namespace fastEnvelope {
 
 		int jump1, jump2;
 
-		std::vector<std::array<int,2>> inter_ijk_list;//list of intersected triangle
+		std::vector<std::array<int, 2>> inter_ijk_list;//list of intersected triangle
 
-		bool out,cut;
+		bool out, cut;
 
 		int inter, inter1, record1, record2,
 
@@ -613,7 +612,7 @@ namespace fastEnvelope {
 			}//case 2 case 2 degenerated as a segment
 
 			for (int i = 0; i < lpi_list.size(); i++) {
-				inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(lpi_list[i], triangle, prismindex,checker);
+				inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(lpi_list[i], triangle, prismindex, checker);
 				if (inter == 1) return 1;
 			}
 			return 0;
@@ -730,7 +729,7 @@ namespace fastEnvelope {
 		int listsize = inter_ijk_list.size();
 		DATA_TPI datatpi;
 		std::vector<DATA_TPI> tpilist;
-		tpilist.reserve(listsize/5);
+		tpilist.reserve(listsize / 5);
 
 
 		int id, id0 = 0;
@@ -758,93 +757,93 @@ namespace fastEnvelope {
 				}
 
 
-					//find prism_map[list[i][1]*8+list[j][1]][0],prism_map[list[i][1]*8+list[j][1]][1]
+				//find prism_map[list[i][1]*8+list[j][1]][0],prism_map[list[i][1]*8+list[j][1]][1]
+				timer_u.start();
+				Vector3 t00, t01, t02, t10, t11, t12;
+				int n1, n2;
+				if (inter_ijk_list[i][0] < prism_size) {
+					n1 = p_facenumber;
+				}
+				else {
+					n1 = c_facenumber;
+				}
+				if (inter_ijk_list[j][0] < prism_size) {
+					n2 = p_facenumber;
+				}
+				else {
+					n2 = c_facenumber;
+				}
+
+
+
+
+				jump2 = inter_ijk_list[j][0];
+
+				if (n1 == p_facenumber) {
+					t00 = envprism[inter_ijk_list[i][0]][p_face[inter_ijk_list[i][1]][0]];
+					t01 = envprism[inter_ijk_list[i][0]][p_face[inter_ijk_list[i][1]][1]];
+					t02 = envprism[inter_ijk_list[i][0]][p_face[inter_ijk_list[i][1]][2]];
+				}
+				else {
+					t00 = envcubic[inter_ijk_list[i][0] - prism_size][c_face[inter_ijk_list[i][1]][0]];
+					t01 = envcubic[inter_ijk_list[i][0] - prism_size][c_face[inter_ijk_list[i][1]][1]];
+					t02 = envcubic[inter_ijk_list[i][0] - prism_size][c_face[inter_ijk_list[i][1]][2]];
+				}
+				if (n2 == p_facenumber) {
+					t10 = envprism[inter_ijk_list[j][0]][p_face[inter_ijk_list[j][1]][0]];
+					t11 = envprism[inter_ijk_list[j][0]][p_face[inter_ijk_list[j][1]][1]];
+					t12 = envprism[inter_ijk_list[j][0]][p_face[inter_ijk_list[j][1]][2]];
+				}
+				else {
+					t10 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][0]];
+					t11 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][1]];
+					t12 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][2]];
+				}
+
+				timein1 += timer_u.getElapsedTimeInSec();
+				timer_u.start();
+				Scalar d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7;
+				bool multiflag;
+
+				bool pre = ip_filtered::orient3D_TPI_prefilter(triangle[0][0], triangle[0][1], triangle[0][2],
+					triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
+					t00[0], t00[1], t00[2],
+					t01[0], t01[1], t01[2],
+					t02[0], t02[1], t02[2],
+					t10[0], t10[1], t10[2],
+					t11[0], t11[1], t11[2],
+					t12[0], t12[1], t12[2],
+					d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7);
+				timein2 += timer_u.getElapsedTimeInSec();
+				if (pre == true) {
+
+					static Multiprecision dr, n1r, n2r, n3r;
+					cut = is_3_triangle_cut_double(d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
+						triangle, t00, t01, t02, t10, t11, t12, multiflag, check_Multiprecision, dr, n1r, n2r, n3r);
+					if (cut == false) continue;
 					timer_u.start();
-					Vector3 t00, t01, t02, t10, t11, t12;
-					int n1, n2;
-					if (inter_ijk_list[i][0] < prism_size) {
-						n1 = p_facenumber;
-					}
-					else {
-						n1 = c_facenumber;
-					}
-					if (inter_ijk_list[j][0] < prism_size) {
-						n2 = p_facenumber;
-					}
-					else {
-						n2 = c_facenumber;
+					inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(//TODO takes most of time
+						d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
+						triangle, t00, t01, t02, t10, t11, t12,
+						prismindex, jump1, jump2, multiflag, check_Multiprecision, dr, n1r, n2r, n3r);
+					timein3 += timer_u.getElapsedTimeInSec();
+					if (inter == 1) {
+
+						return 1;
 					}
 
-
-
-
-					jump2 = inter_ijk_list[j][0];
-
-					if (n1 == p_facenumber) {
-						t00 = envprism[inter_ijk_list[i][0]][p_face[inter_ijk_list[i][1]][0]];
-						t01 = envprism[inter_ijk_list[i][0]][p_face[inter_ijk_list[i][1]][1]];
-						t02 = envprism[inter_ijk_list[i][0]][p_face[inter_ijk_list[i][1]][2]];
-					}
-					else {
-						t00 = envcubic[inter_ijk_list[i][0] - prism_size][c_face[inter_ijk_list[i][1]][0]];
-						t01 = envcubic[inter_ijk_list[i][0] - prism_size][c_face[inter_ijk_list[i][1]][1]];
-						t02 = envcubic[inter_ijk_list[i][0] - prism_size][c_face[inter_ijk_list[i][1]][2]];
-					}
-					if (n2 == p_facenumber) {
-						t10 = envprism[inter_ijk_list[j][0]][p_face[inter_ijk_list[j][1]][0]];
-						t11 = envprism[inter_ijk_list[j][0]][p_face[inter_ijk_list[j][1]][1]];
-						t12 = envprism[inter_ijk_list[j][0]][p_face[inter_ijk_list[j][1]][2]];
-					}
-					else {
-						t10 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][0]];
-						t11 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][1]];
-						t12 = envcubic[inter_ijk_list[j][0] - prism_size][c_face[inter_ijk_list[j][1]][2]];
-					}
-
-					timein1 += timer_u.getElapsedTimeInSec();
+				}
+				else {
 					timer_u.start();
-					Scalar d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7;
-					bool multiflag;
-
-					bool pre = ip_filtered::orient3D_TPI_prefilter(triangle[0][0], triangle[0][1], triangle[0][2],
-						triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
-						t00[0], t00[1], t00[2],
-						t01[0], t01[1], t01[2],
-						t02[0], t02[1], t02[2],
-						t10[0], t10[1], t10[2],
-						t11[0], t11[1], t11[2],
-						t12[0], t12[1], t12[2],
-						d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7);
-					timein2 += timer_u.getElapsedTimeInSec();
-					if (pre == true) {
-
-						static Rational dr, n1r, n2r, n3r;
-						cut =is_3_triangle_cut_double(d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
-							triangle, t00, t01, t02, t10, t11, t12, multiflag, checker, dr, n1r, n2r, n3r);
-						if (cut == false) continue;
-						timer_u.start();
-						inter= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(//TODO takes most of time
-							d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
-							triangle, t00, t01, t02, t10, t11, t12,
-							prismindex, jump1, jump2, multiflag, checker, dr, n1r, n2r, n3r);
-						timein3 += timer_u.getElapsedTimeInSec();
-						if (inter == 1) {
-
-							return 1;
-						}
-
-					}
-					else {
-						timer_u.start();
-						datatpi.prismid1 = inter_ijk_list[i][0];
-						datatpi.facetid1 = inter_ijk_list[i][1];
-						datatpi.prismid2 = inter_ijk_list[j][0];
-						datatpi.facetid2 = inter_ijk_list[j][1];
-						datatpi.jump1 = jump1;
-						datatpi.jump2 = jump2;
-						tpilist.emplace_back(datatpi);
-						timein4 += timer_u.getElapsedTimeInSec();
-					}
+					datatpi.prismid1 = inter_ijk_list[i][0];
+					datatpi.facetid1 = inter_ijk_list[i][1];
+					datatpi.prismid2 = inter_ijk_list[j][0];
+					datatpi.facetid2 = inter_ijk_list[j][1];
+					datatpi.jump1 = jump1;
+					datatpi.jump2 = jump2;
+					tpilist.emplace_back(datatpi);
+					timein4 += timer_u.getElapsedTimeInSec();
+				}
 
 			}
 
@@ -872,7 +871,7 @@ namespace fastEnvelope {
 
 	template<typename T>
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_LPI& datalpi, const std::array<Vector3, 3>&triangle, const std::vector<unsigned int>& prismindex, const std::function<int(T)> &checker)const {
-		int tot,ori;
+		int tot, ori;
 		static T
 			s00, s01, s02, s10, s11, s12,
 			t00, t01, t02,
@@ -897,15 +896,15 @@ namespace fastEnvelope {
 			t22 = envprism[datalpi.prismid][p_face[datalpi.facetid][2]][2];
 		}
 		else {
-			t00 = envcubic[datalpi.prismid-prism_size][c_face[datalpi.facetid][0]][0];
-			t01 = envcubic[datalpi.prismid-prism_size][c_face[datalpi.facetid][0]][1];
-			t02 = envcubic[datalpi.prismid-prism_size][c_face[datalpi.facetid][0]][2];
-			t10 = envcubic[datalpi.prismid-prism_size][c_face[datalpi.facetid][1]][0];
-			t11 = envcubic[datalpi.prismid-prism_size][c_face[datalpi.facetid][1]][1];
-			t12 = envcubic[datalpi.prismid-prism_size][c_face[datalpi.facetid][1]][2];
-			t20 = envcubic[datalpi.prismid-prism_size][c_face[datalpi.facetid][2]][0];
-			t21 = envcubic[datalpi.prismid-prism_size][c_face[datalpi.facetid][2]][1];
-			t22 = envcubic[datalpi.prismid-prism_size][c_face[datalpi.facetid][2]][2];
+			t00 = envcubic[datalpi.prismid - prism_size][c_face[datalpi.facetid][0]][0];
+			t01 = envcubic[datalpi.prismid - prism_size][c_face[datalpi.facetid][0]][1];
+			t02 = envcubic[datalpi.prismid - prism_size][c_face[datalpi.facetid][0]][2];
+			t10 = envcubic[datalpi.prismid - prism_size][c_face[datalpi.facetid][1]][0];
+			t11 = envcubic[datalpi.prismid - prism_size][c_face[datalpi.facetid][1]][1];
+			t12 = envcubic[datalpi.prismid - prism_size][c_face[datalpi.facetid][1]][2];
+			t20 = envcubic[datalpi.prismid - prism_size][c_face[datalpi.facetid][2]][0];
+			t21 = envcubic[datalpi.prismid - prism_size][c_face[datalpi.facetid][2]][1];
+			t22 = envcubic[datalpi.prismid - prism_size][c_face[datalpi.facetid][2]][2];
 
 		}
 
@@ -1156,7 +1155,7 @@ namespace fastEnvelope {
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI& datatpi, const std::array<Vector3, 3>&triangle, const std::vector<unsigned int>& prismindex, const std::function<int(T)> &checker)const {
 
 
-		int tot,ori;
+		int tot, ori;
 		int jump1 = datatpi.jump1, jump2 = datatpi.jump2;
 
 		static T
@@ -1194,17 +1193,17 @@ namespace fastEnvelope {
 			f122 = envprism[datatpi.prismid1][p_face[datatpi.facetid1][2]][2];
 		}
 		else {
-			f100 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][0]][0];
-			f101 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][0]][1];
-			f102 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][0]][2];
+			f100 = envcubic[datatpi.prismid1 - prism_size][c_face[datatpi.facetid1][0]][0];
+			f101 = envcubic[datatpi.prismid1 - prism_size][c_face[datatpi.facetid1][0]][1];
+			f102 = envcubic[datatpi.prismid1 - prism_size][c_face[datatpi.facetid1][0]][2];
 
-			f110 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][1]][0];
-			f111 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][1]][1];
-			f112 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][1]][2];
+			f110 = envcubic[datatpi.prismid1 - prism_size][c_face[datatpi.facetid1][1]][0];
+			f111 = envcubic[datatpi.prismid1 - prism_size][c_face[datatpi.facetid1][1]][1];
+			f112 = envcubic[datatpi.prismid1 - prism_size][c_face[datatpi.facetid1][1]][2];
 
-			f120 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][2]][0];
-			f121 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][2]][1];
-			f122 = envcubic[datatpi.prismid1-prism_size][c_face[datatpi.facetid1][2]][2];
+			f120 = envcubic[datatpi.prismid1 - prism_size][c_face[datatpi.facetid1][2]][0];
+			f121 = envcubic[datatpi.prismid1 - prism_size][c_face[datatpi.facetid1][2]][1];
+			f122 = envcubic[datatpi.prismid1 - prism_size][c_face[datatpi.facetid1][2]][2];
 		}
 		if (datatpi.prismid2 < prism_size) {
 			f200 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][0]][0];
@@ -1218,15 +1217,15 @@ namespace fastEnvelope {
 			f222 = envprism[datatpi.prismid2][p_face[datatpi.facetid2][2]][2];
 		}
 		else {
-			f200 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][0]][0];
-			f201 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][0]][1];
-			f202 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][0]][2];
-			f210 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][1]][0];
-			f211 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][1]][1];
-			f212 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][1]][2];
-			f220 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][2]][0];
-			f221 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][2]][1];
-			f222 = envcubic[datatpi.prismid2-prism_size][c_face[datatpi.facetid2][2]][2];
+			f200 = envcubic[datatpi.prismid2 - prism_size][c_face[datatpi.facetid2][0]][0];
+			f201 = envcubic[datatpi.prismid2 - prism_size][c_face[datatpi.facetid2][0]][1];
+			f202 = envcubic[datatpi.prismid2 - prism_size][c_face[datatpi.facetid2][0]][2];
+			f210 = envcubic[datatpi.prismid2 - prism_size][c_face[datatpi.facetid2][1]][0];
+			f211 = envcubic[datatpi.prismid2 - prism_size][c_face[datatpi.facetid2][1]][1];
+			f212 = envcubic[datatpi.prismid2 - prism_size][c_face[datatpi.facetid2][1]][2];
+			f220 = envcubic[datatpi.prismid2 - prism_size][c_face[datatpi.facetid2][2]][0];
+			f221 = envcubic[datatpi.prismid2 - prism_size][c_face[datatpi.facetid2][2]][1];
+			f222 = envcubic[datatpi.prismid2 - prism_size][c_face[datatpi.facetid2][2]][2];
 		}
 
 		timer.start();
@@ -1301,14 +1300,14 @@ namespace fastEnvelope {
 		const std::array<Vector3, 3>& triangle,
 		const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22,
 		const std::vector<unsigned int>& prismindex, const int& jump1, const int &jump2, const bool & multiflag, const std::function<int(T)> &checker,
-		 T& dr,  T & n1r,  T & n2r,  T& n3r) const {
+		T& dr, T & n1r, T & n2r, T& n3r) const {
 
 		int ori;
 		int tot;
 
 		INDEX index;
 		std::vector<INDEX> recompute;
-		
+
 		for (int i = 0; i < prismindex.size(); i++) {
 			if (prismindex[i] == jump1 || prismindex[i] == jump2) continue;
 			if (prismindex[i] < prism_size) {
@@ -1338,7 +1337,7 @@ namespace fastEnvelope {
 					else if (ori == -1) {
 						tot++;
 					}
-					
+
 
 				}
 				if (tot == p_facenumber) {
@@ -1357,7 +1356,7 @@ namespace fastEnvelope {
 				index.FACES.clear();
 				tot = 0;
 				for (int j = 0; j < c_facenumber; j++) {
-					
+
 					timer_a.start();
 					ori = ip_filtered::
 						orient3D_TPI_postfilter(
@@ -1395,8 +1394,8 @@ namespace fastEnvelope {
 
 
 		}
-		
-		
+
+
 		if (recompute.size() > 0) {
 			timer_a.start();
 			static T
@@ -1489,7 +1488,7 @@ namespace fastEnvelope {
 
 		}
 
-		
+
 
 		return OUT_PRISM;
 	}
@@ -1759,14 +1758,14 @@ namespace fastEnvelope {
 
 
 	bool FastEnvelope::is_triangle_cut_prism(const int&pindex,
-		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const{
+		const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const {
 
 
 		bool cut[8];
 		for (int i = 0; i < 8; i++) {
 			cut[i] = false;
 		}
-		int o1[8], o2[8], o3[8],ori=0;
+		int o1[8], o2[8], o3[8], ori = 0;
 		std::vector<int> cutp;
 
 		for (int i = 0; i < 8; i++) {
@@ -1793,7 +1792,7 @@ namespace fastEnvelope {
 
 			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1) cutp.emplace_back(i);
 		}
-		if (cutp.size() ==0) {
+		if (cutp.size() == 0) {
 			return false;
 		}
 
@@ -1815,7 +1814,7 @@ namespace fastEnvelope {
 				}
 				for (int j = 0; j < cutp.size(); j++) {
 					if (i == j) continue;
-					ori= ip_filtered::
+					ori = ip_filtered::
 						orient3D_LPI_postfilter(
 							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 							tri0[0], tri0[1], tri0[2],
@@ -2253,7 +2252,7 @@ namespace fastEnvelope {
 		return true;
 	}
 	bool FastEnvelope::is_seg_cut_cube(const int&cindex,
-		const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid) const{
+		const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid) const {
 		bool cut[6];
 		for (int i = 0; i < 6; i++) {
 			cut[i] = false;
@@ -2369,7 +2368,7 @@ namespace fastEnvelope {
 
 		return true;
 	}
-	bool FastEnvelope::point_out_prism_rational(const Rational& point0, const Rational& point1, const Rational& point2,  const std::vector<unsigned int>& prismindex, const int& jump)const
+	bool FastEnvelope::point_out_prism_rational(const Rational& point0, const Rational& point1, const Rational& point2, const std::vector<unsigned int>& prismindex, const int& jump)const
 	{
 
 		int  ori;
@@ -2379,7 +2378,7 @@ namespace fastEnvelope {
 			if (prismindex[i] < psize) {
 				for (int j = 0; j < p_facenumber; j++) {
 
-					ori = orient_3d_rational(point0,point1,point2,envprism[prismindex[i]][p_face[j][0]], envprism[prismindex[i]][p_face[j][1]], envprism[prismindex[i]][p_face[j][2]]);
+					ori = orient_3d_rational(point0, point1, point2, envprism[prismindex[i]][p_face[j][0]], envprism[prismindex[i]][p_face[j][1]], envprism[prismindex[i]][p_face[j][2]]);
 					if (ori == 1 || ori == 0) {
 						break;
 					}
@@ -2520,7 +2519,7 @@ namespace fastEnvelope {
 			ABn = AB.normalized();
 			polygon[0] = m_ver[m_faces[i][0]] + (vector1 - ABn) * tolerance;
 			polygon[1] = m_ver[m_faces[i][1]] + (vector1 + ABn) * tolerance;
-			if (dot_sign(AB,BC) < 0) {
+			if (dot_sign(AB, BC) < 0) {
 				polygon[2] = m_ver[m_faces[i][1]] + (-vector1 + ABn) * tolerance;
 				polygon[3] = m_ver[m_faces[i][2]] + (-vector1 + ABn) * tolerance;
 				polygon[4] = m_ver[m_faces[i][2]] + (-vector1 - ABn) * tolerance;
@@ -2623,7 +2622,7 @@ namespace fastEnvelope {
 	}
 
 	void FastEnvelope::prism_bbox(const std::array<Vector3, 12>&prism, Vector3 &min, Vector3& max) {
-		int id ;
+		int id;
 		int id0;
 		bool flag = 0;
 		Vector3 p;
@@ -2726,9 +2725,9 @@ namespace fastEnvelope {
 		be2 = b2 - b0;
 		ce1 = c1 - c0;
 		ce2 = c2 - c0;
-		A(0,0) = ae1[1] * ae2[2] - ae1[2] * ae2[1];
-		A(0,1) = -ae1[0] * ae2[2] + ae1[2] * ae2[0];
-		A(0,2) = ae1[0] * ae2[1] - ae1[1] * ae2[0];
+		A(0, 0) = ae1[1] * ae2[2] - ae1[2] * ae2[1];
+		A(0, 1) = -ae1[0] * ae2[2] + ae1[2] * ae2[0];
+		A(0, 2) = ae1[0] * ae2[1] - ae1[1] * ae2[0];
 
 		A(1, 0) = be1[1] * be2[2] - be1[2] * be2[1];
 		A(1, 1) = -be1[0] * be2[2] + be1[2] * be2[0];
