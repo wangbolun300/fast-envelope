@@ -231,7 +231,7 @@ namespace fastEnvelope {
 	FastEnvelope::FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac)
 	{
 
-		//Multiprecision::set_precision(256);
+		
 		timer.start();
 		Vector3 min, max;
 		get_bb_corners(m_ver, min, max);
@@ -473,8 +473,9 @@ namespace fastEnvelope {
 
 	{
 
-		static const std::function<int(fastEnvelope::Multiprecision)> checker = check_Multiprecision;
+		static const std::function<int(fastEnvelope::Rational)> checker = check_Rational;
 		static const std::function<int(fastEnvelope::Multiprecision)> checker1 = check_Multiprecision;
+		
 		if (prismindex.size() == 0) {
 
 			return 1;
@@ -817,15 +818,15 @@ namespace fastEnvelope {
 					timein2 += timer_u.getElapsedTimeInSec();
 					if (pre == true) {
 
-						static Multiprecision dr, n1r, n2r, n3r;
+						static Rational dr, n1r, n2r, n3r;
 						cut =is_3_triangle_cut_double(d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
-							triangle, t00, t01, t02, t10, t11, t12, multiflag, check_Multiprecision, dr, n1r, n2r, n3r);
+							triangle, t00, t01, t02, t10, t11, t12, multiflag, checker, dr, n1r, n2r, n3r);
 						if (cut == false) continue;
 						timer_u.start();
 						inter= Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(//TODO takes most of time
 							d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
 							triangle, t00, t01, t02, t10, t11, t12,
-							prismindex, jump1, jump2, multiflag, check_Multiprecision, dr, n1r, n2r, n3r);
+							prismindex, jump1, jump2, multiflag, checker, dr, n1r, n2r, n3r);
 						timein3 += timer_u.getElapsedTimeInSec();
 						if (inter == 1) {
 
