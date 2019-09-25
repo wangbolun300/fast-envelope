@@ -937,8 +937,8 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	const int spac = 10;// space subdivision parameter
 	int ft;
 	// if there are over one million triangles, then test maximal one million triangles
-	if (triangles.size() > 1000000) {
-		ft = 1000000;
+	if (triangles.size() > 500000) {
+		ft = 500000;
 	}
 	else {
 		ft = triangles.size();//test face number
@@ -1030,9 +1030,9 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	AABBWrapper sf_tree(envmesh);
 	for (int i = 0; i < fn; i++) {
 
-		is_out_function(triangles[i], dd, sf_tree); ;
+		is_out_function(triangles[i], dd, sf_tree);
 	}
-	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
+	cout << "aabb time, " << timer.getElapsedTimeInSec() << endl;
 
 	std::cout << "TEST aabb FINISHED  " << std::endl;
 	//////////////////////////////
