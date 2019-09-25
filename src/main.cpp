@@ -1723,9 +1723,11 @@ int main(int argc, char const *argv[])
 	//test_in_wild(argv[1],argv[2]);
 	//test_in_wild();
 	//test_without_sampling();
-	test_without_sampling(argv[1], argv[2]);
 	
-	
+	for (int i = 0; i < (argc - 1) / 2; i++) {
+		test_without_sampling(argv[2*i+1], argv[2*i+2]);
+		std::cout << i<<" done!\n" << std::endl;
+	}
 	
 
 	//fordebug();
@@ -1738,7 +1740,7 @@ int main(int argc, char const *argv[])
 
 
 
-	std::cout << "512 done!" << std::endl;
+	
 
 
 	return 0;
