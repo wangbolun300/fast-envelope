@@ -622,8 +622,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 
 //void test_in_wild(string inputFileName1, string input_surface_path1) {
 void test_in_wild() {
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl";
 	///string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl_env.csv";
 	///string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl";
 	///
@@ -1721,11 +1721,11 @@ int main(int argc, char const *argv[])
 
 
 	//test_in_wild(argv[1],argv[2]);
-	//test_in_wild();
+	test_in_wild();
 	//test_without_sampling();
 	
 	for (int i = 0; i < (argc - 1) / 2; i++) {
-		test_without_sampling(argv[2*i+1], argv[2*i+2]);
+		//test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << i<<" done!\n" << std::endl;
 	}
 	
