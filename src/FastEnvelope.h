@@ -11,6 +11,7 @@
 #include <fastenvelope/Multiprecision.hpp>
 #include <fastenvelope/Rational.hpp>
 #include <geogram/mesh/mesh.h>
+#include <fastenvelope/ip_filtered.h>
 
 namespace fastEnvelope {
 	class AABB;
@@ -193,14 +194,14 @@ namespace fastEnvelope {
 			 int facetid;
 			 int jump1;
 		 };
-		 template<typename T>
-		 int Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_LPI& datalpi,const std::array<Vector3,3>&triangle, const std::vector<unsigned int>& prismindex, const std::function<int(T)> &checker)const;
-		 template<typename T>
+		 
+		 int Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_LPI& datalpi,const std::array<Vector3,3>&triangle, const std::vector<unsigned int>& prismindex)const;
+		 
 		 int Implicit_Seg_Facet_interpoint_Out_Prism_double(
 			 const Scalar& a11, const Scalar&a12, const Scalar& a13, const Scalar& d, const Scalar& fa11,
 			 const Scalar& fa12, const Scalar& fa13, const Scalar& max1, const Scalar&max2, const Scalar& max5,
 			 const Vector3& segpoint0, const Vector3& segpoint1, const Vector3& triangle1,
-			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<unsigned int>& prismindex, const int& jump, const std::function<int(T)> &checker)const;
+			 const Vector3& triangle2, const Vector3& triangle3, const std::vector<unsigned int>& prismindex, const int& jump)const;
 
 
 
@@ -212,23 +213,22 @@ namespace fastEnvelope {
 			int jump1;
 			int jump2;
 		};
-		template<typename T>
-		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI& datatpi, const std::array<Vector3, 3>&triangle, const std::vector<unsigned int>& prismindex, const std::function<int(T)> &checker)const;
+		
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI& datatpi, const std::array<Vector3, 3>&triangle, const std::vector<unsigned int>& prismindex)const;
 
 
-		template<typename T>
+		
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(
 			const Scalar& d, const Scalar& n1d, const Scalar& n2d, const Scalar& n3d,
 			const Scalar& max1, const Scalar& max2, const Scalar& max3, const Scalar& max4, const Scalar& max5, const Scalar&max6, const Scalar& max7,
 			const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22,
-			const std::vector<unsigned int>& prismindex, const int& jump1, const int &jump2, const bool & multiflag, const std::function<int(T)> &checker,
-			T& dr, T&  n1r, T&  n2r, T& n3r) const;
+			const std::vector<unsigned int>& prismindex, const int& jump1, const int &jump2, const bool & multiflag, TPI_exact_suppvars& s) const;
 
 
-		template<typename T>
-		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3>& triangle, const T& dr, const T& n1r, const T& n2r, const T& n3r, const std::function<int(T)> &checker);
-		template<typename T>
+		
+		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3>& triangle,  TPI_exact_suppvars& s);
+		
 		static bool is_3_triangle_cut_double(
 			const Scalar &d, const Scalar & n1d, const Scalar &n2d, const Scalar & n3d,
 			const Scalar & max1, const Scalar &max2, const Scalar &max3, const Scalar & max4, const Scalar & max5,
@@ -236,7 +236,7 @@ namespace fastEnvelope {
 			const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet2,
 			bool & multiflag,
-			const std::function<int(T)> &checker, T &dr, T & n1r, T &n2r, T & n3r);
+			TPI_exact_suppvars& s);
 
 
 		static int is_3_triangle_cut_float_fast(

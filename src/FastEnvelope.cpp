@@ -4,7 +4,7 @@
 #include <fstream>
 #include <istream>
 #include <igl/Timer.h>
-#include <fastenvelope/ip_filtered.h>
+
 #include <arbitraryprecision/fprecision.h>
 #include<fastenvelope/mesh_AABB.h>
 #include <geogram/mesh/mesh_reorder.h>
@@ -474,8 +474,7 @@ namespace fastEnvelope {
 
 	{
 
-		static const std::function<int(fastEnvelope::Multiprecision)> checker = check_Multiprecision;
-		static const std::function<int(fastEnvelope::Multiprecision)> checker1 = check_Multiprecision;
+	
 		if (prismindex.size() == 0) {
 
 			return 1;
@@ -550,7 +549,7 @@ namespace fastEnvelope {
 									inter = Implicit_Seg_Facet_interpoint_Out_Prism_double(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 										triangle[triseg[we][0]], triangle[triseg[we][1]],
 										envprism[prismindex[i]][p_face[cid[j]][0]], envprism[prismindex[i]][p_face[cid[j]][1]], envprism[prismindex[i]][p_face[cid[j]][2]],
-										prismindex, jump1, checker);
+										prismindex, jump1);
 									if (inter == 1) {
 
 										return 1;
@@ -586,7 +585,7 @@ namespace fastEnvelope {
 									inter = Implicit_Seg_Facet_interpoint_Out_Prism_double(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 										triangle[triseg[we][0]], triangle[triseg[we][1]],
 										envcubic[cindex][c_face[cid[j]][0]], envcubic[cindex][c_face[cid[j]][1]], envcubic[cindex][c_face[cid[j]][2]],
-										prismindex, jump1, checker);
+										prismindex, jump1);
 									if (inter == 1) {
 
 										return 1;
@@ -613,7 +612,7 @@ namespace fastEnvelope {
 			}//case 2 case 2 degenerated as a segment
 
 			for (int i = 0; i < lpi_list.size(); i++) {
-				inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(lpi_list[i], triangle, prismindex, checker);
+				inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(lpi_list[i], triangle, prismindex);
 				if (inter == 1) return 1;
 			}
 			return 0;
@@ -653,7 +652,7 @@ namespace fastEnvelope {
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_double(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 								triangle[triseg[k][0]], triangle[triseg[k][1]],
 								envprism[prismindex[i]][p_face[cidl[j]][0]], envprism[prismindex[i]][p_face[cidl[j]][1]], envprism[prismindex[i]][p_face[cidl[j]][2]],
-								prismindex, jump1, checker);
+								prismindex, jump1);
 							if (inter == 1) {
 
 								return 1;
@@ -697,7 +696,7 @@ namespace fastEnvelope {
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_double(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 								triangle[triseg[k][0]], triangle[triseg[k][1]],
 								envcubic[cindex][c_face[cidl[j]][0]], envcubic[cindex][c_face[cidl[j]][1]], envcubic[cindex][c_face[cidl[j]][2]],
-								prismindex, jump1, checker);
+								prismindex, jump1);
 							if (inter == 1) {
 
 								return 1;
@@ -720,7 +719,7 @@ namespace fastEnvelope {
 
 		}
 		for (int i = 0; i < lpi_list.size(); i++) {
-			inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(lpi_list[i], triangle, prismindex, checker);
+			inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(lpi_list[i], triangle, prismindex);
 			if (inter == 1) return 1;
 		}//TODO consider this part put here or the end of the algorithm
 
@@ -818,15 +817,15 @@ namespace fastEnvelope {
 				timein2 += timer_u.getElapsedTimeInSec();
 				if (pre == true) {
 
-					static Multiprecision dr, n1r, n2r, n3r;
+					TPI_exact_suppvars s;
 					cut = is_3_triangle_cut_double(d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
-						triangle, t00, t01, t02, t10, t11, t12, multiflag, check_Multiprecision, dr, n1r, n2r, n3r);
+						triangle, t00, t01, t02, t10, t11, t12, multiflag, s);
 					if (cut == false) continue;
 					timer_u.start();
 					inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(//TODO takes most of time
 						d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
 						triangle, t00, t01, t02, t10, t11, t12,
-						prismindex, jump1, jump2, multiflag, check_Multiprecision, dr, n1r, n2r, n3r);
+						prismindex, jump1, jump2, multiflag, s);
 					timein3 += timer_u.getElapsedTimeInSec();
 					if (inter == 1) {
 
@@ -852,7 +851,7 @@ namespace fastEnvelope {
 		time_p3d += timerdetail.getElapsedTimeInSec();
 		timerdetail.start();
 		for (int i = 0; i < tpilist.size(); i++) {
-			inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(tpilist[i], triangle, prismindex, checker);//is_3_intersection is already in it
+			inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(tpilist[i], triangle, prismindex);//is_3_intersection is already in it
 			if (inter == 1) return 1;
 		}
 		time_p3m += timerdetail.getElapsedTimeInSec();
@@ -1240,7 +1239,7 @@ namespace fastEnvelope {
 			s);
 		time_multi += timer.getElapsedTimeInSec();
 		if (premulti == false) return 2;//means have parallel facets
-		bool cut = is_3_triangle_cut_pure_multiprecision(triangle, dr, n1r, n2r, n3r, checker);
+		bool cut = is_3_triangle_cut_pure_multiprecision(triangle,s);
 		if (cut == false) return 2;
 		for (int i = 0; i < prismindex.size(); i++) {
 			if (prismindex[i] == jump1 || prismindex[i] == jump2) continue;
@@ -1499,7 +1498,7 @@ namespace fastEnvelope {
 	}
 #include<ctime>
 
-	bool FastEnvelope::is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3>& triangle, TPI_exact_suppvars& s) {
+	bool FastEnvelope::is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3>& triangle,  TPI_exact_suppvars& s) {
 		int o1, o2, o3;
 		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
 
