@@ -1,3 +1,4 @@
 3rdparty*
 *.sublime-*
 bin*
+*.code-workspace

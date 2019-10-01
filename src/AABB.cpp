@@ -1,9 +1,33 @@
 #include <fastenvelope/AABB.h>
 #include <fastenvelope/FastEnvelope.h>
 
+#include <cassert>
+
 namespace fastEnvelope {
+	namespace {
+		bool box_box_intersection(const Vector3 &min1, const Vector3 &max1, const Vector3 &min2, const Vector3 &max2)
+		{
+			if (max1[0] < min2[0] || max1[1] < min2[1] || max1[2] < min2[2])
+				return 0;
+			if (max2[0] < min1[0] || max2[1] < min1[1] || max2[2] < min1[2])
+				return 0;
+			return 1;
+		}
+
+		void get_tri_corners(const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2, Vector3 &mint, Vector3 &maxt)
+		{
+			mint[0] = std::min(std::min(triangle0[0], triangle1[0]), triangle2[0]);
+			mint[1] = std::min(std::min(triangle0[1], triangle1[1]), triangle2[1]);
+			mint[2] = std::min(std::min(triangle0[2], triangle1[2]), triangle2[2]);
+			maxt[0] = std::max(std::max(triangle0[0], triangle1[0]), triangle2[0]);
+			maxt[1] = std::max(std::max(triangle0[1], triangle1[1]), triangle2[1]);
+			maxt[2] = std::max(std::max(triangle0[2], triangle1[2]), triangle2[2]);
+		}
+	}
+
+
 	void AABB::init_envelope_boxes_recursive(
-		const std::vector<std::array<fastEnvelope::Vector3, 2>> &cornerlist,
+		const std::vector<std::array<Vector3, 2>> &cornerlist,
 		int node_index,
 		int b, int e)
 	{
@@ -34,14 +58,14 @@ namespace fastEnvelope {
 	}
 
 	void AABB::facet_in_envelope_recursive(
-		const fastEnvelope::Vector3 &triangle0, const fastEnvelope::Vector3 &triangle1, const fastEnvelope::Vector3 &triangle2,
+		const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2,
 		std::vector<unsigned int> &list,
 		int n, int b, int e) const
 	{
 		assert(e != b);
 
 		assert(n < boxlist.size());
-		bool cut = fastEnvelope::FastEnvelope::is_triangle_cut_bounding_box(triangle0, triangle1, triangle2, boxlist[n][0], boxlist[n][1]);
+		bool cut = is_triangle_cut_bounding_box(triangle0, triangle1, triangle2, n);
 
 		if (cut == false) return;
 
@@ -86,37 +110,26 @@ namespace fastEnvelope {
 		);
 	}
 
-	void AABB::init_envelope(const std::vector<std::array<fastEnvelope::Vector3, 2>> &cornerlist, bool use_aabbcc)
+	void AABB::init_envelope(const std::vector<std::array<Vector3, 2>> &cornerlist)
 	{
-		use_aabbcc_ = use_aabbcc;
-		aabb.reset(nullptr);
-		if (use_aabbcc_)
-		{
-			//dim, skinThickness, nels, touchIsOverlap
-			aabb = std::make_unique<aabb::Tree>(3, 0, cornerlist.size(), true);
+		n_corners = cornerlist.size();
 
-			for(size_t i = 0; i < cornerlist.size(); ++i)
-			{
-				const auto &box = cornerlist[i];
-				std::vector<double> minv = {box[0][0], box[0][1], box[0][2]};
-				std::vector<double> maxv = {box[1][0], box[1][1], box[1][2]};
+		boxlist.resize(
+			envelope_max_node_index(
+				1, 0, n_corners) +
+			1 // <-- this is because size == max_index + 1 !!!
+		);
 
-				aabb->insertParticle(i, minv, maxv);
-			}
+		init_envelope_boxes_recursive(cornerlist, 1, 0, n_corners);
+	}
 
-			aabb->rebuild();
-		}
-		else
-		{
-			n_corners = cornerlist.size();
-
-			boxlist.resize(
-				envelope_max_node_index(
-					1, 0, n_corners) +
-				1 // <-- this is because size == max_index + 1 !!!
-			);
-
-			init_envelope_boxes_recursive(cornerlist, 1, 0, n_corners);
-		}
+	bool AABB::is_triangle_cut_bounding_box(
+		const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, int index) const
+	{
+		const auto &bmin = boxlist[index][0];
+		const auto &bmax = boxlist[index][1];
+		Vector3 tmin, tmax;
+		get_tri_corners(tri0, tri1, tri2, tmin, tmax);
+		return box_box_intersection(tmin, tmax, bmin, bmax);
 	}
 }

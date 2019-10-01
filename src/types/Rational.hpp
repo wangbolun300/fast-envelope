@@ -6,8 +6,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
 
-#ifndef TRIWILD_RATIONAL_H
-#define TRIWILD_RATIONAL_H
+#pragma once
 
 #include <gmp.h>
 #include <iostream>
@@ -177,5 +176,3 @@ public:
     }
     };
 }
-
-#endif //TRIWILD_RATIONAL_H

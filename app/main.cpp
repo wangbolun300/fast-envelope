@@ -1,23 +1,24 @@
 ﻿#include <fastenvelope/FastEnvelope.h>
-#include<iostream>
-#include<array>
 #include <fastenvelope/MeshIO.hpp>
-#include <fstream>
-#include <istream>
-#include<fastenvelope/Predicates.hpp>
-#include<fastenvelope/Types.hpp>
+#include <fastenvelope/Multiprecision.hpp>
+#include <fastenvelope/Predicates.hpp>
+#include <fastenvelope/Types.hpp>
 #include <fastenvelope/AABBWrapper.h>
 #include <fastenvelope/Rational.hpp>
+
 #include <igl/Timer.h>
-#include <ctime>
-#include <cstdlib>
+
 //#include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
-#include <arbitraryprecision/fprecision.h>
-#include <arbitraryprecision/intervalprecision.h>
+
 #include <stdio.h>
-#include<assert.h>
-#include <fastenvelope/Multiprecision.hpp>
+#include <assert.h>
+#include <fstream>
+#include <istream>
+#include <iostream>
+#include <array>
+#include <ctime>
+#include <cstdlib>
 
 using namespace floatTetWild;
 using namespace fastEnvelope;
@@ -689,16 +690,16 @@ void test_in_wild() {
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
 	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
-	fast_envelope.print_ini_number();
+	// fast_envelope.print_ini_number(); //TODO
 	timer2.start();
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
 	pos2.resize(fn);
-	
+
 	for (int i = 0; i < fn; i++) {
 
 		pos1[i] = outenvelope[i];
-		//fast_envelope.print_prisms(triangles[i]);
+		//fast_envelope.print_prisms(triangles[i], "D:\\vs\\fast_envelope_csv\\problems\\");
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
 		//if (i - i / 1000*1000 == 0) cout << "ten thousand test over " << i / 1000 << endl;
 
@@ -731,7 +732,7 @@ void test_in_wild() {
 	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
 	std::cout << "0-1 cases number " << rmk << std::endl;
 	cout << endl;
-	FastEnvelope::print_number();
+	// FastEnvelope::print_number(); //TODO
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -862,13 +863,6 @@ void test_in_wild() {
 		}
 	}
 
-
-
-
-
-
-
-
 	/*if (trindex1.size() > 0) {
 		std::ofstream fout;
 		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
@@ -881,11 +875,11 @@ void test_in_wild() {
 		}
 		fout.close();
 
-		fast_envelope.print_prisms(triangles[trindex1[idx]]);
+		fast_envelope.print_prisms(triangles[trindex1[idx]], "D:\\vs\\fast_envelope_csv\\problems\\");
 
 	}
 */
-////for aabb method
+	////for aabb method
 	Vector3 min, max;
 
 	Scalar dd;
@@ -976,7 +970,7 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
 	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
-	fast_envelope.print_ini_number();
+	// fast_envelope.print_ini_number(); //TODO
 	timer2.start();
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
@@ -985,7 +979,7 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	for (int i = 0; i < fn; i++) {
 
 		pos1[i] = outenvelope[i];
-		//fast_envelope.print_prisms(triangles[i]);
+		//fast_envelope.print_prisms(triangles[i], "D:\\vs\\fast_envelope_csv\\problems\\");
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
 		//if (i - i / 1000*1000 == 0) cout << "ten thousand test over " << i / 1000 << endl;
 
@@ -1018,7 +1012,7 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
 	std::cout << "0-1 cases number " << rmk << std::endl;
 	cout << endl;
-	FastEnvelope::print_number();
+	// FastEnvelope::print_number(); //TODO
 
 ////for aabb method
 	Vector3 min, max;
@@ -1081,7 +1075,7 @@ void fordebug() {
 	timer.start();
 	timer1.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
-	
+
 	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
 	timer2.start();
 	vector<bool> pos1, pos2;
@@ -1090,7 +1084,7 @@ void fordebug() {
 	for (int i = query; i < query+1; i++) {
 
 		pos1[i] = outenvelope[i];
-		fast_envelope.print_prisms(triangles[i]);
+		fast_envelope.print_prisms(triangles[i], "D:\\vs\\fast_envelope_csv\\problems\\");
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
 
 	}
@@ -1122,7 +1116,7 @@ void fordebug() {
 	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
 	std::cout << "0-1 cases number " << rmk << std::endl;
 	cout << endl;
-	FastEnvelope::print_number();
+	// FastEnvelope::print_number(); //TODO
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1163,7 +1157,7 @@ void fordebug() {
 
 	}
 	cout << "comparison " << pos2[query] << " " << pos3[query] << endl;
-	
+
 	int nbr = 0;
 	for (int i = 0; i < trindex2.size(); i++) {
 
@@ -1265,7 +1259,7 @@ void fordebug() {
 		}
 		fout.close();
 
-		fast_envelope.print_prisms(triangles[trindex1[idx]]);
+		fast_envelope.print_prisms(triangles[trindex1[idx]],"D:\\vs\\fast_envelope_csv\\problems\\");
 
 	}
 */
@@ -1321,7 +1315,7 @@ void test_tree() {
 	igl::Timer timer;
 
 
-
+:
 	timer.start();
 
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
@@ -1332,7 +1326,7 @@ void test_tree() {
 	//for (int i = 0; i < fn; i++) {
 
 	//	pos1[i] = outenvelope[i];
-	//	//fast_envelope.print_prisms(triangles[i]);
+	//	//fast_envelope.print_prisms(triangles[i], "D:\\vs\\fast_envelope_csv\\problems\\");
 	//	pos2[i] = fast_envelope.is_outside(triangles[i]);
 
 	//}
@@ -1342,7 +1336,7 @@ void test_tree() {
 	std::vector<unsigned int> querylist;
 	bool use_aabbcc = true;
 
-	std::cout << "\nbefore call function, cornerlist size " << fast_envelope.cornerlist.size() << endl;
+	// std::cout << "\nbefore call function, cornerlist size " << fast_envelope.cornerlist.size() << endl;
 	AABB tree;
 	tree.init_envelope(fast_envelope.cornerlist, use_aabbcc);
 
@@ -1354,7 +1348,7 @@ void test_tree() {
 		tree.facet_in_envelope(triangles[i][0], triangles[i][1], triangles[i][2], querylist);
 
 		//std::cout << i << " succeed,size " << querylist.size() << endl;
-		//fast_envelope.print_prisms(triangles[i]);
+		//fast_envelope.print_prisms(triangles[i], "D:\\vs\\fast_envelope_csv\\problems\\");
 	}
 	std::cout << "\ntest tree over " << timer.getElapsedTimeInSec() << endl;
 }
@@ -1653,6 +1647,7 @@ void try_eigen() {
 
 int main(int argc, char const *argv[])
 {
+	srand(42);
 	GEO::initialize();
 
 
@@ -1723,12 +1718,12 @@ int main(int argc, char const *argv[])
 	//test_in_wild(argv[1],argv[2]);
 	test_in_wild();
 	//test_without_sampling();
-	
+
 	for (int i = 0; i < (argc - 1) / 2; i++) {
 		//test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << i<<" done!\n" << std::endl;
 	}
-	
+
 
 	//fordebug();
 
@@ -1740,7 +1735,7 @@ int main(int argc, char const *argv[])
 
 
 
-	
+
 
 
 	return 0;

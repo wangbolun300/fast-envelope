@@ -32,30 +32,6 @@ function(fast_envelope_download_libigl)
 endfunction()
 
 
-## Json
-function(fast_envelope_download_json)
-    fast_envelope_download_project(json
-        GIT_REPOSITORY https://github.com/jdumas/json
-        GIT_TAG        0901d33bf6e7dfe6f70fd9d142c8f5c6695c6c5b
-    )
-endfunction()
-
-## Catch2
-function(fast_envelope_download_catch2)
-    fast_envelope_download_project(Catch2
-        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        v2.4.2
-    )
-endfunction()
-
-## Multi precision
-function(fast_envelope_download_arbitrary_precision)
-    fast_envelope_download_project(arbitrary_precision
-        GIT_REPOSITORY      https://github.com/teseoch/arbitrary_precision.git
-        GIT_TAG             2dc2deca151f7f682728b2bb985a03eb578ad379
-    )
-endfunction()
-
 ## CLI11
 function(fast_envelope_download_cli11)
     fast_envelope_download_project(cli11
@@ -95,13 +71,4 @@ function(fast_envelope_download_geogram)
         GIT_REPOSITORY https://github.com/alicevision/geogram.git
         GIT_TAG        v1.6.8
     )
-endfunction()
-
-
-## aabbcc
-function(fast_envelope_download_aabbcc)
-    fast_envelope_download_project(aabbcc
-            GIT_REPOSITORY https://github.com/lohedges/aabbcc.git
-            GIT_TAG        0c85e61362d384d70c71946826bfed0fb24a74ba
-            )
 endfunction()

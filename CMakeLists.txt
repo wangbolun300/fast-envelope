@@ -118,49 +118,16 @@ find_package(LIBIGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC igl::core)
 
 
-
 # Geogram
 fast_envelope_download_geogram()
 include(geogram)
 target_link_libraries(${PROJECT_NAME} PUBLIC geogram)
 
 
-# aabbcc
-target_link_libraries(${PROJECT_NAME} PUBLIC aabbcc)
-
-
 if(FAST_ENVELOPE_WITH_SANITIZERS)
 	add_sanitizers(${PROJECT_NAME})
 endif()
 
-fast_envelope_download_arbitrary_precision()
-add_subdirectory(${THIRD_PARTY_DIR}/arbitrary_precision)
-target_link_libraries(${PROJECT_NAME} PUBLIC ArbitraryPrecision)
-
-################################################################################
-# FastEnvelope binary
-################################################################################
-
-# Main executable
-if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
-	add_executable(${PROJECT_NAME}_bin src/main.cpp)
-	# add_subdirectory(src/benchmark)
-	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
-
-	target_link_libraries(${PROJECT_NAME}_bin
-		PUBLIC
-			${PROJECT_NAME}
-			warnings::all
-	)
-
-	if(FAST_ENVELOPE_WITH_SANITIZERS)
-		add_sanitizers(${PROJECT_NAME}_bin)
-	endif()
-
-	if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
-		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
-	endif()
-endif()
 
 ################################################################################
 # Required libraries
@@ -204,41 +171,35 @@ target_link_libraries(${PROJECT_NAME} PUBLIC CLI11::CLI11)
 target_include_directories(${PROJECT_NAME} PUBLIC ${GMP_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GMP_LIBRARIES})
 
-# Json
-# FAST_ENVELOPE_json()
-# add_library(json INTERFACE)
-# target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/include)
-# target_link_libraries(FastEnvelope PUBLIC json)
-
-
-# Catch2
-# fast_envelope_download_catch2()
-# add_library(catch INTERFACE)
-# target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
-
-
-################################################################################
-# Optional libraries
-################################################################################
-
-
-################################################################################
-# Clutter management
-################################################################################
-
 ################################################################################
 # Subdirectories
 ################################################################################
 
-# Other sources
+# Sources
 add_subdirectory(src)
 
-# Compile extras only if this is a top-level project
-if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
-	# Auxiliary binaries
 
-	# Unit tests
-	# include(CTest)
-	# enable_testing()
-	# add_subdirectory(tests)
+################################################################################
+# FastEnvelope binary
+################################################################################
+
+# Main executable
+if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
+	add_executable(${PROJECT_NAME}_bin app/main.cpp)
+	# add_subdirectory(src/benchmark)
+	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+
+	target_link_libraries(${PROJECT_NAME}_bin
+		PUBLIC
+			${PROJECT_NAME}
+			warnings::all
+	)
+
+	if(FAST_ENVELOPE_WITH_SANITIZERS)
+		add_sanitizers(${PROJECT_NAME}_bin)
+	endif()
+
+	if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
+		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
+	endif()
 endif()

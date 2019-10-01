@@ -4,9 +4,7 @@ set(SOURCES
         FastEnvelope.cpp
         FastEnvelope.h
         Logger.hpp
-        Multiprecision.hpp
-        Parameters.h
-        Rational.hpp
+
         Types.hpp
 )
 
@@ -20,5 +18,5 @@ target_sources(FastEnvelope PRIVATE ${SOURCES})
 ################################################################################
 
 add_subdirectory(external)
-add_subdirectory(benchmark)
+add_subdirectory(types)
 add_subdirectory(indirectPredicates)
