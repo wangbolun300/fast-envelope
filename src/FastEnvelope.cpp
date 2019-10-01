@@ -79,6 +79,82 @@ static const int prism_map[64][2] = {
 	{-1, -1},
 	{5, 11},
 	{-1, -1}};
+static const int cubic_map[36][2] = {
+
+	{-1, -1},
+
+ {-1, -1},
+
+ {0, 3},
+
+ {0, 1},
+
+ {1, 2},
+
+ {2, 3},
+
+ {-1, -1},
+
+ {-1, -1},
+
+ {4, 7},
+
+ {4, 5},
+
+ {5, 6},
+
+ {6, 7},
+
+ {0, 3},
+
+ {4, 7},
+
+ {-1, -1},
+
+ {0, 4},
+
+ {-1, -1},
+
+ {3, 7},
+
+ {0, 1},
+
+ {4, 5},
+
+ {0, 4},
+
+ {-1, -1},
+
+ {1, 5},
+
+ {-1, -1},
+
+ {1, 2},
+
+ {5, 6},
+
+ {-1, -1},
+
+ {1, 5},
+
+ {-1, -1},
+
+ {2, 6},
+
+ {2, 3},
+
+ {6, 7},
+
+ {3, 7},
+
+ {-1, -1},
+
+ {2, 6},
+
+ {-1, -1}
+
+};
+
 
 static const int p_facenumber = 8;
 static const int c_facenumber = 6;
@@ -289,7 +365,7 @@ bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const
 
 	const auto res = FastEnvelopeTestImplicit(triangle, querylist);
 	timer.stop();
-	logger().info("Query time time {}s", timer.getElapsedTimeInSec());
+	//logger().info("Query time time {}s", timer.getElapsedTimeInSec());
 
 	return res;
 }
@@ -417,43 +493,7 @@ bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triang
 
 	const int prism_size = envprism.size();
 
-	static const int cubic_map[36][2] = {
-		{-1, -1},
-		{-1, -1},
-		{0, 3},
-		{0, 1},
-		{1, 2},
-		{2, 3},
-		{-1, -1},
-		{-1, -1},
-		{4, 7},
-		{4, 5},
-		{5, 6},
-		{6, 7},
-		{0, 3},
-		{4, 7},
-		{-1, -1},
-		{0, 4},
-		{-1, -1},
-		{3, 7},
-		{0, 1},
-		{4, 5},
-		{0, 4},
-		{-1, -1},
-		{1, 5},
-		{-1, -1},
-		{1, 2},
-		{5, 6},
-		{-1, -1},
-		{1, 5},
-		{-1, -1},
-		{2, 6},
-		{2, 3},
-		{6, 7},
-		{3, 7},
-		{-1, -1},
-		{2, 6},
-		{-1, -1}};
+	
 
 	int jump1, jump2;
 
@@ -2466,7 +2506,7 @@ bool FastEnvelope::is_triangle_cut_cube(const int &cindex,
 				continue;
 
 			int id = cutp[i] * 6 + cutp[j];
-			int id0 = prism_map[id][0];
+			int id0 = cubic_map[id][0];
 			if (id0 == -1)
 				continue;
 			int inter = is_3_triangle_cut_float_fast(
