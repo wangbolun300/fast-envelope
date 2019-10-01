@@ -9,7 +9,7 @@ void vector_unique(std::vector<T>& v){
     v.erase(std::unique(v.begin(), v.end()), v.end());
 }
 
-void floatTetWild::AABBWrapper::init_b_mesh(const std::vector<Vector3>& input_vertices, const std::vector<Vector3i>& input_faces) {
+void fastEnvelope::AABBWrapper::init_b_mesh(const std::vector<Vector3>& input_vertices, const std::vector<Vector3i>& input_faces) {
     b_mesh.clear(false,false);
 //    std::vector<std::array<int, 2>> edges;
 //    for(int i=0;i<sf_mesh.facets.nb();i++){
@@ -77,7 +77,7 @@ void floatTetWild::AABBWrapper::init_b_mesh(const std::vector<Vector3>& input_ve
     mesh_reorder(b_mesh, GEO::MESH_ORDER_MORTON);
 }
 
-//void floatTetWild::AABBWrapper::init_tmp_b_mesh_and_tree(const Mesh& mesh, const std::vector<std::array<int, 2>>& b_edges){
+//void fastEnvelope::AABBWrapper::init_tmp_b_mesh_and_tree(const Mesh& mesh, const std::vector<std::array<int, 2>>& b_edges){
 //    if (b_edges.empty()) {
 //        tmp_b_mesh.vertices.clear();
 //        tmp_b_mesh.vertices.create_vertices(1);
@@ -111,7 +111,7 @@ void floatTetWild::AABBWrapper::init_b_mesh(const std::vector<Vector3>& input_ve
 //    tmp_b_tree = std::make_shared<GEO::MeshFacetsAABBWithEps>(tmp_b_mesh);
 //}
 
-void floatTetWild::AABBWrapper::init_tmp_b_mesh_and_tree(const std::vector<Vector3>& input_vertices, const std::vector<Vector3i>& input_faces,
+void fastEnvelope::AABBWrapper::init_tmp_b_mesh_and_tree(const std::vector<Vector3>& input_vertices, const std::vector<Vector3i>& input_faces,
                               const std::vector<std::array<int, 2>>& b_edges){
     if (b_edges.empty()) {
         tmp_b_mesh.vertices.clear();

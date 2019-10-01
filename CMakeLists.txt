@@ -186,7 +186,7 @@ add_subdirectory(src)
 # Main executable
 if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	add_executable(${PROJECT_NAME}_bin app/main.cpp)
-	# add_subdirectory(src/benchmark)
+	add_subdirectory(app)
 	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
 	target_link_libraries(${PROJECT_NAME}_bin

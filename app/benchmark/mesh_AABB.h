@@ -414,7 +414,7 @@ namespace GEO {
 
 }
 
-namespace floatTetWild {
+namespace fastEnvelope {
 
 inline void get_point_facet_nearest_point(
     const GEO::Mesh& M,

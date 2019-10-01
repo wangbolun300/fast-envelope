@@ -20,7 +20,6 @@
 #include <ctime>
 #include <cstdlib>
 
-using namespace floatTetWild;
 using namespace fastEnvelope;
 using namespace std;
 
@@ -202,10 +201,98 @@ void testOrientation() {
 	int ori = Predicates::orient_3d(p, tri[0], tri[1], tri[2]);
 	std::cout << "orientation test : " << ori << std::endl;
 }
+void sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& ps, Scalar sampling_dist) {
+	Scalar sqrt3_2 = std::sqrt(3) / 2;
+
+	std::array<Scalar, 3> ls;
+	for (int i = 0; i < 3; i++) {
+		ls[i] = (vs[i] - vs[(i + 1) % 3]).squaredNorm();
+	}
+	auto min_max = std::minmax_element(ls.begin(), ls.end());
+	int min_i = min_max.first - ls.begin();
+	int max_i = min_max.second - ls.begin();
+	Scalar N = sqrt(ls[max_i]) / sampling_dist;
+	if (N <= 1) {
+		for (int i = 0; i < 3; i++)
+			ps.push_back(GEO::vec3(vs[i][0], vs[i][1], vs[i][2]));
+		return;
+	}
+	if (N == int(N))
+		N -= 1;
+
+	GEO::vec3 v0(vs[max_i][0], vs[max_i][1], vs[max_i][2]);
+	GEO::vec3 v1(vs[(max_i + 1) % 3][0], vs[(max_i + 1) % 3][1], vs[(max_i + 1) % 3][2]);
+	GEO::vec3 v2(vs[(max_i + 2) % 3][0], vs[(max_i + 2) % 3][1], vs[(max_i + 2) % 3][2]);
+
+	GEO::vec3 n_v0v1 = GEO::normalize(v1 - v0);
+	for (int n = 0; n <= N; n++) {
+		ps.push_back(v0 + n_v0v1 * sampling_dist * n);
+	}
+	ps.push_back(v1);
+
+	Scalar h = GEO::distance(GEO::dot((v2 - v0), (v1 - v0)) * (v1 - v0) / ls[max_i] + v0, v2);
+	int M = h / (sqrt3_2 * sampling_dist);
+	if (M < 1) {
+		ps.push_back(v2);
+		return;
+	}
+
+	GEO::vec3 n_v0v2 = GEO::normalize(v2 - v0);
+	GEO::vec3 n_v1v2 = GEO::normalize(v2 - v1);
+	Scalar tan_v0, tan_v1, sin_v0, sin_v1;
+	sin_v0 = GEO::length(GEO::cross((v2 - v0), (v1 - v0))) / (GEO::distance(v0, v2) * GEO::distance(v0, v1));
+	tan_v0 = GEO::length(GEO::cross((v2 - v0), (v1 - v0))) / GEO::dot((v2 - v0), (v1 - v0));
+	tan_v1 = GEO::length(GEO::cross((v2 - v1), (v0 - v1))) / GEO::dot((v2 - v1), (v0 - v1));
+	sin_v1 = GEO::length(GEO::cross((v2 - v1), (v0 - v1))) / (GEO::distance(v1, v2) * GEO::distance(v0, v1));
+
+	for (int m = 1; m <= M; m++) {
+		int n = sqrt3_2 / tan_v0 * m + 0.5;
+		int n1 = sqrt3_2 / tan_v0 * m;
+		if (m % 2 == 0 && n == n1) {
+			n += 1;
+		}
+		GEO::vec3 v0_m = v0 + m * sqrt3_2 * sampling_dist / sin_v0 * n_v0v2;
+		GEO::vec3 v1_m = v1 + m * sqrt3_2 * sampling_dist / sin_v1 * n_v1v2;
+		if (GEO::distance(v0_m, v1_m) <= sampling_dist)
+			break;
+
+		Scalar delta_d = ((n + (m % 2) / 2.0) - m * sqrt3_2 / tan_v0) * sampling_dist;
+		GEO::vec3 v = v0_m + delta_d * n_v0v1;
+		int N1 = GEO::distance(v, v1_m) / sampling_dist;
+		//        ps.push_back(v0_m);
+		for (int i = 0; i <= N1; i++) {
+			ps.push_back(v + i * n_v0v1 * sampling_dist);
+		}
+		//        ps.push_back(v1_m);
+	}
+	ps.push_back(v2);
+
+	//sample edges
+	N = sqrt(ls[(max_i + 1) % 3]) / sampling_dist;
+	if (N > 1) {
+		if (N == int(N))
+			N -= 1;
+		GEO::vec3 n_v1v2 = GEO::normalize(v2 - v1);
+		for (int n = 1; n <= N; n++) {
+			ps.push_back(v1 + n_v1v2 * sampling_dist * n);
+		}
+	}
+
+	N = sqrt(ls[(max_i + 2) % 3]) / sampling_dist;
+	if (N > 1) {
+		if (N == int(N))
+			N -= 1;
+		GEO::vec3 n_v2v0 = GEO::normalize(v0 - v2);
+		for (int n = 1; n <= N; n++) {
+			ps.push_back(v2 + n_v2v0 * sampling_dist * n);
+		}
+	}
+}
+
 
 bool is_out_function(const std::array<Vector3, 3>& triangle, const Scalar& dd, AABBWrapper& sf_tree) {
 	std::vector<GEO::vec3> ps;
-	sample_triangle(triangle, ps, dd);//dd is used for sapmling
+	sample_trianglex(triangle, ps, dd);//dd is used for sapmling
 	return sf_tree.is_out_sf_envelope(ps, pow(dd*(1 - (1 / sqrt(3))), 2));
 	//int cnt = 0;
 	//Scalar sq_dist;
