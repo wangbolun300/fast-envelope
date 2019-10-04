@@ -8,8 +8,15 @@
 
 #include <igl/Timer.h>
 
+
+#include <geogram/basic/command_line.h>
+
+#include <geogram/basic/command_line_args.h>
+
 //#include<fastenvelope/EnvelopeTest.h>
 #include <unordered_map>
+
+#include <stdlib.h>
 
 #include <stdio.h>
 #include <assert.h>
@@ -1387,8 +1394,14 @@ void try_eigen() {
 int main(int argc, char const *argv[])
 {
 	srand(42);
-	GEO::initialize();
 
+#ifndef WIN32
+	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
+#endif
+	GEO::initialize(0);
+	GEO::CmdLine::import_arg_group("standard");
+	GEO::CmdLine::import_arg_group("pre");
+	GEO::CmdLine::import_arg_group("algo");
 
 	//init_envelope_boxes_recursive()
 

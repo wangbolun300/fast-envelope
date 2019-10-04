@@ -369,8 +369,7 @@ namespace fastEnvelope
 		//initializing types
 		initFPU();
 
-		logger().debug("prism size {}", envprism.size());
-		logger().debug("cubic size {}", envcubic.size());
+		//logger().debug("envelope size {}", envelope.size());
 	}
 
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const
@@ -566,12 +565,13 @@ namespace fastEnvelope
 					jump1 = prismindex[i];
 					int face[3];
 					std::vector<int> cid;
-					if (envelope[prismindex[i]].size() == 12) {
+					/*if (envelope[prismindex[i]].size() == 12) {
 						cut = is_seg_cut_prism(prismindex[i], triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
 					}
 					if (envelope[prismindex[i]].size() == 8) {
 						cut = is_seg_cut_cube(prismindex[i] - prism_size, triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
-					}
+					}*/
+					cut = is_seg_cut_polyhedra(prismindex[i], triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
 					if (cut == false) continue;
 
 					for (int j = 0; j < cid.size(); j++)
@@ -645,6 +645,16 @@ namespace fastEnvelope
 			if (envelope[prismindex[i]].size() == 8) {
 				cut = is_triangle_cut_cube(prismindex[i]-prism_size,
 					triangle[0], triangle[1], triangle[2], cidl);
+			}
+			std::vector<int> cidd;
+			bool cut1 = is_triangle_cut_envelope_polyhedra(prismindex[i],
+				triangle[0], triangle[1], triangle[2], cidd);
+			if (cut != cut1) std::cout << "diff in cut " << cut - cut1 << std::endl;
+			if (cut == cut1) {
+				if (cidl != cidd) {
+					//std::cout << "size of list " << cidl.size() << " " << cidd.size()<<" "<< envelope[prismindex[i]].size() << std::endl;
+				}
+				//if (envelope[prismindex[i]].size() == 8) std::cout << "!!!" << std::endl;
 			}
 			if (cut == false) continue;
 			int face[3];
@@ -2409,18 +2419,20 @@ namespace fastEnvelope
 				seg12[temp] = tri2[2];
 				temp++;
 			}
-			if (envelope[cindex].size() == 12) {
-				face[0] = p_face[cutp[i]][0];
-				face[1] = p_face[cutp[i]][1];
-				face[2] = p_face[cutp[i]][2];
-			}
-			if (envelope[cindex].size() == 8) {
-				face[0] = c_face[cutp[i]][0];
-				face[1] = c_face[cutp[i]][1];
-				face[2] = c_face[cutp[i]][2];
-			}
+			if (temp == 3) std::cout << "wrong here" << std::endl;
+			if (temp == 0) std::cout << "wrong here" << std::endl;
 			for (int k = 0; k < 2; k++)
 			{
+				if (envelope[cindex].size() == 12) {
+					face[0] = p_face[cutp[i]][0];
+					face[1] = p_face[cutp[i]][1];
+					face[2] = p_face[cutp[i]][2];
+				}
+				if (envelope[cindex].size() == 8) {
+					face[0] = c_face[cutp[i]][0];
+					face[1] = c_face[cutp[i]][1];
+					face[2] = c_face[cutp[i]][2];
+				}
 				bool precom = orient3D_LPI_prefilter( // it is boolean maybe need considering
 					seg00[k], seg01[k], seg02[k],
 					seg10[k], seg11[k], seg12[k],
@@ -2492,8 +2504,7 @@ namespace fastEnvelope
 				if (envelope[cindex].size() == 12) {
 					id= cutp[i] * 8 + cutp[j];
 					id0 = prism_map[id][0];
-					if (id0 == -1)
-						continue;
+					if (id0 == -1) continue;
 					face1[0] = p_face[cutp[i]][0];
 					face1[1] = p_face[cutp[i]][1];
 					face1[2] = p_face[cutp[i]][2];
@@ -2505,8 +2516,7 @@ namespace fastEnvelope
 				if (envelope[cindex].size() == 8) {
 					id = cutp[i] * 6 + cutp[j];
 					id0 = cubic_map[id][0];
-					if (id0 == -1)
-						continue;
+					if (id0 == -1) continue;
 					face1[0] = c_face[cutp[i]][0];
 					face1[1] = c_face[cutp[i]][1];
 					face1[2] = c_face[cutp[i]][2];
@@ -2582,7 +2592,7 @@ namespace fastEnvelope
 			}
 		}
 
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < number; i++)
 		{
 			if (cut[i] == true)
 				cid.emplace_back(i);
@@ -2670,22 +2680,43 @@ namespace fastEnvelope
 
 		return true;
 	}
-	bool FastEnvelope::is_seg_cut_polyhedra(const int &cindex,TODO
+	bool FastEnvelope::is_seg_cut_polyhedra(const int &cindex,
 		const Vector3 &seg0, const Vector3 &seg1, std::vector<int> &cid) const
 	{
-		bool cut[6];
-		for (int i = 0; i < 6; i++)
+
+		int number;
+		if (envelope[cindex].size() == 12) {
+			number = 8;
+		}
+		if (envelope[cindex].size() == 8) {
+			number = 6;
+		}
+		std::vector<bool> cut;
+		cut.resize(number);
+		for (int i = 0; i < number; i++)
 		{
 			cut[i] = false;
 		}
-		int o1[6], o2[6], ori = 0;
+		std::vector<int> o1, o2;
+		o1.resize(number);
+		o2.resize(number);
+		int ori = 0;
 		std::vector<int> cutp;
-
-		for (int i = 0; i < 6; i++)
+		int face[3];
+		for (int i = 0; i < number; i++)
 		{
-
-			o1[i] = Predicates::orient_3d(seg0, envcubic[cindex][c_face[i][0]], envcubic[cindex][c_face[i][1]], envcubic[cindex][c_face[i][2]]);
-			o2[i] = Predicates::orient_3d(seg1, envcubic[cindex][c_face[i][0]], envcubic[cindex][c_face[i][1]], envcubic[cindex][c_face[i][2]]);
+			if (envelope[cindex].size() == 12) {
+				face[0] = p_face[i][0];
+				face[1] = p_face[i][1];
+				face[2] = p_face[i][2];
+			}
+			if (envelope[cindex].size() == 8) {
+				face[0] = c_face[i][0];
+				face[1] = c_face[i][1];
+				face[2] = c_face[i][2];
+			}
+			o1[i] = Predicates::orient_3d(seg0, envelope[cindex][face[0]], envelope[cindex][face[1]], envelope[cindex][face[2]]);
+			o2[i] = Predicates::orient_3d(seg1, envelope[cindex][face[0]], envelope[cindex][face[1]], envelope[cindex][face[2]]);
 
 			if (o1[i] + o2[i] >= 1)
 			{
@@ -2708,13 +2739,22 @@ namespace fastEnvelope
 		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
 		for (int i = 0; i < cutp.size(); i++)
 		{
-
+			if (envelope[cindex].size() == 12) {
+				face[0] = p_face[cutp[i]][0];
+				face[1] = p_face[cutp[i]][1];
+				face[2] = p_face[cutp[i]][2];
+			}
+			if (envelope[cindex].size() == 8) {
+				face[0] = c_face[cutp[i]][0];
+				face[1] = c_face[cutp[i]][1];
+				face[2] = c_face[cutp[i]][2];
+			}
 			bool precom = orient3D_LPI_prefilter( // it is boolean maybe need considering
 				seg0[0], seg0[1], seg0[2],
 				seg1[0], seg1[1], seg1[2],
-				envcubic[cindex][c_face[cutp[i]][0]][0], envcubic[cindex][c_face[cutp[i]][0]][1], envcubic[cindex][c_face[cutp[i]][0]][2],
-				envcubic[cindex][c_face[cutp[i]][1]][0], envcubic[cindex][c_face[cutp[i]][1]][1], envcubic[cindex][c_face[cutp[i]][1]][2],
-				envcubic[cindex][c_face[cutp[i]][2]][0], envcubic[cindex][c_face[cutp[i]][2]][1], envcubic[cindex][c_face[cutp[i]][2]][2],
+				envelope[cindex][face[0]][0], envelope[cindex][face[0]][1], envelope[cindex][face[0]][2],
+				envelope[cindex][face[1]][0], envelope[cindex][face[1]][1], envelope[cindex][face[1]][2],
+				envelope[cindex][face[2]][0], envelope[cindex][face[2]][1], envelope[cindex][face[2]][2],
 				a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 			if (precom == false)
 			{
@@ -2725,13 +2765,23 @@ namespace fastEnvelope
 			{
 				if (i == j)
 					continue;
+				if (envelope[cindex].size() == 12) {
+					face[0] = p_face[cutp[j]][0];
+					face[1] = p_face[cutp[j]][1];
+					face[2] = p_face[cutp[j]][2];
+				}
+				if (envelope[cindex].size() == 8) {
+					face[0] = c_face[cutp[j]][0];
+					face[1] = c_face[cutp[j]][1];
+					face[2] = c_face[cutp[j]][2];
+				}
 				ori =
 					orient3D_LPI_postfilter(
 						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 						seg0[0], seg0[1], seg0[2],
-						envcubic[cindex][c_face[cutp[j]][0]][0], envcubic[cindex][c_face[cutp[j]][0]][1], envcubic[cindex][c_face[cutp[j]][0]][2],
-						envcubic[cindex][c_face[cutp[j]][1]][0], envcubic[cindex][c_face[cutp[j]][1]][1], envcubic[cindex][c_face[cutp[j]][1]][2],
-						envcubic[cindex][c_face[cutp[j]][2]][0], envcubic[cindex][c_face[cutp[j]][2]][1], envcubic[cindex][c_face[cutp[j]][2]][2]);
+						envelope[cindex][face[0]][0], envelope[cindex][face[0]][1], envelope[cindex][face[0]][2],
+						envelope[cindex][face[1]][0], envelope[cindex][face[1]][1], envelope[cindex][face[1]][2],
+						envelope[cindex][face[2]][0], envelope[cindex][face[2]][1], envelope[cindex][face[2]][2]);
 
 				if (ori == 1)
 					break;
@@ -2742,7 +2792,7 @@ namespace fastEnvelope
 			}
 		}
 
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < number; i++)
 		{
 			if (cut[i] == true)
 				cid.emplace_back(i);
@@ -2753,48 +2803,42 @@ namespace fastEnvelope
 	bool FastEnvelope::point_out_prism(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump) const
 	{
 
-		int ori;
-		int psize = envprism.size();
+		int ori,number,face[3];
+		
 		for (int i = 0; i < prismindex.size(); i++)
 		{
 			if (prismindex[i] == jump)
 				continue;
-			if (prismindex[i] < psize)
+			if (envelope[prismindex[i]].size() == 12) {
+				number = 8;
+			}
+			if (envelope[prismindex[i]].size() == 8) {
+				number = 6;
+			}
+			for (int j = 0; j < number; j++)
 			{
-				for (int j = 0; j < p_facenumber; j++)
+				if (envelope[prismindex[i]].size() == 12) {
+					face[0] = p_face[j][0];
+					face[1] = p_face[j][1];
+					face[2] = p_face[j][2];
+				}
+				if (envelope[prismindex[i]].size() == 8) {
+					face[0] = c_face[j][0];
+					face[1] = c_face[j][1];
+					face[2] = c_face[j][2];
+				}
+				ori = Predicates::orient_3d(envelope[prismindex[i]][face[0]], envelope[prismindex[i]][face[1]], envelope[prismindex[i]][face[2]], point);
+				if (ori == -1 || ori == 0)
+				{
+					break;
+				}
+				if (j == number - 1)
 				{
 
-					ori = Predicates::orient_3d(envprism[prismindex[i]][p_face[j][0]], envprism[prismindex[i]][p_face[j][1]], envprism[prismindex[i]][p_face[j][2]], point);
-					if (ori == -1 || ori == 0)
-					{
-						break;
-					}
-					if (j == 7)
-					{
-
-						return false;
-					}
+					return false;
 				}
 			}
-			else
-			{
-				int boxid = prismindex[i] - psize;
-				for (int j = 0; j < c_facenumber; j++)
-				{
-
-					ori = Predicates::orient_3d(envcubic[boxid][c_face[j][0]], envcubic[boxid][c_face[j][1]], envcubic[boxid][c_face[j][2]], point);
-
-					if (ori == -1 || ori == 0)
-					{
-						break;
-					}
-					if (j == 5)
-					{
-
-						return false;
-					}
-				}
-			}
+			
 		}
 
 		return true;
