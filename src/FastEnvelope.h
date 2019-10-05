@@ -75,15 +75,16 @@ namespace fastEnvelope {
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int &pieces) const;
 
 		//export files for debugging
-		void print_prisms(const std::array<Vector3, 3> &triangle, const std::string &path) const;
+		//void print_prisms(const std::array<Vector3, 3> &triangle, const std::string &path) const;
 
 	private:
 		AABB tree;
 
 		//unify
-		std::vector<std::array<Vector3,12>> envprism;
-		std::vector<std::array<Vector3,8>> envcubic;
-		std::vector<std::vector<Vector3>> envelope;
+
+
+		
+		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 
 		//main pipeline
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
@@ -121,8 +122,8 @@ namespace fastEnvelope {
 
 		//maybe unify
 		static void halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::array<Vector3, 12>> &envprism, std::vector<std::array<Vector3, 8>> &envbox, const Scalar &epsilon);
-		template<typename T>
-		static void halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<std::vector<int>> &m_faces, const Scalar &epsilon, std::vector<std::vector<std::array<Vector3, 3>>> &hs);
+		/*template<typename T>*/
+		//static void halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<std::vector<int>> &m_faces, const Scalar &epsilon, std::vector<std::vector<std::array<Vector3, 3>>> &hs);
 		//generate boxes for segments
 		static void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox);
 
@@ -197,17 +198,17 @@ namespace fastEnvelope {
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12,
 			const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
 		//not accurate but conservative
-		bool is_triangle_cut_prism(const int&pindex,
-			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const ;
-		//not accurate but conservative
-		bool is_triangle_cut_cube(const int&cindex,
-			 const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const;
-		//not accurate but conservative
-		bool is_seg_cut_prism(const int&pindex,
-			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
-		//not accurate but conservative
-		bool is_seg_cut_cube(const int&cindex,
-			const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
+		//bool is_triangle_cut_prism(const int&pindex,
+		//	const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const ;
+		////not accurate but conservative
+		//bool is_triangle_cut_cube(const int&cindex,
+		//	 const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, std::vector<int> &cid)const;
+		////not accurate but conservative
+		//bool is_seg_cut_prism(const int&pindex,
+		//	const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
+		////not accurate but conservative
+		//bool is_seg_cut_cube(const int&cindex,
+		//	const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
 		bool FastEnvelope::is_triangle_cut_envelope_polyhedra(const int &cindex,
 			const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, std::vector<int> &cid) const;
 		bool FastEnvelope::is_seg_cut_polyhedra(const int &cindex,
