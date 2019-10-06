@@ -60,7 +60,7 @@ namespace fastEnvelope {
 
 		//static const Scalar  BOX_SCALE = 1 / 10.0;
 	public:
-		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps, const int spac);
+		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);
 
 		//check if tri is outside
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;

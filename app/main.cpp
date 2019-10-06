@@ -715,10 +715,10 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-//void test_in_wild(string inputFileName1, string input_surface_path1) {
-void test_in_wild() {
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl";
+void test_in_wild(string inputFileName1, string input_surface_path1) {
+//void test_in_wild() {
+	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl_env.csv";
+	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl";
 	///string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl_env.csv";
 	///string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl";
 	///
@@ -742,7 +742,7 @@ void test_in_wild() {
 
 	Scalar shrink = 1;
 	Scalar eps = 1e-3;
-	const int spac = 10;// space subdivision parameter
+
 	int ft;
 	// if there are over one million triangles, then test maximal one million triangles
 	if (triangles.size() > 1000000) {
@@ -781,7 +781,7 @@ void test_in_wild() {
 
 	timer.start();
 	timer1.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
 	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
 	// fast_envelope.print_ini_number(); //TODO
@@ -1061,7 +1061,7 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 
 	timer.start();
 	timer1.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps, spac);
+	const FastEnvelope fast_envelope(env_vertices, env_faces, eps);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
 	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
 	// fast_envelope.print_ini_number(); //TODO
@@ -1467,12 +1467,12 @@ int main(int argc, char const *argv[])
 
 
 
-	//test_in_wild(argv[1],argv[2]);
+	test_in_wild(argv[1],argv[2]);
 	//test_in_wild();
 	//test_without_sampling();
 
 	for (int i = 0; i < (argc - 1) / 2; i++) {
-		test_without_sampling(argv[2*i+1], argv[2*i+2]);
+		//test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
 	}
 

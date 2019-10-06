@@ -145,7 +145,7 @@ namespace fastEnvelope
 
 
 
-	FastEnvelope::FastEnvelope(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, const Scalar eps, const int spac)
+	FastEnvelope::FastEnvelope(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, const Scalar eps)
 	{
 		igl::Timer timer;
 		
