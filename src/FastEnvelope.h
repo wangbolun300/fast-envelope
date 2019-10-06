@@ -209,9 +209,9 @@ namespace fastEnvelope {
 		////not accurate but conservative
 		//bool is_seg_cut_cube(const int&cindex,
 		//	const Vector3& seg0, const Vector3& seg1, std::vector<int> &cid)const;
-		bool FastEnvelope::is_triangle_cut_envelope_polyhedra(const int &cindex,
+		bool is_triangle_cut_envelope_polyhedra(const int &cindex,
 			const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, std::vector<int> &cid) const;
-		bool FastEnvelope::is_seg_cut_polyhedra(const int &cindex,
+		bool is_seg_cut_polyhedra(const int &cindex,
 			const Vector3 &seg0, const Vector3 &seg1, std::vector<int> &cid) const;
 	};
 
