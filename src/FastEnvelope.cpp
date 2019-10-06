@@ -148,7 +148,7 @@ namespace fastEnvelope
 	FastEnvelope::FastEnvelope(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, const Scalar eps, const int spac)
 	{
 		igl::Timer timer;
-		//Multiprecision::set_precision(256);
+		
 		timer.start();
 		Vector3 min, max;
 		min = m_ver.front();
@@ -184,7 +184,7 @@ namespace fastEnvelope
 		timer.start();
 		std::vector<std::array<Vector3, 12>> envprism;
 		std::vector<std::array<Vector3, 8>> envcubic;
-		halfspace_generation(ver_new, faces_new, envprism, envcubic, epsilon);//TODO take lambda function to generate any shape envelope convex polyhedra
+		halfspace_generation(ver_new, faces_new, envprism, envcubic, epsilon);
 		static const int p_face[8][3] = { {0, 1, 3}, {7, 6, 9}, {1, 0, 7}, {2, 1, 7}, {3, 2, 8}, {3, 9, 10}, {5, 4, 11}, {0, 5, 6} }; //prism triangle index. all with orientation.
 		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
 		halfspace.resize(envprism.size() + envcubic.size());
