@@ -88,7 +88,7 @@ namespace fastEnvelope {
 
 		//main pipeline
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
-
+		bool is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const;
 
 		//algorithm
 		int Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_LPI &datalpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const;
