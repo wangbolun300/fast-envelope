@@ -715,10 +715,10 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-void test_in_wild(string inputFileName1, string input_surface_path1) {
-//void test_in_wild() {
-	//string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl_env.csv";
-	//string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl";
+//void test_in_wild(string inputFileName1, string input_surface_path1) {
+void test_in_wild() {
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl";
 	///string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl_env.csv";
 	///string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl";
 	///
@@ -1390,6 +1390,33 @@ void try_eigen() {
 	cout << "row of v " << V.rows() << endl;
 }
 
+void tryspeed() {
+	std::vector<int> a,b,c;
+	igl::Timer timer;
+	int size = 100000000;
+	timer.start();
+	for (int i = 0; i < size; i++) {
+		a.push_back(rand());
+	}
+	cout << "time pure push " << timer.getElapsedTimeInSec() << endl;
+
+	timer.start();
+	b.reserve(size);
+	for (int i = 0; i < size; i++) {
+		b.push_back(rand());
+	}
+	cout << "time reserve push " << timer.getElapsedTimeInSec() << endl;
+
+	timer.start();
+	b.resize(size);
+	for (int i = 0; i < size; i++) {
+		b[i] = (rand());
+	}
+	cout << "time reserve push " << timer.getElapsedTimeInSec() << endl;
+
+}
+
+
 
 int main(int argc, char const *argv[])
 {
@@ -1467,10 +1494,10 @@ int main(int argc, char const *argv[])
 
 
 
-	test_in_wild(argv[1],argv[2]);
+	//test_in_wild(argv[1],argv[2]);
 	//test_in_wild();
 	//test_without_sampling();
-
+	tryspeed();
 	for (int i = 0; i < (argc - 1) / 2; i++) {
 		//test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;

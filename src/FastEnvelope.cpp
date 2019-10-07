@@ -534,6 +534,7 @@ namespace fastEnvelope
 					}
 				}
 				inter_ijk_list.push_back({ {int(prismindex[i]), cidl[j]} });
+				if (cidl[j] > 8 || cidl[j] < 0) std::cout << "wrong here finally" << std::endl;
 			}
 
 		}
@@ -595,6 +596,7 @@ namespace fastEnvelope
 					halfspace[inter_ijk_list[j][0]][inter_ijk_list[j][1]][2][2],
 
 					d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7);
+				if (inter_ijk_list[j][1] >= halfspace[inter_ijk_list[j][0]].size()) std::cout << "here is wrong by exceed calling vector" << std::endl;
 				// timein2 += timer_u.getElapsedTimeInSec();
 				if (pre == true)
 				{
@@ -873,17 +875,20 @@ namespace fastEnvelope
 			halfspace[datatpi.prismid2][datatpi.facetid2][2][1],
 			halfspace[datatpi.prismid2][datatpi.facetid2][2][2],
 			s);
-		
+		if (datatpi.prismid1 >= halfspace.size() || datatpi.prismid2 >= halfspace.size()) std::cout << "wrong in id" << std::endl;
+		if (datatpi.facetid1 >= halfspace[datatpi.prismid1].size() || datatpi.facetid2 >= halfspace[datatpi.prismid2].size()) std::cout << "wrong in size" << std::endl;
+		if (datatpi.facetid1 < 0 || datatpi.facetid2 < 0) std::cout << "wrong in size less 0" << std::endl;
+
 		if (premulti == false) return 2; //means have parallel facets
 		bool cut = is_3_triangle_cut_pure_multiprecision(triangle, s);
 		if (cut == false) return 2;
 
 		for (int i = 0; i < prismindex.size(); i++)
 		{
-			
+			if (prismindex[i] == jump1|| prismindex[i] == jump2)	continue;
 			tot = 0;
 			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-				
+			
 				ori = orient3D_TPI_post_exact(s, 
 					halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 					halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
