@@ -1391,26 +1391,31 @@ void try_eigen() {
 }
 
 void tryspeed() {
-	std::vector<int> a,b,c;
+	std::vector<int> a,b,c,d;
 	igl::Timer timer;
-	int size = 100000000;
+	const int size = 100000000;
+	std::vector<int> ini;
+
+	for (int i = 0; i < size; i++) {
+		ini.push_back(int (rand()));
+	}
 	timer.start();
 	for (int i = 0; i < size; i++) {
-		a.push_back(rand());
+		a.push_back(ini[i]);
 	}
 	cout << "time pure push " << timer.getElapsedTimeInSec() << endl;
 
 	timer.start();
 	b.reserve(size);
 	for (int i = 0; i < size; i++) {
-		b.push_back(rand());
+		b.push_back(ini[i]);
 	}
 	cout << "time reserve push " << timer.getElapsedTimeInSec() << endl;
 
 	timer.start();
-	b.resize(size);
+	c.resize(size);
 	for (int i = 0; i < size; i++) {
-		b[i] = (rand());
+		c[i] = ini[i];
 	}
 	cout << "time reserve push " << timer.getElapsedTimeInSec() << endl;
 
