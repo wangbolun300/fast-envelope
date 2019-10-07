@@ -925,22 +925,25 @@ public:
 	static double To_Double(const int elen, const double *e);
 };
 
+#include <cassert>
+
 int expansionObject::Gen_Sum(const int elen, const double *e, const int flen, const double *f, double *h)
 {
 	double Q, Qn, hh, en = e[0], fn = f[0];
 	int e_k, f_k, h_k;
 
 	h_k = e_k = f_k = 0;
-	if ((fn > en) == (fn > -en)) { Q = en; en = e[++e_k]; } else { Q = fn; fn = f[++f_k]; }
+	if ((fn > en) == (fn > -en)) { assert(e_k+1 < elen); Q = en; en = e[++e_k]; }
+	else { assert(f_k + 1 < flen); Q = fn; fn = f[++f_k]; }
 
 	if ((e_k < elen) && (f_k < flen))
 	{
-		if ((fn > en) == (fn > -en)) { Quick_Two_Sum(en, Q, Qn, hh); en = e[++e_k]; } else { Quick_Two_Sum(fn, Q, Qn, hh); fn = f[++f_k]; }
+		if ((fn > en) == (fn > -en)) { Quick_Two_Sum(en, Q, Qn, hh); assert(e_k + 1 < elen); en = e[++e_k]; } else { Quick_Two_Sum(fn, Q, Qn, hh); assert(f_k + 1 < flen); fn = f[++f_k]; }
 		Q = Qn;
 		if (hh != 0.0) h[h_k++] = hh;
 		while ((e_k < elen) && (f_k < flen))
 		{
-			if ((fn > en) == (fn > -en)) { Two_Sum(Q, en, Qn, hh); en = e[++e_k]; } else { Two_Sum(Q, fn, Qn, hh); fn = f[++f_k]; }
+			if ((fn > en) == (fn > -en)) { Two_Sum(Q, en, Qn, hh); assert(e_k + 1 < elen); en = e[++e_k]; } else { Two_Sum(Q, fn, Qn, hh); assert(f_k + 1 < flen); fn = f[++f_k]; }
 			Q = Qn;
 			if (hh != 0.0) h[h_k++] = hh;
 		}
@@ -948,6 +951,7 @@ int expansionObject::Gen_Sum(const int elen, const double *e, const int flen, co
 
 	while (e_k < elen)
 	{
+		assert(e_k + 1 < elen);
 		Two_Sum(Q, en, Qn, hh);
 		en = e[++e_k];
 		Q = Qn;
@@ -955,6 +959,7 @@ int expansionObject::Gen_Sum(const int elen, const double *e, const int flen, co
 	}
 	while (f_k < flen)
 	{
+		assert(f_k + 1 < flen);
 		Two_Sum(Q, fn, Qn, hh);
 		fn = f[++f_k];
 		Q = Qn;
@@ -1079,12 +1084,16 @@ double expansionObject::To_Double(const int elen, const double *e)
 
 void initFPU()
 {
+#if _WIN64
+	//do nothing
+#else
 #ifdef WIN32
 	_control87(_PC_53, _MCW_PC); /* Set FPU control word for double precision. */
 #else
 	int cword;
 	cword = 4722;                 /* set FPU control word for double precision */
 	_FPU_SETCW(cword);
+#endif
 #endif
 }
 
