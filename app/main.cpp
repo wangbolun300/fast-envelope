@@ -584,13 +584,13 @@ void test_in_wild() {
 
 
 
-void test_without_sampling(string inputFileName1, string input_surface_path1) {
-//void test_without_sampling() {
-//	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-//	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\Helicopter_Logo_X1.stl";
-	///string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl_env.csv";
-	///string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl";
-	///
+//void test_without_sampling(string inputFileName1, string input_surface_path1) {
+void test_without_sampling() {
+	/*string inputfilename1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\161438.stl_envelope_log.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\161438.stl";
+	
 
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
@@ -647,7 +647,7 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	//std::cout << "TEST aabb FINISHED  " << std::endl;
 	//////////////////////////////
 
-
+	Scalar temptime=0;
 	timer.start();
 	timer1.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps);
@@ -658,15 +658,21 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
 	pos2.resize(fn);
-
-	for (int i = 0; i < fn; i++) {
-
+	
+	for (int i = 3293; i < 3294; i++) {
+		
 		pos1[i] = outenvelope[i];
-		//fast_envelope.print_prisms(triangles[i], "D:\\vs\\fast_envelope_csv\\problems\\");
+		timer1.start();
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		//if (i - i / 1000*1000 == 0) cout << "ten thousand test over " << i / 1000 << endl;
+		//if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
+		if (timer1.getElapsedTimeInSec() > temptime) {
+			temptime = timer1.getElapsedTimeInSec();
+			cout << "time get longer " << i << ", " << temptime << std::endl;
+		}
 
 	}
+	
+	
 	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
 	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
 
@@ -1089,8 +1095,8 @@ int main(int argc, char const *argv[])
 
 
 	//test_in_wild(argv[1],argv[2]);
-	test_in_wild();
-	//test_without_sampling();
+	//test_in_wild();
+	test_without_sampling();
 	//tryspeed();
 	for (int i = 0; i < (argc - 1) / 2; i++) {
 		//test_without_sampling(argv[2*i+1], argv[2*i+2]);

@@ -1662,6 +1662,7 @@ namespace fastEnvelope
 
 	void FastEnvelope::halfspace_init(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, 
 		std::vector<std::vector<std::array<Vector3, 3>>>& halfspace, std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon) {
+		
 		const auto dot_sign = [](const Vector3 &a, const Vector3 &b)
 		{
 			Scalar t = a.dot(b);
@@ -1690,7 +1691,7 @@ namespace fastEnvelope
 			}
 
 			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-4;
+			const Scalar dis = 1e-6;
 			for (int j = 0; j < 3; j++) {
 				corners[0][j] -= dis;
 				corners[1][j] += dis;
@@ -1711,7 +1712,7 @@ namespace fastEnvelope
 			}
 
 			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-4;
+			const Scalar dis = 1e-6;
 			for (int j = 0; j < 3; j++) {
 				corners[0][j] -= dis;
 				corners[1][j] += dis;
