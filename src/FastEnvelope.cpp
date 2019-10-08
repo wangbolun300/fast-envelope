@@ -162,39 +162,13 @@ namespace fastEnvelope
 		logger().info("Resorting mesh time {}s", timer.getElapsedTimeInSec());
 
 		timer.start();
-		std::vector<std::array<Vector3, 12>> envprism;
-		std::vector<std::array<Vector3, 8>> envcubic;
-		halfspace_generation(ver_new, faces_new, envprism, envcubic, epsilon);
-		static const int p_face[8][3] = { {0, 1, 3}, {7, 6, 9}, {1, 0, 7}, {2, 1, 7}, {3, 2, 8}, {3, 9, 10}, {5, 4, 11}, {0, 5, 6} }; //prism triangle index. all with orientation.
-		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
-		halfspace.resize(envprism.size() + envcubic.size());
-		for (int i = 0; i < envprism.size(); i++) {
-			halfspace[i].resize(8);
-			for (int j = 0; j < 8; j++) {
-				halfspace[i][j] = { { envprism[i][p_face[j][0]],envprism[i][p_face[j][1]],envprism[i][p_face[j][2]] } };
-			}
-		}
-		for (int i = 0; i < envcubic.size(); i++) {
-			halfspace[i + envprism.size()].resize(6);
-			for (int j = 0; j < 6; j++) {
-				halfspace[i + envprism.size()][j] = { {envcubic[i][c_face[j][0]],envcubic[i][c_face[j][1]],envcubic[i][c_face[j][2]] } };
-			}
-		}
-		timer.stop();
-		logger().info("Box generation time {}s", timer.getElapsedTimeInSec());
-
-		//build a hash function
 		std::vector<std::array<Vector3, 2>> cornerlist;
-		timer.start();
-		CornerList_prism(envprism, cornerlist);
-		std::vector<std::array<Vector3, 2>> cubiconors;
-		CornerList_cubic(envcubic, cubiconors);
-
-
-
-		cornerlist.insert(cornerlist.end(), cubiconors.begin(), cubiconors.end());
+		halfspace_init(ver_new, faces_new, halfspace, cornerlist, epsilon);
+		
+		
 		timer.stop();
-		logger().info("Corner generation time {}s", timer.getElapsedTimeInSec());
+		logger().info("halfspace and bounding box initialize time {}s", timer.getElapsedTimeInSec());
+
 
 		timer.start();
 		tree.init_envelope(cornerlist);
@@ -1686,8 +1660,8 @@ namespace fastEnvelope
 		return DEGENERATED_POINT;
 	}
 
-	void FastEnvelope::halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::array<Vector3, 12>> &envprism, std::vector<std::array<Vector3, 8>> &envbox, const Scalar &epsilon)
-	{
+	void FastEnvelope::halfspace_init(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, 
+		std::vector<std::vector<std::array<Vector3, 3>>>& halfspace, std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon) {
 		const auto dot_sign = [](const Vector3 &a, const Vector3 &b)
 		{
 			Scalar t = a.dot(b);
@@ -1703,11 +1677,52 @@ namespace fastEnvelope
 				return -1;
 			return 0;
 		};
+		const auto get_bb_corners_12 = [](const std::array<Vector3, 12> &vertices) {//TODO why use this one
+			std::array<Vector3, 2> corners;
+			corners[0] = vertices[0];
+			corners[1] = vertices[0];
 
+			for (size_t j = 0; j < 12; j++) {
+				for (int i = 0; i < 3; i++) {
+					corners[0][i] = std::min(corners[0][i], vertices[j][i]);
+					corners[1][i] = std::max(corners[1][i], vertices[j][i]);
+				}
+			}
+
+			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
+			const Scalar dis = 1e-4;
+			for (int j = 0; j < 3; j++) {
+				corners[0][j] -= dis;
+				corners[1][j] += dis;
+			}
+			return corners;
+
+		};
+		const auto get_bb_corners_8 = [](const std::array<Vector3, 8> &vertices) {//TODO why use this one
+			std::array<Vector3, 2> corners;
+			corners[0] = vertices[0];
+			corners[1] = vertices[0];
+
+			for (size_t j = 0; j < 8; j++) {
+				for (int i = 0; i < 3; i++) {
+					corners[0][i] = std::min(corners[0][i], vertices[j][i]);
+					corners[1][i] = std::max(corners[1][i], vertices[j][i]);
+				}
+			}
+
+			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
+			const Scalar dis = 1e-4;
+			for (int j = 0; j < 3; j++) {
+				corners[0][j] -= dis;
+				corners[1][j] += dis;
+			}
+			return corners;
+		};
 		static const fastEnvelope::Vector3 origin = fastEnvelope::Vector3(0, 0, 0);
 
-		envprism.reserve(m_faces.size());
-		Vector3 AB, AC, BC, normal, vector1, ABn;
+		halfspace.resize(m_faces.size());
+		cornerlist.resize(m_faces.size());
+		Vector3 AB, AC, BC, normal, vector1, ABn, min, max;
 		std::array<Vector3, 6> polygon;
 		std::array<Vector3, 12> polygonoff;
 		std::array<Vector3, 8> box;
@@ -1722,7 +1737,8 @@ namespace fastEnvelope
 				{-1, -1, -1},
 				{1, -1, -1},
 			} };
-
+		static const int p_face[8][3] = { {0, 1, 3}, {7, 6, 9}, {1, 0, 7}, {2, 1, 7}, {3, 2, 8}, {3, 9, 10}, {5, 4, 11}, {0, 5, 6} }; //prism triangle index. all with orientation.
+		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
 		Scalar tolerance = epsilon / sqrt(3);
 		Scalar de;
 
@@ -1740,7 +1756,14 @@ namespace fastEnvelope
 				{
 					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
 				}
-				envbox.emplace_back(box);
+				halfspace[i].resize(6);
+				for (int j = 0; j < 6; j++) {
+					halfspace[i][j][0] = box[c_face[j][0]];
+					halfspace[i][j][1] = box[c_face[j][1]];
+					halfspace[i][j][2] = box[c_face[j][2]];
+				}
+				cornerlist[i] = (get_bb_corners_8(box));
+
 				continue;
 			}
 			if (de == DEGENERATED_SEGMENT)
@@ -1750,31 +1773,34 @@ namespace fastEnvelope
 				if (length1 >= length2 && length1 >= length3)
 				{
 					seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], tolerance, box);
-					envbox.emplace_back(box);
+					
 				}
 				if (length2 >= length1 && length2 >= length3)
 				{
 					seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][2]], tolerance, box);
-					envbox.emplace_back(box);
+					
 				}
 				if (length3 >= length1 && length3 >= length2)
 				{
 					seg_cube(m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tolerance, box);
-					envbox.emplace_back(box);
 				}
+				halfspace[i].resize(6);
+				for (int j = 0; j < 6; j++) {
+					halfspace[i][j][0] = box[c_face[j][0]];
+					halfspace[i][j][1] = box[c_face[j][1]];
+					halfspace[i][j][2] = box[c_face[j][2]];
+				}
+				cornerlist[i] = (get_bb_corners_8(box));
 				continue;
 			}
 			if (de == NERLY_DEGENERATED)
 			{
 				logger().debug("Envelope Triangle Degeneration- Nearly");
-				//std::cout << std::setprecision(17) <<m_ver[m_faces[i][0]][0] << " " << m_ver[m_faces[i][0]][1] << " " << m_ver[m_faces[i][0]][2] << std::endl;
-				//std::cout << std::setprecision(17) <<m_ver[m_faces[i][1]][0] << " " << m_ver[m_faces[i][1]][1] << " " << m_ver[m_faces[i][1]][2] << std::endl;
-				//std::cout << std::setprecision(17) <<m_ver[m_faces[i][2]][0] << " " << m_ver[m_faces[i][2]][1] << " " << m_ver[m_faces[i][2]][2] << std::endl;
-
+				
 				normal = accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][0]], m_ver[m_faces[i][2]]);
-				//std::cout << "pass1" << std::endl;
+
 				vector1 = accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], origin, normal);
-				//std::cout << "pass2" << std::endl;
+
 			}
 			else
 			{
@@ -1815,7 +1841,13 @@ namespace fastEnvelope
 			{
 				polygonoff[j] = polygon[j - 6] - normal * tolerance;
 			}
-			envprism.emplace_back(polygonoff);
+			halfspace[i].resize(8);
+			for (int j = 0; j < 8; j++) {
+				halfspace[i][j][0] = polygonoff[p_face[j][0]];
+				halfspace[i][j][1] = polygonoff[p_face[j][1]];
+				halfspace[i][j][2] = polygonoff[p_face[j][2]];
+			}
+			cornerlist[i] = (get_bb_corners_12(polygonoff));
 		}
 	}
 

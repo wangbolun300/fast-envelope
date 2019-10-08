@@ -80,10 +80,6 @@ namespace fastEnvelope {
 	private:
 		AABB tree;
 
-		//unify
-
-
-		
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 
 		//main pipeline
@@ -120,77 +116,14 @@ namespace fastEnvelope {
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		bool point_out_prism(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump) const;
 
-		//maybe unify
-		static void halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::array<Vector3, 12>> &envprism, std::vector<std::array<Vector3, 8>> &envbox, const Scalar &epsilon);
-		/*template<typename T>*/
-		//static void halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<std::vector<int>> &m_faces, const Scalar &epsilon, std::vector<std::vector<std::array<Vector3, 3>>> &hs);
-		//generate boxes for segments
+		static void halfspace_init(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace, std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon);
 		static void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox);
 
 
-		//build boxes for set of half planes, change maybe to unify
-		static void get_bb_corners_12(const std::array<Vector3, 12> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
-			min = vertices[0];
-			max = vertices[0];
+		
+		
 
-			for (size_t j = 0; j < 12; j++) {
-				for (int i = 0; i < 3; i++) {
-					min[i] = std::min(min[i], vertices[j][i]);
-					max[i] = std::max(max[i], vertices[j][i]);
-				}
-			}
-
-			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-4;
-			for (int j = 0; j < 3; j++) {
-				min[j] -= dis;
-				max[j] += dis;
-			}
-
-		}
-
-		static void get_bb_corners_8(const std::array<Vector3, 8> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
-			min = vertices[0];
-			max = vertices[0];
-
-			for (size_t j = 0; j < 8; j++) {
-				for (int i = 0; i < 3; i++) {
-					min[i] = std::min(min[i], vertices[j][i]);
-					max[i] = std::max(max[i], vertices[j][i]);
-				}
-			}
-
-			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-4;
-			for (int j = 0; j < 3; j++) {
-				min[j] -= dis;
-				max[j] += dis;
-			}
-
-		}
-
-		static void  CornerList_prism(const std::vector<std::array<Vector3, 12>>& prism,
-			std::vector<std::array<Vector3, 2>>& list) {
-
-			list.resize(prism.size());//to be safer
-			for (int i = 0; i < prism.size(); i++) {
-
-				get_bb_corners_12(prism[i], list[i][0], list[i][1]);
-				//prism_bbox(prism[i], list[i][0], list[i][1]);
-			}
-		}
-
-		static void  CornerList_cubic(const std::vector<std::array<Vector3, 8>>& cubic,
-			std::vector<std::array<Vector3, 2>>& list) {
-
-			list.resize(cubic.size());//to be safer
-			for (int i = 0; i < cubic.size(); i++) {
-
-				get_bb_corners_8(cubic[i], list[i][0], list[i][1]);
-				//cubic_bbox(cubic[i], list[i][0], list[i][1]);
-			}
-		}
-
+	
 
 		//heuristics to refine the box box guess from the tree
 		static int is_3_triangle_cut_float_fast(
