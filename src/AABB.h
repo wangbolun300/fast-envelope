@@ -8,6 +8,10 @@
 namespace fastEnvelope {
 	class AABB {
 	private:
+		static Vector2 to_2d(const Vector3 &p, int t)
+		{
+			return Vector2(p[(t + 1) % 3], p[(t + 2) % 3]);
+		}
 		std::vector<std::array<Vector3, 2>> boxlist;
 		size_t n_corners = -1;
 

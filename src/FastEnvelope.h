@@ -79,11 +79,11 @@ namespace fastEnvelope {
 
 	private:
 		AABB tree;
-
+		std::vector<std::array<Vector3, 2>> cornerlist;
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 
-		std::vector<Vector3> ver_new;
-		std::vector<Vector3i> faces_new;
+		/*std::vector<Vector3> ver_new;
+		std::vector<Vector3i> faces_new;*/
 		
 		//main pipeline
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
@@ -121,6 +121,14 @@ namespace fastEnvelope {
 
 		static void halfspace_init(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace, std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon);
 		static void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox);
+		static bool box_box_intersection(const Vector3 &min1, const Vector3 &max1, const Vector3 &min2, const Vector3 &max2)
+		{
+			if (max1[0] < min2[0] || max1[1] < min2[1] || max1[2] < min2[2])
+				return 0;
+			if (max2[0] < min1[0] || max2[1] < min1[1] || max2[2] < min1[2])
+				return 0;
+			return 1;
+		}
 
 
 		

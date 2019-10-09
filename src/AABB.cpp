@@ -123,6 +123,8 @@ namespace fastEnvelope {
 		init_envelope_boxes_recursive(cornerlist, 1, 0, n_corners);
 	}
 
+	
+#include<fastenvelope/Predicates.hpp>
 	bool AABB::is_triangle_cut_bounding_box(
 		const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, int index) const
 	{
@@ -130,6 +132,35 @@ namespace fastEnvelope {
 		const auto &bmax = boxlist[index][1];
 		Vector3 tmin, tmax;
 		get_tri_corners(tri0, tri1, tri2, tmin, tmax);
-		return box_box_intersection(tmin, tmax, bmin, bmax);
+		bool cut= box_box_intersection(tmin, tmax, bmin, bmax);
+		if (cut) {
+			
+			std::array<Vector2,3> t;
+			std::array<Vector2,4> m;
+			int o0, o1, o2, o3, ori;
+			for (int i = 0; i < 3; i++) {
+				t[0] = to_2d(tri0, i);
+				t[1] = to_2d(tri1, i);
+				t[2] = to_2d(tri2, i);
+
+				m[0] = to_2d(bmin, i);
+				m[1] = to_2d(bmax, i);
+				m[2][0] = m[0][0]; m[2][1] = m[1][1];
+				m[3][0] = m[1][0]; m[3][1] = m[0][1];
+		
+				for (int j = 0; j < 3; j++) {
+					o0 = fastEnvelope::Predicates::orient_2d(m[0], t[j % 3], t[(j + 1) % 3]);
+					o1 = fastEnvelope::Predicates::orient_2d(m[1], t[j % 3], t[(j + 1) % 3]);
+					o2 = fastEnvelope::Predicates::orient_2d(m[2], t[j % 3], t[(j + 1) % 3]);
+					o3 = fastEnvelope::Predicates::orient_2d(m[3], t[j % 3], t[(j + 1) % 3]);
+					ori = fastEnvelope::Predicates::orient_2d(t[(j + 2) % 3], t[j % 3], t[(j + 1) % 3]);
+					if (ori*o0 <= 0 && ori*o1 <= 0 && ori*o2 <= 0 && ori*o3 <= 0) return false;
+				}
+			}
+		}
+		else {
+			return false;
+		}
+		return true;
 	}
 }
