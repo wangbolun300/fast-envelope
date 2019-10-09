@@ -6,14 +6,15 @@
 #include <geogram/mesh/mesh_reorder.h>
 
 #include <igl/Timer.h>
-
+#include<igl/write_triangle_mesh.h>
 #include <fstream>
 #include <istream>
 
-
+int dbg1=0, dbg2=0,dbg3=0;
 static const std::array<std::array<int, 2>, 3> triseg = {
 	{{{0, 1}}, {{0, 2}}, {{1, 2}}}
 };
+std::vector<int> tempid;
 
 namespace fastEnvelope
 {
@@ -151,16 +152,18 @@ namespace fastEnvelope
 
 		timer.start();
 		GEO::Mesh M;
-
-		std::vector<Vector3> ver_new;
-		std::vector<Vector3i> faces_new;
+		ver_new.clear();
+		faces_new.clear();
 
 		to_geogram_mesh(m_ver, m_faces, M);
 		GEO::mesh_reorder(M, GEO::MESH_ORDER_MORTON);
 		from_geogram_mesh(M, ver_new, faces_new);
 		timer.stop();
 		logger().info("Resorting mesh time {}s", timer.getElapsedTimeInSec());
+		/////////////////just for debug
 
+
+		/////////////////
 		timer.start();
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		halfspace_init(ver_new, faces_new, halfspace, cornerlist, epsilon);
@@ -315,16 +318,14 @@ namespace fastEnvelope
 		{
 			return true;
 		}
-
-		
-
-
+		std::cout << "size of all bbd finding " << prismindex.size() << std::endl;
 
 		int jump1, jump2;
 
 		std::vector<std::array<int, 2>> inter_ijk_list; //list of intersected triangle
 		std::vector<DATA_TPI> tpilist; tpilist.reserve(100);
-
+		std::vector<int> filted_intersection;
+		std::vector<std::vector<int>>intersect_face;
 		bool out, cut;
 
 		int inter, inter1, record1, record2,
@@ -443,6 +444,12 @@ namespace fastEnvelope
 				triangle[0], triangle[1], triangle[2], cidl);
 			
 			if (!cut) continue;
+			if (cidl.size() > 0) {
+				dbg3++;
+				int tmp = prismindex[i];
+				
+			}
+			//tempid.emplace_back(prismindex[i]);
 			
 			for (int j = 0; j < cidl.size(); j++) {
 				for (int k = 0; k < 3; k++) {
@@ -461,6 +468,7 @@ namespace fastEnvelope
 						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
 					if (precom)
 					{
+
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_double(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 							triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[prismindex[i]][cidl[j]][0], halfspace[prismindex[i]][cidl[j]][1], halfspace[prismindex[i]][cidl[j]][2],
@@ -491,8 +499,9 @@ namespace fastEnvelope
 			if (inter == 1)
 				return true;
 		} //TODO consider this part put here or the end of the algorithm
-
+		
 		int listsize = inter_ijk_list.size();
+		std::cout << "length of face size " << listsize << std::endl;
 		tpilist.clear();
 		tpilist.reserve(listsize / 5);
 
@@ -555,6 +564,7 @@ namespace fastEnvelope
 					if (!cut)
 						continue;
 					// timer_u.start();
+					dbg1++;
 					inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double( //TODO takes most of time
 						d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,triangle,
 						halfspace[inter_ijk_list[i][0]][inter_ijk_list[i][1]][0],
@@ -595,6 +605,35 @@ namespace fastEnvelope
 		}
 		// time_p3m += timerdetail.getElapsedTimeInSec();
 		// time_p3 += timer_bigpart.getElapsedTimeInSec();
+		std::cout << "how many prisms intersection " << dbg3 << std::endl;
+		std::cout << "how many times of tpp calculation " << dbg1 << std::endl;
+		std::cout << "how many times of directly multi tpp calculation " << dbg2 << std::endl;
+		
+
+		//Eigen::MatrixXd V(ver_new.size(), 3);
+		//for (int i = 0; i < ver_new.size(); ++i)
+		//	V.row(i) = ver_new[i];
+		//Eigen::MatrixXi F(tempid.size(), 3);
+
+		//for (int i = 0; i < tempid.size(); ++i)
+		//	F.row(i) = faces_new[tempid[i]];
+
+		////igl::write_triangle_mesh("patch.stl", V, F);
+		//Eigen::MatrixXd V1(3, 3);
+		//Eigen::MatrixXi F1(1, 3);
+		//V1(0,0) = triangle[0][0];
+		//V1(0, 1) = triangle[0][1];
+		//V1(0, 2) = triangle[0][2];
+		//V1(1, 0) = triangle[1][0];
+		//V1(1, 1) = triangle[1][1];
+		//V1(1, 2) = triangle[1][2];
+		//V1(2, 0) = triangle[2][0];
+		//V1(2, 1) = triangle[2][1];
+		//V1(2, 2) = triangle[2][2];
+
+		//
+		//F1 << 0, 1, 2;
+		//igl::write_triangle_mesh("tri.stl", V1, F1);
 
 		return false;
 	}
@@ -820,7 +859,8 @@ namespace fastEnvelope
 		if (premulti == false) return 2; //means have parallel facets
 		bool cut = is_3_triangle_cut_pure_multiprecision(triangle, s);
 		if (cut == false) return 2;
-
+		dbg1++;
+		dbg2++;
 		for (int i = 0; i < prismindex.size(); i++)
 		{
 			if (prismindex[i] == jump1|| prismindex[i] == jump2)	continue;

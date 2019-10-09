@@ -82,6 +82,9 @@ namespace fastEnvelope {
 
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 
+		std::vector<Vector3> ver_new;
+		std::vector<Vector3i> faces_new;
+		
 		//main pipeline
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
 		bool is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const;

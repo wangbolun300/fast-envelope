@@ -26,6 +26,7 @@
 #include <array>
 #include <ctime>
 #include <cstdlib>
+#include<igl/writeOBJ.h>
 
 using namespace fastEnvelope;
 using namespace std;
@@ -667,7 +668,8 @@ void test_without_sampling() {
 		//if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
 		if (timer1.getElapsedTimeInSec() > temptime) {
 			temptime = timer1.getElapsedTimeInSec();
-			cout << "time get longer " << i << ", " << temptime << std::endl;
+			//cout << "time get longer " << i << ", " << temptime << std::endl;
+			
 		}
 
 	}
@@ -1097,6 +1099,7 @@ int main(int argc, char const *argv[])
 	//test_in_wild(argv[1],argv[2]);
 	//test_in_wild();
 	test_without_sampling();
+
 	//tryspeed();
 	for (int i = 0; i < (argc - 1) / 2; i++) {
 		//test_without_sampling(argv[2*i+1], argv[2*i+2]);
