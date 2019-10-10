@@ -10,7 +10,7 @@
 #include <fstream>
 #include <istream>
 
-int dbg1=0, dbg2=0,dbg3=0;
+int dbg1=0, dbg2=0,dbg3=0,dbg4=0;
 static const std::array<std::array<int, 2>, 3> triseg = {
 	{{{0, 1}}, {{0, 2}}, {{1, 2}}}
 };
@@ -739,7 +739,64 @@ namespace fastEnvelope
 		// timerdetail.start();
 		for (int i = 0; i < tpilist.size(); i++)
 		{
-			inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(tpilist[i], triangle, filted_intersection); //is_3_intersection is already in it
+			TPI_exact_suppvars s;
+			bool premulti = orient3D_TPI_pre_exact(
+				triangle[0][0], triangle[0][1], triangle[0][2],
+				triangle[1][0], triangle[1][1], triangle[1][2],
+				triangle[2][0], triangle[2][1], triangle[2][2],
+
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][0][0],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][0][1],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][0][2],
+
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][1][0],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][1][1],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][1][2],
+
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][2][0],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][2][1],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][2][2],
+
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][0][0],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][0][1],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][0][2],
+
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][1][0],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][1][1],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][1][2],
+
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][2][0],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][2][1],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][2][2],
+				s);
+			if (premulti == false) continue;
+			cut = is_3_triangle_cut_pure_multiprecision(triangle, s);
+			if (cut == false) continue;
+			cut = is_tpp_on_polyhedra_double(triangle,
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][0],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][1],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][2],
+
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][0],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][1],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][2], tpilist[i].prismid1, tpilist[i].facetid1);
+			if (cut == false) continue;
+			cut = is_tpp_on_polyhedra_double(triangle,
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][0],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][1],
+				halfspace[tpilist[i].prismid1][tpilist[i].facetid1][2],
+
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][0],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][1],
+				halfspace[tpilist[i].prismid2][tpilist[i].facetid2][2], tpilist[i].prismid2, tpilist[i].facetid2);
+			if (cut == false) continue;
+			localtree.bbd_finding_in_envelope(cornerlist[tpilist[i].prismid1][0], cornerlist[tpilist[i].prismid1][1], localist);
+			potential_prism.clear();
+			potential_prism.resize(localist.size());
+			for (int k = 0; k < localist.size(); k++) {
+				potential_prism[k] = filted_intersection[localist[k]];
+			}
+			inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(tpilist[i], triangle, potential_prism,s); //is_3_intersection is already in it
 			if (inter == 1)
 				return true;
 		}
@@ -956,50 +1013,14 @@ namespace fastEnvelope
 		return OUT_PRISM;
 	}
 
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const
+	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex, TPI_exact_suppvars& s) const
 	{
 		
 		int tot, ori;
 		int jump1 = datatpi.jump1, jump2 = datatpi.jump2;
 
 		
-		TPI_exact_suppvars s;
-		bool premulti = orient3D_TPI_pre_exact(
-			triangle[0][0], triangle[0][1], triangle[0][2],
-			triangle[1][0], triangle[1][1], triangle[1][2],
-			triangle[2][0], triangle[2][1], triangle[2][2],
-			
-			halfspace[datatpi.prismid1][datatpi.facetid1][0][0], 
-			halfspace[datatpi.prismid1][datatpi.facetid1][0][1], 
-			halfspace[datatpi.prismid1][datatpi.facetid1][0][2],
-
-			halfspace[datatpi.prismid1][datatpi.facetid1][1][0],
-			halfspace[datatpi.prismid1][datatpi.facetid1][1][1],
-			halfspace[datatpi.prismid1][datatpi.facetid1][1][2],
-			
-			halfspace[datatpi.prismid1][datatpi.facetid1][2][0],
-			halfspace[datatpi.prismid1][datatpi.facetid1][2][1],
-			halfspace[datatpi.prismid1][datatpi.facetid1][2][2],
-
-			halfspace[datatpi.prismid2][datatpi.facetid2][0][0],
-			halfspace[datatpi.prismid2][datatpi.facetid2][0][1],
-			halfspace[datatpi.prismid2][datatpi.facetid2][0][2],
-
-			halfspace[datatpi.prismid2][datatpi.facetid2][1][0],
-			halfspace[datatpi.prismid2][datatpi.facetid2][1][1],
-			halfspace[datatpi.prismid2][datatpi.facetid2][1][2],
-
-			halfspace[datatpi.prismid2][datatpi.facetid2][2][0],
-			halfspace[datatpi.prismid2][datatpi.facetid2][2][1],
-			halfspace[datatpi.prismid2][datatpi.facetid2][2][2],
-			s);
-		if (datatpi.prismid1 >= halfspace.size() || datatpi.prismid2 >= halfspace.size()) std::cout << "wrong in id" << std::endl;
-		if (datatpi.facetid1 >= halfspace[datatpi.prismid1].size() || datatpi.facetid2 >= halfspace[datatpi.prismid2].size()) std::cout << "wrong in size" << std::endl;
-		if (datatpi.facetid1 < 0 || datatpi.facetid2 < 0) std::cout << "wrong in size less 0" << std::endl;
-
-		if (premulti == false) return 2; //means have parallel facets
-		bool cut = is_3_triangle_cut_pure_multiprecision(triangle, s);
-		if (cut == false) return 2;
+		
 		dbg1++;
 		dbg2++;
 		for (int i = 0; i < prismindex.size(); i++)

@@ -98,8 +98,9 @@ namespace fastEnvelope {
 			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle1,
 			const Vector3 &triangle2, const Vector3 &triangle3, const std::vector<unsigned int> &prismindex, const int &jump) const;
 
-		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const;
-		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3> &triangle, TPI_exact_suppvars &s);
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex,TPI_exact_suppvars& s) const;
+		
+		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3> &triangle,  TPI_exact_suppvars &s);
 
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(
 			const Scalar &d, const Scalar &n1d, const Scalar &n2d, const Scalar &n3d,
