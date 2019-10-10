@@ -1031,70 +1031,7 @@ int main(int argc, char const *argv[])
 	GEO::CmdLine::import_arg_group("standard");
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
-
-	//init_envelope_boxes_recursive()
-
-	/*const std::function<int(double)> check_double = [](double v) {
-
-		if (fabs(v) < 1e-10)
-			return -2;
-
-		if (v > 0)
-			return 1;
-
-		if (v < 0)
-			return -1;
-
-		return 0;
-	};
-
-	using namespace arbitrary_precision;
-	const std::function<int(interval<float_precision>)> check_interval = [](interval<float_precision> v) {
-		const auto clazz = v.is_class();
-		if (clazz == MIXED || clazz == NO_CLASS)
-			return -2;
-
-		if (clazz == POSITIVE)
-			return 1;
-
-		if (clazz == NEGATIVE)
-			return -1;
-
-		assert(clazz == ZERO);
-		return 0;
-	};
-
-	interval<float_precision> a;
-	a.ref_lower()->precision(40);
-	a.ref_upper()->precision(40);
-	a = float_precision(1.3, 16);
-	interval<float_precision> b = 2;
-	cout << "a  " << a<<"\na pre "<<a.ref_lower()->precision()<< endl;
-	test1(a, b, check_interval);
-	float f = 1e-15;
-	interval<float_precision> h(f);
-
-	std::cout << "triansfer "<<h.ref_lower()->precision()<<"\n" << endl;
-
-	float_precision fp(0.3333333333333337, 16);
-	float_precision fpp(3.333333333333339, 16);
-	float_precision fppp(fp/fpp);
-
-	//fppp = fp * fpp;
-	std::cout << "fp " << fp << " fp digits " << fp.precision() << endl;
-	std::cout << "fpp " << fpp << " fp digits " << fpp.precision() << endl;
-	std::cout << "fppp " << fppp << " fp digits " << fppp.precision() << endl;
-
-
-	std::cout << "triansfer "<<h.ref_lower()->precision() << endl;*/
-
-
-	//interval_try();
-	/*srand(int(time(0)));
-	cout << rand()<<"," << rand() <<","<< rand() << endl;*/
-	//assert(false);
-
-
+	
 
 	//test_in_wild(argv[1],argv[2]);
 	//test_in_wild();

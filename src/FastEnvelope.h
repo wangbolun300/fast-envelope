@@ -115,6 +115,10 @@ namespace fastEnvelope {
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet2,
 			bool &multiflag,
 			TPI_exact_suppvars &s);
+		bool is_tpp_on_polyhedra_double(
+			const std::array<Vector3, 3> &triangle,
+			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
+			const int &prismid, const int &faceid)const;
 
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		bool point_out_prism(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump) const;

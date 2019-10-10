@@ -25,10 +25,15 @@ namespace fastEnvelope {
 			std::vector<unsigned int> &list,
 			int n, int b, int e) const;
 
+		void bbd_searching_recursive(
+			const Vector3 &bbd0, const Vector3 &bbd1,
+			std::vector<unsigned int> &list,
+			int n, int b, int e) const;
+
 		static int envelope_max_node_index(int node_index, int b, int e);
 
 		bool is_triangle_cut_bounding_box(const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, int index) const;
-
+		bool is_bbd_cut_bounding_box(const Vector3 &bbd0, const Vector3 &bbd1, int index) const;
 	public:
 		void init_envelope(const std::vector<std::array<Vector3, 2>> &cornerlist);
 
@@ -38,6 +43,14 @@ namespace fastEnvelope {
 		{
 			assert(n_corners >= 0);
 			facet_in_envelope_recursive(triangle0, triangle1, triangle2, list, 1, 0, n_corners);
+		}
+		inline void bbd_finding_in_envelope(
+			const Vector3 &bbd0, const Vector3 &bbd1,
+			std::vector<unsigned int> &list) const
+		{
+			list.clear();
+			assert(n_corners >= 0);
+			bbd_searching_recursive(bbd0,bbd1, list, 1, 0, n_corners);
 		}
 	};
 }
