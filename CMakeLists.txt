@@ -164,9 +164,9 @@ endif()
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	target_compile_options(${PROJECT_NAME} PUBLIC "/fp:strict")
+	target_compile_options(${PROJECT_NAME} PRIVATE "/fp:strict")
 elseif(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-	target_compile_options(${PROJECT_NAME} PUBLIC "-frounding-math")
+	target_compile_options(${PROJECT_NAME} PRIVATE "-frounding-math")
 endif()
 
 #spdlog
