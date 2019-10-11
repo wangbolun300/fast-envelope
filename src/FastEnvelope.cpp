@@ -318,7 +318,7 @@ namespace fastEnvelope
 		{
 			return true;
 		}
-		std::cout << "size of all bbd finding " << prismindex.size() << std::endl;
+		
 
 		int jump1, jump2;
 
@@ -402,7 +402,7 @@ namespace fastEnvelope
 							if (inter == 1)
 							{
 
-								return 1;
+								return true;
 							}
 						}
 						else
@@ -443,10 +443,9 @@ namespace fastEnvelope
 				filted_intersection.emplace_back(prismindex[i]);
 				intersect_face.emplace_back(cidl);
 				dbg3++;
-			
-
 			}
 		}
+		if (filted_intersection.size() == 0) return false;//inside
 		std::vector<std::vector<bool>>face_flags;
 		face_flags.resize(intersect_face.size());
 		for (int i = 0; i < intersect_face.size(); i++) {
@@ -457,7 +456,7 @@ namespace fastEnvelope
 		}
 		std::vector<int> ast, astf;
 		ast.reserve(50); astf.reserve(50);
-		std::cout << "size of real intersection " << filted_intersection.size() << " " << intersect_face.size() << std::endl;
+
 		int check_id;
 		for (int i = 0; i < filted_intersection.size(); i++)
 		{
@@ -520,15 +519,9 @@ namespace fastEnvelope
 
 		}
 		assert(ast.size() == lpi_list.size());
-		int tmpc1 = 0, tmpc2 = 0;
-		for (int i = 0; i < face_flags.size(); i++) {
-			for (int j = 0; j < face_flags[i].size(); j++) {
-				tmpc1++;
-				if (face_flags[i][j] == true) tmpc2++;
-			}
-		}
-		std::cout << "original faces " << tmpc1 << " filted out faces " << tmpc2 << std::endl;
-		std::cout << "multi face list  " << lpi_list.size() << std::endl;
+		
+
+
 		for (int i = 0; i < lpi_list.size(); i++)
 		{
 			if (face_flags[ast[i]][astf[i]]) continue;
@@ -553,15 +546,6 @@ namespace fastEnvelope
 			}
 		} 
 
-		tmpc1 = 0; tmpc2 = 0;
-		for (int i = 0; i < face_flags.size(); i++) {
-			for (int j = 0; j < face_flags[i].size(); j++) {
-				tmpc1++;
-				if (face_flags[i][j] == true) tmpc2++;
-			}
-		}
-		std::cout << "original faces " << tmpc1 << " filted out faces " << tmpc2 << std::endl;
-
 
 		std::vector<unsigned int> filted_intersection_new; filted_intersection_new.reserve(filted_intersection.size());
 		std::vector<std::vector<int>>intersect_face_new; intersect_face_new.reserve(intersect_face.size());
@@ -582,28 +566,24 @@ namespace fastEnvelope
 				intersect_face_new.emplace_back(tempvector);
 			}
 		}
-		tmpc1 = 0;
-		for (int i = 0; i < intersect_face_new.size(); i++) {
-			for (int j = 0; j < intersect_face_new[i].size(); j++) {
-				tmpc1++;
-			}
-		}
-		std::cout << "check new faces " << tmpc1 << std::endl;
-
+		
+		if (filted_intersection_new.size() == 0) return false;//inside
 		///////////////////////////////////////////////////tpp
 		igl::Timer timerm;
 		timerm.start();
-		static AABB localtree;
+		AABB localtree;
 		std::vector<std::array<Vector3, 2>>localcorners;
-		localcorners.resize(filted_intersection_new.size());//TODO this is too long cause too many same id
+		localcorners.resize(filted_intersection_new.size());
+
 		for (int i = 0; i < filted_intersection_new.size(); i++) {
 			localcorners[i] = cornerlist[filted_intersection_new[i]];
 		}
+
 		localtree.init_envelope(localcorners);
-		std::wcout << "time for local tree " << timerm.getElapsedTimeInSec() << std::endl;
+		//std::wcout << "time for local tree " << timerm.getElapsedTimeInSec() << std::endl;
 
 		
-		
+
 		tpilist.clear();
 		tpilist.reserve(filted_intersection_new.size()/50);
 		
@@ -824,6 +804,7 @@ namespace fastEnvelope
 			}
 			*/
 		}
+
 		// time_p3d += timerdetail.getElapsedTimeInSec();
 		// timerdetail.start();
 		for (int i = 0; i < tpilist.size(); i++)
@@ -889,13 +870,12 @@ namespace fastEnvelope
 			if (inter == 1)
 				return true;
 		}
-		std::cout << "time for tpp " << timerm.getElapsedTimeInSec() << std::endl;
-		// time_p3m += timerdetail.getElapsedTimeInSec();
-		// time_p3 += timer_bigpart.getElapsedTimeInSec();
+
+		/*std::cout << "time for tpp " << timerm.getElapsedTimeInSec() << std::endl;
 		std::cout << "how many prisms intersection " << dbg3 << std::endl;
 		std::cout << "how many times of tpp calculation " << dbg1 << std::endl;
 		std::cout << "how many times of directly multi tpp calculation " << dbg2 << std::endl;
-		
+		*/
 
 		//Eigen::MatrixXd V(ver_new.size(), 3);
 		//for (int i = 0; i < ver_new.size(); ++i)
