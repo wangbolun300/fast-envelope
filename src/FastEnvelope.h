@@ -97,7 +97,16 @@ namespace fastEnvelope {
 			const Scalar &fa12, const Scalar &fa13, const Scalar &max1, const Scalar &max2, const Scalar &max5,
 			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle1,
 			const Vector3 &triangle2, const Vector3 &triangle3, const std::vector<unsigned int> &prismindex, const int &jump) const;
-
+		int Implicit_Seg_Facet_interpoint_Out_Prism_double_return_id(
+			const Scalar &a11, const Scalar &a12, const Scalar &a13, const Scalar &d, const Scalar &fa11,
+			const Scalar &fa12, const Scalar &fa13, const Scalar &max1, const Scalar &max2, const Scalar &max5,
+			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
+			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const;
+		int Implicit_Seg_Facet_interpoint_Out_Prism_check_id(
+			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
+			const Vector3 &triangle1, const Vector3 &triangle2, const int &id) const;
+		int Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_id(const DATA_LPI &datalpi, const std::array<Vector3, 3> &triangle,
+			const std::vector<unsigned int> &prismindex, int& id) const;
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex,TPI_exact_suppvars& s) const;
 		
 		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3> &triangle,  TPI_exact_suppvars &s);
