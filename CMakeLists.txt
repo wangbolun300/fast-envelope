@@ -163,6 +163,11 @@ if(${FAST_ENVELOPE_USE_FLOAT})
 endif()
 
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	target_compile_options(${PROJECT_NAME} PUBLIC "/fp:strict")
+elseif(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	target_compile_options(${PROJECT_NAME} PUBLIC "-frounding-math")
+endif()
 
 #spdlog
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
