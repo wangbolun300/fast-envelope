@@ -10,7 +10,7 @@
 #include <fstream>
 #include <istream>
 
-int dbg1=0, dbg2=0,dbg3=0,dbg4=0;
+int dbg1=0, dbg2=0,dbg3=0,dbg4=0,dbgout1=0,dbgout2=0,dbgout3=0,dbgout4=0,dbgout5=0;
 static const std::array<std::array<int, 2>, 3> triseg = {
 	{{{0, 1}}, {{0, 2}}, {{1, 2}}}
 };
@@ -123,7 +123,9 @@ namespace fastEnvelope
 			}
 		}
 	}
-
+	void FastEnvelope::printnumber() {
+		std::cout << "where checking is out " << dbgout1 << " " << dbgout2 << " " << dbgout3 << " " << dbgout4 << " " << dbgout5 << std::endl;
+	}
 
 
 	FastEnvelope::FastEnvelope(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, const Scalar eps)
@@ -333,16 +335,35 @@ namespace fastEnvelope
 			tti; //triangle-triangle intersection
 
 		jump1 = -1;
-		for (int i = 0; i < 3; i++)
+		std::vector<int >pointid0, pointid1, pointid2;
+		
+		out = point_out_prism_return_id_list(triangle[0], prismindex, jump1, pointid0);
+		if (out)
 		{
+			dbgout5++;
+			return true;
+		}
+		out = point_out_prism_return_id_list(triangle[1], prismindex, jump1, pointid1);
+		if (out)
+		{
+			dbgout5++;
+			return true;
+		}
+		out = point_out_prism_return_id_list(triangle[2], prismindex, jump1, pointid2);
+		if (out)
+		{
+			dbgout5++;
+			return true;
+		}
 
-			out = point_out_prism(triangle[i], prismindex, jump1);
-
-			if (out)
-			{
-				return true;
+		for (int i = 0; i < pointid0.size(); i++) {
+			for (int j = 0; j < pointid1.size(); j++) {
+				for (int k = 0; k < pointid2.size(); k++) {
+					if (pointid0[i] == pointid1[j] && pointid0[i] == pointid2[k]) return false;
+				}
 			}
 		}
+
 
 		if (prismindex.size() == 1)
 			return false;
@@ -487,6 +508,7 @@ namespace fastEnvelope
 							filted_intersection, jump1,check_id);
 						if (inter == 1)
 						{
+							dbgout1++;
 							return true;
 						}
 						if (inter == 0) {
@@ -526,8 +548,11 @@ namespace fastEnvelope
 		{
 			if (face_flags[ast[i]][astf[i]]) continue;
 			inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_id(lpi_list[i], triangle, filted_intersection,check_id);
-			if (inter == 1)
+			if (inter == 1) {
+				dbgout2++;
 				return true;
+			}
+				
 			if (inter == 0) {
 				for (int h = 0; h < 3; h++) {
 					if (lpi_list[i].segid == h) continue;
@@ -691,6 +716,7 @@ namespace fastEnvelope
 							// timein3 += timer_u.getElapsedTimeInSec();
 							if (inter == 1)
 							{
+								dbgout3++;
 								return true;
 							}
 						}
@@ -867,8 +893,11 @@ namespace fastEnvelope
 				potential_prism[k] = filted_intersection_new[localist[k]];
 			}
 			inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(tpilist[i], triangle, potential_prism,s); //is_3_intersection is already in it
-			if (inter == 1)
+			if (inter == 1) {
+				dbgout4++;
 				return true;
+			}
+				
 		}
 
 		/*std::cout << "time for tpp " << timerm.getElapsedTimeInSec() << std::endl;
@@ -1251,9 +1280,11 @@ namespace fastEnvelope
 						break;
 
 				}
-				id = in1;
-				if (ori == -1) return IN_PRISM;
-
+				
+				if (ori == -1) {
+					id = in1;
+					return IN_PRISM;
+				}
 			}
 		}
 
@@ -2283,7 +2314,65 @@ namespace fastEnvelope
 
 		return true;
 	}
+	bool FastEnvelope::point_out_prism_return_id(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump,int &id) const
+	{
 
+		int ori;
+
+		for (int i = 0; i < prismindex.size(); i++)
+		{
+			if (prismindex[i] == jump)
+				continue;
+
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++)
+			{
+
+				ori = Predicates::orient_3d(halfspace[prismindex[i]][j][0], halfspace[prismindex[i]][j][1], halfspace[prismindex[i]][j][2], point);
+				if (ori == -1 || ori == 0)
+				{
+					break;
+				}
+				if (j == halfspace[prismindex[i]].size() - 1)
+				{
+					id = prismindex[i];
+					return false;
+				}
+			}
+
+		}
+
+		return true;
+	}
+	bool FastEnvelope::point_out_prism_return_id_list(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, std::vector<int> &idlist) const
+	{
+		idlist.clear();
+
+		int ori;
+
+		for (int i = 0; i < prismindex.size(); i++)
+		{
+			if (prismindex[i] == jump)
+				continue;
+
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++)
+			{
+
+				ori = Predicates::orient_3d(halfspace[prismindex[i]][j][0], halfspace[prismindex[i]][j][1], halfspace[prismindex[i]][j][2], point);
+				if (ori == -1 || ori == 0)
+				{
+					break;
+				}
+				if (j == halfspace[prismindex[i]].size() - 1)
+				{
+					idlist.emplace_back(prismindex[i]);
+					
+				}
+			}
+
+		}
+		if (idlist.size() > 0) return false;
+		return true;
+	}
 	int FastEnvelope::is_triangle_degenerated(const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2)
 	{
 		const auto to_2d = [](const Vector3 &p, int t)
