@@ -601,8 +601,11 @@ namespace fastEnvelope
 		localcorners.resize(filted_intersection_new.size());
 
 		for (int i = 0; i < filted_intersection_new.size(); i++) {
-			localcorners[i] = cornerlist[filted_intersection_new[i]];
+			localcorners[i] = cornerlist[filted_intersection_new[i]];TODO should not use the new list because the excluded elements 
+				are still needed in predication
 		}
+		and now i have a great idea for reducing predication, we can use the facelist!
+		remember to make the intersection function resonable
 
 		localtree.init_envelope(localcorners);
 		//std::wcout << "time for local tree " << timerm.getElapsedTimeInSec() << std::endl;
