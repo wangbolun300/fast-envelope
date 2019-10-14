@@ -665,10 +665,10 @@ void test_without_sampling() {
 		pos1[i] = outenvelope[i];
 		timer1.start();
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
+		//if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
 		if (timer1.getElapsedTimeInSec() > temptime) {
 			temptime = timer1.getElapsedTimeInSec();
-			cout << "time get longer " << i << ", " << temptime << std::endl;
+			//cout << "time get longer " << i << ", " << temptime << std::endl;
 			
 		}
 

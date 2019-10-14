@@ -574,7 +574,8 @@ namespace fastEnvelope
 
 		std::vector<unsigned int> filted_intersection_new; filted_intersection_new.reserve(filted_intersection.size());
 		std::vector<std::vector<int>>intersect_face_new; intersect_face_new.reserve(intersect_face.size());
-		std::vector<int> tempvector;
+		std::vector<int> tempvector,oldtonew;
+		oldtonew.resize(intersect_face.size());
 		int tot;
 		for (int i = 0; i < filted_intersection.size(); i++) {
 			tot = 0;
@@ -589,6 +590,10 @@ namespace fastEnvelope
 					if (face_flags[i][j] == false) tempvector.emplace_back(intersect_face[i][j]);
 				}
 				intersect_face_new.emplace_back(tempvector);
+				oldtonew[i] = intersect_face_new.size() - 1;
+			}
+			else {
+				oldtonew[i] = -1;
 			}
 		}
 		
@@ -598,15 +603,12 @@ namespace fastEnvelope
 		timerm.start();
 		AABB localtree;
 		std::vector<std::array<Vector3, 2>>localcorners;
-		localcorners.resize(filted_intersection_new.size());
+		localcorners.resize(filted_intersection.size());
 
-		for (int i = 0; i < filted_intersection_new.size(); i++) {
-			localcorners[i] = cornerlist[filted_intersection_new[i]];TODO should not use the new list because the excluded elements 
-				are still needed in predication
+		for (int i = 0; i < filted_intersection.size(); i++) {
+			localcorners[i] = cornerlist[filted_intersection[i]];//caution: this must not use the new list
 		}
-		and now i have a great idea for reducing predication, we can use the facelist!
-		remember to make the intersection function resonable
-
+		
 		localtree.init_envelope(localcorners);
 		//std::wcout << "time for local tree " << timerm.getElapsedTimeInSec() << std::endl;
 
@@ -623,18 +625,18 @@ namespace fastEnvelope
 		for (int i = 0; i < filted_intersection_new.size(); i++)
 		{
 			jump1 = filted_intersection_new[i];
-			localtree.bbd_finding_in_envelope(localcorners[i][0], localcorners[i][1], localist);
+			localtree.bbd_finding_in_envelope(cornerlist[filted_intersection_new[i]][0], cornerlist[filted_intersection_new[i]][1], localist);
 			potential_prism.clear();
 			potential_prism.resize(localist.size());
 			for (int k = 0; k < localist.size(); k++) {
-				potential_prism[k] = filted_intersection_new[localist[k]];
+				potential_prism[k] = filted_intersection[localist[k]];
 			}
 			for (int k = 0; k < intersect_face_new[i].size(); k++) {
 				for (int j = 0; j < localist.size(); j++) {
-			
-					jump2= filted_intersection_new[localist[j]];
+					if (oldtonew[localist[j]] == -1) continue;
+					jump2= filted_intersection[localist[j]];
 					if (jump1 >= jump2) continue;
-					for (int h = 0; h < intersect_face_new[localist[j]].size(); h++) {
+					for (int h = 0; h < intersect_face_new[oldtonew[localist[j]]].size(); h++) {
 						Scalar d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7;
 						bool multiflag;
 
@@ -652,17 +654,17 @@ namespace fastEnvelope
 							halfspace[jump1][intersect_face_new[i][k]][2][1],
 							halfspace[jump1][intersect_face_new[i][k]][2][2],
 
-							halfspace[jump2][intersect_face_new[localist[j]][h]][0][0],
-							halfspace[jump2][intersect_face_new[localist[j]][h]][0][1],
-							halfspace[jump2][intersect_face_new[localist[j]][h]][0][2],
+							halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0][0],
+							halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0][1],
+							halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0][2],
 
-							halfspace[jump2][intersect_face_new[localist[j]][h]][1][0],
-							halfspace[jump2][intersect_face_new[localist[j]][h]][1][1],
-							halfspace[jump2][intersect_face_new[localist[j]][h]][1][2],
+							halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1][0],
+							halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1][1],
+							halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1][2],
 											 
-							halfspace[jump2][intersect_face_new[localist[j]][h]][2][0],
-							halfspace[jump2][intersect_face_new[localist[j]][h]][2][1],
-							halfspace[jump2][intersect_face_new[localist[j]][h]][2][2],
+							halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2][0],
+							halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2][1],
+							halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2][2],
 
 							d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7);
 
@@ -674,9 +676,9 @@ namespace fastEnvelope
 								halfspace[jump1][intersect_face_new[i][k]][1],
 								halfspace[jump1][intersect_face_new[i][k]][2],
 								
-								halfspace[jump2][intersect_face_new[localist[j]][h]][0],
-								halfspace[jump2][intersect_face_new[localist[j]][h]][1],
-								halfspace[jump2][intersect_face_new[localist[j]][h]][2],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2],
 								multiflag, s);
 							if (!cut)
 								continue;
@@ -685,9 +687,9 @@ namespace fastEnvelope
 								halfspace[jump1][intersect_face_new[i][k]][1],
 								halfspace[jump1][intersect_face_new[i][k]][2],
 
-								halfspace[jump2][intersect_face_new[localist[j]][h]][0],
-								halfspace[jump2][intersect_face_new[localist[j]][h]][1],
-								halfspace[jump2][intersect_face_new[localist[j]][h]][2], jump1, intersect_face_new[i][k]);
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2], jump1, intersect_face_new[i][k]);
 							if (!cut) continue;
 
 							cut = is_tpp_on_polyhedra_double(triangle,
@@ -695,10 +697,38 @@ namespace fastEnvelope
 								halfspace[jump1][intersect_face_new[i][k]][1],
 								halfspace[jump1][intersect_face_new[i][k]][2],
 
-								halfspace[jump2][intersect_face_new[localist[j]][h]][0],
-								halfspace[jump2][intersect_face_new[localist[j]][h]][1],
-								halfspace[jump2][intersect_face_new[localist[j]][h]][2], jump2, intersect_face_new[localist[j]][h]);
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2], jump2, intersect_face_new[oldtonew[localist[j]]][h]);
 							if (!cut) continue;
+
+							cut=is_tpp_inside_bbd(triangle,
+								halfspace[jump1][intersect_face_new[i][k]][0],
+								halfspace[jump1][intersect_face_new[i][k]][1],
+								halfspace[jump1][intersect_face_new[i][k]][2],
+
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2],
+								cornerlist[filted_intersection_new[i]][0], cornerlist[filted_intersection_new[i]][1]);
+							if (!cut) {
+								std::cout << "wrong in point on prism check " << std::endl;
+								continue;
+							}
+							cut = is_tpp_inside_bbd(triangle,
+								halfspace[jump1][intersect_face_new[i][k]][0],
+								halfspace[jump1][intersect_face_new[i][k]][1],
+								halfspace[jump1][intersect_face_new[i][k]][2],
+
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2],
+								cornerlist[jump2][0], cornerlist[jump2][1]);
+							if (!cut) {
+								std::cout << "wrong in point on prism check " << std::endl;
+								continue;
+							}
+
 							/*for (int k = 0; k < listsize; k++) {
 								if (k == i || k == j) continue;
 								if()
@@ -712,9 +742,9 @@ namespace fastEnvelope
 								halfspace[jump1][intersect_face_new[i][k]][1],
 								halfspace[jump1][intersect_face_new[i][k]][2],
 
-								halfspace[jump2][intersect_face_new[localist[j]][h]][0],
-								halfspace[jump2][intersect_face_new[localist[j]][h]][1],
-								halfspace[jump2][intersect_face_new[localist[j]][h]][2],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
+								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2],
 								potential_prism, jump1, jump2, multiflag, s);
 							// timein3 += timer_u.getElapsedTimeInSec();
 							if (inter == 1)
@@ -731,7 +761,7 @@ namespace fastEnvelope
 							datatpi.prismid1 = jump1;
 							datatpi.facetid1 = intersect_face_new[i][k];
 							datatpi.prismid2 = jump2;
-							datatpi.facetid2 = intersect_face_new[localist[j]][h];
+							datatpi.facetid2 = intersect_face_new[oldtonew[localist[j]]][h];
 							datatpi.jump1 = jump1;
 							datatpi.jump2 = jump2;
 							// timein4 += timer_u.getElapsedTimeInSec();
@@ -893,7 +923,7 @@ namespace fastEnvelope
 			potential_prism.clear();
 			potential_prism.resize(localist.size());
 			for (int k = 0; k < localist.size(); k++) {
-				potential_prism[k] = filted_intersection_new[localist[k]];
+				potential_prism[k] = filted_intersection[localist[k]];
 			}
 			inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(tpilist[i], triangle, potential_prism,s); //is_3_intersection is already in it
 			if (inter == 1) {
@@ -2159,12 +2189,14 @@ namespace fastEnvelope
 							facet21[0], facet21[1], facet21[2],
 							facet22[0], facet22[1], facet22[2],
 							s);
+						if (premulti == false) return false;
 					}
 					ori = orient3D_TPI_post_exact(s,
 						halfspace[prismid][i][0][0], halfspace[prismid][i][0][1], halfspace[prismid][i][0][2],
 						halfspace[prismid][i][1][0], halfspace[prismid][i][1][1], halfspace[prismid][i][1][2],
 						halfspace[prismid][i][2][0], halfspace[prismid][i][2][1], halfspace[prismid][i][2][2]);
 				}
+				if (ori == 0) std::cout << "f id " << halfspace[prismid].size() <<" "<< faceid << " " << i << std::endl;
 				if (ori == 1) return false;
 
 			}
@@ -2184,16 +2216,120 @@ namespace fastEnvelope
 				facet21[0], facet21[1], facet21[2],
 				facet22[0], facet22[1], facet22[2],
 				s);
+			if (premulti == false) return false;
 			for (int i = 0; i < halfspace[prismid].size(); i++) {
 				bool neib = is_two_facets_neighbouring(prismid, i, faceid);
 				if (neib == false) continue;
 
-					ori = orient3D_TPI_post_exact(s,
-						halfspace[prismid][i][0][0], halfspace[prismid][i][0][1], halfspace[prismid][i][0][2],
-						halfspace[prismid][i][1][0], halfspace[prismid][i][1][1], halfspace[prismid][i][1][2],
-						halfspace[prismid][i][2][0], halfspace[prismid][i][2][1], halfspace[prismid][i][2][2]);
-				
+				ori = orient3D_TPI_post_exact(s,
+					halfspace[prismid][i][0][0], halfspace[prismid][i][0][1], halfspace[prismid][i][0][2],
+					halfspace[prismid][i][1][0], halfspace[prismid][i][1][1], halfspace[prismid][i][1][2],
+					halfspace[prismid][i][2][0], halfspace[prismid][i][2][1], halfspace[prismid][i][2][2]);
+				if (ori == 0) std::cout << "f id " << faceid << " " << i << std::endl;
 				if (ori == 1) return false;
+
+			}
+		}
+		return true;
+	}
+	bool FastEnvelope::is_tpp_inside_bbd(
+		const std::array<Vector3, 3> &triangle,
+		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
+		const Vector3& min, const Vector3 &max)const {
+		int ori;
+		Scalar  d, n1, n2, n3,
+			max1, max2, max3, max4, max5,
+			max6, max7;
+		TPI_exact_suppvars s;
+		std::array<Vector3, 8> ver;
+		ver[0] = Vector3(min[0], min[1], min[2]);
+		ver[1] = Vector3(max[0], min[1], min[2]);
+		ver[2] = Vector3(max[0], max[1], min[2]);
+		ver[3] = Vector3(min[0], max[1], min[2]);
+		ver[4] = Vector3(min[0], min[1], max[2]);
+		ver[5] = Vector3(max[0], min[1], max[2]);
+		ver[6] = Vector3(max[0], max[1], max[2]);
+		ver[7] = Vector3(min[0], max[1], max[2]);
+
+		std::array<std::array<Vector3, 3>, 6> box;
+		box[0][0] = ver[0]; box[0][1] = ver[3]; box[0][2] = ver[2];
+		box[1][0] = ver[4]; box[1][1] = ver[5]; box[1][2] = ver[6];
+		box[2][0] = ver[5]; box[2][1] = ver[4]; box[2][2] = ver[0];
+		box[3][0] = ver[5]; box[3][1] = ver[1]; box[3][2] = ver[6];
+		box[4][0] = ver[7]; box[4][1] = ver[6]; box[4][2] = ver[2];
+		box[5][0] = ver[4]; box[5][1] = ver[7]; box[5][2] = ver[3];
+		bool premulti = false;
+		bool pre =
+			orient3D_TPI_prefilter(
+				triangle[0][0], triangle[0][1], triangle[0][2],
+				triangle[1][0], triangle[1][1], triangle[1][2],
+				triangle[2][0], triangle[2][1], triangle[2][2],
+				facet10[0], facet10[1], facet10[2],
+				facet11[0], facet11[1], facet11[2],
+				facet12[0], facet12[1], facet12[2],
+				facet20[0], facet20[1], facet20[2],
+				facet21[0], facet21[1], facet21[2],
+				facet22[0], facet22[1], facet22[2],
+				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
+		if (pre == true) {
+			for (int i = 0; i < 6; i++) {
+				
+				ori =
+					orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
+						box[i][0][0], box[i][0][1], box[i][0][2],
+						box[i][1][0], box[i][1][1], box[i][1][2],
+						box[i][2][0], box[i][2][1], box[i][2][2]);
+
+				if (ori == 0) {
+					if (premulti == false) {
+						premulti = orient3D_TPI_pre_exact(
+							triangle[0][0], triangle[0][1], triangle[0][2],
+							triangle[1][0], triangle[1][1], triangle[1][2],
+							triangle[2][0], triangle[2][1], triangle[2][2],
+
+							facet10[0], facet10[1], facet10[2],
+							facet11[0], facet11[1], facet11[2],
+							facet12[0], facet12[1], facet12[2],
+
+							facet20[0], facet20[1], facet20[2],
+							facet21[0], facet21[1], facet21[2],
+							facet22[0], facet22[1], facet22[2],
+							s);
+						if (premulti == false) return false;
+					}
+					ori = orient3D_TPI_post_exact(s,
+						box[i][0][0], box[i][0][1], box[i][0][2],
+						box[i][1][0], box[i][1][1], box[i][1][2],
+						box[i][2][0], box[i][2][1], box[i][2][2]);
+				}
+				if (ori == 1 || ori == 0) return false;
+
+			}
+
+		}
+		else {
+			premulti = orient3D_TPI_pre_exact(
+				triangle[0][0], triangle[0][1], triangle[0][2],
+				triangle[1][0], triangle[1][1], triangle[1][2],
+				triangle[2][0], triangle[2][1], triangle[2][2],
+
+				facet10[0], facet10[1], facet10[2],
+				facet11[0], facet11[1], facet11[2],
+				facet12[0], facet12[1], facet12[2],
+
+				facet20[0], facet20[1], facet20[2],
+				facet21[0], facet21[1], facet21[2],
+				facet22[0], facet22[1], facet22[2],
+				s);
+			if (premulti == false) return false;
+			for (int i = 0; i < 6; i++) {
+
+				ori = orient3D_TPI_post_exact(s,
+					box[i][0][0], box[i][0][1], box[i][0][2],
+					box[i][1][0], box[i][1][1], box[i][1][2],
+					box[i][2][0], box[i][2][1], box[i][2][2]);
+
+				if (ori == 1 || ori == 0) return false;
 
 			}
 		}
@@ -2449,7 +2585,7 @@ namespace fastEnvelope
 			}
 
 			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-6;
+			const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				corners[0][j] -= dis;
 				corners[1][j] += dis;
@@ -2470,7 +2606,7 @@ namespace fastEnvelope
 			}
 
 			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-6;
+			const Scalar dis = 1e-4;
 			for (int j = 0; j < 3; j++) {
 				corners[0][j] -= dis;
 				corners[1][j] += dis;

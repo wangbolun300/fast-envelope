@@ -129,7 +129,10 @@ namespace fastEnvelope {
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
 			const int &prismid, const int &faceid)const;
-
+		bool is_tpp_inside_bbd(
+			const std::array<Vector3, 3> &triangle,
+			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
+			const Vector3& min, const Vector3 &max)const;
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		bool point_out_prism(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump) const;
 		bool point_out_prism_return_id(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, int &id)const;
