@@ -160,7 +160,7 @@ namespace fastEnvelope {
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12,
 			const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
 		
-		bool is_triangle_cut_envelope_polyhedra(const int &cindex,
+		int is_triangle_cut_envelope_polyhedra(const int &cindex,
 			const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, std::vector<int> &cid) const;
 		bool is_seg_cut_polyhedra(const int &cindex,
 			const Vector3 &seg0, const Vector3 &seg1, std::vector<int> &cid) const;

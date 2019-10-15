@@ -335,35 +335,20 @@ namespace fastEnvelope
 			tti; //triangle-triangle intersection
 
 		jump1 = -1;
-		std::vector<int >pointid0, pointid1, pointid2;
+	
 		
-		out = point_out_prism_return_id_list(triangle[0], prismindex, jump1, pointid0);
-		if (out)
-		{
-			dbgout5++;
-			return true;
-		}
-		out = point_out_prism_return_id_list(triangle[1], prismindex, jump1, pointid1);
-		if (out)
-		{
-			dbgout5++;
-			return true;
-		}
-		out = point_out_prism_return_id_list(triangle[2], prismindex, jump1, pointid2);
-		if (out)
-		{
-			dbgout5++;
-			return true;
-		}
+		for (int i = 0; i < 3; i++)
 
-		for (int i = 0; i < pointid0.size(); i++) {
-			for (int j = 0; j < pointid1.size(); j++) {
-				for (int k = 0; k < pointid2.size(); k++) {
-					if (pointid0[i] == pointid1[j] && pointid0[i] == pointid2[k]) return false;
-				}
+		{
+
+			out = point_out_prism(triangle[i], prismindex, jump1);
+
+			if (out)
+			{
+				return true;
 			}
 		}
-
+		
 
 		if (prismindex.size() == 1)
 			return false;
@@ -457,9 +442,10 @@ namespace fastEnvelope
 
 		std::vector<int> cidl; cidl.reserve(8);
 		for (int i = 0; i < prismindex.size(); i++) {
-			cut = is_triangle_cut_envelope_polyhedra(prismindex[i],
+			tti = is_triangle_cut_envelope_polyhedra(prismindex[i],
 				triangle[0], triangle[1], triangle[2], cidl);
-			if (cut && cidl.size() > 0) {
+			if (tti == 2) return false;
+			if (tti == 1 && cidl.size() > 0) {
 				 
 				filted_intersection.emplace_back(prismindex[i]);
 				intersect_face.emplace_back(cidl);
@@ -702,7 +688,7 @@ namespace fastEnvelope
 								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2], jump2, intersect_face_new[oldtonew[localist[j]]][h]);
 							if (!cut) continue;
 
-							cut=is_tpp_inside_bbd(triangle,
+							/*cut=is_tpp_inside_bbd(triangle,
 								halfspace[jump1][intersect_face_new[i][k]][0],
 								halfspace[jump1][intersect_face_new[i][k]][1],
 								halfspace[jump1][intersect_face_new[i][k]][2],
@@ -714,8 +700,8 @@ namespace fastEnvelope
 							if (!cut) {
 								std::cout << "wrong in point on prism check " << std::endl;
 								continue;
-							}
-							cut = is_tpp_inside_bbd(triangle,
+							}*/
+							/*cut = is_tpp_inside_bbd(triangle,
 								halfspace[jump1][intersect_face_new[i][k]][0],
 								halfspace[jump1][intersect_face_new[i][k]][1],
 								halfspace[jump1][intersect_face_new[i][k]][2],
@@ -727,13 +713,12 @@ namespace fastEnvelope
 							if (!cut) {
 								std::cout << "wrong in point on prism check " << std::endl;
 								continue;
-							}
+							}*/
 
 							/*for (int k = 0; k < listsize; k++) {
 								if (k == i || k == j) continue;
 								if()
 							}*/
-							
 
 							dbg1++;
 							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double( //TODO takes most of time
@@ -1931,7 +1916,7 @@ namespace fastEnvelope
 
 
 
-	bool FastEnvelope::is_triangle_cut_envelope_polyhedra(const int &cindex,
+	int FastEnvelope::is_triangle_cut_envelope_polyhedra(const int &cindex,
 		const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, std::vector<int> &cid) const
 	{
 		cid.clear();
@@ -1945,7 +1930,7 @@ namespace fastEnvelope
 		o1.resize(halfspace[cindex].size());
 		o2.resize(halfspace[cindex].size());
 		o3.resize(halfspace[cindex].size());
-		int  ori = 0;
+		int  ori = 0, ct = 0;
 		
 
 		for (int i = 0; i < halfspace[cindex].size(); i++)
@@ -1956,31 +1941,33 @@ namespace fastEnvelope
 			o3[i] = Predicates::orient_3d(tri2, halfspace[cindex][i][0], halfspace[cindex][i][1], halfspace[cindex][i][2]);
 			if (o1[i] + o2[i] + o3[i] >= 3)
 			{
-				return false;
+				return 0;
 			}
+			if (o1[i] == -1) ct++;
 			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 1)
 			{
-				return false;
+				return 0;
 			}
 			if (o1[i] == 1 && o2[i] == 0 && o3[i] == 0)
 			{
-				return false;
+				return 0;
 			}
 			if (o1[i] == 0 && o2[i] == 1 && o3[i] == 0)
 			{
-				return false;
+				return 0;
 			}
 			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 0)
 			{
-				return false;
+				return 0;
 			}
 
 			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)
 				cutp.emplace_back(i);
 		}
+		if (cutp.size() == 0 && ct == halfspace[cindex].size()) return 2;//means totally inside of this prism
 		if (cutp.size() == 0)
 		{
-			return false;
+			return 0;
 		}
 
 		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
@@ -2015,8 +2002,7 @@ namespace fastEnvelope
 				seg12[temp] = tri2[2];
 				temp++;
 			}
-			if (temp == 3) std::cout << "wrong here" << std::endl;
-			if (temp == 0) std::cout << "wrong here" << std::endl;
+			
 			for (int k = 0; k < 2; k++)
 			{
 				
@@ -2064,7 +2050,7 @@ namespace fastEnvelope
 				if (cut[i] == true)
 					cid.emplace_back(i);
 			}
-			return true;
+			return 1;
 		}
 		// triangle-facet-facet intersection
 		Scalar n1, n2, n3, max3, max4, max6, max7;
@@ -2140,7 +2126,7 @@ namespace fastEnvelope
 				cid.emplace_back(i);
 		}
 
-		return true;
+		return 1;
 	}
 	bool FastEnvelope::is_tpp_on_polyhedra_double(
 		const std::array<Vector3, 3> &triangle,
@@ -2166,8 +2152,9 @@ namespace fastEnvelope
 				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
 		if (pre == true) {
 			for (int i = 0; i < halfspace[prismid].size(); i++) {
-				bool neib = is_two_facets_neighbouring(prismid, i, faceid);
-				if (neib == false) continue;
+				/*bool neib = is_two_facets_neighbouring(prismid, i, faceid);
+				if (neib == false) continue;*/
+				if (i == faceid) continue;
 				ori =
 					orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
 						halfspace[prismid][i][0][0], halfspace[prismid][i][0][1], halfspace[prismid][i][0][2],
@@ -2196,7 +2183,7 @@ namespace fastEnvelope
 						halfspace[prismid][i][1][0], halfspace[prismid][i][1][1], halfspace[prismid][i][1][2],
 						halfspace[prismid][i][2][0], halfspace[prismid][i][2][1], halfspace[prismid][i][2][2]);
 				}
-				if (ori == 0) std::cout << "f id " << halfspace[prismid].size() <<" "<< faceid << " " << i << std::endl;
+				//if (ori == 0) std::cout << "f id " << halfspace[prismid].size() <<" "<< faceid << " " << i << std::endl;
 				if (ori == 1) return false;
 
 			}
@@ -2218,14 +2205,14 @@ namespace fastEnvelope
 				s);
 			if (premulti == false) return false;
 			for (int i = 0; i < halfspace[prismid].size(); i++) {
-				bool neib = is_two_facets_neighbouring(prismid, i, faceid);
-				if (neib == false) continue;
-
+				/*bool neib = is_two_facets_neighbouring(prismid, i, faceid);
+				if (neib == false) continue;*/
+				if (i == faceid) continue;
 				ori = orient3D_TPI_post_exact(s,
 					halfspace[prismid][i][0][0], halfspace[prismid][i][0][1], halfspace[prismid][i][0][2],
 					halfspace[prismid][i][1][0], halfspace[prismid][i][1][1], halfspace[prismid][i][1][2],
 					halfspace[prismid][i][2][0], halfspace[prismid][i][2][1], halfspace[prismid][i][2][2]);
-				if (ori == 0) std::cout << "f id " << faceid << " " << i << std::endl;
+				//if (ori == 0) std::cout << "f id " << faceid << " " << i << std::endl;
 				if (ori == 1) return false;
 
 			}
@@ -2778,7 +2765,7 @@ namespace fastEnvelope
 		envbox[7] = p1 + width * (-v + v1 - v2); //right hand in direction
 	}
 
-	Vector3 FastEnvelope::accurate_normal_vector(const Vector3 &p0, const Vector3 &p1,
+	Vector3 FastEnvelope::accurate_normal_vector(const Vector3 &p0, const Vector3 &p1,//TODO use marco's code
 		const Vector3 &q0, const Vector3 &q1)
 	{
 
