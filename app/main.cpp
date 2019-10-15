@@ -589,8 +589,8 @@ void test_in_wild() {
 void test_without_sampling() {
 	/*string inputfilename1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
 	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\161438.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\161438.stl";
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\905406.stl_envelope_log.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\905406.stl";
 	
 
 	vector<int> outenvelope;
@@ -665,7 +665,7 @@ void test_without_sampling() {
 		pos1[i] = outenvelope[i];
 		timer1.start();
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		//if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
+		if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
 		if (timer1.getElapsedTimeInSec() > temptime) {
 			temptime = timer1.getElapsedTimeInSec();
 			cout << "time get longer " << i << ", " << temptime << std::endl;
