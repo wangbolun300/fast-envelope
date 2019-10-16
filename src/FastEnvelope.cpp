@@ -350,7 +350,7 @@ namespace fastEnvelope
 		igl::Timer timer;
 
 		int jump1, jump2;
-
+		std::cout << "prism size " << prismindex.size() << std::endl;
 		
 		std::vector<DATA_TPI> tpilist; 
 		std::vector<unsigned int> filted_intersection; filted_intersection.reserve(prismindex.size() / 3);
@@ -562,9 +562,7 @@ namespace fastEnvelope
 						astf.emplace_back(j);
 					}
 				}
-				
-				
-				if (intersect_face[i][j] > 8 || intersect_face[i][j] < 0) logger().debug("wrong here finally");
+
 			}
 
 		}
@@ -650,7 +648,7 @@ namespace fastEnvelope
 		int id, id0 = 0;
 		std::vector<unsigned int> localist;
 		std::vector<unsigned int> potential_prism;
-		
+		std::vector<std::vector<int>> potential_facets;
 		timerm.start();
 		
 		timer.start();
@@ -661,9 +659,12 @@ namespace fastEnvelope
 			localtree.bbd_finding_in_envelope(cornerlist[filted_intersection_new[i]][0], cornerlist[filted_intersection_new[i]][1], localist);
 			time13 += timer1.getElapsedTimeInSec();
 			potential_prism.clear();
+			potential_facets.clear();
 			potential_prism.resize(localist.size());
+			potential_facets.resize(localist.size());
 			for (int k = 0; k < localist.size(); k++) {
 				potential_prism[k] = filted_intersection[localist[k]];
+				potential_facets[k] = intersect_face[localist[k]];
 			}
 			for (int k = 0; k < intersect_face_new[i].size(); k++) {
 				for (int j = 0; j < localist.size(); j++) {
@@ -744,7 +745,7 @@ namespace fastEnvelope
 					
 
 							dbg1++;
-							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double( //TODO takes most of time
+							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_with_face_order( //TODO takes most of time
 								d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7, triangle,
 								halfspace[jump1][intersect_face_new[i][k]][0],
 								halfspace[jump1][intersect_face_new[i][k]][1],
@@ -753,7 +754,7 @@ namespace fastEnvelope
 								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0],
 								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
 								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2],
-								potential_prism, jump1, jump2, multiflag, s);
+								potential_prism,potential_facets, jump1, jump2, multiflag, s);
 							
 							if (inter == 1)
 							{
@@ -849,6 +850,7 @@ namespace fastEnvelope
 			for (int k = 0; k < localist.size(); k++) {
 				potential_prism[k] = filted_intersection[localist[k]];
 			}
+			
 			inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(tpilist[i], triangle, potential_prism,s); //is_3_intersection is already in it
 			if (inter == 1) {
 				dbgout4++;
@@ -860,9 +862,10 @@ namespace fastEnvelope
 		}
 		time9 += timer.getElapsedTimeInSec();
 		time6 += timerm.getElapsedTimeInSec();
+		std::cout << "how many times of tpp calculation " << dbg1 << std::endl;
 		/*std::cout << "time for tpp " << timerm.getElapsedTimeInSec() << std::endl;
 		std::cout << "how many prisms intersection " << dbg3 << std::endl;
-		std::cout << "how many times of tpp calculation " << dbg1 << std::endl;
+		
 		std::cout << "how many times of directly multi tpp calculation " << dbg2 << std::endl;
 		*/
 
@@ -1526,6 +1529,161 @@ namespace fastEnvelope
 				}
 				if (ori == -1) {
 					time12+=timer.getElapsedTimeInSec();
+					return IN_PRISM;
+				}
+			}
+		}
+		time12 += timer.getElapsedTimeInSec();
+		return OUT_PRISM;
+	}
+
+	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_with_face_order(
+		const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
+		const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
+		const std::array<Vector3, 3> &triangle,
+		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
+		const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>intersect_face, const int &jump1, const int &jump2, const bool &multiflag,
+		TPI_exact_suppvars &s) const
+	{
+
+		int ori;
+		int tot;
+		igl::Timer timer;
+		static INDEX index;
+		static std::vector<INDEX> recompute;
+		recompute.clear();
+		bool flag = false;
+
+		for (int i = 0; i < prismindex.size(); i++)
+		{
+			if (prismindex[i] == jump1 || prismindex[i] == jump2)
+				continue;
+			
+			index.FACES.clear();
+			tot = 0;
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
+				flag = false;
+				for (int k = 0; k < intersect_face[i].size(); k++) {
+					if (j == intersect_face[i][k]) {
+						flag = true;
+						break;
+					}
+				}
+				if (flag == false) continue;
+				timer.start();
+				ct1 += 1;
+				ori =
+					orient3D_TPI_postfilter(
+						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
+						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
+						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
+						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
+				// timetpp1 += timer_a.getElapsedTimeInSec();
+				time7 += timer.getElapsedTimeInSec();
+				if (ori == 1)
+				{
+					break;
+				}
+				if (ori == 0)
+				{
+					index.FACES.emplace_back(j);
+				}
+
+				else if (ori == -1)
+				{
+					tot++;
+				}
+			}
+			if (ori == 1) continue;
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
+				flag = false;
+				for (int k = 0; k < intersect_face[i].size(); k++) {
+					if (j == intersect_face[i][k]) {
+						flag = true;
+						break;
+					}
+				}
+				if (flag == true) continue;
+				timer.start();
+				ct1 += 1;
+				ori =
+					orient3D_TPI_postfilter(
+						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
+						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
+						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
+						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
+				// timetpp1 += timer_a.getElapsedTimeInSec();
+				time7 += timer.getElapsedTimeInSec();
+				if (ori == 1)
+				{
+					break;
+				}
+				if (ori == 0)
+				{
+					index.FACES.emplace_back(j);
+				}
+
+				else if (ori == -1)
+				{
+					tot++;
+				}
+			}
+			if (ori == 1) continue;
+			if (tot == halfspace[prismindex[i]].size())
+			{
+
+				return IN_PRISM;
+			}
+
+			if (ori != 1)
+			{
+				index.Pi = prismindex[i];
+				recompute.emplace_back(index);
+
+			}
+		}
+		timer.start();
+		if (recompute.size() > 0)
+		{
+
+			if (!multiflag)
+			{
+				// timer.start();
+				bool premulti = orient3D_TPI_pre_exact(
+					triangle[0][0], triangle[0][1], triangle[0][2],
+					triangle[1][0], triangle[1][1], triangle[1][2],
+					triangle[2][0], triangle[2][1], triangle[2][2],
+
+					facet10[0], facet10[1], facet10[2],
+					facet11[0], facet11[1], facet11[2],
+					facet12[0], facet12[1], facet12[2],
+
+					facet20[0], facet20[1], facet20[2],
+					facet21[0], facet21[1], facet21[2],
+					facet22[0], facet22[1], facet22[2],
+					s);
+				// time_multi += timer.getElapsedTimeInSec();
+			}
+
+			// timetpp2 += timer_a.getElapsedTimeInSec();
+
+			for (int k = 0; k < recompute.size(); k++)
+			{
+				int in1 = recompute[k].Pi;
+
+				for (int j = 0; j < recompute[k].FACES.size(); j++) {
+					int in2 = recompute[k].FACES[j];
+
+					ori = orient3D_TPI_post_exact(s,
+						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
+						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
+						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]
+					);
+
+					if (ori == 1 || ori == 0)	break;
+				}
+				if (ori == -1) {
+					time12 += timer.getElapsedTimeInSec();
 					return IN_PRISM;
 				}
 			}

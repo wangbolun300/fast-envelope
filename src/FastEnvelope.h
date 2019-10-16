@@ -109,7 +109,13 @@ namespace fastEnvelope {
 		int Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_id(const DATA_LPI &datalpi, const std::array<Vector3, 3> &triangle,
 			const std::vector<unsigned int> &prismindex, int& id) const;
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex,TPI_exact_suppvars& s) const;
-		
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_with_face_order(
+			const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
+			const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
+			const std::array<Vector3, 3> &triangle,
+			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
+			const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>intersect_face, const int &jump1, const int &jump2, const bool &multiflag,
+			TPI_exact_suppvars &s) const;
 		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3> &triangle,  TPI_exact_suppvars &s);
 
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(
