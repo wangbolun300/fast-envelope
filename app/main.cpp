@@ -1039,6 +1039,9 @@ int main(int argc, char const *argv[])
 	/*test_without_sampling();
 	test_without_sampling();*/
 	test_without_sampling();
+	bool a=true;
+	if (a) cout << "a true" <<a<< endl;
+	if (!a) cout << "a false" << endl;
 	//tryspeed();
 	
 	/*for (int i = 0; i < (argc - 1) / 2; i++) {

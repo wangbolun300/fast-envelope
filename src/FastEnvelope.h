@@ -83,8 +83,8 @@ namespace fastEnvelope {
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 
-		/*std::vector<Vector3> ver_new;
-		std::vector<Vector3i> faces_new;*/
+		std::vector<Vector3> ver_new;
+		std::vector<Vector3i> faces_new;
 		
 		//main pipeline
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
@@ -114,7 +114,7 @@ namespace fastEnvelope {
 			const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-			const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>intersect_face, const int &jump1, const int &jump2, const bool &multiflag,
+			const std::vector<unsigned int> &prismindex, const std::vector<std::array<bool, 8>>intersect_face, const int &jump1, const int &jump2, const bool &multiflag,
 			TPI_exact_suppvars &s) const;
 		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3> &triangle,  TPI_exact_suppvars &s);
 

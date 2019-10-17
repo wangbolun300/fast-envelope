@@ -176,8 +176,8 @@ namespace fastEnvelope
 
 		const Scalar bbd = (max - min).norm();
 		const Scalar epsilon = bbd * eps; //eps*bounding box diagnal
-		std::vector<Vector3> ver_new;
-		std::vector<Vector3i> faces_new;
+		/*std::vector<Vector3> ver_new;
+		std::vector<Vector3i> faces_new;*/
 		timer.start();
 		GEO::Mesh M;
 		ver_new.clear();
@@ -366,18 +366,81 @@ namespace fastEnvelope
 		
 
 		timer.start();
-		for (int i = 0; i < 3; i++)
+		/*for (int i = 0; i < 3; i++)
 
 		{
 
-			out = point_out_prism(triangle[i], prismindex, jump1);
+			out = point_out_prism_return_id_list(triangle[i], prismindex, jump1);
 
 			if (out)
 			{
 				time1 += timer.getElapsedTimeInSec();
 				return true;
 			}
+		}*/
+		std::vector<int >pointid0, pointid1, pointid2;
+		out = point_out_prism_return_id_list(triangle[0], prismindex, jump1, pointid0);
+		if (out)
+		{
+			dbgout5++;
+			return true;
 		}
+		out = point_out_prism_return_id_list(triangle[1], prismindex, jump1, pointid1);
+		if (out)
+		{
+			dbgout5++;
+			return true;
+		}
+		out = point_out_prism_return_id_list(triangle[2], prismindex, jump1, pointid2);
+		if (out)
+		{
+			dbgout5++;
+			return true;
+		}
+		
+
+		std::vector<unsigned int> jail0, jail1, jail2;
+		for (int i = 0; i < pointid0.size(); i++) {
+
+			for (int j = 0; j < pointid1.size(); j++) {
+
+				for (int k = 0; k < pointid2.size(); k++) {
+
+					if (pointid0[i] == pointid1[j] && pointid0[i] == pointid2[k]) return false;
+				}
+			}
+		}
+
+
+		for (int i = 0; i < pointid0.size(); i++) {
+			for (int j = 0; j < pointid1.size(); j++) {
+				if (pointid0[i] == pointid1[j]) jail0.emplace_back(pointid0[i]);
+			}
+			for (int k = 0; k < pointid2.size(); k++) {
+				if (pointid0[i] == pointid2[k]) jail1.emplace_back(pointid0[i]);
+			}		
+		}
+		for (int i = 0; i < pointid1.size(); i++) {
+			for (int k = 0; k < pointid2.size(); k++) {
+				if (pointid1[i] == pointid2[k])jail2.emplace_back(pointid1[i]);
+			}
+		}
+		bool edgeflag[3]; edgeflag[0] = false; edgeflag[1] = false; edgeflag[2] = false;
+		if (jail0.size() > 0)
+			edgeflag[0] = true;
+		if (jail1.size() > 0)
+			edgeflag[1] = true;
+		if (jail2.size() > 0)
+			edgeflag[2] = true;
+
+
+		std::cout << "jail0 size " << jail0.size() << std::endl;
+		std::cout << "jail1 size " << jail1.size() << std::endl;
+		std::cout << "jail2 size " << jail2.size() << std::endl;
+		jail0.insert(jail0.end(), jail1.begin(), jail1.end());
+		jail0.insert(jail0.end(), jail2.begin(), jail2.end());
+		
+		std::cout << "jail size " << jail0.size() << std::endl;
 		time1 += timer.getElapsedTimeInSec();
 
 		if (prismindex.size() == 1)
@@ -484,6 +547,7 @@ namespace fastEnvelope
 				 
 				filted_intersection.emplace_back(prismindex[i]);
 				intersect_face.emplace_back(cidl);
+				
 				dbg3++;
 			}
 		}
@@ -491,6 +555,35 @@ namespace fastEnvelope
 			time3 += timer.getElapsedTimeInSec();
 			return false;//inside
 		}
+		std::cout << "filted intersection size" << filted_intersection.size() << std::endl;
+
+
+		/*Eigen::MatrixXd V(ver_new.size(), 3);
+		for (int i = 0; i < ver_new.size(); ++i)
+			V.row(i) = ver_new[i];
+		Eigen::MatrixXi F(filted_intersection.size(), 3);
+
+		for (int i = 0; i < filted_intersection.size(); ++i)
+			F.row(i) = faces_new[filted_intersection[i]];
+
+		igl::write_triangle_mesh("patch1017.stl", V, F);
+		Eigen::MatrixXd V1(3, 3);
+		Eigen::MatrixXi F1(1, 3);
+		V1(0,0) = triangle[0][0];
+		V1(0, 1) = triangle[0][1];
+		V1(0, 2) = triangle[0][2];
+		V1(1, 0) = triangle[1][0];
+		V1(1, 1) = triangle[1][1];
+		V1(1, 2) = triangle[1][2];
+		V1(2, 0) = triangle[2][0];
+		V1(2, 1) = triangle[2][1];
+		V1(2, 2) = triangle[2][2];
+		F1 << 0, 1, 2;
+		igl::write_triangle_mesh("tri1017.stl", V1, F1);
+
+*/
+
+
 		std::vector<std::vector<bool>>face_flags;
 		face_flags.resize(intersect_face.size());
 		for (int i = 0; i < intersect_face.size(); i++) {
@@ -513,6 +606,7 @@ namespace fastEnvelope
 			for (int j = 0; j < intersect_face[i].size(); j++) {
 				if (face_flags[i][j]) continue;
 				for (int k = 0; k < 3; k++) {
+					if (edgeflag[k] == true) continue;
 					tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
 						halfspace[filted_intersection[i]][intersect_face[i][j]][0], halfspace[filted_intersection[i]][intersect_face[i][j]][1], halfspace[filted_intersection[i]][intersect_face[i][j]][2] );
 
@@ -623,6 +717,7 @@ namespace fastEnvelope
 				oldtonew[i] = -1;
 			}
 		}
+		std::wcout << "the size of new intersection prisms " << intersect_face_new.size() << std::endl;
 		time4 += timer.getElapsedTimeInSec();
 		if (filted_intersection_new.size() == 0) return false;//inside
 		///////////////////////////////////////////////////tpp
@@ -648,7 +743,7 @@ namespace fastEnvelope
 		int id, id0 = 0;
 		std::vector<unsigned int> localist;
 		std::vector<unsigned int> potential_prism;
-		std::vector<std::vector<int>> potential_facets;
+		std::vector<std::array<bool,8>> potential_facets;
 		timerm.start();
 		
 		timer.start();
@@ -663,9 +758,22 @@ namespace fastEnvelope
 			potential_prism.resize(localist.size());
 			potential_facets.resize(localist.size());
 			for (int k = 0; k < localist.size(); k++) {
-				potential_prism[k] = filted_intersection[localist[k]];
-				potential_facets[k] = intersect_face[localist[k]];
+				for (int j = 0; j < 8; j++) {
+					potential_facets[k][j] = false;
+				}
 			}
+			//std::cout << "ok1" << std::endl;
+			for (int k = 0; k < localist.size(); k++) {
+				potential_prism[k] = filted_intersection[localist[k]];
+				//potential_facets[k] = intersect_face[localist[k]];
+				for (int j = 0; j < intersect_face[localist[k]].size(); j++) {
+					
+					//if (intersect_face[localist[k]][j] >= 8|| intersect_face[localist[k]][j]<=-1) std::cout << "exceed " << intersect_face[localist[k]][j] << std::endl;
+					potential_facets[k][intersect_face[localist[k]][j]] = true;
+				}
+			}
+			//std::cout << "ok2" << std::endl;
+			//std::cout << "potential intersections of the given prism " <<potential_prism.size()<<std::endl;
 			for (int k = 0; k < intersect_face_new[i].size(); k++) {
 				for (int j = 0; j < localist.size(); j++) {
 					if (oldtonew[localist[j]] == -1) continue;
@@ -741,9 +849,21 @@ namespace fastEnvelope
 								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2], jump2, intersect_face_new[oldtonew[localist[j]]][h]);
 							time11 += timer1.getElapsedTimeInSec();
 							if (!cut) continue;
+							if (potential_prism.size() > 2*jail0.size()) {
+								inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double( //TODO takes most of time
+									d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7, triangle,
+									halfspace[jump1][intersect_face_new[i][k]][0],
+									halfspace[jump1][intersect_face_new[i][k]][1],
+									halfspace[jump1][intersect_face_new[i][k]][2],
 
-					
+									halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0],
+									halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
+									halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2],
+									jail0, jump1, jump2, multiflag, s);
 
+								if (inter == 0) continue;
+							}
+							
 							dbg1++;
 							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_with_face_order( //TODO takes most of time
 								d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7, triangle,
@@ -755,6 +875,16 @@ namespace fastEnvelope
 								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
 								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2],
 								potential_prism,potential_facets, jump1, jump2, multiflag, s);
+							//inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double( //TODO takes most of time
+							//	d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7, triangle,
+							//	halfspace[jump1][intersect_face_new[i][k]][0],
+							//	halfspace[jump1][intersect_face_new[i][k]][1],
+							//	halfspace[jump1][intersect_face_new[i][k]][2],
+
+							//	halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][0],
+							//	halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][1],
+							//	halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2],
+							//	potential_prism, jump1, jump2, multiflag, s);
 							
 							if (inter == 1)
 							{
@@ -1542,7 +1672,7 @@ namespace fastEnvelope
 		const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
 		const std::array<Vector3, 3> &triangle,
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-		const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>intersect_face, const int &jump1, const int &jump2, const bool &multiflag,
+		const std::vector<unsigned int> &prismindex, const std::vector<std::array<bool,8>>intersect_face, const int &jump1, const int &jump2, const bool &multiflag,
 		TPI_exact_suppvars &s) const
 	{
 
@@ -1552,7 +1682,7 @@ namespace fastEnvelope
 		static INDEX index;
 		static std::vector<INDEX> recompute;
 		recompute.clear();
-		bool flag = false;
+
 
 		for (int i = 0; i < prismindex.size(); i++)
 		{
@@ -1562,14 +1692,8 @@ namespace fastEnvelope
 			index.FACES.clear();
 			tot = 0;
 			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-				flag = false;
-				for (int k = 0; k < intersect_face[i].size(); k++) {
-					if (j == intersect_face[i][k]) {
-						flag = true;
-						break;
-					}
-				}
-				if (flag == false) continue;
+				
+				if (intersect_face[i][j] == false) continue;
 				timer.start();
 				ct1 += 1;
 				ori =
@@ -1596,14 +1720,8 @@ namespace fastEnvelope
 			}
 			if (ori == 1) continue;
 			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-				flag = false;
-				for (int k = 0; k < intersect_face[i].size(); k++) {
-					if (j == intersect_face[i][k]) {
-						flag = true;
-						break;
-					}
-				}
-				if (flag == true) continue;
+
+				if (intersect_face[i][j] == true) continue;
 				timer.start();
 				ct1 += 1;
 				ori =
@@ -2679,7 +2797,7 @@ namespace fastEnvelope
 			}
 
 			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-4;
+			const Scalar dis = 1e-6;
 			for (int j = 0; j < 3; j++) {
 				corners[0][j] -= dis;
 				corners[1][j] += dis;
@@ -2700,7 +2818,7 @@ namespace fastEnvelope
 			}
 
 			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-4;
+			const Scalar dis = 1e-6;
 			for (int j = 0; j < 3; j++) {
 				corners[0][j] -= dis;
 				corners[1][j] += dis;
