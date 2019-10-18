@@ -544,12 +544,13 @@ namespace fastEnvelope
 		for (int i = 0; i < queue.size(); i++) {
 			
 			jump1 = filted_intersection[queue[i]];
+			/*
 			localtree.bbd_finding_in_envelope(cornerlist[jump1][0], cornerlist[jump1][1], list);
 			neighbours.clear();
-			neighbours.resize(list.size());
-			for (int j = 0; j < list.size(); j++) {
+			neighbours.resize(list.size());*/
+			/*for (int j = 0; j < list.size(); j++) {
 				neighbours[j] = filted_intersection[list[j]];
-			}
+			}*/
 			for (int k = 0; k < 3; k++) {
 				for (int j = 0; j < intersect_face[queue[i]].size(); j++) {
 					tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
@@ -577,14 +578,14 @@ namespace fastEnvelope
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_double_return_local_id(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
 								triangle[triseg[k][0]], triangle[triseg[k][1]],
 								halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
-								neighbours, jump1, check_id);
+								filted_intersection, jump1, check_id);
 							if (inter == 1) {
 								dbgout2++;
 								return true;
 							}
 							if (inter == 0) { 
-								queue.emplace_back(list[check_id]); 
-								idlist.emplace_back(filted_intersection[list[check_id]]);
+								queue.emplace_back(check_id); 
+								idlist.emplace_back(filted_intersection[check_id]);
 							}
 						}
 						
@@ -599,13 +600,13 @@ namespace fastEnvelope
 							
 							time4 += timer.getElapsedTimeInSec();
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_local_id(
-								datalpi, triangle, neighbours, check_id);
+								datalpi, triangle, filted_intersection, check_id);
 							if (inter == 1) { 
 								dbgout2++;
 								return true; }
 							if (inter == 0) {
-								queue.emplace_back(list[check_id]);
-								idlist.emplace_back(filted_intersection[list[check_id]]);
+								queue.emplace_back(check_id);
+								idlist.emplace_back(filted_intersection[check_id]);
 							}
 						}
 						
