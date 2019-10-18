@@ -589,8 +589,8 @@ void test_in_wild() {
 void test_without_sampling() {
 	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
 	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\119829.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\119829.stl";
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\529449.stl_envelope_log.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\529449.stl";
 	
 
 	vector<int> outenvelope;
@@ -660,7 +660,7 @@ void test_without_sampling() {
 	pos1.resize(fn);
 	pos2.resize(fn);
 	
-	for (int i = 89402; i < 89403; i++) {//3294
+	for (int i = 0; i < fn; i++) {//3294
 								  //34783,89402,
 		
 		pos1[i] = outenvelope[i];
