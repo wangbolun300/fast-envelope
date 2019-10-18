@@ -660,7 +660,8 @@ void test_without_sampling() {
 	pos1.resize(fn);
 	pos2.resize(fn);
 	
-	for (int i = 34783; i < 34784; i++) {//3294
+	for (int i = 89402; i < 89403; i++) {//3294
+								  //34783,89402,
 		
 		pos1[i] = outenvelope[i];
 		timer1.start();

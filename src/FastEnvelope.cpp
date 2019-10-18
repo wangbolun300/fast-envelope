@@ -350,7 +350,7 @@ namespace fastEnvelope
 		igl::Timer timer;
 
 		int jump1, jump2;
-		std::cout << "prism size " << prismindex.size() << std::endl;
+		//std::cout << "prism size " << prismindex.size() << std::endl;
 		
 		std::vector<DATA_TPI> tpilist; 
 		std::vector<unsigned int> filted_intersection; filted_intersection.reserve(prismindex.size() / 3);
@@ -434,13 +434,13 @@ namespace fastEnvelope
 			edgeflag[2] = true;
 
 
-		std::cout << "jail0 size " << jail0.size() << std::endl;
+		/*std::cout << "jail0 size " << jail0.size() << std::endl;
 		std::cout << "jail1 size " << jail1.size() << std::endl;
-		std::cout << "jail2 size " << jail2.size() << std::endl;
+		std::cout << "jail2 size " << jail2.size() << std::endl;*/
 		jail0.insert(jail0.end(), jail1.begin(), jail1.end());
 		jail0.insert(jail0.end(), jail2.begin(), jail2.end());
 		
-		std::cout << "jail size " << jail0.size() << std::endl;
+		/*std::cout << "jail size " << jail0.size() << std::endl;*/
 		time1 += timer.getElapsedTimeInSec();
 
 		if (prismindex.size() == 1)
@@ -555,7 +555,7 @@ namespace fastEnvelope
 			time3 += timer.getElapsedTimeInSec();
 			return false;//inside
 		}
-		std::cout << "filted intersection size" << filted_intersection.size() << std::endl;
+		//std::cout << "filted intersection size" << filted_intersection.size() << std::endl;
 
 
 		/*Eigen::MatrixXd V(ver_new.size(), 3);
@@ -717,7 +717,7 @@ namespace fastEnvelope
 				oldtonew[i] = -1;
 			}
 		}
-		std::wcout << "the size of new intersection prisms " << intersect_face_new.size() << std::endl;
+		//std::wcout << "the size of new intersection prisms " << intersect_face_new.size() << std::endl;
 		time4 += timer.getElapsedTimeInSec();
 		if (filted_intersection_new.size() == 0) return false;//inside
 		///////////////////////////////////////////////////tpp
@@ -849,7 +849,7 @@ namespace fastEnvelope
 								halfspace[jump2][intersect_face_new[oldtonew[localist[j]]][h]][2], jump2, intersect_face_new[oldtonew[localist[j]]][h]);
 							time11 += timer1.getElapsedTimeInSec();
 							if (!cut) continue;
-							if (potential_prism.size() > 2*jail0.size()) {
+							if (potential_prism.size() > 5*jail0.size()) {
 								inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double( //TODO takes most of time
 									d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7, triangle,
 									halfspace[jump1][intersect_face_new[i][k]][0],
@@ -992,38 +992,8 @@ namespace fastEnvelope
 		}
 		time9 += timer.getElapsedTimeInSec();
 		time6 += timerm.getElapsedTimeInSec();
-		std::cout << "how many times of tpp calculation " << dbg1 << std::endl;
-		/*std::cout << "time for tpp " << timerm.getElapsedTimeInSec() << std::endl;
-		std::cout << "how many prisms intersection " << dbg3 << std::endl;
+		//std::cout << "how many times of tpp calculation " << dbg1 << std::endl;
 		
-		std::cout << "how many times of directly multi tpp calculation " << dbg2 << std::endl;
-		*/
-
-		//Eigen::MatrixXd V(ver_new.size(), 3);
-		//for (int i = 0; i < ver_new.size(); ++i)
-		//	V.row(i) = ver_new[i];
-		//Eigen::MatrixXi F(tempid.size(), 3);
-
-		//for (int i = 0; i < tempid.size(); ++i)
-		//	F.row(i) = faces_new[tempid[i]];
-
-		////igl::write_triangle_mesh("patch.stl", V, F);
-		//Eigen::MatrixXd V1(3, 3);
-		//Eigen::MatrixXi F1(1, 3);
-		//V1(0,0) = triangle[0][0];
-		//V1(0, 1) = triangle[0][1];
-		//V1(0, 2) = triangle[0][2];
-		//V1(1, 0) = triangle[1][0];
-		//V1(1, 1) = triangle[1][1];
-		//V1(1, 2) = triangle[1][2];
-		//V1(2, 0) = triangle[2][0];
-		//V1(2, 1) = triangle[2][1];
-		//V1(2, 2) = triangle[2][2];
-
-		//
-		//F1 << 0, 1, 2;
-		//igl::write_triangle_mesh("tri.stl", V1, F1);
-
 		return false;
 	}
 
