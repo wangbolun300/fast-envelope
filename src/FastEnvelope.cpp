@@ -456,7 +456,6 @@ namespace fastEnvelope
 									time2 += timer.getElapsedTimeInSec();
 
 									dbgout4++;
-								
 									return true;
 								}
 								if (inter == 0) {
