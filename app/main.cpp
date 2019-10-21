@@ -282,7 +282,7 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	if (!infile.is_open())
 	{
 		cout << "Path Wrong!!!!" << endl;
-		exit(EXIT_FAILURE);
+		return triangle;
 	}
 
 	int l = 0;
@@ -585,17 +585,17 @@ void test_in_wild() {
 
 
 
-void test_without_sampling(string inputFileName1, string input_surface_path1) {
-//void test_without_sampling() {
-//	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-//	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-//	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\931880.stl_envelope_log.csv";
-//	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\931880.stl";
+//void test_without_sampling(string inputFileName1, string input_surface_path1) {
+void test_without_sampling() {
+	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\99910.stl_envelope_log.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\99910.stl";
 	
 
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
-
+	if (triangles.size() == 0) return;
 	std::vector<Vector3> env_vertices;
 	std::vector<Vector3i> env_faces;
 	GEO::Mesh envmesh;
@@ -1039,16 +1039,16 @@ int main(int argc, char const *argv[])
 	//test_in_wild();
 	/*test_without_sampling();
 	test_without_sampling();*/
-	/*test_without_sampling();*/
+	test_without_sampling();
 	/*bool a=true;
 	if (a) cout << "a true" <<a<< endl;
 	if (!a) cout << "a false" << endl;*/
 	//tryspeed();
 	
-	for (int i = 0; i < (argc - 1) / 2; i++) {
+	/*for (int i = 0; i < (argc - 1) / 2; i++) {
 		test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
-	}
+	}*/
 
 
 	//fordebug();
