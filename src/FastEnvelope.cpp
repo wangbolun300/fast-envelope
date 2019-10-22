@@ -10,7 +10,7 @@
 #include <fstream>
 #include <istream>
 
-int dbg1=0, dbg2=0,dbg3=0,dbg4=0,dbgout1=0,dbgout2=0,dbgout3=0,dbgout4=0,dbgout5=0;
+int dbg1=0, dbg2=0,dbg3=0,dbg4=0,dbgout1=0,dbgout2=0,dbgout3=0,dbgout4=0,dbgout5=0,howmany=0;
 int ct1=0, ct2 = 0, ct3 = 0, ct4 = 0, ct5 = 0;
 double time1 = 0, time2 = 0, time3 = 0, time4 = 0, time5 = 0, timesearch = 0, timecheck = 0,
 time6 = 0, time7 = 0, time8 = 0, time9 = 0, time10 = 0, time11 = 0, time12 = 0, time13 = 0, time14 = 0, time15 = 0, time16 = 0,time17=0,
@@ -230,7 +230,7 @@ namespace fastEnvelope
 		timer.start();
 		const auto res = FastEnvelopeTestImplicit(triangle, querylist);
 		timecheck += timer.getElapsedTimeInSec();
-
+		//bool res=debugcode(triangle, querylist);
 		return res;
 	}
 
@@ -873,7 +873,287 @@ namespace fastEnvelope
 
 		
 	}
+	bool FastEnvelope::debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const {
+		if (prismindex.size() == 0)
+		{
+			return true;
+		}
 
+		int jump1, jump2;
+		//std::cout << "prism size " << prismindex.size() << std::endl;
+
+
+		std::vector<unsigned int> filted_intersection; filted_intersection.reserve(prismindex.size() / 3);
+		std::vector<std::vector<int>>intersect_face; intersect_face.reserve(prismindex.size() / 3);
+		bool out, cut,flag1=0,flag2=0;
+		int where;
+		int inter, inter1, record1, record2,
+
+			tti; //triangle-triangle intersection
+
+		jump1 = -1;
+
+		int check_id;
+
+	
+		for (int i = 0; i < 3; i++)
+
+		{
+
+			out = point_out_prism_return_id(triangle[i], prismindex, jump1, check_id);
+
+			if (out)
+			{
+
+				dbgout1++;
+
+				return true;
+			}
+		}
+
+
+
+
+		
+
+		if (prismindex.size() == 1)
+			return false;
+
+		////////////////////degeneration fix
+
+		
+		int degeneration = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
+
+		
+
+		DATA_LPI datalpi;
+		std::vector<DATA_LPI> lpi_list;
+		if (degeneration == DEGENERATED_SEGMENT)
+		{
+
+			std::vector<unsigned int > queue, idlist;
+			queue.emplace_back(check_id);//queue contains the id in prismindex
+			idlist.emplace_back(prismindex[check_id]);
+			std::vector<unsigned int > list;
+			std::vector<int> cidl; cidl.reserve(8);
+			for (int i = 0; i < queue.size(); i++) {
+
+				jump1 = prismindex[queue[i]];
+
+				for (int k = 0; k < 3; k++) {
+					cut = is_seg_cut_polyhedra(jump1, triangle[triseg[k][0]], triangle[triseg[k][1]], cidl);
+					if (cut&&cidl.size() == 0)continue;
+					if (!cut) continue;
+					for (int j = 0; j < cidl.size(); j++) {
+						/*tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
+							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2]);
+						if (tti != CUT_FACE) continue;*/
+						Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+						bool precom = orient3D_LPI_prefilter( //
+							triangle[triseg[k][0]][0], triangle[triseg[k][0]][1], triangle[triseg[k][0]][2],
+							triangle[triseg[k][1]][0], triangle[triseg[k][1]][1], triangle[triseg[k][1]][2],
+							halfspace[jump1][cidl[j]][0][0], halfspace[jump1][cidl[j]][0][1], halfspace[jump1][cidl[j]][0][2],
+							halfspace[jump1][cidl[j]][1][0], halfspace[jump1][cidl[j]][1][1], halfspace[jump1][cidl[j]][1][2],
+							halfspace[jump1][cidl[j]][2][0], halfspace[jump1][cidl[j]][2][1], halfspace[jump1][cidl[j]][2][2],
+							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+						if (precom)
+						{
+
+							inter = Implicit_Seg_Facet_interpoint_Out_Prism_double_return_id(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+								triangle[triseg[k][0]], triangle[triseg[k][1]],
+								halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
+								idlist, jump1, check_id);
+							if (inter == 1)
+							{
+
+
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism_double_return_local_id(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+									triangle[triseg[k][0]], triangle[triseg[k][1]],
+									halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
+									prismindex, jump1, check_id);
+								if (inter == 1) {
+									
+
+									dbgout4++;
+									flag1 = 1;
+								}
+								if (inter == 0) {
+									queue.emplace_back(check_id);
+									idlist.emplace_back(prismindex[check_id]);
+								}
+							}
+
+						}
+						else {
+							datalpi.segid = k;
+							datalpi.prismid = jump1;
+							datalpi.facetid = cidl[j];
+							datalpi.jump1 = jump1;
+							inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_local_id(datalpi, triangle, idlist, check_id);
+							if (inter == 1) {
+
+
+								inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_local_id(
+									datalpi, triangle, prismindex, check_id);
+								if (inter == 1) {
+									
+
+									dbgout4++;
+									flag1 = 1;
+								}
+								if (inter == 0) {
+									queue.emplace_back(check_id);
+									idlist.emplace_back(prismindex[check_id]);
+								}
+							}
+
+						}
+					}
+				}
+			}
+
+			
+		}
+
+
+		if (degeneration == DEGENERATED_SEGMENT)
+		{
+			for (int we = 0; we < 3; we++)
+
+			{
+				for (int i = 0; i < prismindex.size(); i++)
+
+				{
+
+					jump1 = prismindex[i];
+					std::vector<int> cid;
+					/*if (envelope[prismindex[i]].size() == 12) {
+
+						cut = is_seg_cut_prism(prismindex[i], triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
+
+					}
+
+					if (envelope[prismindex[i]].size() == 8) {
+
+						cut = is_seg_cut_cube(prismindex[i] - prism_size, triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
+
+					}*/
+
+					cut = is_seg_cut_polyhedra(prismindex[i], triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
+
+					if (cut == false) continue;
+
+
+
+					for (int j = 0; j < cid.size(); j++)
+
+					{
+						cut = seg_cut_plane(triangle[triseg[we][0]], triangle[triseg[we][1]],
+							halfspace[prismindex[i]][cid[j]][0], halfspace[prismindex[i]][cid[j]][1], halfspace[prismindex[i]][cid[j]][2]);
+						if (cut == false) continue;
+						int dg = is_triangle_degenerated(
+							halfspace[prismindex[i]][cid[j]][0], halfspace[prismindex[i]][cid[j]][1], halfspace[prismindex[i]][cid[j]][2]);
+						if (dg == DEGENERATED_SEGMENT || dg == DEGENERATED_POINT) continue;
+						Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+
+						bool precom = orient3D_LPI_prefilter( //
+
+							triangle[triseg[we][0]][0], triangle[triseg[we][0]][1], triangle[triseg[we][0]][2],
+
+							triangle[triseg[we][1]][0], triangle[triseg[we][1]][1], triangle[triseg[we][1]][2],
+
+							halfspace[prismindex[i]][cid[j]][0][0], halfspace[prismindex[i]][cid[j]][0][1], halfspace[prismindex[i]][cid[j]][0][2],
+
+							halfspace[prismindex[i]][cid[j]][1][0], halfspace[prismindex[i]][cid[j]][1][1], halfspace[prismindex[i]][cid[j]][1][2],
+
+							halfspace[prismindex[i]][cid[j]][2][0], halfspace[prismindex[i]][cid[j]][2][1], halfspace[prismindex[i]][cid[j]][2][2],
+
+							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+
+						if (precom == true)
+
+						{
+
+							inter = Implicit_Seg_Facet_interpoint_Out_Prism_double(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+
+								triangle[triseg[we][0]], triangle[triseg[we][1]],
+
+								halfspace[prismindex[i]][cid[j]][0], halfspace[prismindex[i]][cid[j]][1], halfspace[prismindex[i]][cid[j]][2],
+
+								prismindex, jump1);
+
+							if (inter == 1)
+
+							{
+
+								where = 1;
+
+								flag2 = 1;
+
+							}
+
+						}
+
+						else
+
+						{
+
+							datalpi.segid = we;
+
+							datalpi.prismid = prismindex[i];
+
+							datalpi.facetid = cid[j];
+
+							datalpi.jump1 = jump1;
+
+							lpi_list.emplace_back(datalpi);
+
+						}
+
+					}
+
+
+
+				}
+
+
+
+			} //case 2 case 2 degenerated as a segment
+
+
+
+			for (int i = 0; i < lpi_list.size(); i++)
+
+			{
+
+				inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(lpi_list[i], triangle, prismindex);
+
+				if (inter == 1) {
+					where = 2;
+					flag2 = 1;
+				}
+
+
+
+				
+
+			}
+
+
+
+			
+
+		}
+
+
+		if (flag1 != flag2) {
+			howmany++;
+			std::cout << "diff results " << flag1 <<" "<<flag2<<" "<<howmany << std::endl;
+			std::cout << "where out " << where << std::endl;
+		}
+		
+		return false;
+	}
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_LPI &datalpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const
 	{
@@ -942,7 +1222,7 @@ namespace fastEnvelope
 					tot++;
 				}
 			}
-			if (tot == prismindex.size())
+			if (tot == halfspace[prismindex[i]].size())
 			{
 				return IN_PRISM;
 			}
@@ -1098,7 +1378,7 @@ namespace fastEnvelope
 					tot++;
 				}
 			}
-			if (tot == prismindex.size())
+			if (tot == halfspace[prismindex[i]].size())
 			{
 				id = i;
 				return IN_PRISM;

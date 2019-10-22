@@ -87,6 +87,7 @@ namespace fastEnvelope {
 		std::vector<Vector3i> faces_new;
 		
 		//main pipeline
+		bool debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex)const;
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
 		bool is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const;
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_return_local_id(
