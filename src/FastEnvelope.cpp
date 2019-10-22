@@ -548,11 +548,18 @@ namespace fastEnvelope
 		F1 << 0, 1, 2;
 		igl::write_triangle_mesh("tri1018.stl", V1, F1);
 */
-
+		std::vector<std::array<bool, 8>> neighbour_facets, idlistorder;
+		std::array<bool, 8> tempbool;
+		for (int i = 0; i < 8; i++) {
+			tempbool[i] = false;
+		}
 		std::vector<unsigned int > queue,idlist;
 		queue.emplace_back(0);//queue contains the id in filted_intersection
 		idlist.emplace_back(filted_intersection[queue[0]]);
-		
+		idlistorder.emplace_back(tempbool);
+		for (int i = 0; i < intersect_face[queue[0]].size(); i++) {
+			idlistorder[0][intersect_face[queue[0]][i]] = true;
+		}
 		time3 += timer.getElapsedTimeInSec();
 		timer.start();
 		AABB localtree;
@@ -566,7 +573,7 @@ namespace fastEnvelope
 		localtree.init_envelope(localcorner);
 		time5 += timer.getElapsedTimeInSec();
 		std::vector<unsigned int> neighbours;//local id
-		std::vector<std::array<bool, 8>> neighbour_facets;
+		
 		std::vector<unsigned int > list;
 		timer.start();
 		for (int i = 0; i < queue.size(); i++) {
@@ -613,6 +620,10 @@ namespace fastEnvelope
 								return true;
 							}
 							if (inter == 0) { 
+								idlistorder.emplace_back(tempbool);
+								for (int r = 0; r < intersect_face[check_id].size(); r++) {
+									idlistorder[idlistorder.size()-1][intersect_face[check_id][r]] = true;
+								}
 								queue.emplace_back(check_id); 
 								idlist.emplace_back(filted_intersection[check_id]);
 							}
@@ -635,6 +646,10 @@ namespace fastEnvelope
 								time4 += timer.getElapsedTimeInSec();
 								return true; }
 							if (inter == 0) {
+								idlistorder.emplace_back(tempbool);
+								for (int r = 0; r < intersect_face[check_id].size(); r++) {
+									idlistorder[idlistorder.size() - 1][intersect_face[check_id][r]] = true;
+								}
 								queue.emplace_back(check_id);
 								idlist.emplace_back(filted_intersection[check_id]);
 							}
@@ -648,6 +663,8 @@ namespace fastEnvelope
 
 		time4 += timer.getElapsedTimeInSec();
 		//std::cout << "the size of queue " << queue.size()<<" "<<idlist.size()  << std::endl;
+		
+		
 		//tpi part
 		igl::Timer timer1;
 		timer.start();
@@ -671,6 +688,7 @@ namespace fastEnvelope
 					neighbour_facets[j][intersect_face[list[j]][h]] = true;
 				}
 			}
+
 			time13 += timer1.getElapsedTimeInSec();
 			for (int j = 0; j < i; j++) {
 				jump2 = filted_intersection[queue[j]];
@@ -748,7 +766,7 @@ namespace fastEnvelope
 							time11 += timer1.getElapsedTimeInSec();
 							if (!cut) continue;
 							timer1.start();
-							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double( //TODO takes most of time
+							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_return_id_with_face_order( //TODO takes most of time
 								d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7, triangle,
 								halfspace[jump1][intersect_face[queue[i]][k]][0],
 								halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -757,7 +775,7 @@ namespace fastEnvelope
 								halfspace[jump2][intersect_face[queue[j]][h]][0],
 								halfspace[jump2][intersect_face[queue[j]][h]][1],
 								halfspace[jump2][intersect_face[queue[j]][h]][2],
-								idlist, jump1, jump2, multiflag, s);
+								idlist, idlistorder, jump1, jump2, multiflag, s, check_id);
 							time14 += timer1.getElapsedTimeInSec();
 							if (inter == 1) {
 								timer1.start();
@@ -777,6 +795,10 @@ namespace fastEnvelope
 									time6 += timer.getElapsedTimeInSec();
 									return true; }
 								if (inter == 0) {
+									idlistorder.emplace_back(tempbool);
+									for (int r = 0; r < intersect_face[list[check_id]].size(); r++) {
+										idlistorder[idlistorder.size() - 1][intersect_face[list[check_id]][r]] = true;
+									}
 									queue.emplace_back(list[check_id]);
 									idlist.emplace_back(filted_intersection[list[check_id]]);
 								}
@@ -858,6 +880,10 @@ namespace fastEnvelope
 									return true;
 								}
 								if (inter == 0) {
+									idlistorder.emplace_back(tempbool);
+									for (int r = 0; r < intersect_face[list[check_id]].size(); r++) {
+										idlistorder[idlistorder.size() - 1][intersect_face[list[check_id]][r]] = true;
+									}
 									queue.emplace_back(list[check_id]);
 									idlist.emplace_back(filted_intersection[list[check_id]]);
 								}
