@@ -652,8 +652,8 @@ namespace fastEnvelope
 							halfspace[jump2][intersect_face[queue[j]][h]][1],
 							halfspace[jump2][intersect_face[queue[j]][h]][2], jump1, intersect_face[queue[i]][k]);
 						time11 += timer1.getElapsedTimeInSec();
-
 						if (!cut) continue;
+
 						timer1.start();
 						cut = is_tpp_on_polyhedra_double(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
@@ -665,6 +665,7 @@ namespace fastEnvelope
 							halfspace[jump2][intersect_face[queue[j]][h]][2], jump2, intersect_face[queue[j]][h]);
 						time11 += timer1.getElapsedTimeInSec();
 						if (!cut) continue;
+						
 						timer1.start();
 						inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
@@ -2450,7 +2451,11 @@ namespace fastEnvelope
 			if (premulti == false) return 2;
 			for (int i = 0; i < prismindex.size(); i++)
 			{
+
 				if (prismindex[i] == jump1 || prismindex[i] == jump2)	continue;
+				if (!box_box_intersection(cornerlist[prismindex[i]][0], cornerlist[prismindex[i]][1], cornerlist[jump1][0], cornerlist[jump1][1])) continue;
+				if (!box_box_intersection(cornerlist[prismindex[i]][0], cornerlist[prismindex[i]][1], cornerlist[jump2][0], cornerlist[jump2][1])) continue;
+
 				tot = 0;
 				for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
 
@@ -2490,6 +2495,8 @@ namespace fastEnvelope
 		{
 			if (prismindex[i] == jump1 || prismindex[i] == jump2)
 				continue;
+			if (!box_box_intersection(cornerlist[prismindex[i]][0], cornerlist[prismindex[i]][1], cornerlist[jump1][0], cornerlist[jump1][1])) continue;
+			if (!box_box_intersection(cornerlist[prismindex[i]][0], cornerlist[prismindex[i]][1], cornerlist[jump2][0], cornerlist[jump2][1])) continue;
 
 			index.FACES.clear();
 			tot = 0;
