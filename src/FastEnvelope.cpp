@@ -3412,7 +3412,7 @@ namespace fastEnvelope
 				return 1;
 			if (t < -1 * SCALAR_ZERO)
 				return -1;
-			Multiprecision a0(a[0]), a1(a[1]), a2(a[2]), b0(b[0]), b1(b[1]), b2(b[2]), dot;
+			Rational a0(a[0]), a1(a[1]), a2(a[2]), b0(b[0]), b1(b[1]), b2(b[2]), dot;
 			dot = a0 * b0 + a1 * b1 + a2 * b2;
 			if (dot.get_sign() > 0)
 				return 1;
