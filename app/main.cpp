@@ -680,7 +680,7 @@ void test_without_sampling() {
 	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
 	fast_envelope.printnumber();
 	fast_envelope.reset_time();
-
+	count_ip();
 	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
 	for (int i = 0; i < fn; i++) {
 		if (pos1[i] - pos2[i] != 0) {

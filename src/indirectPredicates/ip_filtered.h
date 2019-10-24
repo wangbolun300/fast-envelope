@@ -75,7 +75,7 @@ switching to the Exact version only when necessary.
 //
 
 void initFPU();
-
+void count_ip();
 
 enum Filtered_Orientation {
 	POSITIVE = 1,					// Intersection point is OVER the reference plane

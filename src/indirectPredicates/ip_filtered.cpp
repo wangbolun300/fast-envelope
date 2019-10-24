@@ -39,7 +39,7 @@
 #include <math.h>
 #include <fenv.h>
 #include "ip_filtered.h"
-
+#include<iostream>
 #ifndef WIN32
 #if __APPLE__
 #define _FPU_SETCW(cw) // nothing
@@ -383,7 +383,11 @@
 //}
 
 
-
+int lpre = 0, lpost = 0, lpree = 0, lposte = 0, tpre = 0, tposet = 0, tpree = 0, tposte = 0;
+void count_ip() {
+	std::cout << "lpi: pre,post,pre_exact,post_exact " << lpre << " " << lpost << " " << lpree << " " << lposte << " " << std::endl;
+	std::cout << "tpi: pre,post,pre_exact,post_exact " << tpre << " " << tposet << " " << tpree << " " << tposte << " " << std::endl;
+}
 bool orient3D_LPI_prefilter(
 	const double& px, const double& py, const double& pz,
 	const double& qx, const double& qy, const double& qz,
@@ -398,7 +402,7 @@ bool orient3D_LPI_prefilter(
 	double a21, a22, a23, a31, a32, a33;
 
 	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-
+	lpre++;
 	a11 = (px - qx);
 	a12 = (py - qy);
 	a13 = (pz - qz);
@@ -477,7 +481,7 @@ int orient3D_LPI_postfilter(
 	double det;
 
 	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-
+	lpost++;
 	px_cx = px - cx;
 	py_cy = py - cy;
 	pz_cz = pz - cz;
@@ -568,7 +572,7 @@ bool orient3D_TPI_prefilter(
 	)
 {
 	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-
+	tpre++;
 	double v3x = ov3x - ov2x;
 	double v3y = ov3y - ov2y;
 	double v3z = ov3z - ov2z;
@@ -710,7 +714,7 @@ int orient3D_TPI_postfilter(
 	)
 {
 	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-
+	tposet++;
 	double dq3x = d*q3x;
 	double dq3y = d*q3y;
 	double dq3z = d*q3z;
@@ -1253,6 +1257,7 @@ bool orient3D_LPI_pre_exact(
 	int& dl, int& nl
 	)
 {
+	
 	double a21[2], a22[2], a23[2], a31[2], a32[2], a33[2];
 	double px_rx[2], py_ry[2], pz_rz[2];
 	double t1[8], t2[8];
@@ -1322,6 +1327,7 @@ bool orient3D_LPI_pre_exact(
 	LPI_exact_suppvars& s
 	)
 {
+	lpree++;
 	return orient3D_LPI_pre_exact(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, s.a11, s.a12, s.a13, s.d, s.n, s.dl, s.nl);
 }
 
@@ -1419,6 +1425,7 @@ int orient3D_LPI_post_exact(
 	double bx, double by, double bz,
 	double cx, double cy, double cz)
 {
+	lposte++;
 	return orient3D_LPI_post_exact(s.a11, s.a12, s.a13, s.d, s.n, s.dl, s.nl, px, py, pz, ax, ay, az, bx, by, bz, cx, cy, cz);
 }
 
@@ -1710,6 +1717,7 @@ bool orient3D_TPI_pre_exact(
 	TPI_exact_suppvars& s
 	)
 {
+	tpree++;
 	return orient3D_TPI_pre_exact(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z, w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
 		u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z, &s.d, s.dl, &s.n1, s.n1l, &s.n2, s.n2l, &s.n3, s.n3l);
 }
@@ -1807,6 +1815,7 @@ int orient3D_TPI_post_exact(
 	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z
 	)
 {
+	tposte++;
 	return orient3D_TPI_post_exact(s.d, s.dl, s.n1, s.n1l, s.n2, s.n2l, s.n3, s.n3l, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
 }
 

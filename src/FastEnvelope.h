@@ -138,7 +138,7 @@ namespace fastEnvelope {
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-			const std::vector<unsigned int> &prismindex, const std::vector<std::array<bool, 8>>intersect_face, const int &jump1, const int &jump2, 
+			const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>&intersect_face, const int &jump1, const int &jump2, 
 			 int &id) const;
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_return_id_with_face_order(
 			const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
