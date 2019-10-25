@@ -125,6 +125,10 @@ namespace fastEnvelope {
 		int Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(
 			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const;
+		int Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
+			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
+			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, 
+			const std::vector<std::vector<int>>& faceorder, const int &jump, int &id) const;
 		int Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_local_id(const DATA_LPI &datalpi, const std::array<Vector3, 3> &triangle,
 			const std::vector<unsigned int> &prismindex, int& id) const;
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex,TPI_exact_suppvars& s) const;

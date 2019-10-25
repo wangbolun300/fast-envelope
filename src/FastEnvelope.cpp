@@ -558,15 +558,15 @@ namespace fastEnvelope
 					tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
 						halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2]);
 					if (tti != CUT_FACE) continue;
-					inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(triangle[triseg[k][0]], triangle[triseg[k][1]],
+					inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle[triseg[k][0]], triangle[triseg[k][1]],
 						halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
-						idlist, jump1, check_id);
+						idlist,idlistorder, jump1, check_id);
 
 					if (inter == 1)
 					{
-						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(triangle[triseg[k][0]], triangle[triseg[k][1]],
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
-							filted_intersection, jump1, check_id);
+							filted_intersection, intersect_face, jump1, check_id);
 
 						if (inter == 1) {
 							dbgout2++;
@@ -1577,107 +1577,348 @@ namespace fastEnvelope
 
 		return OUT_PRISM;
 	}
-		
-		int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_double_return_local_id(
-			const Scalar &a11, const Scalar &a12, const Scalar &a13, const Scalar &d, const Scalar &fa11,
-			const Scalar &fa12, const Scalar &fa13, const Scalar &max1, const Scalar &max2, const Scalar &max5,
-			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
-			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const
-		{
-			int tot;
-			int ori, ori1;
-			static INDEX index;
-			static std::vector<INDEX> recompute;
+	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
+		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
+		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
+		const std::vector<std::vector<int>>& intersect_face, const int &jump, int &id) const {
+		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		bool precom = orient3D_LPI_prefilter( //
+			segpoint0[0], segpoint0[1], segpoint0[2],
+			segpoint1[0], segpoint1[1], segpoint1[2],
+			triangle0[0], triangle0[1], triangle0[2],
+			triangle1[0], triangle1[1], triangle1[2],
+			triangle2[0], triangle2[1], triangle2[2],
+			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+		if (precom == false) {
+			int tot, ori,fid;
 
-			recompute.clear();
-			int face[3];
+			LPI_exact_suppvars s;
+			bool premulti = orient3D_LPI_pre_exact(
+				segpoint0[0], segpoint0[1], segpoint0[2],
+				segpoint1[0], segpoint1[1], segpoint1[2],
+
+				triangle0[0], triangle0[1], triangle0[2],
+				triangle1[0], triangle1[1], triangle1[2],
+				triangle2[0], triangle2[1], triangle2[2], s);
+
+			// time_multi += timer.getElapsedTimeInSec();
+			if (premulti == false) return 2;
 			for (int i = 0; i < prismindex.size(); i++)
 			{
-				if (prismindex[i] == jump) continue;
-
-				index.FACES.clear();
-				tot = 0;
-
+				if (prismindex[i] == jump)
+				{
+					continue;
+				}
+				tot = 0; fid = 0;
 
 				for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
 
-					ori =
-						orient3D_LPI_postfilter(
-							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
-							segpoint0[0], segpoint0[1], segpoint0[2],
-							halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-							halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-							halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
+					// timer.start();
+					if (intersect_face[i][fid] == j)
+					{
+						if (fid + 1 < intersect_face[i].size()) fid++;
+					}
+					else continue;
+					ori = orient3D_LPI_post_exact(s,
+						segpoint0[0], segpoint0[1], segpoint0[2],
 
-					if (ori == 1)
+						halfspace[prismindex[i]][j][0][0],
+						halfspace[prismindex[i]][j][0][1],
+						halfspace[prismindex[i]][j][0][2],
+
+						halfspace[prismindex[i]][j][1][0],
+						halfspace[prismindex[i]][j][1][1],
+						halfspace[prismindex[i]][j][1][2],
+
+						halfspace[prismindex[i]][j][2][0],
+						halfspace[prismindex[i]][j][2][1],
+						halfspace[prismindex[i]][j][2][2]);
+					if (ori == 1 || ori == 0)
 					{
 						break;
 					}
-					if (ori == 0)
-					{
-						index.FACES.emplace_back(j);
-					}
 
-					else if (ori == -1)
+					if (ori == -1)
 					{
 						tot++;
 					}
-
 				}
-				if (tot == halfspace[prismindex[i]].size())
+				if (ori == 1 || ori == 0) continue;
+				fid = 0;
+				for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
+
+					// timer.start();
+					if (intersect_face[i][fid] == j)
+					{
+						if (fid + 1 < intersect_face[i].size()) fid++;
+						continue;
+					}
+					
+					ori = orient3D_LPI_post_exact(s,
+						segpoint0[0], segpoint0[1], segpoint0[2],
+
+						halfspace[prismindex[i]][j][0][0],
+						halfspace[prismindex[i]][j][0][1],
+						halfspace[prismindex[i]][j][0][2],
+
+						halfspace[prismindex[i]][j][1][0],
+						halfspace[prismindex[i]][j][1][1],
+						halfspace[prismindex[i]][j][1][2],
+
+						halfspace[prismindex[i]][j][2][0],
+						halfspace[prismindex[i]][j][2][1],
+						halfspace[prismindex[i]][j][2][2]);
+					if (ori == 1 || ori == 0)
+					{
+						break;
+					}
+
+					if (ori == -1)
+					{
+						tot++;
+					}
+				}
+				if (ori == 1 || ori == 0) continue;
+				if (tot == prismindex.size())
 				{
 					id = i;
 					return IN_PRISM;
 				}
-
-				if (ori != 1)
-				{
-					assert(!index.FACES.empty());
-					index.Pi = i;//local id
-					recompute.emplace_back(index);
-				}
 			}
 
-			if (!recompute.empty())
-			{
-
-				// timer.start();
-				LPI_exact_suppvars s;
-				bool premulti = orient3D_LPI_pre_exact(
-					segpoint0[0], segpoint0[1], segpoint0[2],
-					segpoint1[0], segpoint1[1], segpoint1[2],
-					triangle0[0], triangle0[1], triangle0[2],
-					triangle1[0], triangle1[1], triangle1[2],
-					triangle2[0], triangle2[1], triangle2[2],
-					s);
-				// time_multi += timer.getElapsedTimeInSec();
-
-				for (int k = 0; k < recompute.size(); k++)
-				{
-					int in1 = prismindex[recompute[k].Pi];
-
-					for (int j = 0; j < recompute[k].FACES.size(); j++) {
-						int in2 = recompute[k].FACES[j];
-
-						ori = orient3D_LPI_post_exact(s, segpoint0[0], segpoint0[1], segpoint0[2],
-							halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
-							halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
-							halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
-						// time_multi += timer.getElapsedTimeInSec();
-						if (ori == 1 || ori == 0)
-							break;
-
-					}
-
-					if (ori == -1) {
-						id = recompute[k].Pi;
-						return IN_PRISM;
-					}
-				}
-			}
 
 			return OUT_PRISM;
 		}
+		int tot,fid;
+		int ori;
+		static INDEX index;
+		static std::vector<INDEX> recompute;
+
+		recompute.clear();
+		for (int i = 0; i < prismindex.size(); i++)
+		{
+			if (prismindex[i] == jump) continue;
+
+			index.FACES.clear();
+			tot = 0; fid = 0;
+
+
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
+				if (intersect_face[i][fid] == j)
+				{
+					if (fid + 1 < intersect_face[i].size()) fid++;
+				}
+				else continue;
+				ori =
+					orient3D_LPI_postfilter(
+						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						segpoint0[0], segpoint0[1], segpoint0[2],
+						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
+						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
+						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
+
+				if (ori == 1)
+				{
+					break;
+				}
+				if (ori == 0)
+				{
+					index.FACES.emplace_back(j);
+				}
+
+				else if (ori == -1)
+				{
+					tot++;
+				}
+
+			}
+			if (ori == 1) continue;
+			fid = 0;
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
+				if (intersect_face[i][fid] == j)
+				{
+					if (fid + 1 < intersect_face[i].size()) fid++;
+					continue;
+				}
+				
+				ori =
+					orient3D_LPI_postfilter(
+						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						segpoint0[0], segpoint0[1], segpoint0[2],
+						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
+						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
+						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
+
+				if (ori == 1)
+				{
+					break;
+				}
+				if (ori == 0)
+				{
+					index.FACES.emplace_back(j);
+				}
+
+				else if (ori == -1)
+				{
+					tot++;
+				}
+
+			}
+			if (ori == 1) continue;
+			if (tot == halfspace[prismindex[i]].size())
+			{
+				id = i;
+				return IN_PRISM;
+			}
+
+			if (ori != 1)
+			{
+				assert(!index.FACES.empty());
+				index.Pi = i;//local id
+				recompute.emplace_back(index);
+			}
+		}
+
+		if (!recompute.empty())
+		{
+
+			// timer.start();
+			LPI_exact_suppvars s;
+			bool premulti = orient3D_LPI_pre_exact(
+				segpoint0[0], segpoint0[1], segpoint0[2],
+				segpoint1[0], segpoint1[1], segpoint1[2],
+				triangle0[0], triangle0[1], triangle0[2],
+				triangle1[0], triangle1[1], triangle1[2],
+				triangle2[0], triangle2[1], triangle2[2],
+				s);
+			// time_multi += timer.getElapsedTimeInSec();
+
+			for (int k = 0; k < recompute.size(); k++)
+			{
+				int in1 = prismindex[recompute[k].Pi];
+
+				for (int j = 0; j < recompute[k].FACES.size(); j++) {
+					int in2 = recompute[k].FACES[j];
+
+					ori = orient3D_LPI_post_exact(s, segpoint0[0], segpoint0[1], segpoint0[2],
+						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
+						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
+						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
+					// time_multi += timer.getElapsedTimeInSec();
+					if (ori == 1 || ori == 0)
+						break;
+
+				}
+
+				if (ori == -1) {
+					id = recompute[k].Pi;
+					return IN_PRISM;
+				}
+			}
+		}
+
+		return OUT_PRISM;
+	}
+	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_double_return_local_id(
+		const Scalar &a11, const Scalar &a12, const Scalar &a13, const Scalar &d, const Scalar &fa11,
+		const Scalar &fa12, const Scalar &fa13, const Scalar &max1, const Scalar &max2, const Scalar &max5,
+		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
+		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const
+	{
+		int tot;
+		int ori, ori1;
+		static INDEX index;
+		static std::vector<INDEX> recompute;
+
+		recompute.clear();
+		int face[3];
+		for (int i = 0; i < prismindex.size(); i++)
+		{
+			if (prismindex[i] == jump) continue;
+
+			index.FACES.clear();
+			tot = 0;
+
+
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
+
+				ori =
+					orient3D_LPI_postfilter(
+						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						segpoint0[0], segpoint0[1], segpoint0[2],
+						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
+						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
+						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
+
+				if (ori == 1)
+				{
+					break;
+				}
+				if (ori == 0)
+				{
+					index.FACES.emplace_back(j);
+				}
+
+				else if (ori == -1)
+				{
+					tot++;
+				}
+
+			}
+			if (tot == halfspace[prismindex[i]].size())
+			{
+				id = i;
+				return IN_PRISM;
+			}
+
+			if (ori != 1)
+			{
+				assert(!index.FACES.empty());
+				index.Pi = i;//local id
+				recompute.emplace_back(index);
+			}
+		}
+
+		if (!recompute.empty())
+		{
+
+			// timer.start();
+			LPI_exact_suppvars s;
+			bool premulti = orient3D_LPI_pre_exact(
+				segpoint0[0], segpoint0[1], segpoint0[2],
+				segpoint1[0], segpoint1[1], segpoint1[2],
+				triangle0[0], triangle0[1], triangle0[2],
+				triangle1[0], triangle1[1], triangle1[2],
+				triangle2[0], triangle2[1], triangle2[2],
+				s);
+			// time_multi += timer.getElapsedTimeInSec();
+
+			for (int k = 0; k < recompute.size(); k++)
+			{
+				int in1 = prismindex[recompute[k].Pi];
+
+				for (int j = 0; j < recompute[k].FACES.size(); j++) {
+					int in2 = recompute[k].FACES[j];
+
+					ori = orient3D_LPI_post_exact(s, segpoint0[0], segpoint0[1], segpoint0[2],
+						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
+						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
+						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
+					// time_multi += timer.getElapsedTimeInSec();
+					if (ori == 1 || ori == 0)
+						break;
+
+				}
+
+				if (ori == -1) {
+					id = recompute[k].Pi;
+					return IN_PRISM;
+				}
+			}
+		}
+
+		return OUT_PRISM;
+	}
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_check_id(
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
