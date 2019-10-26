@@ -508,7 +508,7 @@ namespace fastEnvelope
 				dbg3++;
 			}
 		}
-
+		time3 += timer.getElapsedTimeInSec();
 
 		if (filted_intersection.size() == 0) {
 			time3 += timer.getElapsedTimeInSec();
