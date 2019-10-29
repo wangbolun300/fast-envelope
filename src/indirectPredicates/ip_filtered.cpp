@@ -39,370 +39,305 @@
 #include <math.h>
 #include <fenv.h>
 #include "ip_filtered.h"
-#include<iostream>
-#ifndef WIN32
+
+#ifdef WIN32
+inline void setFPUModeToRoundUP() { _controlfp(_RC_UP, _MCW_RC); }
+inline void setFPUModeToRoundNEAR() { _controlfp(_RC_NEAR, _MCW_RC); }
+#else
+
+#include <fenv.h>
 #if __APPLE__
-#define _FPU_SETCW(cw) // nothing
+#define _FPU_SETCW(cw) // nothing https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/float.3.html
 #else
 #include <fpu_control.h>
 #endif
+
+inline void setFPUModeToRoundUP() { fesetround(FE_UPWARD); }
+inline void setFPUModeToRoundNEAR() { fesetround(FE_TONEAREST); }
+
 #endif
 
+#ifdef USE_MULTISTAGE_FILTERS
+interval_number interval_number::operator*(const interval_number& b) const
+{
+	casted_double l1(low), h1(high), l2(b.low), h2(b.high);
+	uint64_t conf = (l1.is_negative() << 3) + (h1.is_negative() << 2) + (l2.is_negative() << 1) + (h2.is_negative());
+	switch (conf)
+	{
+	case 0: return interval_number(-((-low)*b.low), high*b.high);
+	case 2: return interval_number(-((-high)*b.low), high*b.high);
+	case 3: return interval_number(-((-high)*b.low), low*b.high);
+	case 8: return interval_number(-((-low)*b.high), high*b.high);
+	case 10:
+		double ll, lh, hl, hh;
+		ll = low*b.low; lh = -((-low)*b.high); hl = -((-high)*b.low); hh = high*b.high;
+		if (hl < lh) lh = hl;
+		if (ll > hh) hh = ll;
+		return interval_number(lh, hh);
+	case 11: return interval_number(-((-high)*b.low), low*b.low);
+	case 12: return interval_number(-((-low)*b.high), high*b.low);
+	case 14: return interval_number(-((-low)*b.high), low*b.low);
+	case 15: return interval_number(-((-high)*b.high), low*b.low);
+	};
 
-// The following 'monolithic' versions are commented and replaced by the new versions
-// at the end of this file.
-
-//int orient3D_LPI_filtered(
-//	double px, double py, double pz,
-//	double qx, double qy, double qz,
-//	double rx, double ry, double rz,
-//	double sx, double sy, double sz,
-//	double tx, double ty, double tz,
-//	double ax, double ay, double az,
-//	double bx, double by, double bz,
-//	double cx, double cy, double cz)
-//{
-//	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-//
-//	double a11, a12, a13, a21, a22, a23, a31, a32, a33, d21, d31, d22, d32, d23, d33;
-//	double px_rx, py_ry, pz_rz, px_cx, py_cy, pz_cz;
-//	double a2233, a2133, a2132;
-//	double d, n;
-//	double d11, d12, d13;
-//	double d2233, d2332, d2133, d2331, d2132, d2231;
-//	double det;
-//
-//	a11 = (px - qx);
-//	a12 = (py - qy);
-//	a13 = (pz - qz);
-//	a21 = (sx - rx);
-//	a22 = (sy - ry);
-//	a23 = (sz - rz);
-//	a31 = (tx - rx);
-//	a32 = (ty - ry);
-//	a33 = (tz - rz);
-//	a2233 = ((a22 * a33) - (a23 * a32));
-//	a2133 = ((a21 * a33) - (a23 * a31));
-//	a2132 = ((a21 * a32) - (a22 * a31));
-//	d = (((a11 * a2233) - (a12 * a2133)) + (a13 * a2132));
-//
-//
-//	// Almost static filter for d
-//
-//	double fa11 = fabs(a11);
-//	double fa21 = fabs(a21);
-//	double fa31 = fabs(a31);
-//	double fa12 = fabs(a12);
-//	double fa22 = fabs(a22);
-//	double fa32 = fabs(a32);
-//	double fa13 = fabs(a13);
-//	double fa23 = fabs(a23);
-//	double fa33 = fabs(a33);
-//
-//	double max1, max2, max5;
-//
-//	max1 = fa23;
-//	if (max1 < fa13) max1 = fa13;
-//	if (max1 < fa33) max1 = fa33;
-//
-//	max2 = fa12;
-//	if (max2 < fa22) max2 = fa22;
-//	if (max2 < fa32) max2 = fa32;
-//
-//	max5 = fa11;
-//	if (max5 < fa21) max5 = fa21;
-//	if (max5 < fa31) max5 = fa31;
-//
-//	double deps = 5.1107127829973299e-015 * max1 * max2 * max5;
-//	if (d <= deps && d >= -deps) return Filtered_Orientation::UNCERTAIN;
-//
-//
-//	px_rx = px - rx;
-//	py_ry = py - ry;
-//	pz_rz = pz - rz;
-//	n = ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
-//
-//	px_cx = px - cx;
-//	py_cy = py - cy;
-//	pz_cz = pz - cz;
-//
-//	d11 = (d * px_cx) + (a11 * n);
-//	d21 = (ax - cx);
-//	d31 = (bx - cx);
-//	d12 = (d * py_cy) + (a12 * n);
-//	d22 = (ay - cy);
-//	d32 = (by - cy);
-//	d13 = (d * pz_cz) + (a13 * n);
-//	d23 = (az - cz);
-//	d33 = (bz - cz);
-//
-//	d2233 = d22*d33;
-//	d2332 = d23*d32;
-//	d2133 = d21*d33;
-//	d2331 = d23*d31;
-//	d2132 = d21*d32;
-//	d2231 = d22*d31;
-//
-//	det = d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231);
-//
-//	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
-//
-//	// An additional static filter here may be advantageous... possibly initialized based on input coordinates
-//
-//	// Almost static filter
-//
-//	double fpxrx = fabs(px_rx);
-//	double fpyry = fabs(py_ry);
-//	double fpzrz = fabs(pz_rz);
-//	double fd11 = fabs(d11);
-//	double fd21 = fabs(d21);
-//	double fd31 = fabs(d31);
-//	double fd12 = fabs(d12);
-//	double fd22 = fabs(d22);
-//	double fd32 = fabs(d32);
-//	double fd13 = fabs(d13);
-//	double fd23 = fabs(d23);
-//	double fd33 = fabs(d33);
-//	double fpxcx = fabs(px_cx);
-//	double fpycy = fabs(py_cy);
-//	double fpzcz = fabs(pz_cz);
-//
-//	if (max1 < fpzrz) max1 = fpzrz;
-//	if (max2 < fpyry) max2 = fpyry;
-//	if (max5 < fpxrx) max5 = fpxrx;
-//
-//	double max3, max4, max6;
-//
-//	max3 = fa12;
-//	if (max3 < fd32) max3 = fd32;
-//	if (max3 < fd22) max3 = fd22;
-//	if (max3 < fpycy) max3 = fpycy;
-//
-//	max4 = fa13;
-//	if (max4 < fpzcz) max4 = fpzcz;
-//	if (max4 < fd33) max4 = fd33;
-//	if (max4 < fd23) max4 = fd23;
-//
-//	max6 = fa11;
-//	if (max6 < fd21) max6 = fd21;
-//	if (max6 < fd31) max6 = fd31;
-//	if (max6 < fpxcx) max6 = fpxcx;
-//
-//	double eps = 1.3865993466947057e-013 * max2 * max1 * max5 * max6 * max3 * max4;
-//
-//	if ((det > eps)) return (d>0) ? (Filtered_Orientation::POSITIVE) : (Filtered_Orientation::NEGATIVE);
-//	if ((det < -eps)) return (d>0) ? (Filtered_Orientation::NEGATIVE) : (Filtered_Orientation::POSITIVE);
-//	return Filtered_Orientation::UNCERTAIN;
-//}
-//
-//
-//
-//
-//int orient3D_TPI_filtered(
-//	double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
-//	double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
-//	double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
-//	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z
-//	)
-//{
-//	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-//
-//	v3x -= v2x;
-//	v3y -= v2y;
-//	v3z -= v2z;
-//	v2x -= v1x;
-//	v2y -= v1y;
-//	v2z -= v1z;
-//	double nvx = v2y*v3z - v2z*v3y;
-//	double nvy = v3x*v2z - v3z*v2x;
-//	double nvz = v2x*v3y - v2y*v3x;
-//
-//	w3x -= w2x;
-//	w3y -= w2y;
-//	w3z -= w2z;
-//	w2x -= w1x;
-//	w2y -= w1y;
-//	w2z -= w1z;
-//	double nwx = w2y*w3z - w2z*w3y;
-//	double nwy = w3x*w2z - w3z*w2x;
-//	double nwz = w2x*w3y - w2y*w3x;
-//
-//	u3x -= u2x;
-//	u3y -= u2y;
-//	u3z -= u2z;
-//	u2x -= u1x;
-//	u2y -= u1y;
-//	u2z -= u1z;
-//	double nux = u2y*u3z - u2z*u3y;
-//	double nuy = u3x*u2z - u3z*u2x;
-//	double nuz = u2x*u3y - u2y*u3x;
-//
-//	double nwyuz = nwy*nuz - nwz*nuy;
-//	double nwxuz = nwx*nuz - nwz*nux;
-//	double nwxuy = nwx*nuy - nwy*nux;
-//
-//	double nvyuz = nvy*nuz - nvz*nuy;
-//	double nvxuz = nvx*nuz - nvz*nux;
-//	double nvxuy = nvx*nuy - nvy*nux;
-//
-//	double nvywz = nvy*nwz - nvz*nwy;
-//	double nvxwz = nvx*nwz - nvz*nwx;
-//	double nvxwy = nvx*nwy - nvy*nwx;
-//
-//	double d = nvx*nwyuz - nvy*nwxuz + nvz*nwxuy;
-//
-//
-//	// Almost static filter for d
-//	double fv2x = fabs(v2x);
-//	double fv2y = fabs(v2y);
-//	double fv2z = fabs(v2z);
-//	double fv3x = fabs(v3x);
-//	double fv3y = fabs(v3y);
-//	double fv3z = fabs(v3z);
-//
-//	double fw2x = fabs(w2x);
-//	double fw2y = fabs(w2y);
-//	double fw2z = fabs(w2z);
-//	double fw3x = fabs(w3x);
-//	double fw3y = fabs(w3y);
-//	double fw3z = fabs(w3z);
-//
-//	double fu2x = fabs(u2x);
-//	double fu3x = fabs(u3x);
-//	double fu2y = fabs(u2y);
-//	double fu2z = fabs(u2z);
-//	double fu3y = fabs(u3y);
-//	double fu3z = fabs(u3z);
-//
-//	double max2, max4, max5, max7;
-//
-//	max4 = fv2y;
-//	if (max4 < fv3y) max4 = fv3y;
-//	if (max4 < fw3y) max4 = fw3y;
-//	if (max4 < fw2y) max4 = fw2y;
-//	max2 = fv3x;
-//	if (max2 < fv2x) max2 = fv2x;
-//	if (max2 < fw2x) max2 = fw2x;
-//	if (max2 < fw3x) max2 = fw3x;
-//	max5 = fv2z;
-//	if (max5 < fv3z) max5 = fv3z;
-//	if (max5 < fw3z) max5 = fw3z;
-//	if (max5 < fw2z) max5 = fw2z;
-//	max7 = fu2x;
-//	if (max7 < fu3x) max7 = fu3x;
-//	if (max7 < fw2x) max7 = fw2x;
-//	if (max7 < fw3x) max7 = fw3x;
-//
-//	double max9 = fu2y;
-//	if (max9 < fu3y) max9 = fu3y;
-//	if (max9 < fw2y) max9 = fw2y;
-//	if (max9 < fw3y) max9 = fw3y;
-//	double max10 = fu2y;
-//	if (max10 < fu3z) max10 = fu3z;
-//	if (max10 < fw2z) max10 = fw2z;
-//	if (max10 < fw3z) max10 = fw3z;
-//
-//	double deps = 8.8881169117764924e-014 * (((((max4 * max5) * max2) * max10) * max7) * max9);
-//	if (d <= deps && d >= -deps) return Filtered_Orientation::UNCERTAIN;
-//
-//
-//	double p1 = nvx*v1x + nvy*v1y + nvz*v1z;
-//	double p2 = nwx*w1x + nwy*w1y + nwz*w1z;
-//	double p3 = nux*u1x + nuy*u1y + nuz*u1z;
-//
-//	double n1 = p1*nwyuz - p2*nvyuz + p3*nvywz;
-//	double n2 = p2*nvxuz - p3*nvxwz - p1*nwxuz;
-//	double n3 = p3*nvxwy - p2*nvxuy + p1*nwxuy;
-//
-//	double dq3x = d*q3x;
-//	double dq3y = d*q3y;
-//	double dq3z = d*q3z;
-//
-//	double a11 = n1 - dq3x;
-//	double a12 = n2 - dq3y;
-//	double a13 = n3 - dq3z;
-//	double a21 = q1x - q3x;
-//	double a22 = q1y - q3y;
-//	double a23 = q1z - q3z;
-//	double a31 = q2x - q3x;
-//	double a32 = q2y - q3y;
-//	double a33 = q2z - q3z;
-//
-//	double det = a11*(a22*a33 - a23*a32) - a12*(a21*a33 - a23*a31) + a13*(a21*a32 - a22*a31);
-//
-//	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
-//	
-//	// Almost static filter
-//
-//	double fa21 = fabs(a21);
-//	double fa22 = fabs(a22);
-//	double fa23 = fabs(a23);
-//	double fa31 = fabs(a31);
-//	double fa32 = fabs(a32);
-//	double fa33 = fabs(a33);
-//
-//	double max1, max3, max6, max8;
-//
-//	if (max4 < fu2y) max4 = fu2y;
-//	if (max4 < fu3y) max4 = fu3y;
-//	if (max2 < fu2x) max2 = fu2x;
-//	if (max2 < fu3x) max2 = fu3x;
-//	if (max5 < fu2z) max5 = fu2z;
-//	if (max5 < fu3z) max5 = fu3z;
-//	if (max7 < fa21) max7 = fa21;
-//	if (max7 < fa31) max7 = fa31;
-//
-//	max1 = max4;
-//	if (max1 < max2) max1 = max2;
-//	max3 = max5;
-//	if (max3 < max4) max3 = max4;
-//	max6 = fu2x;
-//	if (max6 < fu3x) max6 = fu3x;
-//	if (max6 < fu2z) max6 = fu2z;
-//	if (max6 < fw3y) max6 = fw3y;
-//	if (max6 < fw2x) max6 = fw2x;
-//	if (max6 < fw3z) max6 = fw3z;
-//	if (max6 < fw2y) max6 = fw2y;
-//	if (max6 < fw2z) max6 = fw2z;
-//	if (max6 < fu2y) max6 = fu2y;
-//	if (max6 < fu3z) max6 = fu3z;
-//	if (max6 < fu3y) max6 = fu3y;
-//	if (max6 < fw3x) max6 = fw3x;
-//	if (max6 < fa22) max6 = fa22;
-//	if (max6 < fa32) max6 = fa32;
-//	max8 = fa22;
-//	if (max8 < fa23) max8 = fa23;
-//	if (max8 < fa33) max8 = fa33;
-//	if (max8 < fa32) max8 = fa32;
-//
-//	double eps = 3.4025182954957945e-012 * (((((((max1 * max3) * max2) * max5) * max7) * max4) * max6) * max8);
-//
-//	if ((det > eps)) return (d>0) ? (Filtered_Orientation::POSITIVE) : (Filtered_Orientation::NEGATIVE);
-//	if ((det < -eps)) return (d>0) ? (Filtered_Orientation::NEGATIVE) : (Filtered_Orientation::POSITIVE);
-//	return Filtered_Orientation::UNCERTAIN;
-//}
-
-
-int lpre = 0, lpost = 0, lpree = 0, lposte = 0, tpre = 0, tposet = 0, tpree = 0, tposte = 0;
-void count_ip() {
-	std::cout << "lpi: pre,post,pre_exact,post_exact " << lpre << " " << lpost << " " << lpree << " " << lposte << " " << std::endl;
-	std::cout << "tpi: pre,post,pre_exact,post_exact " << tpre << " " << tposet << " " << tpree << " " << tposte << " " << std::endl;
+	return interval_number(NAN);
 }
+
+/////////////////// Dynamic filters with interval arithmetic /////////////
+
+bool orient3D_LPI_pre_dfilter(
+	double px, double py, double pz,
+	double qx, double qy, double qz,
+	double rx, double ry, double rz,
+	double sx, double sy, double sz,
+	double tx, double ty, double tz,
+	LPI_filtered_suppvars& svs)
+{
+	setFPUModeToRoundUP();
+	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
+
+	svs.ia11 = (px - qx);
+	svs.ia12 = (py - qy);
+	svs.ia13 = (pz - qz);
+	interval_number a21(sx - rx);
+	interval_number a22(sy - ry);
+	interval_number a23(sz - rz);
+	interval_number a31(tx - rx);
+	interval_number a32(ty - ry);
+	interval_number a33(tz - rz);
+	interval_number a2233((a22 * a33) - (a23 * a32));
+	interval_number a2133((a21 * a33) - (a23 * a31));
+	interval_number a2132((a21 * a32) - (a22 * a31));
+	svs.id = (((svs.ia11 * a2233) - (svs.ia12 * a2133)) + (svs.ia13 * a2132));
+
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || !svs.id.signIsReliable()) {
+		setFPUModeToRoundNEAR();
+		return false;
+	}
+
+	interval_number px_rx(px - rx);
+	interval_number py_ry(py - ry);
+	interval_number pz_rz(pz - rz);
+	interval_number n(((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132)));
+
+	svs.ia11 = (svs.ia11 * n);
+	svs.ia12 = (svs.ia12 * n);
+	svs.ia13 = (svs.ia13 * n);
+
+	setFPUModeToRoundNEAR();
+
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return false;
+
+	svs.d = NAN; // This makes it possible to know which filter succeeded
+
+	return true;
+}
+
+int orient3D_LPI_post_dfilter(const LPI_filtered_suppvars& svs,
+	double px, double py, double pz,
+	double ax, double ay, double az,
+	double bx, double by, double bz,
+	double cx, double cy, double cz)
+{
+	setFPUModeToRoundUP();
+	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
+
+	interval_number px_cx(px - cx);
+	interval_number py_cy(py - cy);
+	interval_number pz_cz(pz - cz);
+
+	interval_number d11((svs.id * px_cx) + (svs.ia11));
+	interval_number d21((ax - cx));
+	interval_number d31((bx - cx));
+	interval_number d12((svs.id * py_cy) + (svs.ia12));
+	interval_number d22((ay - cy));
+	interval_number d32((by - cy));
+	interval_number d13((svs.id * pz_cz) + (svs.ia13));
+	interval_number d23((az - cz));
+	interval_number d33((bz - cz));
+
+	interval_number d2233(d22*d33);
+	interval_number d2332(d23*d32);
+	interval_number d2133(d21*d33);
+	interval_number d2331(d23*d31);
+	interval_number d2132(d21*d32);
+	interval_number d2231(d22*d31);
+
+	interval_number det(d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231));
+	setFPUModeToRoundNEAR();
+
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || !det.signIsReliable()) return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
+
+	return det.sign()*svs.id.sign();
+}
+
+
+
+
+bool orient3D_TPI_pre_dfilter(
+	double ov1x, double ov1y, double ov1z, double ov2x, double ov2y, double ov2z, double ov3x, double ov3y, double ov3z,
+	double ow1x, double ow1y, double ow1z, double ow2x, double ow2y, double ow2z, double ow3x, double ow3y, double ow3z,
+	double ou1x, double ou1y, double ou1z, double ou2x, double ou2y, double ou2z, double ou3x, double ou3y, double ou3z,
+	TPI_filtered_suppvars& svs)
+{
+	setFPUModeToRoundUP();
+	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
+
+	interval_number v3x(ov3x - ov2x);
+	interval_number v3y(ov3y - ov2y);
+	interval_number v3z(ov3z - ov2z);
+	interval_number v2x(ov2x - ov1x);
+	interval_number v2y(ov2y - ov1y);
+	interval_number v2z(ov2z - ov1z);
+	interval_number w3x(ow3x - ow2x);
+	interval_number w3y(ow3y - ow2y);
+	interval_number w3z(ow3z - ow2z);
+	interval_number w2x(ow2x - ow1x);
+	interval_number w2y(ow2y - ow1y);
+	interval_number w2z(ow2z - ow1z);
+	interval_number u3x(ou3x - ou2x);
+	interval_number u3y(ou3y - ou2y);
+	interval_number u3z(ou3z - ou2z);
+	interval_number u2x(ou2x - ou1x);
+	interval_number u2y(ou2y - ou1y);
+	interval_number u2z(ou2z - ou1z);
+
+	interval_number nvx(v2y*v3z - v2z*v3y);
+	interval_number nvy(v3x*v2z - v3z*v2x);
+	interval_number nvz(v2x*v3y - v2y*v3x);
+
+	interval_number nwx(w2y*w3z - w2z*w3y);
+	interval_number nwy(w3x*w2z - w3z*w2x);
+	interval_number nwz(w2x*w3y - w2y*w3x);
+
+	interval_number nux(u2y*u3z - u2z*u3y);
+	interval_number nuy(u3x*u2z - u3z*u2x);
+	interval_number nuz(u2x*u3y - u2y*u3x);
+
+	interval_number nwyuz(nwy*nuz - nwz*nuy);
+	interval_number nwxuz(nwx*nuz - nwz*nux);
+	interval_number nwxuy(nwx*nuy - nwy*nux);
+
+	svs.id = (nvx*nwyuz - nvy*nwxuz + nvz*nwxuy);
+
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || !svs.id.signIsReliable()) {
+		setFPUModeToRoundNEAR();
+		return false;
+	}
+
+	interval_number nvyuz(nvy*nuz - nvz*nuy);
+	interval_number nvxuz(nvx*nuz - nvz*nux);
+	interval_number nvxuy(nvx*nuy - nvy*nux);
+
+	interval_number nvywz(nvy*nwz - nvz*nwy);
+	interval_number nvxwz(nvx*nwz - nvz*nwx);
+	interval_number nvxwy(nvx*nwy - nvy*nwx);
+
+	interval_number p1(nvx*ov1x + nvy*ov1y + nvz*ov1z);
+	interval_number p2(nwx*ow1x + nwy*ow1y + nwz*ow1z);
+	interval_number p3(nux*ou1x + nuy*ou1y + nuz*ou1z);
+
+	svs.in1 = (p1*nwyuz - p2*nvyuz + p3*nvywz);
+	svs.in2 = (p2*nvxuz - p3*nvxwz - p1*nwxuz);
+	svs.in3 = (p3*nvxwy - p2*nvxuy + p1*nwxuy);
+
+	setFPUModeToRoundNEAR();
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return false;
+
+	svs.d = NAN; // This makes it possible to know which filter succeeded
+
+	return true;
+}
+
+
+int orient3D_TPI_post_dfilter(
+	const TPI_filtered_suppvars& svs,
+	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z
+	)
+{
+	setFPUModeToRoundUP();
+	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
+
+	interval_number dq3x(svs.id*q3x);
+	interval_number dq3y(svs.id*q3y);
+	interval_number dq3z(svs.id*q3z);
+
+	interval_number a11(svs.in1 - dq3x);
+	interval_number a12(svs.in2 - dq3y);
+	interval_number a13(svs.in3 - dq3z);
+	interval_number a21(q1x - q3x);
+	interval_number a22(q1y - q3y);
+	interval_number a23(q1z - q3z);
+	interval_number a31(q2x - q3x);
+	interval_number a32(q2y - q3y);
+	interval_number a33(q2z - q3z);
+
+	interval_number det(a11*(a22*a33 - a23*a32) - a12*(a21*a33 - a23*a31) + a13*(a21*a32 - a22*a31));
+	setFPUModeToRoundNEAR();
+
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || !det.signIsReliable()) return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
+
+	return det.sign()*svs.id.sign();
+}
+
+int orient3D_LPI_dfiltered(
+	double px, double py, double pz,
+	double qx, double qy, double qz,
+	double rx, double ry, double rz,
+	double sx, double sy, double sz,
+	double tx, double ty, double tz,
+	double ax, double ay, double az,
+	double bx, double by, double bz,
+	double cx, double cy, double cz)
+{
+	LPI_filtered_suppvars svs;
+
+	if (!orient3D_LPI_pre_dfilter(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, svs))
+		return Filtered_Orientation::UNCERTAIN;
+	return orient3D_LPI_post_dfilter(svs, px, py, pz, ax, ay, az, bx, by, bz, cx, cy, cz);
+}
+
+int orient3D_TPI_dfiltered(
+	double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
+	double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
+	double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
+	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z
+	)
+{
+	TPI_filtered_suppvars svs;
+
+	if (!orient3D_TPI_pre_dfilter(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z, w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z, u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z, svs))
+		return Filtered_Orientation::UNCERTAIN;
+	return orient3D_TPI_post_dfilter(svs, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
+}
+#endif
+
+/////////////////// Multi-stage filters (almost-static + dynamic) ///////////////
+// Almost-static only if USE_MULTISTAGE_FILTERS is not defined
+
 bool orient3D_LPI_prefilter(
 	const double& px, const double& py, const double& pz,
 	const double& qx, const double& qy, const double& qz,
 	const double& rx, const double& ry, const double& rz,
 	const double& sx, const double& sy, const double& sz,
 	const double& tx, const double& ty, const double& tz,
-	double& a11, double& a12, double& a13,
-	double& d,
-	double& fa11, double& fa12, double& fa13,
-	double& max1, double& max2, double& max5)
+	LPI_filtered_suppvars& svs)
 {
 	double a21, a22, a23, a31, a32, a33;
 
 	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-	lpre++;
+
+	double& a11 = svs.a11;
+	double& a12 = svs.a12;
+	double& a13 = svs.a13;
+	double& d = svs.d;
+	double& fa11 = svs.fa11;
+	double& fa12 = svs.fa12;
+	double& fa13 = svs.fa13;
+	double& max1 = svs.max1;
+	double& max2 = svs.max2;
+	double& max5 = svs.max5;
+
 	a11 = (px - qx);
 	a12 = (py - qy);
 	a13 = (pz - qz);
@@ -440,7 +375,12 @@ bool orient3D_LPI_prefilter(
 	if (max5 < fa31) max5 = fa31;
 
 	double deps = 5.1107127829973299e-015 * max1 * max2 * max5;
-	if (d <= deps && d >= -deps) return false;
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || (d <= deps && d >= -deps))
+#ifdef USE_MULTISTAGE_FILTERS
+		return orient3D_LPI_pre_dfilter(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, svs);
+#else
+		return false;
+#endif
 
 	double px_rx = px - rx;
 	double py_ry = py - ry;
@@ -452,7 +392,12 @@ bool orient3D_LPI_prefilter(
 	a12 *= n;
 	a13 *= n;
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return false;
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
+#ifdef USE_MULTISTAGE_FILTERS
+	return orient3D_LPI_pre_dfilter(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, svs);
+#else
+	return false;
+#endif
 
 	double fpxrx = fabs(px_rx);
 	double fpyry = fabs(py_ry);
@@ -462,26 +407,45 @@ bool orient3D_LPI_prefilter(
 	if (max2 < fpyry) max2 = fpyry;
 	if (max5 < fpxrx) max5 = fpxrx;
 
+#ifdef USE_MULTISTAGE_FILTERS
+	svs.qx = qx;
+	svs.qy = qy;
+	svs.qz = qz;
+	svs.rx = rx;
+	svs.ry = ry;
+	svs.rz = rz;
+	svs.sx = sx;
+	svs.sy = sy;
+	svs.sz = sz;
+	svs.tx = tx;
+	svs.ty = ty;
+	svs.tz = tz;
+#endif
+
 	return true;
 }
 
-int orient3D_LPI_postfilter(
-	const double& a11, const double& a12, const double& a13,
-	const double& d,
-	const double& fa11, const double& fa12, const double& fa13,
-	const double& max1, const double& max2, const double& max5,
+int orient3D_LPI_postfilter(const LPI_filtered_suppvars& svs,
 	const double& px, const double& py, const double& pz,
 	const double& ax, const double& ay, const double& az,
 	const double& bx, const double& by, const double& bz,
 	const double& cx, const double& cy, const double& cz)
 {
+#ifdef USE_MULTISTAGE_FILTERS
+	if (svs.d == NAN) return orient3D_LPI_postfilter(svs, px, py, pz, ax, ay, az, bx, by, bz, cx, cy, cz);
+#endif
 	double px_cx, py_cy, pz_cz;
 	double d11, d12, d13, d21, d31, d22, d32, d23, d33;
 	double d2233, d2332, d2133, d2331, d2132, d2231;
 	double det;
 
 	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-	lpost++;
+
+	const double& a11 = svs.a11, &a12 = svs.a12, &a13 = svs.a13;
+	const double& d = svs.d;
+	const double& fa11 = svs.fa11, &fa12 = svs.fa12, &fa13 = svs.fa13;
+	const double& max1 = svs.max1, &max2 = svs.max2, &max5 = svs.max5;
+
 	px_cx = px - cx;
 	py_cy = py - cy;
 	pz_cz = pz - cz;
@@ -505,7 +469,13 @@ int orient3D_LPI_postfilter(
 
 	det = d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231);
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
+#ifdef USE_MULTISTAGE_FILTERS
+		return orient3D_LPI_dfiltered(px, py, pz, svs.qx, svs.qy, svs.qz, svs.rx, svs.ry, svs.rz, 
+		        svs.sx, svs.sy, svs.sz, svs.tx, svs.ty, svs.tz,	ax, ay, az,	bx, by, bz,	cx, cy, cz);
+#else
+		return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
+#endif
 
 	double fd11 = fabs(d11);
 	double fd21 = fabs(d21);
@@ -541,25 +511,13 @@ int orient3D_LPI_postfilter(
 
 	if ((det > eps)) return (d>0) ? (Filtered_Orientation::POSITIVE) : (Filtered_Orientation::NEGATIVE);
 	if ((det < -eps)) return (d>0) ? (Filtered_Orientation::NEGATIVE) : (Filtered_Orientation::POSITIVE);
-	return Filtered_Orientation::UNCERTAIN;
-}
 
-
-int orient3D_LPI_filtered(
-	double px, double py, double pz,
-	double qx, double qy, double qz,
-	double rx, double ry, double rz,
-	double sx, double sy, double sz,
-	double tx, double ty, double tz,
-	double ax, double ay, double az,
-	double bx, double by, double bz,
-	double cx, double cy, double cz)
-{
-	double a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
-
-	if (!orient3D_LPI_prefilter(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5))
-		return Filtered_Orientation::UNCERTAIN;
-	return orient3D_LPI_postfilter(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5, px, py, pz, ax, ay, az, bx, by, bz, cx, cy, cz);
+#ifdef USE_MULTISTAGE_FILTERS
+	return orient3D_LPI_dfiltered(px, py, pz, svs.qx, svs.qy, svs.qz, svs.rx, svs.ry, svs.rz,
+		svs.sx, svs.sy, svs.sz, svs.tx, svs.ty, svs.tz, ax, ay, az, bx, by, bz, cx, cy, cz);
+#else
+	return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
+#endif
 }
 
 
@@ -567,12 +525,14 @@ bool orient3D_TPI_prefilter(
 	const double& ov1x, const double& ov1y, const double& ov1z, const double& ov2x, const double& ov2y, const double& ov2z, const double& ov3x, const double& ov3y, const double& ov3z,
 	const double& ow1x, const double& ow1y, const double& ow1z, const double& ow2x, const double& ow2y, const double& ow2z, const double& ow3x, const double& ow3y, const double& ow3z,
 	const double& ou1x, const double& ou1y, const double& ou1z, const double& ou2x, const double& ou2y, const double& ou2z, const double& ou3x, const double& ou3y, const double& ou3z,
-	double& d, double& n1, double& n2, double& n3,
-	double& max1, double& max2, double& max3, double& max4, double& max5, double& max6, double& max7
+	TPI_filtered_suppvars& svs
 	)
 {
 	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-	tpre++;
+
+	double& d = svs.d, &n1 = svs.n1, &n2 = svs.n2, &n3 = svs.n3;
+	double& max1 = svs.max1, &max2 = svs.max2, &max3 = svs.max3, &max4 = svs.max4, &max5 = svs.max5, &max6 = svs.max6, &max7 = svs.max7;
+
 	double v3x = ov3x - ov2x;
 	double v3y = ov3y - ov2y;
 	double v3z = ov3z - ov2z;
@@ -607,14 +567,6 @@ bool orient3D_TPI_prefilter(
 	double nwyuz = nwy*nuz - nwz*nuy;
 	double nwxuz = nwx*nuz - nwz*nux;
 	double nwxuy = nwx*nuy - nwy*nux;
-
-	double nvyuz = nvy*nuz - nvz*nuy;
-	double nvxuz = nvx*nuz - nvz*nux;
-	double nvxuy = nvx*nuy - nvy*nux;
-
-	double nvywz = nvy*nwz - nvz*nwy;
-	double nvxwz = nvx*nwz - nvz*nwx;
-	double nvxwy = nvx*nwy - nvy*nwx;
 
 	d = nvx*nwyuz - nvy*nwxuz + nvz*nwxuy;
 
@@ -668,8 +620,22 @@ bool orient3D_TPI_prefilter(
 	if (max10 < fw3z) max10 = fw3z;
 
 	double deps = 8.8881169117764924e-014 * (((((max4 * max5) * max2) * max10) * max7) * max9);
-	if (d <= deps && d >= -deps) return false;
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || (d <= deps && d >= -deps))
+#ifdef USE_MULTISTAGE_FILTERS
+		return orient3D_TPI_pre_dfilter(ov1x, ov1y, ov1z, ov2x, ov2y, ov2z, ov3x, ov3y, ov3z,
+			ow1x, ow1y, ow1z, ow2x, ow2y, ow2z, ow3x, ow3y, ow3z, ou1x, ou1y, ou1z, ou2x, ou2y, ou2z, 
+			ou3x, ou3y, ou3z, svs);
+#else
+	return false;
+#endif
 
+	double nvyuz = nvy*nuz - nvz*nuy;
+	double nvxuz = nvx*nuz - nvz*nux;
+	double nvxuy = nvx*nuy - nvy*nux;
+
+	double nvywz = nvy*nwz - nvz*nwy;
+	double nvxwz = nvx*nwz - nvz*nwx;
+	double nvxwy = nvx*nwy - nvy*nwx;
 
 	double p1 = nvx*ov1x + nvy*ov1y + nvz*ov1z;
 	double p2 = nwx*ow1x + nwy*ow1y + nwz*ow1z;
@@ -678,6 +644,15 @@ bool orient3D_TPI_prefilter(
 	n1 = p1*nwyuz - p2*nvyuz + p3*nvywz;
 	n2 = p2*nvxuz - p3*nvxwz - p1*nwxuz;
 	n3 = p3*nvxwy - p2*nvxuy + p1*nwxuy;
+
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
+#ifdef USE_MULTISTAGE_FILTERS
+		return orient3D_TPI_pre_dfilter(ov1x, ov1y, ov1z, ov2x, ov2y, ov2z, ov3x, ov3y, ov3z,
+		ow1x, ow1y, ow1z, ow2x, ow2y, ow2z, ow3x, ow3y, ow3z, ou1x, ou1y, ou1z, ou2x, ou2y, ou2z,
+		ou3x, ou3y, ou3z, svs);
+#else
+		return false;
+#endif
 
 	if (max4 < fu2y) max4 = fu2y;
 	if (max4 < fu3y) max4 = fu3y;
@@ -703,18 +678,28 @@ bool orient3D_TPI_prefilter(
 	if (max6 < fu3y) max6 = fu3y;
 	if (max6 < fw3x) max6 = fw3x;
 
+#ifdef USE_MULTISTAGE_FILTERS
+	svs.v1x = ov1x; svs.v1y = ov1y; svs.v1z = ov1z; svs.v2x = ov2x; svs.v2y = ov2y; svs.v2z = ov2z; svs.v3x = ov3x; svs.v3y = ov3y; svs.v3z = ov3z;
+	svs.w1x = ow1x; svs.w1y = ow1y; svs.w1z = ow1z; svs.w2x = ow2x; svs.w2y = ow2y; svs.w2z = ow2z; svs.w3x = ow3x; svs.w3y = ow3y; svs.w3z = ow3z;
+	svs.u1x = ou1x; svs.u1y = ou1y; svs.u1z = ou1z; svs.u2x = ou2x; svs.u2y = ou2y; svs.u2z = ou2z; svs.u3x = ou3x; svs.u3y = ou3y; svs.u3z = ou3z;
+#endif
 	return true;
 }
 
 
 int orient3D_TPI_postfilter(
-	const double& d, const double& n1, const double& n2, const double& n3,
-	const double& max1, const double& max2, const double& max3, const double& max4, const double& max5, const double& max6, const double& max7,
+	const TPI_filtered_suppvars& svs,
 	const double& q1x, const double& q1y, const double& q1z, const double& q2x, const double& q2y, const double& q2z, const double& q3x, const double& q3y, const double& q3z
 	)
 {
+#ifdef USE_MULTISTAGE_FILTERS
+	if (svs.d == NAN) return orient3D_TPI_post_dfilter(svs, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
+#endif
 	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-	tposet++;
+
+	const double& d = svs.d, &n1 = svs.n1, &n2 = svs.n2, &n3 = svs.n3;
+	const double& max1 = svs.max1, &max2 = svs.max2, &max3 = svs.max3, &max4 = svs.max4, &max5 = svs.max5, &max6 = svs.max6, &max7 = svs.max7;
+
 	double dq3x = d*q3x;
 	double dq3y = d*q3y;
 	double dq3z = d*q3z;
@@ -731,7 +716,14 @@ int orient3D_TPI_postfilter(
 
 	double det = a11*(a22*a33 - a23*a32) - a12*(a21*a33 - a23*a31) + a13*(a21*a32 - a22*a31);
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
+	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
+#ifdef USE_MULTISTAGE_FILTERS
+	return orient3D_TPI_dfiltered(svs.v1x, svs.v1y, svs.v1z, svs.v2x, svs.v2y, svs.v2z, svs.v3x, svs.v3y, svs.v3z,
+		svs.w1x, svs.w1y, svs.w1z, svs.w2x, svs.w2y, svs.w2z, svs.w3x, svs.w3y, svs.w3z, svs.u1x, svs.u1y, svs.u1z, svs.u2x, svs.u2y, svs.u2z,
+		svs.u3x, svs.u3y, svs.u3z, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
+#else
+		return Filtered_Orientation::UNCERTAIN;
+#endif
 
 	double fa21 = fabs(a21);
 	double fa22 = fabs(a22);
@@ -757,8 +749,33 @@ int orient3D_TPI_postfilter(
 
 	if ((det > eps)) return (d>0) ? (Filtered_Orientation::POSITIVE) : (Filtered_Orientation::NEGATIVE);
 	if ((det < -eps)) return (d>0) ? (Filtered_Orientation::NEGATIVE) : (Filtered_Orientation::POSITIVE);
+#ifdef USE_MULTISTAGE_FILTERS
+	return orient3D_TPI_dfiltered(svs.v1x, svs.v1y, svs.v1z, svs.v2x, svs.v2y, svs.v2z, svs.v3x, svs.v3y, svs.v3z,
+		svs.w1x, svs.w1y, svs.w1z, svs.w2x, svs.w2y, svs.w2z, svs.w3x, svs.w3y, svs.w3z, svs.u1x, svs.u1y, svs.u1z, svs.u2x, svs.u2y, svs.u2z,
+		svs.u3x, svs.u3y, svs.u3z, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
+#else
 	return Filtered_Orientation::UNCERTAIN;
+#endif
 }
+
+
+int orient3D_LPI_filtered(
+	double px, double py, double pz,
+	double qx, double qy, double qz,
+	double rx, double ry, double rz,
+	double sx, double sy, double sz,
+	double tx, double ty, double tz,
+	double ax, double ay, double az,
+	double bx, double by, double bz,
+	double cx, double cy, double cz)
+{
+	LPI_filtered_suppvars svs;
+
+	if (!orient3D_LPI_prefilter(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, svs))
+		return Filtered_Orientation::UNCERTAIN;
+	return orient3D_LPI_postfilter(svs, px, py, pz, ax, ay, az, bx, by, bz, cx, cy, cz);
+}
+
 
 int orient3D_TPI_filtered(
 	double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
@@ -767,11 +784,11 @@ int orient3D_TPI_filtered(
 	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z
 	)
 {
-	double d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7;
+	TPI_filtered_suppvars svs;
 
-	if (!orient3D_TPI_prefilter(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z, w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z, u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z, d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7))
+	if (!orient3D_TPI_prefilter(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z, w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z, u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z, svs))
 		return Filtered_Orientation::UNCERTAIN;
-	return orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
+	return orient3D_TPI_postfilter(svs, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
 }
 
 #define TO_NONNEGATIVE(d) ((d) = fabs(d))
@@ -929,25 +946,24 @@ public:
 	static double To_Double(const int elen, const double *e);
 };
 
-#include <cassert>
-
 int expansionObject::Gen_Sum(const int elen, const double *e, const int flen, const double *f, double *h)
 {
 	double Q, Qn, hh, en = e[0], fn = f[0];
 	int e_k, f_k, h_k;
 
 	h_k = e_k = f_k = 0;
-	if ((fn > en) == (fn > -en)) { assert(e_k+1 < elen); Q = en; en = e[++e_k]; }
-	else { assert(f_k + 1 < flen); Q = fn; fn = f[++f_k]; }
+	if ((fn > en) == (fn > -en)) { Q = en; e_k++; } else { Q = fn; f_k++; }
 
 	if ((e_k < elen) && (f_k < flen))
 	{
-		if ((fn > en) == (fn > -en)) { Quick_Two_Sum(en, Q, Qn, hh); assert(e_k + 1 < elen); en = e[++e_k]; } else { Quick_Two_Sum(fn, Q, Qn, hh); assert(f_k + 1 < flen); fn = f[++f_k]; }
+		en = e[e_k]; fn = f[f_k];
+		if ((fn > en) == (fn > -en)) { Quick_Two_Sum(en, Q, Qn, hh); e_k++; } else { Quick_Two_Sum(fn, Q, Qn, hh); f_k++; }
 		Q = Qn;
 		if (hh != 0.0) h[h_k++] = hh;
 		while ((e_k < elen) && (f_k < flen))
 		{
-			if ((fn > en) == (fn > -en)) { Two_Sum(Q, en, Qn, hh); assert(e_k + 1 < elen); en = e[++e_k]; } else { Two_Sum(Q, fn, Qn, hh); assert(f_k + 1 < flen); fn = f[++f_k]; }
+			en = e[e_k]; fn = f[f_k];
+			if ((fn > en) == (fn > -en)) { Two_Sum(Q, en, Qn, hh); e_k++; } else { Two_Sum(Q, fn, Qn, hh); f_k++; }
 			Q = Qn;
 			if (hh != 0.0) h[h_k++] = hh;
 		}
@@ -955,17 +971,16 @@ int expansionObject::Gen_Sum(const int elen, const double *e, const int flen, co
 
 	while (e_k < elen)
 	{
-		assert(e_k + 1 < elen);
+		en = e[e_k++];
 		Two_Sum(Q, en, Qn, hh);
-		en = e[++e_k];
 		Q = Qn;
 		if (hh != 0.0) h[h_k++] = hh;
 	}
+
 	while (f_k < flen)
 	{
-		assert(f_k + 1 < flen);
+		fn = f[f_k++];
 		Two_Sum(Q, fn, Qn, hh);
-		fn = f[++f_k];
 		Q = Qn;
 		if (hh != 0.0) h[h_k++] = hh;
 	}
@@ -973,6 +988,50 @@ int expansionObject::Gen_Sum(const int elen, const double *e, const int flen, co
 
 	return h_k;
 }
+
+// THE NEW VERSION ABOVE SHOULD BE EQUIVALENT BUT FIXES OUT-OR-RANGE ARRAY ACCESSES.
+// IN CASE OF UNEXPECTED/STRANGE BEHAVIOUR, TRY TO SWITCH BACK TO THE FOLLOWING VERSION.
+//
+//int expansionObject::Gen_Sum(const int elen, const double *e, const int flen, const double *f, double *h)
+//{
+//	double Q, Qn, hh, en = e[0], fn = f[0];
+//	int e_k, f_k, h_k;
+//
+//	h_k = e_k = f_k = 0;
+//	if ((fn > en) == (fn > -en)) { Q = en; en = e[++e_k]; } else { Q = fn; fn = f[++f_k]; }
+//
+//	if ((e_k < elen) && (f_k < flen))
+//	{
+//		if ((fn > en) == (fn > -en)) { Quick_Two_Sum(en, Q, Qn, hh); en = e[++e_k]; } else { Quick_Two_Sum(fn, Q, Qn, hh); fn = f[++f_k]; }
+//		Q = Qn;
+//		if (hh != 0.0) h[h_k++] = hh;
+//		while ((e_k < elen) && (f_k < flen))
+//		{
+//			if ((fn > en) == (fn > -en)) { Two_Sum(Q, en, Qn, hh); en = e[++e_k]; } else { Two_Sum(Q, fn, Qn, hh); fn = f[++f_k]; }
+//			Q = Qn;
+//			if (hh != 0.0) h[h_k++] = hh;
+//		}
+//	}
+//
+//	while (e_k < elen)
+//	{
+//		Two_Sum(Q, en, Qn, hh);
+//		en = e[++e_k];
+//		Q = Qn;
+//		if (hh != 0.0) h[h_k++] = hh;
+//	}
+//
+//	while (f_k < flen)
+//	{
+//		Two_Sum(Q, fn, Qn, hh);
+//		fn = f[++f_k];
+//		Q = Qn;
+//		if (hh != 0.0) h[h_k++] = hh;
+//	}
+//	if ((Q != 0.0) || (h_k == 0)) h[h_k++] = Q;
+//
+//	return h_k;
+//}
 
 int expansionObject::Gen_Scale(const int elen, const double *e, const double& b, double *h)
 {
@@ -1088,7 +1147,7 @@ double expansionObject::To_Double(const int elen, const double *e)
 
 void initFPU()
 {
-#if _WIN64
+#ifdef _WIN64
 	//do nothing
 #else
 #ifdef WIN32
@@ -1257,7 +1316,6 @@ bool orient3D_LPI_pre_exact(
 	int& dl, int& nl
 	)
 {
-	
 	double a21[2], a22[2], a23[2], a31[2], a32[2], a33[2];
 	double px_rx[2], py_ry[2], pz_rz[2];
 	double t1[8], t2[8];
@@ -1327,7 +1385,6 @@ bool orient3D_LPI_pre_exact(
 	LPI_exact_suppvars& s
 	)
 {
-	lpree++;
 	return orient3D_LPI_pre_exact(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, s.a11, s.a12, s.a13, s.d, s.n, s.dl, s.nl);
 }
 
@@ -1425,7 +1482,6 @@ int orient3D_LPI_post_exact(
 	double bx, double by, double bz,
 	double cx, double cy, double cz)
 {
-	lposte++;
 	return orient3D_LPI_post_exact(s.a11, s.a12, s.a13, s.d, s.n, s.dl, s.nl, px, py, pz, ax, ay, az, bx, by, bz, cx, cy, cz);
 }
 
@@ -1717,7 +1773,6 @@ bool orient3D_TPI_pre_exact(
 	TPI_exact_suppvars& s
 	)
 {
-	tpree++;
 	return orient3D_TPI_pre_exact(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z, w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
 		u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z, &s.d, s.dl, &s.n1, s.n1l, &s.n2, s.n2l, &s.n3, s.n3l);
 }
@@ -1815,7 +1870,6 @@ int orient3D_TPI_post_exact(
 	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z
 	)
 {
-	tposte++;
 	return orient3D_TPI_post_exact(s.d, s.dl, s.n1, s.n1l, s.n2, s.n2l, s.n3, s.n3l, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
 }
 
