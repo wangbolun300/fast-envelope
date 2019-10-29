@@ -107,13 +107,11 @@ namespace fastEnvelope {
 			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle1,
 			const Vector3 &triangle2, const Vector3 &triangle3, const std::vector<unsigned int> &prismindex, const int &jump) const;
 		int Implicit_Seg_Facet_interpoint_Out_Prism_double_return_id(
-			const Scalar &a11, const Scalar &a12, const Scalar &a13, const Scalar &d, const Scalar &fa11,
-			const Scalar &fa12, const Scalar &fa13, const Scalar &max1, const Scalar &max2, const Scalar &max5,
+			LPI_filtered_suppvars& s,
 			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const;
 		int Implicit_Seg_Facet_interpoint_Out_Prism_double_return_local_id(
-			const Scalar &a11, const Scalar &a12, const Scalar &a13, const Scalar &d, const Scalar &fa11,
-			const Scalar &fa12, const Scalar &fa13, const Scalar &max1, const Scalar &max2, const Scalar &max5,
+			LPI_filtered_suppvars& sf,
 			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const;
 		int Implicit_Seg_Facet_interpoint_Out_Prism_check_id(
@@ -159,26 +157,16 @@ namespace fastEnvelope {
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
 			const std::vector<unsigned int> &prismindex, const int &jump1, const int &jump2, const bool &multiflag, TPI_exact_suppvars &s) const;
-		static bool is_3_triangle_cut_double(
-			const Scalar &d, const Scalar &n1d, const Scalar &n2d, const Scalar &n3d,
-			const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5,
-			const Scalar &max6, const Scalar &max7,
-			const std::array<Vector3, 3> &triangle,
-			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet2,
-			bool &multiflag,
-			TPI_exact_suppvars &s);
+		
 		static bool is_3_triangle_cut(
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12,
 			const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22);
-		bool is_tpp_on_polyhedra_double(
+		bool is_tpp_on_polyhedra(
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
 			const int &prismid, const int &faceid)const;
-		bool is_tpp_inside_bbd(
-			const std::array<Vector3, 3> &triangle,
-			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-			const Vector3& min, const Vector3 &max)const;
+		
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		bool point_out_prism(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump) const;
 		bool point_out_prism_return_id(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, int &id)const;

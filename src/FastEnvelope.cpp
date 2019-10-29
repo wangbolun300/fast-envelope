@@ -423,61 +423,25 @@ namespace fastEnvelope
 						/*tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2]);
 						if (tti != CUT_FACE) continue;*/
-						Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
-						bool precom = orient3D_LPI_prefilter( //
-							triangle[triseg[k][0]][0], triangle[triseg[k][0]][1], triangle[triseg[k][0]][2],
-							triangle[triseg[k][1]][0], triangle[triseg[k][1]][1], triangle[triseg[k][1]][2],
-							halfspace[jump1][cidl[j]][0][0], halfspace[jump1][cidl[j]][0][1], halfspace[jump1][cidl[j]][0][2],
-							halfspace[jump1][cidl[j]][1][0], halfspace[jump1][cidl[j]][1][1], halfspace[jump1][cidl[j]][1][2],
-							halfspace[jump1][cidl[j]][2][0], halfspace[jump1][cidl[j]][2][1], halfspace[jump1][cidl[j]][2][2],
-							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
-						if (precom)
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(triangle[triseg[k][0]], triangle[triseg[k][1]],
+							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
+							idlist, jump1, check_id);
+
+						if (inter == 1)
 						{
-
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_double_return_id(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
-								triangle[triseg[k][0]], triangle[triseg[k][1]],
+							inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(triangle[triseg[k][0]], triangle[triseg[k][1]],
 								halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
-								idlist, jump1, check_id);
-							if (inter == 1)
-							{
-								inter = Implicit_Seg_Facet_interpoint_Out_Prism_double_return_local_id(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
-									triangle[triseg[k][0]], triangle[triseg[k][1]],
-									halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
-									prismindex, jump1, check_id);
-								if (inter == 1) {
-									time2 += timer.getElapsedTimeInSec();
+								prismindex, jump1, check_id);
 
-									dbgout4++;
-									return true;
-								}
-								if (inter == 0) {
-									queue.emplace_back(check_id);
-									idlist.emplace_back(prismindex[check_id]);
-								}
-							}
-
-						}
-						else {
-							datalpi.segid = k;
-							datalpi.prismid = jump1;
-							datalpi.facetid = cidl[j];
-							datalpi.jump1 = jump1;
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_local_id(datalpi, triangle, idlist, check_id);
 							if (inter == 1) {
-								inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_local_id(
-									datalpi, triangle, prismindex, check_id);
-								if (inter == 1) {
-									time2 += timer.getElapsedTimeInSec();
-
-									dbgout4++;
-									return true;
-								}
-								if (inter == 0) {
-									queue.emplace_back(check_id);
-									idlist.emplace_back(prismindex[check_id]);
-								}
+								time2 += timer.getElapsedTimeInSec();
+								dbgout4++;
+								return true;
 							}
-
+							if (inter == 0) {
+								queue.emplace_back(check_id);
+								idlist.emplace_back(prismindex[check_id]);
+							}
 						}
 					}
 				}
@@ -626,7 +590,7 @@ namespace fastEnvelope
 						time18 += timer1.getElapsedTimeInSec();
 						if (!cut) continue;
 						timer1.start();
-						cut = is_tpp_on_polyhedra_double(triangle,
+						cut = is_tpp_on_polyhedra(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
 							halfspace[jump1][intersect_face[queue[i]][k]][2],
@@ -638,7 +602,7 @@ namespace fastEnvelope
 						if (!cut) continue;
 
 						timer1.start();
-						cut = is_tpp_on_polyhedra_double(triangle,
+						cut = is_tpp_on_polyhedra(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
 							halfspace[jump1][intersect_face[queue[i]][k]][2],
@@ -696,285 +660,6 @@ namespace fastEnvelope
 		
 	}
 	bool FastEnvelope::debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const {
-		if (prismindex.size() == 0)
-		{
-			return true;
-		}
-
-		int jump1, jump2;
-		//std::cout << "prism size " << prismindex.size() << std::endl;
-
-
-		std::vector<unsigned int> filted_intersection; filted_intersection.reserve(prismindex.size() / 3);
-		std::vector<std::vector<int>>intersect_face; intersect_face.reserve(prismindex.size() / 3);
-		bool out, cut,flag1=0,flag2=0;
-		int where;
-		int inter, inter1, record1, record2,
-
-			tti; //triangle-triangle intersection
-
-		jump1 = -1;
-
-		int check_id;
-
-	
-		for (int i = 0; i < 3; i++)
-
-		{
-
-			out = point_out_prism_return_id(triangle[i], prismindex, jump1, check_id);
-
-			if (out)
-			{
-
-				dbgout1++;
-
-				return true;
-			}
-		}
-
-
-
-
-		
-
-		if (prismindex.size() == 1)
-			return false;
-
-		////////////////////degeneration fix
-
-		
-		int degeneration = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
-
-		
-
-		DATA_LPI datalpi;
-		std::vector<DATA_LPI> lpi_list;
-		if (degeneration == DEGENERATED_SEGMENT)
-		{
-
-			std::vector<unsigned int > queue, idlist;
-			queue.emplace_back(check_id);//queue contains the id in prismindex
-			idlist.emplace_back(prismindex[check_id]);
-			std::vector<unsigned int > list;
-			std::vector<int> cidl; cidl.reserve(8);
-			for (int i = 0; i < queue.size(); i++) {
-
-				jump1 = prismindex[queue[i]];
-
-				for (int k = 0; k < 3; k++) {
-					cut = is_seg_cut_polyhedra(jump1, triangle[triseg[k][0]], triangle[triseg[k][1]], cidl);
-					if (cut&&cidl.size() == 0)continue;
-					if (!cut) continue;
-					for (int j = 0; j < cidl.size(); j++) {
-						/*tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
-							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2]);
-						if (tti != CUT_FACE) continue;*/
-						Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
-						bool precom = orient3D_LPI_prefilter( //
-							triangle[triseg[k][0]][0], triangle[triseg[k][0]][1], triangle[triseg[k][0]][2],
-							triangle[triseg[k][1]][0], triangle[triseg[k][1]][1], triangle[triseg[k][1]][2],
-							halfspace[jump1][cidl[j]][0][0], halfspace[jump1][cidl[j]][0][1], halfspace[jump1][cidl[j]][0][2],
-							halfspace[jump1][cidl[j]][1][0], halfspace[jump1][cidl[j]][1][1], halfspace[jump1][cidl[j]][1][2],
-							halfspace[jump1][cidl[j]][2][0], halfspace[jump1][cidl[j]][2][1], halfspace[jump1][cidl[j]][2][2],
-							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
-						if (precom)
-						{
-
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_double_return_id(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
-								triangle[triseg[k][0]], triangle[triseg[k][1]],
-								halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
-								idlist, jump1, check_id);
-							if (inter == 1)
-							{
-
-
-								inter = Implicit_Seg_Facet_interpoint_Out_Prism_double_return_local_id(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
-									triangle[triseg[k][0]], triangle[triseg[k][1]],
-									halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
-									prismindex, jump1, check_id);
-								if (inter == 1) {
-									
-
-									dbgout4++;
-									flag1 = 1;
-								}
-								if (inter == 0) {
-									queue.emplace_back(check_id);
-									idlist.emplace_back(prismindex[check_id]);
-								}
-							}
-
-						}
-						else {
-							datalpi.segid = k;
-							datalpi.prismid = jump1;
-							datalpi.facetid = cidl[j];
-							datalpi.jump1 = jump1;
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_local_id(datalpi, triangle, idlist, check_id);
-							if (inter == 1) {
-
-
-								inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_local_id(
-									datalpi, triangle, prismindex, check_id);
-								if (inter == 1) {
-									
-
-									dbgout4++;
-									flag1 = 1;
-								}
-								if (inter == 0) {
-									queue.emplace_back(check_id);
-									idlist.emplace_back(prismindex[check_id]);
-								}
-							}
-
-						}
-					}
-				}
-			}
-
-			
-		}
-
-
-		if (degeneration == DEGENERATED_SEGMENT)
-		{
-			for (int we = 0; we < 3; we++)
-
-			{
-				for (int i = 0; i < prismindex.size(); i++)
-
-				{
-
-					jump1 = prismindex[i];
-					std::vector<int> cid;
-					/*if (envelope[prismindex[i]].size() == 12) {
-
-						cut = is_seg_cut_prism(prismindex[i], triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
-
-					}
-
-					if (envelope[prismindex[i]].size() == 8) {
-
-						cut = is_seg_cut_cube(prismindex[i] - prism_size, triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
-
-					}*/
-
-					cut = is_seg_cut_polyhedra(prismindex[i], triangle[triseg[we][0]], triangle[triseg[we][1]], cid);
-
-					if (cut == false) continue;
-
-
-
-					for (int j = 0; j < cid.size(); j++)
-
-					{
-						cut = seg_cut_plane(triangle[triseg[we][0]], triangle[triseg[we][1]],
-							halfspace[prismindex[i]][cid[j]][0], halfspace[prismindex[i]][cid[j]][1], halfspace[prismindex[i]][cid[j]][2]);
-						if (cut == false) continue;
-						int dg = is_triangle_degenerated(
-							halfspace[prismindex[i]][cid[j]][0], halfspace[prismindex[i]][cid[j]][1], halfspace[prismindex[i]][cid[j]][2]);
-						if (dg == DEGENERATED_SEGMENT || dg == DEGENERATED_POINT) continue;
-						Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
-
-						bool precom = orient3D_LPI_prefilter( //
-
-							triangle[triseg[we][0]][0], triangle[triseg[we][0]][1], triangle[triseg[we][0]][2],
-
-							triangle[triseg[we][1]][0], triangle[triseg[we][1]][1], triangle[triseg[we][1]][2],
-
-							halfspace[prismindex[i]][cid[j]][0][0], halfspace[prismindex[i]][cid[j]][0][1], halfspace[prismindex[i]][cid[j]][0][2],
-
-							halfspace[prismindex[i]][cid[j]][1][0], halfspace[prismindex[i]][cid[j]][1][1], halfspace[prismindex[i]][cid[j]][1][2],
-
-							halfspace[prismindex[i]][cid[j]][2][0], halfspace[prismindex[i]][cid[j]][2][1], halfspace[prismindex[i]][cid[j]][2][2],
-
-							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
-
-						if (precom == true)
-
-						{
-
-							inter = Implicit_Seg_Facet_interpoint_Out_Prism_double(a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
-
-								triangle[triseg[we][0]], triangle[triseg[we][1]],
-
-								halfspace[prismindex[i]][cid[j]][0], halfspace[prismindex[i]][cid[j]][1], halfspace[prismindex[i]][cid[j]][2],
-
-								prismindex, jump1);
-							
-
-							if (inter == 1)
-
-							{
-
-								where = 1;
-
-								flag2 = 1;
-
-							}
-
-						}
-
-						else
-
-						{
-
-							datalpi.segid = we;
-
-							datalpi.prismid = prismindex[i];
-
-							datalpi.facetid = cid[j];
-
-							datalpi.jump1 = jump1;
-
-							lpi_list.emplace_back(datalpi);
-
-						}
-
-					}
-
-
-
-				}
-
-
-
-			} //case 2 case 2 degenerated as a segment
-
-
-
-			for (int i = 0; i < lpi_list.size(); i++)
-
-			{
-
-				inter = Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision(lpi_list[i], triangle, prismindex);
-
-				if (inter == 1) {
-					where = 2;
-					flag2 = 1;
-				}
-
-
-
-				
-
-			}
-
-
-
-			
-
-		}
-
-
-		if (flag1 != flag2) {
-			howmany++;
-			std::cout << "diff results " << flag1 <<" "<<flag2<<" "<<howmany << std::endl;
-			std::cout << "where out " << where << std::endl;
-		}
-		
 		return false;
 	}
 
@@ -1212,108 +897,9 @@ namespace fastEnvelope
 		return OUT_PRISM;
 	}
 
-	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_double(
-		const Scalar &a11, const Scalar &a12, const Scalar &a13, const Scalar &d, const Scalar &fa11,
-		const Scalar &fa12, const Scalar &fa13, const Scalar &max1, const Scalar &max2, const Scalar &max5,
-		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
-		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump) const
-	{
-		
-		int tot;
-		int ori, ori1;
-		static INDEX index;
-		static std::vector<INDEX> recompute;
-
-		recompute.clear();
-		int face[3];
-		for (int i = 0; i < prismindex.size(); i++)
-		{
-			if (prismindex[i] == jump) continue;
-
-			index.FACES.clear();
-			tot = 0;
-			
-			
-			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-				
-				ori =
-					orient3D_LPI_postfilter(
-						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
-						segpoint0[0], segpoint0[1], segpoint0[2],
-						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-
-				if (ori == 1)
-				{
-					break;
-				}
-				if (ori == 0)
-				{
-					index.FACES.emplace_back(j);
-				}
-
-				else if (ori == -1)
-				{
-					tot++;
-				}
-
-			}
-			if (tot == halfspace[prismindex[i]].size())
-			{
-
-				return IN_PRISM;
-			}
-
-			if (ori != 1)
-			{
-				assert(!index.FACES.empty());
-				index.Pi = prismindex[i];
-				recompute.emplace_back(index);
-			}
-		}
-
-		if (!recompute.empty())
-		{
-				
-			// timer.start();
-			LPI_exact_suppvars s;
-			bool premulti = orient3D_LPI_pre_exact(
-				segpoint0[0],segpoint0[1],segpoint0[2],
-				segpoint1[0],segpoint1[1],segpoint1[2],
-				triangle0[0],triangle0[1],triangle0[2],
-				triangle1[0],triangle1[1],triangle1[2],
-				triangle2[0],triangle2[1],triangle2[2],
-				s);
-			// time_multi += timer.getElapsedTimeInSec();
-
-			for (int k = 0; k < recompute.size(); k++)
-			{
-				int in1 = recompute[k].Pi;
-				
-				for (int j = 0; j < recompute[k].FACES.size(); j++) {
-					int in2 = recompute[k].FACES[j];
-			
-					ori = orient3D_LPI_post_exact(s, segpoint0[0], segpoint0[1], segpoint0[2],
-						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
-						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
-						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
-					// time_multi += timer.getElapsedTimeInSec();
-					if (ori == 1 || ori == 0)
-						break;
-					
-				}
-				if (ori == -1) return IN_PRISM;
-
-			}
-		}
-
-		return OUT_PRISM;
-	}
-
+	
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_double_return_id(
-		const Scalar &a11, const Scalar &a12, const Scalar &a13, const Scalar &d, const Scalar &fa11,
-		const Scalar &fa12, const Scalar &fa13, const Scalar &max1, const Scalar &max2, const Scalar &max5,
+		LPI_filtered_suppvars& sf,
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const
 	{
@@ -1337,7 +923,7 @@ namespace fastEnvelope
 
 				ori =
 					orient3D_LPI_postfilter(
-						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						sf,
 						segpoint0[0], segpoint0[1], segpoint0[2],
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
@@ -1416,14 +1002,14 @@ namespace fastEnvelope
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const {
-		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		LPI_filtered_suppvars sf;
 		bool precom = orient3D_LPI_prefilter( //
 			segpoint0[0], segpoint0[1], segpoint0[2],
 			segpoint1[0], segpoint1[1], segpoint1[2],
 			triangle0[0], triangle0[1], triangle0[2],
 			triangle1[0], triangle1[1], triangle1[2],
 			triangle2[0], triangle2[1], triangle2[2],
-			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+			sf);
 		if (precom == false) {
 			int tot, ori;
 
@@ -1502,7 +1088,7 @@ namespace fastEnvelope
 
 				ori =
 					orient3D_LPI_postfilter(
-						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						sf,
 						segpoint0[0], segpoint0[1], segpoint0[2],
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
@@ -1581,14 +1167,14 @@ namespace fastEnvelope
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
 		const std::vector<std::vector<int>>& intersect_face, const int &jump, int &id) const {
-		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		LPI_filtered_suppvars sl;
 		bool precom = orient3D_LPI_prefilter( //
 			segpoint0[0], segpoint0[1], segpoint0[2],
 			segpoint1[0], segpoint1[1], segpoint1[2],
 			triangle0[0], triangle0[1], triangle0[2],
 			triangle1[0], triangle1[1], triangle1[2],
 			triangle2[0], triangle2[1], triangle2[2],
-			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+			sl);
 		if (precom == false) {
 			int tot, ori,fid;
 
@@ -1711,7 +1297,7 @@ namespace fastEnvelope
 				else continue;
 				ori =
 					orient3D_LPI_postfilter(
-						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						sl,
 						segpoint0[0], segpoint0[1], segpoint0[2],
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
@@ -1743,7 +1329,7 @@ namespace fastEnvelope
 				
 				ori =
 					orient3D_LPI_postfilter(
-						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						sl,
 						segpoint0[0], segpoint0[1], segpoint0[2],
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
@@ -1820,8 +1406,7 @@ namespace fastEnvelope
 		return OUT_PRISM;
 	}
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_double_return_local_id(
-		const Scalar &a11, const Scalar &a12, const Scalar &a13, const Scalar &d, const Scalar &fa11,
-		const Scalar &fa12, const Scalar &fa13, const Scalar &max1, const Scalar &max2, const Scalar &max5,
+		LPI_filtered_suppvars& sf,
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const
 	{
@@ -1844,7 +1429,7 @@ namespace fastEnvelope
 
 				ori =
 					orient3D_LPI_postfilter(
-						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						sf,
 						segpoint0[0], segpoint0[1], segpoint0[2],
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
@@ -1920,134 +1505,7 @@ namespace fastEnvelope
 		return OUT_PRISM;
 	}
 
-	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_check_id(
-		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
-		const Vector3 &triangle1, const Vector3 &triangle2, const int &id) const
-	{
-
-		Scalar a11, a12, a13, d, fa11,
-			fa12, fa13, max1, max2, max5;
-		int tot;
-		int ori;
-		static INDEX index;
-		static std::vector<INDEX> recompute;
-
-		recompute.clear();
-
-		index.FACES.clear();
-		tot = 0;
-
-		bool precom = orient3D_LPI_prefilter( //
-			segpoint0[0], segpoint0[1], segpoint0[2],
-			segpoint1[0], segpoint1[1], segpoint1[2],
-			triangle0[0], triangle0[1], triangle0[2],
-			triangle1[0], triangle1[1], triangle1[2],
-			triangle2[0], triangle2[1], triangle2[2],
-			a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
-		if (precom == false) {
-			LPI_exact_suppvars s;
-			bool premulti = orient3D_LPI_pre_exact(
-				segpoint0[0], segpoint0[1], segpoint0[2],
-				segpoint1[0], segpoint1[1], segpoint1[2],
-				triangle0[0], triangle0[1], triangle0[2],
-				triangle1[0], triangle1[1], triangle1[2],
-				triangle2[0], triangle2[1], triangle2[2],
-				s);
-
-			for (int j = 0; j < halfspace[id].size(); j++) {
-				ori = orient3D_LPI_post_exact(s, segpoint0[0], segpoint0[1], segpoint0[2],
-					halfspace[id][j][0][0], halfspace[id][j][0][1], halfspace[id][j][0][2],
-					halfspace[id][j][1][0], halfspace[id][j][1][1], halfspace[id][j][1][2],
-					halfspace[id][j][2][0], halfspace[id][j][2][1], halfspace[id][j][2][2]);
-				if (ori == 1 || ori == 0) {
-					break;
-				}
-
-			}
-			if (ori == -1) {
-
-				return IN_PRISM;
-			}
-			else {
-				return OUT_PRISM;
-			}
-
-		}
-
-		for (int j = 0; j < halfspace[id].size(); j++) {
-
-			ori =
-				orient3D_LPI_postfilter(
-					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
-					segpoint0[0], segpoint0[1], segpoint0[2],
-					halfspace[id][j][0][0], halfspace[id][j][0][1], halfspace[id][j][0][2],
-					halfspace[id][j][1][0], halfspace[id][j][1][1], halfspace[id][j][1][2],
-					halfspace[id][j][2][0], halfspace[id][j][2][1], halfspace[id][j][2][2]);
-
-			if (ori == 1)
-			{
-				return OUT_PRISM;
-			}
-			if (ori == 0)
-			{
-				index.FACES.emplace_back(j);
-			}
-
-			else if (ori == -1)
-			{
-				tot++;
-			}
-
-		}
-		if (tot == halfspace[id].size())
-		{
-
-			return IN_PRISM;
-		}
-
-
-		assert(!index.FACES.empty());
-		index.Pi = id;
-		recompute.emplace_back(index);
-
-		if (!recompute.empty())
-		{
-
-			// timer.start();
-			LPI_exact_suppvars s;
-			bool premulti = orient3D_LPI_pre_exact(
-				segpoint0[0], segpoint0[1], segpoint0[2],
-				segpoint1[0], segpoint1[1], segpoint1[2],
-				triangle0[0], triangle0[1], triangle0[2],
-				triangle1[0], triangle1[1], triangle1[2],
-				triangle2[0], triangle2[1], triangle2[2],
-				s);
-			// time_multi += timer.getElapsedTimeInSec();
-
-			for (int k = 0; k < recompute.size(); k++)
-			{
-				int in1 = recompute[k].Pi;
-
-				for (int j = 0; j < recompute[k].FACES.size(); j++) {
-					int in2 = recompute[k].FACES[j];
-
-					ori = orient3D_LPI_post_exact(s, segpoint0[0], segpoint0[1], segpoint0[2],
-						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
-						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
-						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
-					// time_multi += timer.getElapsedTimeInSec();
-					if (ori == 1 || ori == 0)
-						break;
-
-				}
 	
-				if (ori == -1) return IN_PRISM;
-
-			}
-		}
-
-		return OUT_PRISM;
-	}
 
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex, TPI_exact_suppvars& s) const
 	{
@@ -2135,517 +1593,10 @@ namespace fastEnvelope
 		return OUT_PRISM;
 	}
 
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(
-		const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
-		const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
-		const std::array<Vector3, 3> &triangle,
-		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-		const std::vector<unsigned int> &prismindex, const int &jump1, const int &jump2, const bool &multiflag,
-		TPI_exact_suppvars &s) const
-	{
-		
-		int ori;
-		int tot;
-		igl::Timer timer;
-		static INDEX index;
-		static std::vector<INDEX> recompute;
-		recompute.clear();
 
-		for (int i = 0; i < prismindex.size(); i++)
-		{
-			if (prismindex[i] == jump1 || prismindex[i] == jump2)
-				continue;
-			
-			index.FACES.clear();
-			tot = 0;
-			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-				timer.start();
-				ct1 += 1;
-				ori =
-					orient3D_TPI_postfilter(
-						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
-						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-				// timetpp1 += timer_a.getElapsedTimeInSec();
-				time7 += timer.getElapsedTimeInSec();
-				if (ori == 1)
-				{
-					break;
-				}
-				if (ori == 0)
-				{
-					index.FACES.emplace_back(j);
-				}
-
-				else if (ori == -1)
-				{
-					tot++;
-				}
-			}
-			if (tot == halfspace[prismindex[i]].size())
-			{
-
-				return IN_PRISM;
-			}
-
-			if (ori != 1)
-			{
-				index.Pi = prismindex[i];
-				recompute.emplace_back(index);
-
-			}
-		}
-		timer.start();
-		if (recompute.size() > 0)
-		{
-
-			if (!multiflag)
-			{
-				// timer.start();
-				bool premulti = orient3D_TPI_pre_exact(
-					triangle[0][0],triangle[0][1],triangle[0][2],
-					triangle[1][0],triangle[1][1],triangle[1][2],
-					triangle[2][0],triangle[2][1],triangle[2][2],
-								  
-					facet10[0], facet10[1], facet10[2],
-					facet11[0], facet11[1], facet11[2],
-					facet12[0], facet12[1], facet12[2],
-
-					facet20[0], facet20[1], facet20[2],
-					facet21[0], facet21[1], facet21[2],
-					facet22[0], facet22[1], facet22[2],
-					s);
-				// time_multi += timer.getElapsedTimeInSec();
-			}
-
-			// timetpp2 += timer_a.getElapsedTimeInSec();
-
-			for (int k = 0; k < recompute.size(); k++)
-			{
-				int in1 = recompute[k].Pi;
-
-				for (int j = 0; j < recompute[k].FACES.size(); j++) {
-					int in2 = recompute[k].FACES[j];
-					
-					ori = orient3D_TPI_post_exact(s,
-						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
-						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
-						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]
-						);
-
-					if (ori == 1 || ori == 0)	break;
-				}
-				if (ori == -1) {
-					time12+=timer.getElapsedTimeInSec();
-					return IN_PRISM;
-				}
-			}
-		}
-		time12 += timer.getElapsedTimeInSec();
-		return OUT_PRISM;
-	}
-
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_return_local_id(
-		const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
-		const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
-		const std::array<Vector3, 3> &triangle,
-		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-		const std::vector<unsigned int> &prismindex, const int &jump1, const int &jump2, const bool &multiflag,
-		TPI_exact_suppvars &s,int &id) const
-	{
-
-		int ori;
-		int tot;
-		igl::Timer timer;
-		static INDEX index;
-		static std::vector<INDEX> recompute;
-		recompute.clear();
-
-		for (int i = 0; i < prismindex.size(); i++)
-		{
-			if (prismindex[i] == jump1 || prismindex[i] == jump2)
-				continue;
-
-			index.FACES.clear();
-			tot = 0;
-			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-				timer.start();
-				ct1 += 1;
-				ori =
-					orient3D_TPI_postfilter(
-						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
-						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-				// timetpp1 += timer_a.getElapsedTimeInSec();
-				time7 += timer.getElapsedTimeInSec();
-				if (ori == 1)
-				{
-					break;
-				}
-				if (ori == 0)
-				{
-					index.FACES.emplace_back(j);
-				}
-
-				else if (ori == -1)
-				{
-					tot++;
-				}
-			}
-			if (tot == halfspace[prismindex[i]].size())
-			{
-				id = i;
-				return IN_PRISM;
-			}
-
-			if (ori != 1)
-			{
-				index.Pi = i;
-				recompute.emplace_back(index);
-
-			}
-		}
-		timer.start();
-		if (recompute.size() > 0)
-		{
-
-			if (!multiflag)
-			{
-				// timer.start();
-				bool premulti = orient3D_TPI_pre_exact(
-					triangle[0][0], triangle[0][1], triangle[0][2],
-					triangle[1][0], triangle[1][1], triangle[1][2],
-					triangle[2][0], triangle[2][1], triangle[2][2],
-
-					facet10[0], facet10[1], facet10[2],
-					facet11[0], facet11[1], facet11[2],
-					facet12[0], facet12[1], facet12[2],
-
-					facet20[0], facet20[1], facet20[2],
-					facet21[0], facet21[1], facet21[2],
-					facet22[0], facet22[1], facet22[2],
-					s);
-				// time_multi += timer.getElapsedTimeInSec();
-			}
-
-			// timetpp2 += timer_a.getElapsedTimeInSec();
-
-			for (int k = 0; k < recompute.size(); k++)
-			{
-				int in1 = prismindex[recompute[k].Pi];
-
-				for (int j = 0; j < recompute[k].FACES.size(); j++) {
-					int in2 = recompute[k].FACES[j];
-
-					ori = orient3D_TPI_post_exact(s,
-						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
-						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
-						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]
-					);
-
-					if (ori == 1 || ori == 0)	break;
-				}
-				if (ori == -1) {
-					time12 += timer.getElapsedTimeInSec();
-					id = recompute[k].Pi;
-					return IN_PRISM;
-				}
-			}
-		}
-		time12 += timer.getElapsedTimeInSec();
-		return OUT_PRISM;
-	}
 	
 
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_with_face_order(
-		const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
-		const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
-		const std::array<Vector3, 3> &triangle,
-		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-		const std::vector<unsigned int> &prismindex, const std::vector<std::array<bool,8>>intersect_face, const int &jump1, const int &jump2, const bool &multiflag,
-		TPI_exact_suppvars &s) const
-	{
 
-		int ori;
-		int tot;
-		igl::Timer timer;
-		static INDEX index;
-		static std::vector<INDEX> recompute;
-		recompute.clear();
-
-
-		for (int i = 0; i < prismindex.size(); i++)
-		{
-			if (prismindex[i] == jump1 || prismindex[i] == jump2)
-				continue;
-			
-			index.FACES.clear();
-			tot = 0;
-			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-				
-				if (intersect_face[i][j] == false) continue;
-				timer.start();
-				ct1 += 1;
-				ori =
-					orient3D_TPI_postfilter(
-						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
-						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-				// timetpp1 += timer_a.getElapsedTimeInSec();
-				time7 += timer.getElapsedTimeInSec();
-				if (ori == 1)
-				{
-					break;
-				}
-				if (ori == 0)
-				{
-					index.FACES.emplace_back(j);
-				}
-
-				else if (ori == -1)
-				{
-					tot++;
-				}
-			}
-			if (ori == 1) continue;
-			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-
-				if (intersect_face[i][j] == true) continue;
-				timer.start();
-				ct1 += 1;
-				ori =
-					orient3D_TPI_postfilter(
-						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
-						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-				// timetpp1 += timer_a.getElapsedTimeInSec();
-				time7 += timer.getElapsedTimeInSec();
-				if (ori == 1)
-				{
-					break;
-				}
-				if (ori == 0)
-				{
-					index.FACES.emplace_back(j);
-				}
-
-				else if (ori == -1)
-				{
-					tot++;
-				}
-			}
-			if (ori == 1) continue;
-			if (tot == halfspace[prismindex[i]].size())
-			{
-
-				return IN_PRISM;
-			}
-
-			if (ori != 1)
-			{
-				index.Pi = prismindex[i];
-				recompute.emplace_back(index);
-
-			}
-		}
-		timer.start();
-		if (recompute.size() > 0)
-		{
-
-			if (!multiflag)
-			{
-				// timer.start();
-				bool premulti = orient3D_TPI_pre_exact(
-					triangle[0][0], triangle[0][1], triangle[0][2],
-					triangle[1][0], triangle[1][1], triangle[1][2],
-					triangle[2][0], triangle[2][1], triangle[2][2],
-
-					facet10[0], facet10[1], facet10[2],
-					facet11[0], facet11[1], facet11[2],
-					facet12[0], facet12[1], facet12[2],
-
-					facet20[0], facet20[1], facet20[2],
-					facet21[0], facet21[1], facet21[2],
-					facet22[0], facet22[1], facet22[2],
-					s);
-				// time_multi += timer.getElapsedTimeInSec();
-			}
-
-			// timetpp2 += timer_a.getElapsedTimeInSec();
-
-			for (int k = 0; k < recompute.size(); k++)
-			{
-				int in1 = recompute[k].Pi;
-
-				for (int j = 0; j < recompute[k].FACES.size(); j++) {
-					int in2 = recompute[k].FACES[j];
-
-					ori = orient3D_TPI_post_exact(s,
-						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
-						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
-						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]
-					);
-
-					if (ori == 1 || ori == 0)	break;
-				}
-				if (ori == -1) {
-					time12 += timer.getElapsedTimeInSec();
-					return IN_PRISM;
-				}
-			}
-		}
-		time12 += timer.getElapsedTimeInSec();
-		return OUT_PRISM;
-	}
-	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_return_id_with_face_order(
-		const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
-		const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
-		const std::array<Vector3, 3> &triangle,
-		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-		const std::vector<unsigned int> &prismindex, const std::vector<std::array<bool, 8>>intersect_face, const int &jump1, const int &jump2, const bool &multiflag,
-		TPI_exact_suppvars &s, int &id) const
-	{
-
-		int ori;
-		int tot;
-		igl::Timer timer;
-		static INDEX index;
-		static std::vector<INDEX> recompute;
-		recompute.clear();
-
-
-		for (int i = 0; i < prismindex.size(); i++)
-		{
-			if (prismindex[i] == jump1 || prismindex[i] == jump2)
-				continue;
-
-			index.FACES.clear();
-			tot = 0;
-			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-
-				if (intersect_face[i][j] == false) continue;
-				timer.start();
-				ct1 += 1;
-				ori =
-					orient3D_TPI_postfilter(
-						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
-						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-				// timetpp1 += timer_a.getElapsedTimeInSec();
-				time7 += timer.getElapsedTimeInSec();
-				if (ori == 1)
-				{
-					//std::cout << "SHOULD HAPPEN" << std::endl;
-					break;
-				}
-				if (ori == 0)
-				{
-					index.FACES.emplace_back(j);
-				}
-
-				else if (ori == -1)
-				{
-					tot++;
-				}
-			}
-			if (ori == 1) continue;
-			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-
-				if (intersect_face[i][j] == true) continue;
-				timer.start();
-				ct1 += 1;
-				ori =
-					orient3D_TPI_postfilter(
-						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
-						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-				// timetpp1 += timer_a.getElapsedTimeInSec();
-				time7 += timer.getElapsedTimeInSec();
-				if (ori == 1)
-				{
-					//std::cout << "should not happen" << std::endl;
-					break;
-				}
-				if (ori == 0)
-				{
-					index.FACES.emplace_back(j);
-				}
-
-				else if (ori == -1)
-				{
-					tot++;
-				}
-			}
-			if (ori == 1) continue;
-			if (tot == halfspace[prismindex[i]].size())
-			{
-				id = i;
-				return IN_PRISM;
-			}
-
-			if (ori != 1)
-			{
-				index.Pi = i;
-				recompute.emplace_back(index);
-
-			}
-		}
-		timer.start();
-		if (recompute.size() > 0)
-		{
-
-			if (!multiflag)
-			{
-				// timer.start();
-				bool premulti = orient3D_TPI_pre_exact(
-					triangle[0][0], triangle[0][1], triangle[0][2],
-					triangle[1][0], triangle[1][1], triangle[1][2],
-					triangle[2][0], triangle[2][1], triangle[2][2],
-
-					facet10[0], facet10[1], facet10[2],
-					facet11[0], facet11[1], facet11[2],
-					facet12[0], facet12[1], facet12[2],
-
-					facet20[0], facet20[1], facet20[2],
-					facet21[0], facet21[1], facet21[2],
-					facet22[0], facet22[1], facet22[2],
-					s);
-				// time_multi += timer.getElapsedTimeInSec();
-			}
-
-			// timetpp2 += timer_a.getElapsedTimeInSec();
-
-			for (int k = 0; k < recompute.size(); k++)
-			{
-				int in1 = prismindex[recompute[k].Pi];
-
-				for (int j = 0; j < recompute[k].FACES.size(); j++) {
-					int in2 = recompute[k].FACES[j];
-
-					ori = orient3D_TPI_post_exact(s,
-						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
-						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
-						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]
-					);
-
-					if (ori == 1 || ori == 0)	break;
-				}
-				if (ori == -1) {
-					time12 += timer.getElapsedTimeInSec();
-					id = recompute[k].Pi;
-					return IN_PRISM;
-				}
-			}
-		}
-		time12 += timer.getElapsedTimeInSec();
-		return OUT_PRISM;
-	}
 
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
 		const std::array<Vector3, 3> &triangle,
@@ -2654,13 +1605,14 @@ namespace fastEnvelope
 		 int &id) const {
 		igl::Timer timer;
 		TPI_exact_suppvars s;
+		TPI_filtered_suppvars st;
 		Scalar d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7;
 		int tot,ori,fid;
 		bool pre = orient3D_TPI_prefilter(triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
 			facet10[0], facet10[1], facet10[2], facet11[0], facet11[1], facet11[2], facet12[0], facet12[1], facet12[2],
 			facet20[0], facet20[1], facet20[2], facet21[0], facet21[1], facet21[2], facet22[0], facet22[1], facet22[2],
-			d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7);
+			st);
 
 		if (pre == false) {
 			bool premulti = orient3D_TPI_pre_exact(
@@ -2767,7 +1719,7 @@ namespace fastEnvelope
 				ct1 += 1;
 				ori =
 					orient3D_TPI_postfilter(
-						d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
+						st,
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
 						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
@@ -2802,7 +1754,7 @@ namespace fastEnvelope
 				ct1 += 1;
 				ori =
 					orient3D_TPI_postfilter(
-						d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7,
+						st,
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
 						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
@@ -2940,221 +1892,12 @@ namespace fastEnvelope
 		return true;
 	}
 
-	bool FastEnvelope::is_3_triangle_cut_double(
-		const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
-		const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5,
-		const Scalar &max6, const Scalar &max7,
-		const std::array<Vector3, 3> &triangle,
-		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-		bool &multiflag,
-		TPI_exact_suppvars &s)
-	{
-		multiflag = false;
-		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
-
-		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0)
-		{
-			logger().debug("Degeneration happens");
-			//move this guy in constructor and use fixed seed
-			n = { {Vector3(rand(), rand(), rand())} };
-		}
-
-		static Scalar
-			t00,
-			t01, t02,
-			t10, t11, t12,
-			t20, t21, t22,
-
-			f100, f101, f102,
-			f110, f111, f112,
-			f120, f121, f122,
-
-			f200, f201, f202,
-			f210, f211, f212,
-			f220, f221, f222;
-
-		bool premulti = false;
-		int o1 = orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
-			triangle[0][0], triangle[0][1], triangle[0][2],
-			triangle[1][0], triangle[1][1], triangle[1][2]);
-		if (o1 == 0)
-		{
-
-			t00 = (triangle[0][0]);
-			t01 = (triangle[0][1]);
-			t02 = (triangle[0][2]);
-			t10 = (triangle[1][0]);
-			t11 = (triangle[1][1]);
-			t12 = (triangle[1][2]);
-			t20 = (triangle[2][0]);
-			t21 = (triangle[2][1]);
-			t22 = (triangle[2][2]);
-
-			f100 = (facet10[0]);
-			f101 = (facet10[1]);
-			f102 = (facet10[2]);
-			f110 = (facet11[0]);
-			f111 = (facet11[1]);
-			f112 = (facet11[2]);
-			f120 = (facet12[0]);
-			f121 = (facet12[1]);
-			f122 = (facet12[2]);
-
-			f200 = (facet20[0]);
-			f201 = (facet20[1]);
-			f202 = (facet20[2]);
-			f210 = (facet21[0]);
-			f211 = (facet21[1]);
-			f212 = (facet21[2]);
-			f220 = (facet22[0]);
-			f221 = (facet22[1]);
-			f222 = (facet22[2]);
-
-			// timer.start();
-			premulti = orient3D_TPI_pre_exact(
-				t00, t01, t02, t10, t11, t12, t20, t21, t22,
-				f100, f101, f102, f110, f111, f112, f120, f121, f122,
-				f200, f201, f202, f210, f211, f212, f220, f221, f222,
-				s);
-			// time_multi += timer.getElapsedTimeInSec();
-			// timer.start();
-			o1 = orient3D_TPI_post_exact(
-				s,
-				n[0], n[1], n[2],
-				t00, t01, t02,
-				t10, t11, t12);
-			// time_multi += timer.getElapsedTimeInSec();
-		}
-
-		if (o1 == 0)
-			return false;
-
-		int o2 = orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
-			triangle[1][0], triangle[1][1], triangle[1][2],
-			triangle[2][0], triangle[2][1], triangle[2][2]);
-		if (o2 == 0)
-		{
-			if (premulti == false)
-			{
-				t00 = (triangle[0][0]);
-				t01 = (triangle[0][1]);
-				t02 = (triangle[0][2]);
-				t10 = (triangle[1][0]);
-				t11 = (triangle[1][1]);
-				t12 = (triangle[1][2]);
-				t20 = (triangle[2][0]);
-				t21 = (triangle[2][1]);
-				t22 = (triangle[2][2]);
-
-				f100 = (facet10[0]);
-				f101 = (facet10[1]);
-				f102 = (facet10[2]);
-				f110 = (facet11[0]);
-				f111 = (facet11[1]);
-				f112 = (facet11[2]);
-				f120 = (facet12[0]);
-				f121 = (facet12[1]);
-				f122 = (facet12[2]);
-
-				f200 = (facet20[0]);
-				f201 = (facet20[1]);
-				f202 = (facet20[2]);
-				f210 = (facet21[0]);
-				f211 = (facet21[1]);
-				f212 = (facet21[2]);
-				f220 = (facet22[0]);
-				f221 = (facet22[1]);
-				f222 = (facet22[2]);
-
-				// timer.start();
-				premulti = orient3D_TPI_pre_exact(
-					t00, t01, t02, t10, t11, t12, t20, t21, t22,
-					f100, f101, f102, f110, f111, f112, f120, f121, f122,
-					f200, f201, f202, f210, f211, f212, f220, f221, f222,
-					s);
-				// time_multi += timer.getElapsedTimeInSec();
-			}
-			// timer.start();
-			o2 = orient3D_TPI_post_exact(
-				s,
-				n[0], n[1], n[2],
-				t10, t11, t12,
-				t20, t21, t22);
-			// time_multi += timer.getElapsedTimeInSec();
-			/*if (o2 == 1) after21++;
-				if (o2 == -1) after22++;
-				if (o2 == 0) after20++;*/
-		}
-		if (o2 == 0 || o1 + o2 == 0)
-			return false;
-
-		int o3 = orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
-			triangle[2][0], triangle[2][1], triangle[2][2],
-			triangle[0][0], triangle[0][1], triangle[0][2]);
-		if (o3 == 0)
-		{
-			if (premulti == false)
-			{
-				t00 = (triangle[0][0]);
-				t01 = (triangle[0][1]);
-				t02 = (triangle[0][2]);
-				t10 = (triangle[1][0]);
-				t11 = (triangle[1][1]);
-				t12 = (triangle[1][2]);
-				t20 = (triangle[2][0]);
-				t21 = (triangle[2][1]);
-				t22 = (triangle[2][2]);
-
-				f100 = (facet10[0]);
-				f101 = (facet10[1]);
-				f102 = (facet10[2]);
-				f110 = (facet11[0]);
-				f111 = (facet11[1]);
-				f112 = (facet11[2]);
-				f120 = (facet12[0]);
-				f121 = (facet12[1]);
-				f122 = (facet12[2]);
-
-				f200 = (facet20[0]);
-				f201 = (facet20[1]);
-				f202 = (facet20[2]);
-				f210 = (facet21[0]);
-				f211 = (facet21[1]);
-				f212 = (facet21[2]);
-				f220 = (facet22[0]);
-				f221 = (facet22[1]);
-				f222 = (facet22[2]);
-
-				// timer.start();
-				premulti = orient3D_TPI_pre_exact(
-					t00, t01, t02, t10, t11, t12, t20, t21, t22,
-					f100, f101, f102, f110, f111, f112, f120, f121, f122,
-					f200, f201, f202, f210, f211, f212, f220, f221, f222,
-					s);
-				// time_multi += timer.getElapsedTimeInSec();
-			}
-			// timer.start();
-			o3 = orient3D_TPI_post_exact(
-				s,
-				n[0], n[1], n[2],
-				t20, t21, t22,
-				t00, t01, t02);
-			// time_multi += timer.getElapsedTimeInSec();
-			/*if (o3 == 1) after21++;
-				if (o3 == -1) after22++;
-				if (o3 == 0) after20++;*/
-		}
-		if (o3 == 0 || o1 + o3 == 0 || o2 + o3 == 0)
-			return false;
-		if (premulti == true)
-			multiflag = true;
-		return true;
-	}
+	
 	bool FastEnvelope::is_3_triangle_cut(
 		const std::array<Vector3, 3> &triangle,
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22)
 	{
-		Scalar d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7;
+		TPI_filtered_suppvars st;
 		TPI_exact_suppvars s;
 		static Scalar
 			t00, t01, t02,
@@ -3175,7 +1918,7 @@ namespace fastEnvelope
 				triangle[2][0], triangle[2][1], triangle[2][2],
 				facet10[0], facet10[1], facet10[2], facet11[0], facet11[1], facet11[2], facet12[0], facet12[1], facet12[2],
 				facet20[0], facet20[1], facet20[2], facet21[0], facet21[1], facet21[2], facet22[0], facet22[1], facet22[2],
-				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
+				st);
 		if (pre == false) {
 			bool premulti = orient3D_TPI_pre_exact(
 				triangle[0][0], triangle[0][1], triangle[0][2],
@@ -3198,7 +1941,7 @@ namespace fastEnvelope
 		
 
 		bool premulti = false;
-		int o1 = orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
+		int o1 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2]);
 		if (o1 == 0)
@@ -3253,7 +1996,7 @@ namespace fastEnvelope
 		if (o1 == 0)
 			return false;
 
-		int o2 = orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
+		int o2 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			triangle[1][0], triangle[1][1], triangle[1][2],
 			triangle[2][0], triangle[2][1], triangle[2][2]);
 		if (o2 == 0)
@@ -3312,7 +2055,7 @@ namespace fastEnvelope
 		if (o2 == 0 || o1 + o2 == 0)
 			return false;
 
-		int o3 = orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
+		int o3 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			triangle[0][0], triangle[0][1], triangle[0][2]);
 		if (o3 == 0)
@@ -3390,7 +2133,7 @@ namespace fastEnvelope
 			// srand(int(time(0)));
 			n = { {Vector3(rand(), rand(), rand())} };
 		}
-		Scalar d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7;
+		TPI_filtered_suppvars st;
 		bool pre =
 			orient3D_TPI_prefilter(
 				tri0[0], tri0[1], tri0[2],
@@ -3398,19 +2141,19 @@ namespace fastEnvelope
 				tri2[0], tri2[1], tri2[2],
 				facet10[0], facet10[1], facet10[2], facet11[0], facet11[1], facet11[2], facet12[0], facet12[1], facet12[2],
 				facet20[0], facet20[1], facet20[2], facet21[0], facet21[1], facet21[2], facet22[0], facet22[1], facet22[2],
-				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
+				st);
 
 		if (pre == false)
 			return 2; // means we dont know
-		int o1 = orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
+		int o1 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			tri0[0], tri0[1], tri0[2],
 			tri1[0], tri1[1], tri1[2]);
-		int o2 = orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
+		int o2 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			tri1[0], tri1[1], tri1[2],
 			tri2[0], tri2[1], tri2[2]);
 		if (o1 * o2 == -1)
 			return 0;
-		int o3 = orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7, n[0], n[1], n[2],
+		int o3 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			tri2[0], tri2[1], tri2[2],
 			tri0[0], tri0[1], tri0[2]);
 		if (o1 * o3 == -1 || o2 * o3 == -1)
@@ -3491,7 +2234,7 @@ namespace fastEnvelope
 			return 0;
 		}
 
-		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		LPI_filtered_suppvars sl;
 		std::array<Scalar, 2> seg00, seg01, seg02, seg10, seg11, seg12;
 		for (int i = 0; i < cutp.size(); i++)
 		{
@@ -3533,7 +2276,7 @@ namespace fastEnvelope
 					halfspace[cindex][cutp[i]][0][0], halfspace[cindex][cutp[i]][0][1], halfspace[cindex][cutp[i]][0][2],
 					halfspace[cindex][cutp[i]][1][0], halfspace[cindex][cutp[i]][1][1], halfspace[cindex][cutp[i]][1][2],
 					halfspace[cindex][cutp[i]][2][0], halfspace[cindex][cutp[i]][2][1], halfspace[cindex][cutp[i]][2][2],
-					a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+					sl);
 				if (precom == false)
 				{
 					cut[cutp[i]] = true;
@@ -3545,7 +2288,7 @@ namespace fastEnvelope
 						continue;
 					ori =
 						orient3D_LPI_postfilter(
-							a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+							sl,
 							seg00[k], seg01[k], seg02[k],
 							halfspace[cindex][cutp[j]][0][0], halfspace[cindex][cutp[j]][0][1], halfspace[cindex][cutp[j]][0][2],
 							halfspace[cindex][cutp[j]][1][0], halfspace[cindex][cutp[j]][1][1], halfspace[cindex][cutp[j]][1][2],
@@ -3574,7 +2317,7 @@ namespace fastEnvelope
 			return 1;
 		}
 		// triangle-facet-facet intersection
-		Scalar n1, n2, n3, max3, max4, max6, max7;
+		TPI_filtered_suppvars st;
 
 		for (int i = 0; i < cutp.size(); i++)
 		{
@@ -3615,7 +2358,7 @@ namespace fastEnvelope
 						halfspace[cindex][cutp[j]][0][0], halfspace[cindex][cutp[j]][0][1], halfspace[cindex][cutp[j]][0][2],
 						halfspace[cindex][cutp[j]][1][0], halfspace[cindex][cutp[j]][1][1], halfspace[cindex][cutp[j]][1][2],
 						halfspace[cindex][cutp[j]][2][0], halfspace[cindex][cutp[j]][2][1], halfspace[cindex][cutp[j]][2][2],
-						d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
+						st);
 
 				for (int k = 0; k < cutp.size(); k++)
 				{
@@ -3624,7 +2367,7 @@ namespace fastEnvelope
 						continue;
 					
 					ori =
-						orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
+						orient3D_TPI_postfilter(st,
 							halfspace[cindex][cutp[k]][0][0], halfspace[cindex][cutp[k]][0][1], halfspace[cindex][cutp[k]][0][2],
 							halfspace[cindex][cutp[k]][1][0], halfspace[cindex][cutp[k]][1][1], halfspace[cindex][cutp[k]][1][2],
 							halfspace[cindex][cutp[k]][2][0], halfspace[cindex][cutp[k]][2][1], halfspace[cindex][cutp[k]][2][2]);
@@ -3649,14 +2392,12 @@ namespace fastEnvelope
 
 		return 1;
 	}
-	bool FastEnvelope::is_tpp_on_polyhedra_double(
+	bool FastEnvelope::is_tpp_on_polyhedra(
 		const std::array<Vector3, 3> &triangle,
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
 		const int &prismid, const int &faceid)const {
 		int ori;
-		Scalar  d, n1, n2, n3,
-			max1, max2, max3, max4, max5,
-			max6, max7;
+		TPI_filtered_suppvars st;
 		TPI_exact_suppvars s;
 		bool premulti = false;
 		bool pre =
@@ -3670,14 +2411,14 @@ namespace fastEnvelope
 				facet20[0], facet20[1], facet20[2],
 				facet21[0], facet21[1], facet21[2],
 				facet22[0], facet22[1], facet22[2],
-				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
+				st);
 		if (pre == true) {
 			for (int i = 0; i < halfspace[prismid].size(); i++) {
 				/*bool neib = is_two_facets_neighbouring(prismid, i, faceid);
 				if (neib == false) continue;*/
 				if (i == faceid) continue;
 				ori =
-					orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
+					orient3D_TPI_postfilter(st,
 						halfspace[prismid][i][0][0], halfspace[prismid][i][0][1], halfspace[prismid][i][0][2],
 						halfspace[prismid][i][1][0], halfspace[prismid][i][1][1], halfspace[prismid][i][1][2],
 						halfspace[prismid][i][2][0], halfspace[prismid][i][2][1], halfspace[prismid][i][2][2]);
@@ -3740,109 +2481,7 @@ namespace fastEnvelope
 		}
 		return true;
 	}
-	bool FastEnvelope::is_tpp_inside_bbd(
-		const std::array<Vector3, 3> &triangle,
-		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-		const Vector3& min, const Vector3 &max)const {
-		int ori;
-		Scalar  d, n1, n2, n3,
-			max1, max2, max3, max4, max5,
-			max6, max7;
-		TPI_exact_suppvars s;
-		std::array<Vector3, 8> ver;
-		ver[0] = Vector3(min[0], min[1], min[2]);
-		ver[1] = Vector3(max[0], min[1], min[2]);
-		ver[2] = Vector3(max[0], max[1], min[2]);
-		ver[3] = Vector3(min[0], max[1], min[2]);
-		ver[4] = Vector3(min[0], min[1], max[2]);
-		ver[5] = Vector3(max[0], min[1], max[2]);
-		ver[6] = Vector3(max[0], max[1], max[2]);
-		ver[7] = Vector3(min[0], max[1], max[2]);
 
-		std::array<std::array<Vector3, 3>, 6> box;
-		box[0][0] = ver[0]; box[0][1] = ver[3]; box[0][2] = ver[2];
-		box[1][0] = ver[4]; box[1][1] = ver[5]; box[1][2] = ver[6];
-		box[2][0] = ver[5]; box[2][1] = ver[4]; box[2][2] = ver[0];
-		box[3][0] = ver[5]; box[3][1] = ver[1]; box[3][2] = ver[6];
-		box[4][0] = ver[7]; box[4][1] = ver[6]; box[4][2] = ver[2];
-		box[5][0] = ver[4]; box[5][1] = ver[7]; box[5][2] = ver[3];
-		bool premulti = false;
-		bool pre =
-			orient3D_TPI_prefilter(
-				triangle[0][0], triangle[0][1], triangle[0][2],
-				triangle[1][0], triangle[1][1], triangle[1][2],
-				triangle[2][0], triangle[2][1], triangle[2][2],
-				facet10[0], facet10[1], facet10[2],
-				facet11[0], facet11[1], facet11[2],
-				facet12[0], facet12[1], facet12[2],
-				facet20[0], facet20[1], facet20[2],
-				facet21[0], facet21[1], facet21[2],
-				facet22[0], facet22[1], facet22[2],
-				d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7);
-		if (pre == true) {
-			for (int i = 0; i < 6; i++) {
-				
-				ori =
-					orient3D_TPI_postfilter(d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7,
-						box[i][0][0], box[i][0][1], box[i][0][2],
-						box[i][1][0], box[i][1][1], box[i][1][2],
-						box[i][2][0], box[i][2][1], box[i][2][2]);
-
-				if (ori == 0) {
-					if (premulti == false) {
-						premulti = orient3D_TPI_pre_exact(
-							triangle[0][0], triangle[0][1], triangle[0][2],
-							triangle[1][0], triangle[1][1], triangle[1][2],
-							triangle[2][0], triangle[2][1], triangle[2][2],
-
-							facet10[0], facet10[1], facet10[2],
-							facet11[0], facet11[1], facet11[2],
-							facet12[0], facet12[1], facet12[2],
-
-							facet20[0], facet20[1], facet20[2],
-							facet21[0], facet21[1], facet21[2],
-							facet22[0], facet22[1], facet22[2],
-							s);
-						if (premulti == false) return false;
-					}
-					ori = orient3D_TPI_post_exact(s,
-						box[i][0][0], box[i][0][1], box[i][0][2],
-						box[i][1][0], box[i][1][1], box[i][1][2],
-						box[i][2][0], box[i][2][1], box[i][2][2]);
-				}
-				if (ori == 1 || ori == 0) return false;
-
-			}
-
-		}
-		else {
-			premulti = orient3D_TPI_pre_exact(
-				triangle[0][0], triangle[0][1], triangle[0][2],
-				triangle[1][0], triangle[1][1], triangle[1][2],
-				triangle[2][0], triangle[2][1], triangle[2][2],
-
-				facet10[0], facet10[1], facet10[2],
-				facet11[0], facet11[1], facet11[2],
-				facet12[0], facet12[1], facet12[2],
-
-				facet20[0], facet20[1], facet20[2],
-				facet21[0], facet21[1], facet21[2],
-				facet22[0], facet22[1], facet22[2],
-				s);
-			if (premulti == false) return false;
-			for (int i = 0; i < 6; i++) {
-
-				ori = orient3D_TPI_post_exact(s,
-					box[i][0][0], box[i][0][1], box[i][0][2],
-					box[i][1][0], box[i][1][1], box[i][1][2],
-					box[i][2][0], box[i][2][1], box[i][2][2]);
-
-				if (ori == 1 || ori == 0) return false;
-
-			}
-		}
-		return true;
-	}
 	bool FastEnvelope::is_seg_cut_polyhedra(const int &cindex,
 		const Vector3 &seg0, const Vector3 &seg1, std::vector<int> &cid) const
 	{
@@ -3888,7 +2527,7 @@ namespace fastEnvelope
 			return false;
 		}
 
-		Scalar a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
+		LPI_filtered_suppvars sf;
 		for (int i = 0; i < cutp.size(); i++)
 		{
 			
@@ -3898,7 +2537,7 @@ namespace fastEnvelope
 				halfspace[cindex][cutp[i]][0][0], halfspace[cindex][cutp[i]][0][1], halfspace[cindex][cutp[i]][0][2],
 				halfspace[cindex][cutp[i]][1][0], halfspace[cindex][cutp[i]][1][1], halfspace[cindex][cutp[i]][1][2],
 				halfspace[cindex][cutp[i]][2][0], halfspace[cindex][cutp[i]][2][1], halfspace[cindex][cutp[i]][2][2],
-				a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5);
+				sf);
 			if (precom == false)
 			{
 				cut[cutp[i]] = true;
@@ -3911,7 +2550,7 @@ namespace fastEnvelope
 				
 				ori =
 					orient3D_LPI_postfilter(
-						a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5,
+						sf,
 						seg0[0], seg0[1], seg0[2],
 						halfspace[cindex][cutp[j]][0][0], halfspace[cindex][cutp[j]][0][1], halfspace[cindex][cutp[j]][0][2],
 						halfspace[cindex][cutp[j]][1][0], halfspace[cindex][cutp[j]][1][1], halfspace[cindex][cutp[j]][1][2],
