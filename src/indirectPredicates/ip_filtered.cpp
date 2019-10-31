@@ -432,7 +432,7 @@ int orient3D_LPI_postfilter(const LPI_filtered_suppvars& svs,
 	const double& cx, const double& cy, const double& cz)
 {
 #ifdef USE_MULTISTAGE_FILTERS
-	if (svs.d == NAN) return orient3D_LPI_postfilter(svs, px, py, pz, ax, ay, az, bx, by, bz, cx, cy, cz);
+	if (svs.d == NAN) return orient3D_LPI_post_dfilter(svs, px, py, pz, ax, ay, az, bx, by, bz, cx, cy, cz);
 #endif
 	double px_cx, py_cy, pz_cz;
 	double d11, d12, d13, d21, d31, d22, d32, d23, d33;
