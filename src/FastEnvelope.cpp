@@ -2766,6 +2766,7 @@ namespace fastEnvelope
 
 		halfspace.resize(m_faces.size());
 		cornerlist.resize(m_faces.size());
+		envelope_vertices.resize(m_faces.size());
 		Vector3 AB, AC, BC, normal, vector1, ABn, min, max;
 		std::array<Vector3, 6> polygon;
 		std::array<Vector3, 12> polygonoff;
@@ -2783,6 +2784,28 @@ namespace fastEnvelope
 			} };
 		static const int p_face[8][3] = { {0, 1, 3}, {7, 6, 9}, {1, 0, 7}, {2, 1, 7}, {3, 2, 8}, {3, 9, 10}, {5, 4, 11}, {0, 5, 6} }; //prism triangle index. all with orientation.
 		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
+		static const std::array<std::vector<int>, 8> p_facepoint = {
+		{{0,1,2,3,4,5},
+	{8,7,6,11,10,9},
+	{7,1,0,6},
+	{2,1,7,8},
+	{3,2,8,9},
+	{4,3,9,10},
+	{4,10,11,5},
+	{6,0,5,11}}
+		};
+
+		static const std::array<std::array<int, 4>, 6> c_facepoint = {
+				{
+					{0,1,2,3},
+			{4,7,6,5},
+			{4,0,3,7},
+			{1,0,4,5},
+			{2,1,5,6},
+			{3,2,6,7}
+				}
+		};
+		
 		Scalar tolerance = epsilon / sqrt(3);
 		Scalar de;
 
@@ -2808,6 +2831,12 @@ namespace fastEnvelope
 				}
 				cornerlist[i] = (get_bb_corners_8(box));
 
+				envelope_vertices[i].resize(8);
+				for (int j = 0; j < 8; j++) {
+					envelope_vertices[i][j][0] = box[j][0];
+					envelope_vertices[i][j][1] = box[j][1];
+					envelope_vertices[i][j][2] = box[j][2];
+				}
 				continue;
 			}
 			if (de == DEGENERATED_SEGMENT)
@@ -2835,6 +2864,13 @@ namespace fastEnvelope
 					halfspace[i][j][2] = box[c_face[j][2]];
 				}
 				cornerlist[i] = (get_bb_corners_8(box));
+
+				envelope_vertices[i].resize(8);
+				for (int j = 0; j < 8; j++) {
+					envelope_vertices[i][j][0] = box[j][0];
+					envelope_vertices[i][j][1] = box[j][1];
+					envelope_vertices[i][j][2] = box[j][2];
+				}
 				continue;
 			}
 			if (de == NERLY_DEGENERATED)
@@ -2892,6 +2928,12 @@ namespace fastEnvelope
 				halfspace[i][j][2] = polygonoff[p_face[j][2]];
 			}
 			cornerlist[i] = (get_bb_corners_12(polygonoff));
+			envelope_vertices[i].resize(12);
+			for (int j = 0; j < 12; j++) {
+				envelope_vertices[i][j][0] = polygonoff[j][0];
+				envelope_vertices[i][j][1] = polygonoff[j][1];
+				envelope_vertices[i][j][2] = polygonoff[j][2];
+			}
 		}
 	}
 

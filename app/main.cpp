@@ -27,7 +27,7 @@
 #include <ctime>
 #include <cstdlib>
 #include<igl/writeOBJ.h>
-
+#include<fastenvelope/obb.h>
 using namespace fastEnvelope;
 using namespace std;
 
@@ -1039,7 +1039,7 @@ int main(int argc, char const *argv[])
 	//test_in_wild();
 	/*test_without_sampling();
 	test_without_sampling();*/
-	test_without_sampling();
+	//test_without_sampling();
 	/*bool a=true;
 	if (a) cout << "a true" <<a<< endl;
 	if (!a) cout << "a false" << endl;*/
@@ -1052,11 +1052,23 @@ int main(int argc, char const *argv[])
 */
 
 	//fordebug();
-
-
-
-
-
+	/*using namespace Eigen;
+	MatrixXd ones = MatrixXd::Ones(3, 3);
+	VectorXcd eivals = ones.eigenvalues();
+	int t = 0;
+	complex<double> lambda = eivals[t];
+	double re = lambda.real();
+	cout << "The eigenvalues of the 3x3 matrix of ones are:" << endl << re<<" "<<lambda<<endl<<eivals << endl;
+	MatrixXd am(3, 3);
+	cout << "am"<<am<< endl;*/
+	/*m(0, 0) = 1;
+	m(0, 1) = 1;
+	m(0, 2) = 1;
+	m(1, 0) = 1;
+	m(1, 1) = 1;
+	m(1, 2) = 1;
+*/
+	obb::test();
 
 
 
