@@ -19,6 +19,17 @@ namespace fastEnvelope {
 				invTrans[i].resize(polyhedron_face_number1);
 				for (int j = 0; j < polyhedron_face_number1; j++) {
 					//triangle to get normal: {envelope_vertices[i][p_face[j][0]],envelope_vertices[i][p_face[j][1]],envelope_vertices[i][p_face[j][2]]}
+#ifdef DO_NOT_HAVE_DEGENERATED_FACES
+					if(((envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][1]]).cross(
+						envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][2]])).norm()<SCALAR_ZERO)
+						normal = FastEnvelope::accurate_normal_vector(envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][1]],
+							envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][2]]);
+					else {
+						normal = (envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][1]]).cross(envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][2]]).normalized();
+					}
+#else
+					//triangle to get normal: {envelope_vertices[i][p_face[j][0]],envelope_vertices[i][p_face[j][1]],envelope_vertices[i][p_face[j][2]]}
+
 					dege = FastEnvelope::is_triangle_degenerated(envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][1]], envelope_vertices[i][p_face[j][2]]);
 					if (dege == FastEnvelope::DEGENERATED_SEGMENT || dege == FastEnvelope::DEGENERATED_POINT) {
 						std::cout << "need to fix here, face degeneration" << std::endl;
@@ -32,6 +43,7 @@ namespace fastEnvelope {
 					if (dege == FastEnvelope::NOT_DEGENERATED) {
 						normal = (envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][1]]).cross(envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][2]]).normalized();
 					}
+#endif
 					points.clear();
 					points.resize(p_facepoint[j].size());
 					for (int k = 0; k < p_facepoint[j].size(); k++) {
@@ -43,28 +55,44 @@ namespace fastEnvelope {
 				}
 
 			}
+
 			if (envelope_vertices[i].size() == polyhedron_point_number2) {
 				Trans[i].resize(polyhedron_face_number2);
 				invTrans[i].resize(polyhedron_face_number2);
 				for (int j = 0; j < polyhedron_face_number2; j++) {
+#ifdef DO_NOT_HAVE_DEGENERATED_FACES
+					if (((envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][1]]).cross(
+						envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][2]])).norm() <SCALAR_ZERO)
+						normal = FastEnvelope::accurate_normal_vector(envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][1]],
+							envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][2]]);
+					else {
+						normal = (envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][1]]).cross(envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][2]]).normalized();
+					}
+#else				
+					
+					
+					
 					//triangle to get normal: {envelope_vertices[i][p_face[j][0]],envelope_vertices[i][p_face[j][1]],envelope_vertices[i][p_face[j][2]]}
-					dege = FastEnvelope::is_triangle_degenerated(envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][1]], envelope_vertices[i][p_face[j][2]]);
+
+					dege = FastEnvelope::is_triangle_degenerated(envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][1]], envelope_vertices[i][c_face[j][2]]);
 					if (dege == FastEnvelope::DEGENERATED_SEGMENT || dege == FastEnvelope::DEGENERATED_POINT) {
 						std::cout << "need to fix here, face degeneration" << std::endl;
 						exit(0);
 					}
 
 					if (dege == FastEnvelope::NERLY_DEGENERATED) {
-						normal = FastEnvelope::accurate_normal_vector(envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][1]],
-							envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][2]]);
+						normal = FastEnvelope::accurate_normal_vector(envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][1]],
+							envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][2]]);
 					}
 					if (dege == FastEnvelope::NOT_DEGENERATED) {
-						normal = (envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][1]]).cross(envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][2]]).normalized();
+						normal = (envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][1]]).cross(envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][2]]).normalized();
 					}
+
+#endif
 					points.clear();
-					points.resize(p_facepoint[j].size());
-					for (int k = 0; k < p_facepoint[j].size(); k++) {
-						points[k] = envelope_vertices[i][p_facepoint[j][k]];
+					points.resize(c_facepoint[j].size());
+					for (int k = 0; k < c_facepoint[j].size(); k++) {
+						points[k] = envelope_vertices[i][c_facepoint[j][k]];
 					}
 
 
@@ -81,18 +109,19 @@ namespace fastEnvelope {
 	{
 		Eigen::MatrixXd  PS(3, points.size());
 		Vector3 cent;
-		cent[0] = 0; cent[1] = 0; cent[2] = 0;
+		cent <<
+			0,0,0;
+		
 		for (int i = 0; i < points.size(); i++) {
 			PS(0, i) = points[i][0];
 			PS(1, i) = points[i][1];
 			PS(2, i) = points[i][2];
-			cent[0] += points[i][0];
-			cent[1] += points[i][1];
-			cent[2] += points[i][2];
+			
 		}
-		cent[0] = cent[0] / points.size();
-		cent[1] = cent[1] / points.size();
-		cent[2] = cent[2] / points.size();
+		cent[0] = PS.row(0).sum() / points.size();
+		cent[1] = PS.row(1).sum() / points.size();
+		cent[2] = PS.row(2).sum() / points.size();
+
 		Eigen::MatrixXd PCA= PS * PS.transpose();
 		Eigen::EigenSolver<Eigen::MatrixXd> eg(PCA);
 		Eigen::VectorXcd ev= eg.eigenvalues();
@@ -129,7 +158,7 @@ namespace fastEnvelope {
 		PSG << PS,
 			Eigen::MatrixXd::Ones(1, points.size());
 		prog = Trans0 * PSG;//contains the projection of the points in new axis
-		Vector3 min, max, mid,corner;
+		Vector3 min, max, mid, corner;
 		for (int i = 0; i < 3; i++) {
 			min[i] = prog.row(i).minCoeff();
 			max[i] = prog.row(i).maxCoeff();

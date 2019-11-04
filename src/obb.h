@@ -5,11 +5,15 @@
 #include<fastenvelope/Types.hpp>
 #include<iostream>
 
+
+// this flag DO_NOT_HAVE_DEGENERATED_FACES is to make code faster when it is sure we dont have any three points that
+//define one halfspace is degenerated to a segment, or a point
+#define DO_NOT_HAVE_DEGENERATED_FACES
 namespace fastEnvelope {
 	class obb
 	{
 	public:
-		
+		// this function is to initialize obb for every facets of polyhedron
 		void obb_init(const std::vector<std::vector<Vector3>>& envelope_vertices, const int p_face[8][3], const int c_face[6][3],
 			const std::array<std::vector<int>, 8>& p_facepoint, const std::array<std::array<int, 4>, 6>& c_facepoint);
 		bool intersected(const int prismid1, const int faceid1, const int prismid2, const int faceid2)const;
