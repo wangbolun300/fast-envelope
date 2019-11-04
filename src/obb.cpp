@@ -25,7 +25,7 @@ namespace fastEnvelope {
 						normal = FastEnvelope::accurate_normal_vector(envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][1]],
 							envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][2]]);
 					else {
-						normal = (envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][1]]).cross(envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][2]]).normalized();
+						normal = ((envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][1]]).cross(envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][2]])).normalized();
 					}
 #else
 					//triangle to get normal: {envelope_vertices[i][p_face[j][0]],envelope_vertices[i][p_face[j][1]],envelope_vertices[i][p_face[j][2]]}
@@ -107,7 +107,7 @@ namespace fastEnvelope {
 	void obb::build_obb(const std::vector<Vector3>& points, const Vector3& normal,const Scalar offset,
 		Eigen::Matrix4d &M, Eigen::Matrix4d &invM)
 	{
-		Eigen::MatrixXd  PS(3, points.size());
+		Eigen::MatrixXd  PS(3, points.size()), PS1(3, points.size());
 		Vector3 cent;
 		cent <<
 			0,0,0;
@@ -121,8 +121,10 @@ namespace fastEnvelope {
 		cent[0] = PS.row(0).sum() / points.size();
 		cent[1] = PS.row(1).sum() / points.size();
 		cent[2] = PS.row(2).sum() / points.size();
-
-		Eigen::MatrixXd PCA= PS * PS.transpose();
+		PS1.row(0) = PS.row(0) - Eigen::MatrixXd::Ones(1, points.size())*cent[0];
+		PS1.row(1) = PS.row(1) - Eigen::MatrixXd::Ones(1, points.size())*cent[1];
+		PS1.row(2) = PS.row(2) - Eigen::MatrixXd::Ones(1, points.size())*cent[2];
+		Eigen::MatrixXd PCA= PS1 * PS1.transpose();
 		Eigen::EigenSolver<Eigen::MatrixXd> eg(PCA);
 		Eigen::VectorXcd ev= eg.eigenvalues();
 		
@@ -140,6 +142,7 @@ namespace fastEnvelope {
 		y[0] = v[0].real(); y[1] = v[1].real(); y[2] = v[2].real();
 		y = y.normalized();
 		assert(normal.dot(y) < SCALAR_ZERO);
+		
 		Vector3 z = normal.cross(y);
 		Matrix3 R;
 		R.col(0) = normal;

@@ -2990,6 +2990,7 @@ namespace fastEnvelope
 		Multiprecision ssum = x * x + y * y + z * z;
 		if (ssum == 0)
 		{
+			std::cout << "flag here" << std::endl;
 			logger().debug("divided by zero in accuratexxx");
 			/*std::cout << std::setprecision(17) << p[0] << " " << p[1] << " " << p[2] << std::endl;
 				std::cout << std::setprecision(17) << q[0] << " " << q[1] << " " << q[2] << std::endl;*/
@@ -3010,7 +3011,7 @@ namespace fastEnvelope
 			return Vector3(fx, fy, fz);
 		}
 		const Multiprecision length = ssum.sqrt(ssum);
-
+		std::cout << "flag here" << std::endl;
 		x = x / length;
 		y = y / length;
 		z = z / length;
