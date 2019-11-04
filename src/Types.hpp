@@ -14,6 +14,7 @@ namespace fastEnvelope {
 #define SCALAR_ZERO 1e-8
 #define SCALAR_ZERO_2 1e-16
 #define SCALAR_ZERO_3 1e-24
+
 #endif
 
     typedef Eigen::Matrix<Scalar, 3, 3> Matrix3;

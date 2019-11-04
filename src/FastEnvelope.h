@@ -12,7 +12,7 @@
 #include <vector>
 #include <array>
 #include <fenv.h>
-
+#include<fastenvelope/obb.h>
 #include<iostream>
 
 
@@ -80,6 +80,7 @@ namespace fastEnvelope {
 
 	private:
 		AABB tree;
+		obb obbtree;
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 		std::vector<std::vector<Vector3>> envelope_vertices;

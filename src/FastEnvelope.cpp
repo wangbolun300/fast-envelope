@@ -8,7 +8,7 @@
 #include <igl/Timer.h>
 #include<igl/write_triangle_mesh.h>
 #include <fstream>
-#include <istream>
+
 
 int dbg1=0, dbg2=0,dbg3=0,dbg4=0,dbgout1=0,dbgout2=0,dbgout3=0,dbgout4=0,dbgout5=0,howmany=0;
 int ct1=0, ct2 = 0, ct3 = 0, ct4 = 0, ct5 = 0;
@@ -2934,7 +2934,10 @@ namespace fastEnvelope
 				envelope_vertices[i][j][1] = polygonoff[j][1];
 				envelope_vertices[i][j][2] = polygonoff[j][2];
 			}
+			
 		}
+
+		obbtree.obb_init(envelope_vertices, p_face, c_face, p_facepoint, c_facepoint);
 	}
 
 	void FastEnvelope::seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox)
