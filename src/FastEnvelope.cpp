@@ -623,10 +623,14 @@ namespace fastEnvelope
 							halfspace[jump2][intersect_face[queue[j]][h]][1],
 							halfspace[jump2][intersect_face[queue[j]][h]][2],
 							idlist, idlistorder, jump1, jump2, check_id);
-					
+						if (jump1 == 259574 && jump2 == 259573 && intersect_face[queue[i]][k] == 7 && intersect_face[queue[j]][h] == 3) {
+							std::cout << "inside of which prism local id? " << check_id << std::endl;
+							std::cout << "prismid " << idlist[check_id] << std::endl;
+						}
 						time14 += timer1.getElapsedTimeInSec();
 						if (inter == 1) {
 							timer1.start();
+							std::cout << "recompute" << std::endl;
 							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
 								halfspace[jump1][intersect_face[queue[i]][k]][0],
 								halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -636,11 +640,16 @@ namespace fastEnvelope
 								halfspace[jump2][intersect_face[queue[j]][h]][1],
 								halfspace[jump2][intersect_face[queue[j]][h]][2],
 								neighbours, neighbour_facets, jump1, jump2, check_id);
-
+							if (jump1 == 259574 && jump2 == 259573 && intersect_face[queue[i]][k] == 7 && intersect_face[queue[j]][h] == 3) {
+								std::cout << "inside of which prism local id? " << check_id << std::endl;
+							}
 							time16 += timer1.getElapsedTimeInSec();
 							if (inter == 1) {
 								dbgout3++;
 								time6 += timer.getElapsedTimeInSec();
+								std::cout << "neighbour size " <<neighbours.size()<< std::endl;
+								std::cout << "pid " << jump1<<" "<<jump2 << std::endl;
+								std::cout << "fid " << intersect_face[queue[i]][k] << " " << intersect_face[queue[j]][h] << std::endl;
 								return true;
 							}
 							if (inter == 0) {
@@ -659,7 +668,23 @@ namespace fastEnvelope
 
 		
 	}
-	bool FastEnvelope::debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const {
+	bool FastEnvelope::debugcode(const std::array<Vector3, 3> &triangle) const {
+		std::vector<unsigned int> ids;
+		ids.push_back(259558);
+		std::vector<std::vector<int>> intersect_face;
+		intersect_face.resize(1);
+		intersect_face[0].push_back(0);
+		int check_id;
+		int inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
+			halfspace[259574][7][0],
+			halfspace[259574][7][1],
+			halfspace[259574][7][2],
+
+			halfspace[259573][3][0],
+			halfspace[259573][3][1],
+			halfspace[259573][3][2],
+			ids, intersect_face, 259574, 259573, check_id);
+		std::cout << "result " << inter << std::endl;
 		return false;
 	}
 
@@ -1606,7 +1631,7 @@ namespace fastEnvelope
 		igl::Timer timer;
 		TPI_exact_suppvars s;
 		TPI_filtered_suppvars st;
-		Scalar d, n1d, n2d, n3d, max1, max2, max3, max4, max5, max6, max7;
+		
 		int tot,ori,fid;
 		bool pre = orient3D_TPI_prefilter(triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2],
@@ -1688,7 +1713,7 @@ namespace fastEnvelope
 				}
 
 			}
-			
+			std::cout << "out here 1" << std::endl;
 			return OUT_PRISM;
 		}
 
@@ -1830,6 +1855,7 @@ namespace fastEnvelope
 			}
 		}
 		time12 += timer.getElapsedTimeInSec();
+		std::cout << "out here 3" << std::endl;
 		return OUT_PRISM;
 
 	}
@@ -2937,7 +2963,7 @@ namespace fastEnvelope
 			
 		}
 
-		obbtree.obb_init(envelope_vertices, p_face, c_face, p_facepoint, c_facepoint);
+		//obbtree.obb_init(envelope_vertices, p_face, c_face, p_facepoint, c_facepoint);
 	}
 
 	void FastEnvelope::seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox)

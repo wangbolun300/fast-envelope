@@ -660,12 +660,12 @@ void test_without_sampling() {
 	pos1.resize(fn);
 	pos2.resize(fn);
 	
-	for (int i = 0; i < fn; i++) {//3294
+	for (int i = 34596; i < 34597; i++) {//3294
 								  //34783,89402,
 		
 		pos1[i] = outenvelope[i];
 		timer1.start();
-		pos2[i] = fast_envelope.is_outside(triangles[i]);
+		//pos2[i] = fast_envelope.is_outside(triangles[i]);
 		//if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
 		if (timer1.getElapsedTimeInSec() > temptime) {
 			temptime = timer1.getElapsedTimeInSec();
@@ -678,8 +678,18 @@ void test_without_sampling() {
 	
 	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
 	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
-	fast_envelope.printnumber();
-	fast_envelope.reset_time();
+	//fast_envelope.printnumber();
+	//fast_envelope.reset_time();
+	fast_envelope.debugcode(triangles[34596]);
+	/*std::ofstream fout;
+	fout.open("d:\\vs\\fast_envelope_csv\\problems\\dbgwithoutdef.txt");
+	for (int i = 0; i < fn; i++) {
+
+		fout << pos2[i] << endl;
+
+	}
+	fout.close();*/
+
 	//count_ip();
 	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
 	for (int i = 0; i < fn; i++) {
