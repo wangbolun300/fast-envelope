@@ -614,7 +614,7 @@ namespace fastEnvelope
 						if (!cut) continue;
 						
 						timer1.start();
-						inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
+						/*inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
 							halfspace[jump1][intersect_face[queue[i]][k]][2],
@@ -622,13 +622,13 @@ namespace fastEnvelope
 							halfspace[jump2][intersect_face[queue[j]][h]][0],
 							halfspace[jump2][intersect_face[queue[j]][h]][1],
 							halfspace[jump2][intersect_face[queue[j]][h]][2],
-							idlist, idlistorder, jump1, jump2, check_id);
+							idlist, idlistorder, jump1, jump2, check_id);*/
 						if (jump1 == 259574 && jump2 == 259573 && intersect_face[queue[i]][k] == 7 && intersect_face[queue[j]][h] == 3) {
 							std::cout << "inside of which prism local id? " << check_id << std::endl;
 							std::cout << "prismid " << idlist[check_id] << std::endl;
 							std::cout << "in or out result " << inter << std::endl;
 							std::cout << "idlist size " << idlist.size() << std::endl;
-							/*std::vector<unsigned int> ids;
+							std::vector<unsigned int> ids;
 							ids.push_back(259558);
 							std::vector<std::vector<int>> fo;
 							fo.resize(1);
@@ -647,9 +647,9 @@ namespace fastEnvelope
 								halfspace[259573][3][2],
 								ids, fo, 259574, 259573, check_id);
 							std::cout << "check again " << tempcheck << std::endl;
-							std::cout << "idlistorder[0].size() " << idlistorder[0].size()<<" "<< idlistorder[0][0] <<" "<< idlistorder[0][1] << std::endl;
-							*/debugcode(triangle);
+							//std::cout << "idlistorder[0].size() " << idlistorder[0].size()<<" "<< idlistorder[0][0] <<" "<< idlistorder[0][1] << std::endl;
 							debugcode(triangle);
+							
 
 							exit(0);
 						}
@@ -1739,6 +1739,7 @@ namespace fastEnvelope
 				if (tot == halfspace[prismindex[i]].size())
 				{
 					id = i;
+					std::cout << "in here 1" << std::endl;
 					return IN_PRISM;
 				}
 
@@ -1778,6 +1779,7 @@ namespace fastEnvelope
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
 						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
+				std::cout << "ori1 " << ori << std::endl;
 				// timetpp1 += timer_a.getElapsedTimeInSec();
 				time7 += timer.getElapsedTimeInSec();
 				if (ori == 1)
@@ -1787,6 +1789,7 @@ namespace fastEnvelope
 				}
 				if (ori == 0)
 				{
+					std::cout << "face id to be recompute " << j << std::endl;
 					index.FACES.emplace_back(j);
 				}
 
@@ -1813,6 +1816,7 @@ namespace fastEnvelope
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
 						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
+				std::cout << "ori2 " << ori << std::endl;
 				// timetpp1 += timer_a.getElapsedTimeInSec();
 				time7 += timer.getElapsedTimeInSec();
 				if (ori == 1)
@@ -1822,6 +1826,8 @@ namespace fastEnvelope
 				}
 				if (ori == 0)
 				{
+					std::cout << "face id to be recompute " << j << std::endl;
+
 					index.FACES.emplace_back(j);
 				}
 
@@ -1834,6 +1840,7 @@ namespace fastEnvelope
 			if (tot == halfspace[prismindex[i]].size())
 			{
 				id = i;
+				std::cout << "in here 2" << std::endl;
 				return IN_PRISM;
 			}
 
@@ -1845,6 +1852,8 @@ namespace fastEnvelope
 			}
 		}
 		timer.start();
+		std::cout << "recompute size " << recompute.size() << std::endl;
+		std::cout << "pre function value " << pre << std::endl;
 		if (recompute.size() > 0)
 		{
 			// timer.start();
@@ -1862,6 +1871,7 @@ namespace fastEnvelope
 				facet22[0], facet22[1], facet22[2],
 				s);
 			if (premulti == false) return 2;
+			
 			for (int k = 0; k < recompute.size(); k++)
 			{
 				int in1 = prismindex[recompute[k].Pi];
@@ -1880,12 +1890,13 @@ namespace fastEnvelope
 				if (ori == -1) {
 					time12 += timer.getElapsedTimeInSec();
 					id = recompute[k].Pi;
+					std::cout << "in here 3" << std::endl;
 					return IN_PRISM;
 				}
 			}
 		}
 		time12 += timer.getElapsedTimeInSec();
-		std::cout << "out here 3" << std::endl;
+		std::cout << "out here 3 " <<"ori "<<ori<< std::endl;
 		return OUT_PRISM;
 
 	}
