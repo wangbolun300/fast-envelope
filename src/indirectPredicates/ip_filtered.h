@@ -88,7 +88,7 @@ the reference planes (see detailed comments below for usage examples).
 ****************************************************************************/
 
 // Uncomment the following to use multi-stage filters instead of almost-static filter only
-//#define USE_MULTISTAGE_FILTERS
+#define USE_MULTISTAGE_FILTERS
 
 //
 // initFPU - Make sure to call this function before using the other functions in your code.

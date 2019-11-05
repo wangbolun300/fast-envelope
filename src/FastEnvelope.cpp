@@ -626,6 +626,32 @@ namespace fastEnvelope
 						if (jump1 == 259574 && jump2 == 259573 && intersect_face[queue[i]][k] == 7 && intersect_face[queue[j]][h] == 3) {
 							std::cout << "inside of which prism local id? " << check_id << std::endl;
 							std::cout << "prismid " << idlist[check_id] << std::endl;
+							std::cout << "in or out result " << inter << std::endl;
+							std::cout << "idlist size " << idlist.size() << std::endl;
+							/*std::vector<unsigned int> ids;
+							ids.push_back(259558);
+							std::vector<std::vector<int>> fo;
+							fo.resize(1);
+							fo[0].resize(2);
+							fo[0][0] = 2;
+							fo[0][1] = 3;
+
+							check_id = 0;
+							int tempcheck = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
+								halfspace[259574][7][0],
+								halfspace[259574][7][1],
+								halfspace[259574][7][2],
+
+								halfspace[259573][3][0],
+								halfspace[259573][3][1],
+								halfspace[259573][3][2],
+								ids, fo, 259574, 259573, check_id);
+							std::cout << "check again " << tempcheck << std::endl;
+							std::cout << "idlistorder[0].size() " << idlistorder[0].size()<<" "<< idlistorder[0][0] <<" "<< idlistorder[0][1] << std::endl;
+							*/debugcode(triangle);
+							debugcode(triangle);
+
+							exit(0);
 						}
 						time14 += timer1.getElapsedTimeInSec();
 						if (inter == 1) {
@@ -669,13 +695,17 @@ namespace fastEnvelope
 		
 	}
 	bool FastEnvelope::debugcode(const std::array<Vector3, 3> &triangle) const {
+		int check_id = 0;
 		std::vector<unsigned int> ids;
 		ids.push_back(259558);
-		std::vector<std::vector<int>> intersect_face;
-		intersect_face.resize(1);
-		intersect_face[0].push_back(0);
-		int check_id;
-		int inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
+		std::vector<std::vector<int>> fo;
+		fo.resize(1);
+		fo[0].resize(2);
+		fo[0][0] = 2;
+		fo[0][1] = 3;
+
+		check_id = 0;
+		int tempcheck = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
 			halfspace[259574][7][0],
 			halfspace[259574][7][1],
 			halfspace[259574][7][2],
@@ -683,8 +713,8 @@ namespace fastEnvelope
 			halfspace[259573][3][0],
 			halfspace[259573][3][1],
 			halfspace[259573][3][2],
-			ids, intersect_face, 259574, 259573, check_id);
-		std::cout << "result " << inter << std::endl;
+			ids, fo, 259574, 259573, check_id);
+		std::cout << "result to find pro " << tempcheck << std::endl;
 		return false;
 	}
 
