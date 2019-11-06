@@ -353,7 +353,7 @@ void test_in_wild() {
 	int ft;
 	// if there are over one million triangles, then test maximal one million triangles
 	if (triangles.size() > 1000000) {
-		ft=1000000;
+		ft = 1000000;
 	}
 	else {
 		ft = triangles.size();//test face number
@@ -423,7 +423,7 @@ void test_in_wild() {
 	std::vector<bool> pos3;
 	pos3.resize(fn);
 	std::array<Vector3, 3> tri;
-	
+
 	int pieces;
 	std::vector<std::array<Vector3, 3>> t;
 	std::vector<int> trindex1, trindex2;
@@ -505,7 +505,7 @@ void test_in_wild() {
 			ti = ti1;
 		}
 		else {
-			cout << "kill all the different cases"<<endl;
+			cout << "kill all the different cases" << endl;
 			break;
 		};
 	}
@@ -563,7 +563,7 @@ void test_in_wild() {
 
 	}
 */
-	////for aabb method
+////for aabb method
 	Vector3 min, max;
 
 	Scalar dd;
@@ -648,7 +648,7 @@ void test_without_sampling() {
 	//std::cout << "TEST aabb FINISHED  " << std::endl;
 	//////////////////////////////
 
-	Scalar temptime=0;
+	Scalar temptime = 0;
 	timer.start();
 	timer1.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, eps);
@@ -659,38 +659,27 @@ void test_without_sampling() {
 	vector<bool> pos1, pos2;
 	pos1.resize(fn);
 	pos2.resize(fn);
-	
-	for (int i = 34596; i < 34597; i++) {//3294
+
+	for (int i = 0; i < fn; i++) {//3294
 								  //34783,89402,
-		
+
 		pos1[i] = outenvelope[i];
 		timer1.start();
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		fast_envelope.debugcode(triangles[i]);
 		//if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
 		if (timer1.getElapsedTimeInSec() > temptime) {
 			temptime = timer1.getElapsedTimeInSec();
 			cout << "time get longer " << i << ", " << temptime << std::endl;
-			
+
 		}
 
 	}
-	
-	
+
+
 	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
 	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
-	//fast_envelope.printnumber();
-	//fast_envelope.reset_time();
-	
-	/*std::ofstream fout;
-	fout.open("d:\\vs\\fast_envelope_csv\\problems\\dbgwithoutdef.txt");
-	for (int i = 0; i < fn; i++) {
-
-		fout << pos2[i] << endl;
-
-	}
-	fout.close();*/
-
+	fast_envelope.printnumber();
+	fast_envelope.reset_time();
 	//count_ip();
 	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
 	for (int i = 0; i < fn; i++) {
@@ -1001,13 +990,13 @@ void try_eigen() {
 }
 
 void tryspeed() {
-	std::vector<int> a,b,c,d;
+	std::vector<int> a, b, c, d;
 	igl::Timer timer;
 	const int size = 100000000;
 	std::vector<int> ini;
 
 	for (int i = 0; i < size; i++) {
-		ini.push_back(int (rand()));
+		ini.push_back(int(rand()));
 	}
 	timer.start();
 	for (int i = 0; i < size; i++) {
@@ -1025,7 +1014,7 @@ void tryspeed() {
 	timer.start();
 	c.resize(size);
 	for (int i = 0; i < size; i++) {
-		c[i]=(ini[i]);
+		c[i] = (ini[i]);
 	}
 	cout << "time reserve push " << timer.getElapsedTimeInSec() << endl;
 
@@ -1044,40 +1033,41 @@ int main(int argc, char const *argv[])
 	GEO::CmdLine::import_arg_group("standard");
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
-	
+
 
 	//test_in_wild(argv[1],argv[2]);
 	//test_in_wild();
 	/*test_without_sampling();
 	test_without_sampling();*/
+	
 	test_without_sampling();
 	/*bool a=true;
 	if (a) cout << "a true" <<a<< endl;
 	if (!a) cout << "a false" << endl;*/
 	//tryspeed();
-	
+
 	/*for (int i = 0; i < (argc - 1) / 2; i++) {
 		test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
 	}
 */
 
-	//fordebug();
-	/*using namespace Eigen;
-	MatrixXd ones = MatrixXd::Ones(3, 3);
-	VectorXcd eivals = ones.eigenvalues();
-	int t = 0;
-	complex<double> lambda = eivals[t];
-	double re = lambda.real();
-	cout << "The eigenvalues of the 3x3 matrix of ones are:" << endl << re<<" "<<lambda<<endl<<eivals << endl;
-	MatrixXd am(3, 3);
-	cout << "am"<<am<< endl;*/
-	/*m(0, 0) = 1;
-	m(0, 1) = 1;
-	m(0, 2) = 1;
-	m(1, 0) = 1;
-	m(1, 1) = 1;
-	m(1, 2) = 1;
+//fordebug();
+/*using namespace Eigen;
+MatrixXd ones = MatrixXd::Ones(3, 3);
+VectorXcd eivals = ones.eigenvalues();
+int t = 0;
+complex<double> lambda = eivals[t];
+double re = lambda.real();
+cout << "The eigenvalues of the 3x3 matrix of ones are:" << endl << re<<" "<<lambda<<endl<<eivals << endl;
+MatrixXd am(3, 3);
+cout << "am"<<am<< endl;*/
+/*m(0, 0) = 1;
+m(0, 1) = 1;
+m(0, 2) = 1;
+m(1, 0) = 1;
+m(1, 1) = 1;
+m(1, 2) = 1;
 */
 	obb::test();
 

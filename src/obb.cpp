@@ -5,105 +5,140 @@
 #include<fastenvelope/FastEnvelope.h>// for is_triangle_degenerated()
 namespace fastEnvelope {
 
-	void obb::obb_init(const std::vector<std::vector<Vector3>>& envelope_vertices, const int p_face[8][3], const int c_face[6][3],
+	std::vector<obb> obb::build_obb_matrixs(const std::vector<Vector3>& face_vertices, const int p_face[8][3], const int c_face[6][3],
 		const std::array<std::vector<int>, 8>& p_facepoint, const std::array<std::array<int, 4>, 6>& c_facepoint) {
 		std::vector<Vector3> points;
-		Trans.resize(envelope_vertices.size());
-		invTrans.resize(envelope_vertices.size());
+		
 		int dege;
 		Vector3 normal;
+		std::vector<obb> M;
 
-		for (int i = 0; i < envelope_vertices.size(); i++) {
-			if (envelope_vertices[i].size() == polyhedron_point_number1) {
-				Trans[i].resize(polyhedron_face_number1);
-				invTrans[i].resize(polyhedron_face_number1);
+		
+			if (face_vertices.size() == polyhedron_point_number1) {
+				//M.resize(polyhedron_face_number1);
+
 				for (int j = 0; j < polyhedron_face_number1; j++) {
 					//triangle to get normal: {envelope_vertices[i][p_face[j][0]],envelope_vertices[i][p_face[j][1]],envelope_vertices[i][p_face[j][2]]}
 #ifdef DO_NOT_HAVE_DEGENERATED_FACES
-					if(((envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][1]]).cross(
-						envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][2]])).norm()<SCALAR_ZERO)
-						normal = FastEnvelope::accurate_normal_vector(envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][1]],
-							envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][2]]);
+					if (((face_vertices[p_face[j][0]] - face_vertices[p_face[j][1]]).cross(
+						face_vertices[p_face[j][0]] - face_vertices[p_face[j][2]])).norm() < SCALAR_ZERO)
+						normal = FastEnvelope::accurate_normal_vector(face_vertices[p_face[j][0]], face_vertices[p_face[j][1]],
+							face_vertices[p_face[j][0]], face_vertices[p_face[j][2]]);
 					else {
-						normal = ((envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][1]]).cross(envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][2]])).normalized();
+						normal = ((face_vertices[p_face[j][0]] - face_vertices[p_face[j][1]]).cross(face_vertices[p_face[j][0]] - face_vertices[p_face[j][2]])).normalized();
 					}
 #else
 					//triangle to get normal: {envelope_vertices[i][p_face[j][0]],envelope_vertices[i][p_face[j][1]],envelope_vertices[i][p_face[j][2]]}
 
-					dege = FastEnvelope::is_triangle_degenerated(envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][1]], envelope_vertices[i][p_face[j][2]]);
+					dege = FastEnvelope::is_triangle_degenerated(face_vertices[p_face[j][0]], face_vertices[p_face[j][1]], face_vertices[p_face[j][2]]);
 					if (dege == FastEnvelope::DEGENERATED_SEGMENT || dege == FastEnvelope::DEGENERATED_POINT) {
 						std::cout << "need to fix here, face degeneration" << std::endl;
 						exit(0);
 					}
-					
+
 					if (dege == FastEnvelope::NERLY_DEGENERATED) {
-						normal = FastEnvelope::accurate_normal_vector(envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][1]],
-							envelope_vertices[i][p_face[j][0]], envelope_vertices[i][p_face[j][2]]);
+						normal = FastEnvelope::accurate_normal_vector(face_vertices[p_face[j][0]], face_vertices[p_face[j][1]],
+							face_vertices[p_face[j][0]], face_vertices[p_face[j][2]]);
 					}
 					if (dege == FastEnvelope::NOT_DEGENERATED) {
-						normal = (envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][1]]).cross(envelope_vertices[i][p_face[j][0]] - envelope_vertices[i][p_face[j][2]]).normalized();
+						normal = ((face_vertices[p_face[j][0]] - face_vertices[p_face[j][1]]).cross(face_vertices[p_face[j][0]] - face_vertices[p_face[j][2]])).normalized();
 					}
 #endif
 					points.clear();
 					points.resize(p_facepoint[j].size());
 					for (int k = 0; k < p_facepoint[j].size(); k++) {
-						points[k] = envelope_vertices[i][p_facepoint[j][k]];
+						points[k] = face_vertices[p_facepoint[j][k]];
 					}
 
-
-					build_obb(points, normal, OBB_OFFSET, Trans[i][j], invTrans[i][j]);
+					M.emplace_back();
+					build_obb(points, normal, OBB_OFFSET, M.back().Trans, M.back().invTrans);
 				}
 
 			}
 
-			if (envelope_vertices[i].size() == polyhedron_point_number2) {
-				Trans[i].resize(polyhedron_face_number2);
-				invTrans[i].resize(polyhedron_face_number2);
+			if (face_vertices.size() == polyhedron_point_number2) {
+				M.resize(polyhedron_face_number2);
+
 				for (int j = 0; j < polyhedron_face_number2; j++) {
 #ifdef DO_NOT_HAVE_DEGENERATED_FACES
-					if (((envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][1]]).cross(
-						envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][2]])).norm() <SCALAR_ZERO)
-						normal = FastEnvelope::accurate_normal_vector(envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][1]],
-							envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][2]]);
+					if (((face_vertices[c_face[j][0]] - face_vertices[c_face[j][1]]).cross(
+						face_vertices[c_face[j][0]] - face_vertices[c_face[j][2]])).norm() < SCALAR_ZERO)
+						normal = FastEnvelope::accurate_normal_vector(face_vertices[c_face[j][0]], face_vertices[c_face[j][1]],
+							face_vertices[c_face[j][0]], face_vertices[c_face[j][2]]);
 					else {
-						normal = (envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][1]]).cross(envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][2]]).normalized();
+						normal = (face_vertices[c_face[j][0]] - face_vertices[c_face[j][1]]).cross(face_vertices[c_face[j][0]] - face_vertices[c_face[j][2]]).normalized();
 					}
 #else				
-					
-					
-					
+
+
+
 					//triangle to get normal: {envelope_vertices[i][p_face[j][0]],envelope_vertices[i][p_face[j][1]],envelope_vertices[i][p_face[j][2]]}
 
-					dege = FastEnvelope::is_triangle_degenerated(envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][1]], envelope_vertices[i][c_face[j][2]]);
+					dege = FastEnvelope::is_triangle_degenerated(face_vertices[c_face[j][0]], face_vertices[c_face[j][1]], face_vertices[c_face[j][2]]);
 					if (dege == FastEnvelope::DEGENERATED_SEGMENT || dege == FastEnvelope::DEGENERATED_POINT) {
 						std::cout << "need to fix here, face degeneration" << std::endl;
 						exit(0);
 					}
 
 					if (dege == FastEnvelope::NERLY_DEGENERATED) {
-						normal = FastEnvelope::accurate_normal_vector(envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][1]],
-							envelope_vertices[i][c_face[j][0]], envelope_vertices[i][c_face[j][2]]);
+						normal = FastEnvelope::accurate_normal_vector(face_vertices[c_face[j][0]], face_vertices[c_face[j][1]],
+							face_vertices[c_face[j][0]], face_vertices[c_face[j][2]]);
 					}
 					if (dege == FastEnvelope::NOT_DEGENERATED) {
-						normal = (envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][1]]).cross(envelope_vertices[i][c_face[j][0]] - envelope_vertices[i][c_face[j][2]]).normalized();
+						normal = (face_vertices[c_face[j][0]] - face_vertices[c_face[j][1]]).cross(face_vertices[c_face[j][0]] - face_vertices[c_face[j][2]]).normalized();
 					}
 
 #endif
 					points.clear();
 					points.resize(c_facepoint[j].size());
 					for (int k = 0; k < c_facepoint[j].size(); k++) {
-						points[k] = envelope_vertices[i][c_facepoint[j][k]];
+						points[k] = face_vertices[c_facepoint[j][k]];
 					}
 
 
-					build_obb(points, normal, OBB_OFFSET, Trans[i][j], invTrans[i][j]);
+					build_obb(points, normal, OBB_OFFSET, M[j].Trans, M[j].invTrans);
 				}
 			}
+			return M;
+		
+	}
+
+	bool obb::intersects(const obb& M2) const {
+		return obb_intersection(Trans, invTrans, M2.Trans, M2.invTrans);
+	}
+
+	bool obb::intersects(const obb& M2, const obb& M3) const{
+		
+		//bool flag1=obb_intersection(Trans, invTrans, M2.Trans, M2.invTrans);
+		bool flag1 = intersects(M2);
+		if (flag1 == false) return false;
+
+		//bool flag2 = obb_intersection(Trans, invTrans, M3.Trans, M3.invTrans);
+		bool flag2 = intersects(M3);
+		if (flag2 == false) return false;
+
+		//bool flag3 = obb_intersection(M2.Trans, M2.invTrans, M3.Trans, M3.invTrans);
+		bool flag3 = M2.intersects(M3);
+		if (flag3 == false) return false;
+
+		return true;
+	}
+
+	obb obb::build_triangle_obb_matrixs(const Vector3&t0, const Vector3&t1, const Vector3&t2) {
+		Vector3 normal;
+		obb res;
+		if (((t0 - t1).cross(t0 - t2)).norm() < SCALAR_ZERO)
+			normal = FastEnvelope::accurate_normal_vector(t0, t1,
+				t0, t2);
+		else {
+			normal = ((t0 - t1).cross(t0 - t2)).normalized();
 		}
+		std::vector<Vector3> points(3);
+		points[0] = t0; points[1] = t1; points[2] = t2;
+		build_obb(points, normal, OBB_OFFSET, res.Trans, res.invTrans);
+		return res;
 	}
-	bool obb::intersected(const int prismid1, const int faceid1, const int prismid2, const int faceid2)const {
-		return obb_intersection(Trans[prismid1][faceid1], invTrans[prismid1][faceid1], Trans[prismid2][faceid2], invTrans[prismid2][faceid2]);
-	}
+	
 	void obb::build_obb(const std::vector<Vector3>& points, const Vector3& normal,const Scalar offset,
 		Eigen::Matrix4d &M, Eigen::Matrix4d &invM)
 	{

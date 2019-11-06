@@ -12,22 +12,30 @@
 namespace fastEnvelope {
 	class obb
 	{
+	private:
+		 
+			Eigen::Matrix4d Trans;
+			Eigen::Matrix4d invTrans;
+		
 	public:
-		// this function is to initialize obb for every facets of polyhedron
-		void obb_init(const std::vector<std::vector<Vector3>>& envelope_vertices, const int p_face[8][3], const int c_face[6][3],
+
+		static std::vector<obb> build_obb_matrixs(const std::vector<Vector3>& prism_vertices, const int p_face[8][3], const int c_face[6][3],
 			const std::array<std::vector<int>, 8>& p_facepoint, const std::array<std::array<int, 4>, 6>& c_facepoint);
-		bool intersected(const int prismid1, const int faceid1, const int prismid2, const int faceid2)const;
+		
+		static obb build_triangle_obb_matrixs(const Vector3&t0, const Vector3&t1, const Vector3&t2);// can not take degenerated triangle
+		bool intersects(const obb& M2)const;
+		bool intersects(const obb& M2, const obb& M3)const;
 		static void test();
 
 	private:
-		int polyhedron_point_number1 = 12;
-		int polyhedron_point_number2 = 8;
-		int polyhedron_face_number1 = 8;
-		int polyhedron_face_number2 = 6;
-		int OBB_OFFSET = 1e-4;
-
-		std::vector<std::vector<Eigen::Matrix4d>> Trans;
-		std::vector<std::vector<Eigen::Matrix4d>> invTrans;
+		static const int polyhedron_point_number1 = 12;
+		static const int polyhedron_point_number2 = 8;
+		static const int polyhedron_face_number1 = 8;
+		static const int polyhedron_face_number2 = 6;
+		static const double OBB_OFFSET = 1e-4;
+		
+		
+		
 		//build obb out of a set of points, transformation matrix Trans maps the box into a box which corners are
 		//[1,1,1] and [-1,-1,-1]
 		//input: points, normal vector of these points(respect to the minimal eigenvalue of PCA matrix)

@@ -74,22 +74,22 @@ namespace fastEnvelope {
 
 		//sample for debugging
 		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int &pieces) const;
-		bool debugcode(const std::array<Vector3, 3> &triangle)const;
+
 		//export files for debugging
 		//void print_prisms(const std::array<Vector3, 3> &triangle, const std::string &path) const;
 
 	private:
 		AABB tree;
-		obb obbtree;
+		
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 		std::vector<std::vector<Vector3>> envelope_vertices;
-	
+
 		std::vector<Vector3> ver_new;
 		std::vector<Vector3i> faces_new;
-		
+
 		//main pipeline
-		
+		bool debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex)const;
 		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
 		bool is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const;
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_return_local_id(
@@ -127,11 +127,11 @@ namespace fastEnvelope {
 			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const;
 		int Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
 			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
-			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex, 
+			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
 			const std::vector<std::vector<int>>& faceorder, const int &jump, int &id) const;
 		int Implicit_Seg_Facet_interpoint_Out_Prism_pure_multiprecision_return_local_id(const DATA_LPI &datalpi, const std::array<Vector3, 3> &triangle,
 			const std::vector<unsigned int> &prismindex, int& id) const;
-		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex,TPI_exact_suppvars& s) const;
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_pure_multiprecision(const DATA_TPI &datatpi, const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex, TPI_exact_suppvars& s) const;
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_with_face_order(
 			const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
 			const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
@@ -142,8 +142,8 @@ namespace fastEnvelope {
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-			const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>&intersect_face, const int &jump1, const int &jump2, 
-			 int &id) const;
+			const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>&intersect_face, const int &jump1, const int &jump2,
+			int &id) const;
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double_return_id_with_face_order(
 			const Scalar &d, const Scalar &n1, const Scalar &n2, const Scalar &n3,
 			const Scalar &max1, const Scalar &max2, const Scalar &max3, const Scalar &max4, const Scalar &max5, const Scalar &max6, const Scalar &max7,
@@ -151,7 +151,7 @@ namespace fastEnvelope {
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
 			const std::vector<unsigned int> &prismindex, const std::vector<std::array<bool, 8>>intersect_face, const int &jump1, const int &jump2, const bool &multiflag,
 			TPI_exact_suppvars &s, int &id) const;
-		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3> &triangle,  TPI_exact_suppvars &s);
+		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3> &triangle, TPI_exact_suppvars &s);
 
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_double(
 			const Scalar &d, const Scalar &n1d, const Scalar &n2d, const Scalar &n3d,
@@ -159,7 +159,7 @@ namespace fastEnvelope {
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
 			const std::vector<unsigned int> &prismindex, const int &jump1, const int &jump2, const bool &multiflag, TPI_exact_suppvars &s) const;
-		
+
 		static bool is_3_triangle_cut(
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12,
@@ -168,12 +168,12 @@ namespace fastEnvelope {
 			const std::array<Vector3, 3> &triangle,
 			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
 			const int &prismid, const int &faceid)const;
-		
+
 		// to check if a point is in the prisms. the jump index shows the prisms not counted in calculation, and jump is sorted from small to big
 		bool point_out_prism(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump) const;
 		bool point_out_prism_return_id(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, int &id)const;
 		bool point_out_prism_return_id_list(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, std::vector<int> &idlist) const;
-		void halfspace_init(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace, 
+		void halfspace_init(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
 			std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon);
 		void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox);
 		static bool box_box_intersection(const Vector3 &min1, const Vector3 &max1, const Vector3 &min2, const Vector3 &max2)
@@ -186,17 +186,17 @@ namespace fastEnvelope {
 		}
 
 
-		
-		
 
-	
+
+
+
 
 		//heuristics to refine the box box guess from the tree
 		static int is_3_triangle_cut_float_fast(
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12,
 			const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
-		
+
 		int is_triangle_cut_envelope_polyhedra(const int &cindex,
 			const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, std::vector<int> &cid) const;
 		bool is_seg_cut_polyhedra(const int &cindex,
