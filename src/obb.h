@@ -32,7 +32,7 @@ namespace fastEnvelope {
 		static const int polyhedron_point_number2 = 8;
 		static const int polyhedron_face_number1 = 8;
 		static const int polyhedron_face_number2 = 6;
-		static const double OBB_OFFSET = 1e-4;
+		static constexpr double OBB_OFFSET = 1e-4;
 		
 		
 		

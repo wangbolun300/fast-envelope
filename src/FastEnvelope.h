@@ -4,7 +4,7 @@
 
 #include <fastenvelope/ip_filtered.h>
 
-#include <fastenvelope/Multiprecision.hpp>
+
 #include <fastenvelope/Rational.hpp>
 
 #include <geogram/mesh/mesh.h>
@@ -12,7 +12,7 @@
 #include <vector>
 #include <array>
 #include <fenv.h>
-#include<fastenvelope/obb.h>
+
 #include<iostream>
 
 
@@ -80,10 +80,9 @@ namespace fastEnvelope {
 
 	private:
 		AABB tree;
-		
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
-		std::vector<std::vector<Vector3>> envelope_vertices;
+		
 
 		std::vector<Vector3> ver_new;
 		std::vector<Vector3i> faces_new;

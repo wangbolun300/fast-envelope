@@ -11,7 +11,7 @@
 
 
 int dbg1 = 0, dbg2 = 0, dbg3 = 0, dbg4 = 0, dbgout1 = 0, dbgout2 = 0, dbgout3 = 0, dbgout4 = 0, dbgout5 = 0, howmany = 0;
-int ct1 = 0, ct2 = 0, ct3 = 0, ct4 = 0, ct5 = 0, count_int1 = 0, count_int2 = 0, count_int3 = 0;
+int ct1 = 0, ct2 = 0, ct3 = 0, ct4 = 0, ct5 = 0, count_int1 = 0, count_int2 = 0, count_int3 = 0, count_int4 = 0;
 double time1 = 0, time2 = 0, time3 = 0, time4 = 0, time5 = 0, timesearch = 0, timecheck = 0,
 time6 = 0, time7 = 0, time8 = 0, time9 = 0, time10 = 0, time11 = 0, time12 = 0, time13 = 0, time14 = 0, time15 = 0, time16 = 0, time17 = 0,
 time18 = 0;
@@ -151,7 +151,7 @@ namespace fastEnvelope
 		std::cout << "time for see if point on prism, " << time11 << std::endl;
 		std::cout << "time for local search, " << time13 << std::endl;
 		std::cout << "time for 3 triangle intersection, " << time18 << std::endl;
-		std::cout << "count intersections " << count_int1<<" "<<count_int2<< " "<<count_int3 << std::endl;
+		std::cout << "count intersections " << count_int1<<" "<<count_int2<< " "<<count_int3<<" "<< count_int4 << std::endl;
 	}
 	void FastEnvelope::reset_time() {
 		time1 = 0; time2 = 0; time3 = 0; time4 = 0; time5 = 0; timesearch = 0; timecheck = 0;
@@ -551,7 +551,8 @@ namespace fastEnvelope
 
 		time4 += timer.getElapsedTimeInSec();
 		//std::cout << "the size of queue " << queue.size()<<" "<<idlist.size()  << std::endl;
-
+		/*obb tobb;
+		tobb = obb::build_triangle_obb_matrixs(triangle[0], triangle[1], triangle[2]);*/
 	
 		//tpi part
 		igl::Timer timer1;
@@ -579,7 +580,9 @@ namespace fastEnvelope
 				for (int k = 0; k < intersect_face[queue[i]].size(); k++) {
 					for (int h = 0; h < intersect_face[queue[j]].size(); h++) {
 						//box on faces?
-
+						count_int1++;
+						/*cut = tobb.intersects(obblist[jump1][intersect_face[queue[i]][k]], obblist[jump2][intersect_face[queue[j]][h]]);
+						if (cut == false) continue;*/
 						timer1.start();
 						cut = is_3_triangle_cut(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
@@ -592,9 +595,9 @@ namespace fastEnvelope
 						
 						time18 += timer1.getElapsedTimeInSec();
 						if (!cut) continue;
-						count_int1++;
 						
-						if (cut) count_int3++;
+						/*cut = obblist[jump1][intersect_face[queue[i]][k]].intersects(obblist[jump2][intersect_face[queue[j]][h]]);
+						if (cut) count_int3++;*/
 						timer1.start();
 						cut = is_tpp_on_polyhedra(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
@@ -619,6 +622,9 @@ namespace fastEnvelope
 						time11 += timer1.getElapsedTimeInSec();
 						if (!cut) continue;
 						count_int2++;
+						/*cut = tobb.intersects(obblist[jump1][intersect_face[queue[i]][k]], obblist[jump2][intersect_face[queue[j]][h]]);
+						if (cut == false) std::cout << "here wrong for obb intersection" << std::endl;
+						if (cut == true) count_int4++;*/
 						timer1.start();
 						inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
@@ -2769,10 +2775,10 @@ namespace fastEnvelope
 			return corners;
 		};
 		static const fastEnvelope::Vector3 origin = fastEnvelope::Vector3(0, 0, 0);
-
+	
 		halfspace.resize(m_faces.size());
 		cornerlist.resize(m_faces.size());
-		envelope_vertices.resize(m_faces.size());
+		
 		Vector3 AB, AC, BC, normal, vector1, ABn, min, max;
 		std::array<Vector3, 6> polygon;
 		std::array<Vector3, 12> polygonoff;
@@ -2837,12 +2843,13 @@ namespace fastEnvelope
 				}
 				cornerlist[i] = (get_bb_corners_8(box));
 
-				envelope_vertices[i].resize(8);
+				/*envelope_vertices.resize(8);
 				for (int j = 0; j < 8; j++) {
-					envelope_vertices[i][j][0] = box[j][0];
-					envelope_vertices[i][j][1] = box[j][1];
-					envelope_vertices[i][j][2] = box[j][2];
+					envelope_vertices[j][0] = box[j][0];
+					envelope_vertices[j][1] = box[j][1];
+					envelope_vertices[j][2] = box[j][2];
 				}
+				obblist[i] = obb::build_obb_matrixs(envelope_vertices, p_face, c_face, p_facepoint, c_facepoint);*/
 				continue;
 			}
 			if (de == DEGENERATED_SEGMENT)
@@ -2871,12 +2878,13 @@ namespace fastEnvelope
 				}
 				cornerlist[i] = (get_bb_corners_8(box));
 
-				envelope_vertices[i].resize(8);
+				/*envelope_vertices.resize(8);
 				for (int j = 0; j < 8; j++) {
-					envelope_vertices[i][j][0] = box[j][0];
-					envelope_vertices[i][j][1] = box[j][1];
-					envelope_vertices[i][j][2] = box[j][2];
+					envelope_vertices[j][0] = box[j][0];
+					envelope_vertices[j][1] = box[j][1];
+					envelope_vertices[j][2] = box[j][2];
 				}
+				obblist[i] = obb::build_obb_matrixs(envelope_vertices, p_face, c_face, p_facepoint, c_facepoint);*/
 				continue;
 			}
 			if (de == NERLY_DEGENERATED)
@@ -2934,13 +2942,13 @@ namespace fastEnvelope
 				halfspace[i][j][2] = polygonoff[p_face[j][2]];
 			}
 			cornerlist[i] = (get_bb_corners_12(polygonoff));
-			envelope_vertices[i].resize(12);
+			/*envelope_vertices.resize(12);
 			for (int j = 0; j < 12; j++) {
-				envelope_vertices[i][j][0] = polygonoff[j][0];
-				envelope_vertices[i][j][1] = polygonoff[j][1];
-				envelope_vertices[i][j][2] = polygonoff[j][2];
+				envelope_vertices[j][0] = polygonoff[j][0];
+				envelope_vertices[j][1] = polygonoff[j][1];
+				envelope_vertices[j][2] = polygonoff[j][2];
 			}
-
+			obblist[i] = obb::build_obb_matrixs(envelope_vertices, p_face, c_face, p_facepoint, c_facepoint);*/
 		}
 
 		
@@ -2981,49 +2989,33 @@ namespace fastEnvelope
 	Vector3 FastEnvelope::accurate_normal_vector(const Vector3 &p0, const Vector3 &p1,//TODO use marco's code
 		const Vector3 &q0, const Vector3 &q1)
 	{
+		
+		logger().debug("use accurate normal vector solver for nearly degenerated triangles");
+		
+		Rational p00r(p0[0]), p01r(p0[1]), p02r(p0[2]),
+			p10r(p1[0]), p11r(p1[1]), p12r(p1[2]),
+			q00r(q0[0]), q01r(q0[1]), q02r(q0[2]),
+			q10r(q1[0]), q11r(q1[1]), q12r(q1[2]);
+		Rational axr(p10r - p00r), ayr(p11r - p01r), azr(p12r - p02r),
+			bxr(q10r - q00r), byr(q11r - q01r), bzr(q12r - q02r);
+		Rational xr = ayr * bzr - azr * byr;
+		Rational yr = azr * bxr - axr * bzr;
+		Rational zr = axr * byr - ayr * bxr;//get the direction (x,y,z), now normalize
+		int xsign, ysign, zsign;
+		xsign = xr.get_sign();
+		ysign = yr.get_sign();
+		zsign = zr.get_sign();
+		Rational ssumr = xr * xr + yr * yr + zr * zr;
+		xr = xr * xr / ssumr;
+		yr = yr * yr / ssumr;
+		zr = zr * zr / ssumr;
 
-		const Multiprecision ax = p1[0] - p0[0];
-		const Multiprecision ay = p1[1] - p0[1];
-		const Multiprecision az = p1[2] - p0[2];
-
-		const Multiprecision bx = q1[0] - q0[0];
-		const Multiprecision by = q1[1] - q0[1];
-		const Multiprecision bz = q1[2] - q0[2];
-
-		Multiprecision x = ay * bz - az * by;
-		Multiprecision y = az * bx - ax * bz;
-		Multiprecision z = ax * by - ay * bx;
-		Multiprecision ssum = x * x + y * y + z * z;
-		if (ssum == 0)
-		{
-			std::cout << "flag here" << std::endl;
-			logger().debug("divided by zero in accuratexxx");
-			/*std::cout << std::setprecision(17) << p[0] << " " << p[1] << " " << p[2] << std::endl;
-				std::cout << std::setprecision(17) << q[0] << " " << q[1] << " " << q[2] << std::endl;*/
-			Rational p00r(p0[0]), p01r(p0[1]), p02r(p0[2]),
-				p10r(p1[0]), p11r(p1[1]), p12r(p1[2]),
-				q00r(q0[0]), q01r(q0[1]), q02r(q0[2]),
-				q10r(q1[0]), q11r(q1[1]), q12r(q1[2]);
-			Rational axr(p10r - p00r), ayr(p11r - p01r), azr(p12r - p02r),
-				bxr(q10r - q00r), byr(q11r - q01r), bzr(q12r - q02r);
-			Rational xr = ayr * bzr - azr * byr;
-			Rational yr = azr * bxr - axr * bzr;
-			Rational zr = axr * byr - ayr * bxr;
-			Rational ssumr = xr * xr + yr * yr + zr * zr;
-			Scalar sum = ssumr.to_double();
-			Scalar l = sqrt(sum);
-			Scalar xd = xr.to_double(), yd = yr.to_double(), zd = zr.to_double();
-			Scalar fx = xd / l, fy = yd / l, fz = zd / l;
-			return Vector3(fx, fy, fz);
-		}
-		const Multiprecision length = ssum.sqrt(ssum);
-		std::cout << "flag here" << std::endl;
-		x = x / length;
-		y = y / length;
-		z = z / length;
-
-		Scalar fx = x.to_double(), fy = y.to_double(), fz = z.to_double();
-		return Vector3(fx, fy, fz);
+		Scalar x, y, z;
+		x = sqrt(xr.to_double())*xsign;
+		y = sqrt(yr.to_double())*ysign;
+		z = sqrt(zr.to_double())*zsign;
+		return Vector3(x, y, z);
+		
 	}
 
 	bool FastEnvelope::is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const {
