@@ -6,6 +6,8 @@ set(SOURCES
         Logger.hpp
 obb.h
 obb.cpp
+Morton.h
+Morton.cpp
         Types.hpp
 )
 

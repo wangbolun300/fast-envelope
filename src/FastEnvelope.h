@@ -84,8 +84,7 @@ namespace fastEnvelope {
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 		
 
-		std::vector<Vector3> ver_new;
-		std::vector<Vector3i> faces_new;
+
 
 		//main pipeline
 		bool debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex)const;
@@ -175,6 +174,7 @@ namespace fastEnvelope {
 		void halfspace_init(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
 			std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon);
 		void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox);
+		static void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew);
 		static bool box_box_intersection(const Vector3 &min1, const Vector3 &max1, const Vector3 &min2, const Vector3 &max2)
 		{
 			if (max1[0] < min2[0] || max1[1] < min2[1] || max1[2] < min2[2])
