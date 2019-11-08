@@ -395,7 +395,7 @@ namespace fastEnvelope
 		igl::Timer timer;
 
 		int jump1, jump2;
-		//std::cout << "prism size " << prismindex.size() << std::endl;
+
 
 
 		std::vector<unsigned int> filted_intersection; filted_intersection.reserve(prismindex.size() / 3);
@@ -412,7 +412,7 @@ namespace fastEnvelope
 
 		timer.start();
 		for (int i = 0; i < 3; i++) {
-			out = point_out_prism_return_id(triangle[i], prismindex, jump1, check_id);
+			out = point_out_prism_return_local_id(triangle[i], prismindex, jump1, check_id);
 
 			if (out) {
 				dbgout1++;
@@ -435,19 +435,19 @@ namespace fastEnvelope
 		timer.start();
 		int degeneration = is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
 
-		if (degeneration == DEGENERATED_POINT)
-		{ //case 1 degenerate to a point
+		if (degeneration == DEGENERATED_POINT) //case 1 degenerate to a point
+		{
 			return false;
 		}
 
-		DATA_LPI datalpi;
+		
 		std::vector<DATA_LPI> lpi_list;
 		if (degeneration == DEGENERATED_SEGMENT)
 		{
 			std::vector<unsigned int > queue, idlist;
 			queue.emplace_back(check_id);//queue contains the id in prismindex
 			idlist.emplace_back(prismindex[check_id]);
-			std::vector<unsigned int > list;
+			
 			std::vector<int> cidl; cidl.reserve(8);
 			for (int i = 0; i < queue.size(); i++) {
 
@@ -458,9 +458,7 @@ namespace fastEnvelope
 					if (cut&&cidl.size() == 0)continue;
 					if (!cut) continue;
 					for (int j = 0; j < cidl.size(); j++) {
-						/*tti = seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
-							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2]);
-						if (tti != CUT_FACE) continue;*/
+						
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
 							idlist, jump1, check_id);
@@ -490,9 +488,7 @@ namespace fastEnvelope
 		//
 		////////////////////////////////degeneration fix over
 		time2 += timer.getElapsedTimeInSec();
-		// logger().info("Bit time? time {}s", timer.getElapsedTimeInSec())
 
-		// timer_bigpart.start();
 		timer.start();
 		std::vector<int> cidl; cidl.reserve(8);
 		for (int i = 0; i < prismindex.size(); i++) {
@@ -503,7 +499,7 @@ namespace fastEnvelope
 				return false;
 			}
 			else if (tti == 1 && cidl.size() > 0) {
-				//if(prismindex[i] == check_id) 
+				
 				filted_intersection.emplace_back(prismindex[i]);
 				intersect_face.emplace_back(cidl);
 
@@ -514,7 +510,7 @@ namespace fastEnvelope
 
 		if (filted_intersection.size() == 0) {
 			time3 += timer.getElapsedTimeInSec();
-			return false;//inside
+			return false;
 		}
 
 
@@ -530,11 +526,12 @@ namespace fastEnvelope
 
 		localtree.init_envelope(localcorner);
 		time5 += timer.getElapsedTimeInSec();
+		//tree end
 
 
 		std::vector<unsigned int > queue, idlist;
 		queue.emplace_back(0);//queue contains the id in filted_intersection
-		idlist.emplace_back(filted_intersection[queue[0]]);
+		idlist.emplace_back(filted_intersection[queue[0]]);// idlist contains the id in prismid
 
 		std::vector<std::vector<int>> neighbour_facets, idlistorder;
 
@@ -569,7 +566,7 @@ namespace fastEnvelope
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
 							filted_intersection, intersect_face, jump1, check_id);
-
+						assert(inter != 2);// the point must exist
 						if (inter == 1) {
 							dbgout2++;
 							time4 += timer.getElapsedTimeInSec();
@@ -587,20 +584,19 @@ namespace fastEnvelope
 
 
 		time4 += timer.getElapsedTimeInSec();
-		//std::cout << "the size of queue " << queue.size()<<" "<<idlist.size()  << std::endl;
-		/*obb tobb;
-		tobb = obb::build_triangle_obb_matrixs(triangle[0], triangle[1], triangle[2]);*/
+
 	
 		//tpi part
 		igl::Timer timer1;
 		timer.start();
-		DATA_TPI datatpi;
+		
 		for (int i = 1; i < queue.size(); i++)
 		{
 			jump1 = filted_intersection[queue[i]];
 			timer1.start();
 			localtree.bbd_finding_in_envelope(cornerlist[jump1][0], cornerlist[jump1][1], list);
 			neighbours.clear();
+			neighbour_facets.clear();
 			neighbours.resize(list.size());
 			neighbour_facets.resize(list.size());
 			for (int j = 0; j < list.size(); j++) {
@@ -616,10 +612,9 @@ namespace fastEnvelope
 					continue;
 				for (int k = 0; k < intersect_face[queue[i]].size(); k++) {
 					for (int h = 0; h < intersect_face[queue[j]].size(); h++) {
-						//box on faces?
+						
 						count_int1++;
-						/*cut = tobb.intersects(obblist[jump1][intersect_face[queue[i]][k]], obblist[jump2][intersect_face[queue[j]][h]]);
-						if (cut == false) continue;*/
+						
 						timer1.start();
 						cut = is_3_triangle_cut(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
@@ -633,8 +628,6 @@ namespace fastEnvelope
 						time18 += timer1.getElapsedTimeInSec();
 						if (!cut) continue;
 						
-						/*cut = obblist[jump1][intersect_face[queue[i]][k]].intersects(obblist[jump2][intersect_face[queue[j]][h]]);
-						if (cut) count_int3++;*/
 						timer1.start();
 						cut = is_tpp_on_polyhedra(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
@@ -659,9 +652,7 @@ namespace fastEnvelope
 						time11 += timer1.getElapsedTimeInSec();
 						if (!cut) continue;
 						count_int2++;
-						/*cut = tobb.intersects(obblist[jump1][intersect_face[queue[i]][k]], obblist[jump2][intersect_face[queue[j]][h]]);
-						if (cut == false) std::cout << "here wrong for obb intersection" << std::endl;
-						if (cut == true) count_int4++;*/
+						
 						timer1.start();
 						inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
@@ -702,7 +693,7 @@ namespace fastEnvelope
 				}
 			}
 		}
-		//std::cout << "the size of queue " << queue.size() << " " << idlist.size() << std::endl;
+		
 		time6 += timer.getElapsedTimeInSec();
 		return false;
 
@@ -2233,6 +2224,7 @@ namespace fastEnvelope
 	{
 
 		cid.clear();
+		cid.reserve(3);
 		std::vector<bool> cut;
 		cut.resize(halfspace[cindex].size());
 		for (int i = 0; i < halfspace[cindex].size(); i++)
@@ -2243,7 +2235,7 @@ namespace fastEnvelope
 		o1.resize(halfspace[cindex].size());
 		o2.resize(halfspace[cindex].size());
 		o3.resize(halfspace[cindex].size());
-		int  ori = 0, ct = 0;
+		int  ori = 0, ct1 = 0, ct2 = 0, ct3 = 0;
 
 
 		for (int i = 0; i < halfspace[cindex].size(); i++)
@@ -2256,7 +2248,9 @@ namespace fastEnvelope
 			{
 				return 0;
 			}
-			if (o1[i] == -1) ct++;
+			if (o1[i] == -1) ct1++;
+			if (o2[i] == -1) ct2++;
+			if (o3[i] == -1) ct3++;
 			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 1)
 			{
 				return 0;
@@ -2277,7 +2271,12 @@ namespace fastEnvelope
 			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)
 				cutp.emplace_back(i);
 		}
-		if (cutp.size() == 0 && ct == halfspace[cindex].size()) return 2;//means totally inside of this prism
+		if (cutp.size() == 0) {
+			if (ct1 == halfspace[cindex].size()|| ct2 == halfspace[cindex].size()|| ct3 == halfspace[cindex].size()) {
+				return 2;
+			}
+		}
+
 		if (cutp.size() == 0)
 		{
 			return 0;
@@ -2353,7 +2352,7 @@ namespace fastEnvelope
 				}
 			}
 
-			ori = 0;
+			ori = 0;// initialize the orientation to avoid the j loop doesn't happen because cutp.size()==1
 		}
 
 		if (cutp.size() <= 2)
@@ -2370,7 +2369,7 @@ namespace fastEnvelope
 
 		for (int i = 0; i < cutp.size(); i++)
 		{
-			for (int j = i + 1; j < cutp.size(); j++)
+			for (int j = i + 1; j < cutp.size(); j++)// two facets and the triangle generate a point
 			{
 				if (cut[cutp[i]] == true && cut[cutp[j]] == true)
 					continue;
@@ -2651,7 +2650,7 @@ namespace fastEnvelope
 
 		return true;
 	}
-	bool FastEnvelope::point_out_prism_return_id(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const
+	bool FastEnvelope::point_out_prism_return_local_id(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const
 	{
 
 		int ori;
@@ -2669,11 +2668,12 @@ namespace fastEnvelope
 				{
 					break;
 				}
-				if (j == halfspace[prismindex[i]].size() - 1)
-				{
-					id = i;
-					return false;
-				}
+
+			}
+			if (ori == 1)
+			{
+				id = i;
+				return false;
 			}
 
 		}
