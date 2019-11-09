@@ -7,7 +7,7 @@
 
 #include <fastenvelope/Rational.hpp>
 
-#include <geogram/mesh/mesh.h>
+
 
 #include <vector>
 #include <array>

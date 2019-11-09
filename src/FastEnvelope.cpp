@@ -20,62 +20,7 @@ std::vector<int> tempid;
 namespace fastEnvelope
 {
 	namespace {
-		void to_geogram_mesh(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, GEO::Mesh &M)
-		{
-			M.clear();
-
-			// Setup vertices
-			M.vertices.create_vertices(V.size());
-
-			for (int i = 0; i < (int)M.vertices.nb(); ++i)
-			{
-				GEO::vec3 &p = M.vertices.point(i);
-
-				p[0] = V[i][0];
-				p[1] = V[i][1];
-				p[2] = V[i][2];
-			}
-
-			// Setup faces
-
-			M.facets.create_triangles(F.size());
-
-			for (int c = 0; c < (int)M.facets.nb(); ++c)
-			{
-				for (int lv = 0; lv < 3; ++lv)
-				{
-					M.facets.set_vertex(c, lv, F[c][lv]);
-				}
-			}
-		}
-
-		void from_geogram_mesh(const GEO::Mesh &M, std::vector<Vector3> &V, std::vector<Vector3i> &F)
-		{
-			V.resize(M.vertices.nb());
-
-			for (int i = 0; i < (int)M.vertices.nb(); ++i)
-			{
-				GEO::vec3 p = M.vertices.point(i);
-
-				V[i][0] = p[0];
-				V[i][1] = p[1];
-				V[i][2] = p[2];
-			}
-
-			assert(M.facets.are_simplices());
-
-			F.resize(M.facets.nb());
-
-			for (int c = 0; c < (int)M.facets.nb(); ++c)
-			{
-				for (int lv = 0; lv < 3; ++lv)
-				{
-					F[c][lv] = M.facets.vertex(c, lv);
-				}
-			}
-
-			assert(M.cells.are_simplices());
-		}
+		
 
 		//delete me in the future
 		void triangle_sample_segment(const std::array<Vector3, 3> &triangle, Vector3 &ps, const int &pieces, const int &nbr)
