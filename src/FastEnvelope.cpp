@@ -2807,27 +2807,27 @@ namespace fastEnvelope
 			} };
 		static const int p_face[8][3] = { {0, 1, 3}, {7, 6, 9}, {1, 0, 7}, {2, 1, 7}, {3, 2, 8}, {3, 9, 10}, {5, 4, 11}, {0, 5, 6} }; //prism triangle index. all with orientation.
 		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
-		static const std::array<std::vector<int>, 8> p_facepoint = {
-		{{0,1,2,3,4,5},
-	{8,7,6,11,10,9},
-	{7,1,0,6},
-	{2,1,7,8},
-	{3,2,8,9},
-	{4,3,9,10},
-	{4,10,11,5},
-	{6,0,5,11}}
-		};
+	//	static const std::array<std::vector<int>, 8> p_facepoint = {
+	//	{{0,1,2,3,4,5},
+	//{8,7,6,11,10,9},
+	//{7,1,0,6},
+	//{2,1,7,8},
+	//{3,2,8,9},
+	//{4,3,9,10},
+	//{4,10,11,5},
+	//{6,0,5,11}}
+	//	};
 
-		static const std::array<std::array<int, 4>, 6> c_facepoint = {
-				{
-					{0,1,2,3},
-			{4,7,6,5},
-			{4,0,3,7},
-			{1,0,4,5},
-			{2,1,5,6},
-			{3,2,6,7}
-				}
-		};
+	//	static const std::array<std::array<int, 4>, 6> c_facepoint = {
+	//			{
+	//				{0,1,2,3},
+	//		{4,7,6,5},
+	//		{4,0,3,7},
+	//		{1,0,4,5},
+	//		{2,1,5,6},
+	//		{3,2,6,7}
+	//			}
+	//	};
 
 		Scalar tolerance = epsilon / sqrt(3);
 		Scalar de;
