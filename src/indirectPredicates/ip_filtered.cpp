@@ -40,6 +40,8 @@
 #include <fenv.h>
 #include "ip_filtered.h"
 
+#pragma intrinsic(fabs)
+
 #ifdef WIN32
 inline void setFPUModeToRoundUP() { _controlfp(_RC_UP, _MCW_RC); }
 inline void setFPUModeToRoundNEAR() { _controlfp(_RC_NEAR, _MCW_RC); }
@@ -94,7 +96,6 @@ bool orient3D_LPI_pre_dfilter(
 	LPI_filtered_suppvars& svs)
 {
 	setFPUModeToRoundUP();
-	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 
 	svs.ia11 = (px - qx);
 	svs.ia12 = (py - qy);
@@ -110,7 +111,7 @@ bool orient3D_LPI_pre_dfilter(
 	interval_number a2132((a21 * a32) - (a22 * a31));
 	svs.id = (((svs.ia11 * a2233) - (svs.ia12 * a2133)) + (svs.ia13 * a2132));
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || !svs.id.signIsReliable()) {
+	if (!svs.id.signIsReliable()) {
 		setFPUModeToRoundNEAR();
 		return false;
 	}
@@ -126,7 +127,7 @@ bool orient3D_LPI_pre_dfilter(
 
 	setFPUModeToRoundNEAR();
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return false;
+	if (!isfinite(svs.ia11) || !isfinite(svs.ia12) || !isfinite(svs.ia13)) return false;
 
 	svs.d = NAN; // This makes it possible to know which filter succeeded
 
@@ -140,7 +141,6 @@ int orient3D_LPI_post_dfilter(const LPI_filtered_suppvars& svs,
 	double cx, double cy, double cz)
 {
 	setFPUModeToRoundUP();
-	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 
 	interval_number px_cx(px - cx);
 	interval_number py_cy(py - cy);
@@ -166,7 +166,7 @@ int orient3D_LPI_post_dfilter(const LPI_filtered_suppvars& svs,
 	interval_number det(d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231));
 	setFPUModeToRoundNEAR();
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || !det.signIsReliable()) return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
+	if (!det.signIsReliable()) return Filtered_Orientation::UNCERTAIN;
 
 	return det.sign()*svs.id.sign();
 }
@@ -181,7 +181,6 @@ bool orient3D_TPI_pre_dfilter(
 	TPI_filtered_suppvars& svs)
 {
 	setFPUModeToRoundUP();
-	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 
 	interval_number v3x(ov3x - ov2x);
 	interval_number v3y(ov3y - ov2y);
@@ -220,7 +219,7 @@ bool orient3D_TPI_pre_dfilter(
 
 	svs.id = (nvx*nwyuz - nvy*nwxuz + nvz*nwxuy);
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || !svs.id.signIsReliable()) {
+	if (!svs.id.signIsReliable()) {
 		setFPUModeToRoundNEAR();
 		return false;
 	}
@@ -242,7 +241,7 @@ bool orient3D_TPI_pre_dfilter(
 	svs.in3 = (p3*nvxwy - p2*nvxuy + p1*nwxuy);
 
 	setFPUModeToRoundNEAR();
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)) return false;
+	if (!isfinite(svs.in1) || !isfinite(svs.in2) || !isfinite(svs.in3)) return false;
 
 	svs.d = NAN; // This makes it possible to know which filter succeeded
 
@@ -256,7 +255,6 @@ int orient3D_TPI_post_dfilter(
 	)
 {
 	setFPUModeToRoundUP();
-	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 
 	interval_number dq3x(svs.id*q3x);
 	interval_number dq3y(svs.id*q3y);
@@ -275,7 +273,7 @@ int orient3D_TPI_post_dfilter(
 	interval_number det(a11*(a22*a33 - a23*a32) - a12*(a21*a33 - a23*a31) + a13*(a21*a32 - a22*a31));
 	setFPUModeToRoundNEAR();
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || !det.signIsReliable()) return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
+	if (!det.signIsReliable()) return Filtered_Orientation::UNCERTAIN;
 
 	return det.sign()*svs.id.sign();
 }
@@ -325,8 +323,6 @@ bool orient3D_LPI_prefilter(
 {
 	double a21, a22, a23, a31, a32, a33;
 
-	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-
 	double& a11 = svs.a11;
 	double& a12 = svs.a12;
 	double& a13 = svs.a13;
@@ -375,7 +371,7 @@ bool orient3D_LPI_prefilter(
 	if (max5 < fa31) max5 = fa31;
 
 	double deps = 5.1107127829973299e-015 * max1 * max2 * max5;
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || (d <= deps && d >= -deps))
+	if (!isfinite(d) || (d <= deps && d >= -deps))
 #ifdef USE_MULTISTAGE_FILTERS
 		return orient3D_LPI_pre_dfilter(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, svs);
 #else
@@ -392,7 +388,7 @@ bool orient3D_LPI_prefilter(
 	a12 *= n;
 	a13 *= n;
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
+	if (!isfinite(a11) || !isfinite(a12) || !isfinite(a13))
 #ifdef USE_MULTISTAGE_FILTERS
 	return orient3D_LPI_pre_dfilter(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, svs);
 #else
@@ -407,20 +403,20 @@ bool orient3D_LPI_prefilter(
 	if (max2 < fpyry) max2 = fpyry;
 	if (max5 < fpxrx) max5 = fpxrx;
 
-#ifdef USE_MULTISTAGE_FILTERS
-	svs.qx = qx;
-	svs.qy = qy;
-	svs.qz = qz;
-	svs.rx = rx;
-	svs.ry = ry;
-	svs.rz = rz;
-	svs.sx = sx;
-	svs.sy = sy;
-	svs.sz = sz;
-	svs.tx = tx;
-	svs.ty = ty;
-	svs.tz = tz;
-#endif
+//#ifdef USE_MULTISTAGE_FILTERS
+//	svs.qx = qx;
+//	svs.qy = qy;
+//	svs.qz = qz;
+//	svs.rx = rx;
+//	svs.ry = ry;
+//	svs.rz = rz;
+//	svs.sx = sx;
+//	svs.sy = sy;
+//	svs.sz = sz;
+//	svs.tx = tx;
+//	svs.ty = ty;
+//	svs.tz = tz;
+//#endif
 
 	return true;
 }
@@ -438,8 +434,6 @@ int orient3D_LPI_postfilter(const LPI_filtered_suppvars& svs,
 	double d11, d12, d13, d21, d31, d22, d32, d23, d33;
 	double d2233, d2332, d2133, d2331, d2132, d2231;
 	double det;
-
-	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 
 	const double& a11 = svs.a11, &a12 = svs.a12, &a13 = svs.a13;
 	const double& d = svs.d;
@@ -469,13 +463,13 @@ int orient3D_LPI_postfilter(const LPI_filtered_suppvars& svs,
 
 	det = d11 * (d2233 - d2332) - d12 * (d2133 - d2331) + d13 * (d2132 - d2231);
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
-#ifdef USE_MULTISTAGE_FILTERS
-		return orient3D_LPI_dfiltered(px, py, pz, svs.qx, svs.qy, svs.qz, svs.rx, svs.ry, svs.rz, 
-		        svs.sx, svs.sy, svs.sz, svs.tx, svs.ty, svs.tz,	ax, ay, az,	bx, by, bz,	cx, cy, cz);
-#else
+	if (!isfinite(det))
+//#ifdef USE_MULTISTAGE_FILTERS
+//		return orient3D_LPI_dfiltered(px, py, pz, svs.qx, svs.qy, svs.qz, svs.rx, svs.ry, svs.rz, 
+//		        svs.sx, svs.sy, svs.sz, svs.tx, svs.ty, svs.tz,	ax, ay, az,	bx, by, bz,	cx, cy, cz);
+//#else
 		return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
-#endif
+//#endif
 
 	double fd11 = fabs(d11);
 	double fd21 = fabs(d21);
@@ -512,12 +506,12 @@ int orient3D_LPI_postfilter(const LPI_filtered_suppvars& svs,
 	if ((det > eps)) return (d>0) ? (Filtered_Orientation::POSITIVE) : (Filtered_Orientation::NEGATIVE);
 	if ((det < -eps)) return (d>0) ? (Filtered_Orientation::NEGATIVE) : (Filtered_Orientation::POSITIVE);
 
-#ifdef USE_MULTISTAGE_FILTERS
-	return orient3D_LPI_dfiltered(px, py, pz, svs.qx, svs.qy, svs.qz, svs.rx, svs.ry, svs.rz,
-		svs.sx, svs.sy, svs.sz, svs.tx, svs.ty, svs.tz, ax, ay, az, bx, by, bz, cx, cy, cz);
-#else
+//#ifdef USE_MULTISTAGE_FILTERS
+//	return orient3D_LPI_dfiltered(px, py, pz, svs.qx, svs.qy, svs.qz, svs.rx, svs.ry, svs.rz,
+//		svs.sx, svs.sy, svs.sz, svs.tx, svs.ty, svs.tz, ax, ay, az, bx, by, bz, cx, cy, cz);
+//#else
 	return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
-#endif
+//#endif
 }
 
 
@@ -528,8 +522,6 @@ bool orient3D_TPI_prefilter(
 	TPI_filtered_suppvars& svs
 	)
 {
-	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
-
 	double& d = svs.d, &n1 = svs.n1, &n2 = svs.n2, &n3 = svs.n3;
 	double& max1 = svs.max1, &max2 = svs.max2, &max3 = svs.max3, &max4 = svs.max4, &max5 = svs.max5, &max6 = svs.max6, &max7 = svs.max7;
 
@@ -620,7 +612,7 @@ bool orient3D_TPI_prefilter(
 	if (max10 < fw3z) max10 = fw3z;
 
 	double deps = 8.8881169117764924e-014 * (((((max4 * max5) * max2) * max10) * max7) * max9);
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID) || (d <= deps && d >= -deps))
+	if (!isfinite(d) || (d <= deps && d >= -deps))
 #ifdef USE_MULTISTAGE_FILTERS
 		return orient3D_TPI_pre_dfilter(ov1x, ov1y, ov1z, ov2x, ov2y, ov2z, ov3x, ov3y, ov3z,
 			ow1x, ow1y, ow1z, ow2x, ow2y, ow2z, ow3x, ow3y, ow3z, ou1x, ou1y, ou1z, ou2x, ou2y, ou2z, 
@@ -645,7 +637,7 @@ bool orient3D_TPI_prefilter(
 	n2 = p2*nvxuz - p3*nvxwz - p1*nwxuz;
 	n3 = p3*nvxwy - p2*nvxuy + p1*nwxuy;
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
+	if (!isfinite(n1) || !isfinite(n2) || !isfinite(n3))
 #ifdef USE_MULTISTAGE_FILTERS
 		return orient3D_TPI_pre_dfilter(ov1x, ov1y, ov1z, ov2x, ov2y, ov2z, ov3x, ov3y, ov3z,
 		ow1x, ow1y, ow1z, ow2x, ow2y, ow2z, ow3x, ow3y, ow3z, ou1x, ou1y, ou1z, ou2x, ou2y, ou2z,
@@ -678,11 +670,11 @@ bool orient3D_TPI_prefilter(
 	if (max6 < fu3y) max6 = fu3y;
 	if (max6 < fw3x) max6 = fw3x;
 
-#ifdef USE_MULTISTAGE_FILTERS
-	svs.v1x = ov1x; svs.v1y = ov1y; svs.v1z = ov1z; svs.v2x = ov2x; svs.v2y = ov2y; svs.v2z = ov2z; svs.v3x = ov3x; svs.v3y = ov3y; svs.v3z = ov3z;
-	svs.w1x = ow1x; svs.w1y = ow1y; svs.w1z = ow1z; svs.w2x = ow2x; svs.w2y = ow2y; svs.w2z = ow2z; svs.w3x = ow3x; svs.w3y = ow3y; svs.w3z = ow3z;
-	svs.u1x = ou1x; svs.u1y = ou1y; svs.u1z = ou1z; svs.u2x = ou2x; svs.u2y = ou2y; svs.u2z = ou2z; svs.u3x = ou3x; svs.u3y = ou3y; svs.u3z = ou3z;
-#endif
+//#ifdef USE_MULTISTAGE_FILTERS
+//	svs.v1x = ov1x; svs.v1y = ov1y; svs.v1z = ov1z; svs.v2x = ov2x; svs.v2y = ov2y; svs.v2z = ov2z; svs.v3x = ov3x; svs.v3y = ov3y; svs.v3z = ov3z;
+//	svs.w1x = ow1x; svs.w1y = ow1y; svs.w1z = ow1z; svs.w2x = ow2x; svs.w2y = ow2y; svs.w2z = ow2z; svs.w3x = ow3x; svs.w3y = ow3y; svs.w3z = ow3z;
+//	svs.u1x = ou1x; svs.u1y = ou1y; svs.u1z = ou1z; svs.u2x = ou2x; svs.u2y = ou2y; svs.u2z = ou2z; svs.u3x = ou3x; svs.u3y = ou3y; svs.u3z = ou3z;
+//#endif
 	return true;
 }
 
@@ -695,7 +687,6 @@ int orient3D_TPI_postfilter(
 #ifdef USE_MULTISTAGE_FILTERS
 	if (svs.d == NAN) return orient3D_TPI_post_dfilter(svs, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
 #endif
-	::feclearexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID);
 
 	const double& d = svs.d, &n1 = svs.n1, &n2 = svs.n2, &n3 = svs.n3;
 	const double& max1 = svs.max1, &max2 = svs.max2, &max3 = svs.max3, &max4 = svs.max4, &max5 = svs.max5, &max6 = svs.max6, &max7 = svs.max7;
@@ -716,14 +707,14 @@ int orient3D_TPI_postfilter(
 
 	double det = a11*(a22*a33 - a23*a32) - a12*(a21*a33 - a23*a31) + a13*(a21*a32 - a22*a31);
 
-	if (::fetestexcept(FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID))
-#ifdef USE_MULTISTAGE_FILTERS
-	return orient3D_TPI_dfiltered(svs.v1x, svs.v1y, svs.v1z, svs.v2x, svs.v2y, svs.v2z, svs.v3x, svs.v3y, svs.v3z,
-		svs.w1x, svs.w1y, svs.w1z, svs.w2x, svs.w2y, svs.w2z, svs.w3x, svs.w3y, svs.w3z, svs.u1x, svs.u1y, svs.u1z, svs.u2x, svs.u2y, svs.u2z,
-		svs.u3x, svs.u3y, svs.u3z, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
-#else
+	if (!isfinite(det))
+//#ifdef USE_MULTISTAGE_FILTERS
+//	return orient3D_TPI_dfiltered(svs.v1x, svs.v1y, svs.v1z, svs.v2x, svs.v2y, svs.v2z, svs.v3x, svs.v3y, svs.v3z,
+//		svs.w1x, svs.w1y, svs.w1z, svs.w2x, svs.w2y, svs.w2z, svs.w3x, svs.w3y, svs.w3z, svs.u1x, svs.u1y, svs.u1z, svs.u2x, svs.u2y, svs.u2z,
+//		svs.u3x, svs.u3y, svs.u3z, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
+//#else
 		return Filtered_Orientation::UNCERTAIN;
-#endif
+//#endif
 
 	double fa21 = fabs(a21);
 	double fa22 = fabs(a22);
@@ -749,13 +740,13 @@ int orient3D_TPI_postfilter(
 
 	if ((det > eps)) return (d>0) ? (Filtered_Orientation::POSITIVE) : (Filtered_Orientation::NEGATIVE);
 	if ((det < -eps)) return (d>0) ? (Filtered_Orientation::NEGATIVE) : (Filtered_Orientation::POSITIVE);
-#ifdef USE_MULTISTAGE_FILTERS
-	return orient3D_TPI_dfiltered(svs.v1x, svs.v1y, svs.v1z, svs.v2x, svs.v2y, svs.v2z, svs.v3x, svs.v3y, svs.v3z,
-		svs.w1x, svs.w1y, svs.w1z, svs.w2x, svs.w2y, svs.w2z, svs.w3x, svs.w3y, svs.w3z, svs.u1x, svs.u1y, svs.u1z, svs.u2x, svs.u2y, svs.u2z,
-		svs.u3x, svs.u3y, svs.u3z, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
-#else
+//#ifdef USE_MULTISTAGE_FILTERS
+//	return orient3D_TPI_dfiltered(svs.v1x, svs.v1y, svs.v1z, svs.v2x, svs.v2y, svs.v2z, svs.v3x, svs.v3y, svs.v3z,
+//		svs.w1x, svs.w1y, svs.w1z, svs.w2x, svs.w2y, svs.w2z, svs.w3x, svs.w3y, svs.w3z, svs.u1x, svs.u1y, svs.u1z, svs.u2x, svs.u2y, svs.u2z,
+//		svs.u3x, svs.u3y, svs.u3z, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
+//#else
 	return Filtered_Orientation::UNCERTAIN;
-#endif
+//#endif
 }
 
 
@@ -791,7 +782,6 @@ int orient3D_TPI_filtered(
 	return orient3D_TPI_postfilter(svs, q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
 }
 
-#define TO_NONNEGATIVE(d) ((d) = fabs(d))
 
 
 // The following macros are fast implementations of basic expansion arithmetic due

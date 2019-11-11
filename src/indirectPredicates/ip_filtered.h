@@ -88,7 +88,7 @@ the reference planes (see detailed comments below for usage examples).
 ****************************************************************************/
 
 // Uncomment the following to use multi-stage filters instead of almost-static filter only
-//#define USE_MULTISTAGE_FILTERS
+#define USE_MULTISTAGE_FILTERS
 
 //
 // initFPU - Make sure to call this function before using the other functions in your code.
@@ -120,15 +120,20 @@ public:
 	inline interval_number(double a, double b) : low(a), high(b) {}
 	inline interval_number(const interval_number& b) : low(b.low), high(b.high) {}
 
-	inline bool signIsReliable() const { return (low>0 || high <0 || (low == 0 && high == 0)); }
+	inline bool signIsReliable() const { return ((low>0 || high <0) && isfinite(low) && isfinite(high)); }
+
 	inline int sign() const { return (low > 0) ? (1) : ((low < 0) ? (-1) : (0)); }
 
 	inline interval_number& operator=(const interval_number& b) { low = b.low; high = b.high; return *this; }
 	inline interval_number operator+(const interval_number& b) const { return interval_number(-((-low) - b.low), high + b.high); }
 	inline interval_number operator-(const interval_number& b) const { return interval_number(-(b.high - low), high - b.low); }
 	interval_number operator*(const interval_number& b) const;
+
+	friend bool isfinite(const interval_number& i);
 };
 #endif
+
+inline bool isfinite(const interval_number& i) { return (::isfinite(i.low) && ::isfinite(i.high)); }
 
 enum Filtered_Orientation {
 	POSITIVE = 1,					// Intersection point is OVER the reference plane
