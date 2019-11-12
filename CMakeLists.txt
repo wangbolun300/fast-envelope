@@ -185,6 +185,7 @@ set(INDIRECTPREDICATES_SOURCES
 	indirectPredicates/ip_filtered.h
 )
 add_library(IndirectPredicates ${INDIRECTPREDICATES_SOURCES})
+indirect_predicates_copy_headers(${INDIRECTPREDICATES_SOURCES})
 target_include_directories(IndirectPredicates PRIVATE indirectPredicates/)
 
 

@@ -2,7 +2,7 @@
 #include <fastenvelope/Types.hpp>
 #include <fastenvelope/AABB.h>
 
-#include <fastenvelope/ip_filtered.h>
+#include <indirectpredicates/ip_filtered.h>
 
 
 #include <fastenvelope/Rational.hpp>
@@ -44,7 +44,7 @@ namespace fastEnvelope {
 			std::vector<int> FACES;
 		};
 
-		
+
 		static const int OUT_PRISM = 1;
 		static const int IN_PRISM = 0;
 
