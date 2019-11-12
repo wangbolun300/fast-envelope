@@ -129,21 +129,33 @@ endif()
 
 
 # TBB
-if(FAST_ENVELOPE_ENABLE_TBB)
-	fast_envelope_download_tbb()
-	set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
-	set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-	set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
-	set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
-	set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+# if(FAST_ENVELOPE_ENABLE_TBB AND NOT TARGET tbb::tbb)
+# 	fast_envelope_download_tbb()
+# 	set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
+# 	set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+# 	set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
+# 	set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
+# 	set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+# 	set(TBB_NO_DATE ON CACHE BOOL " " FORCE)
 
-	add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
-	set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
+# 	add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
+# 	set_target_properties(tbb_static PROPERTIES
+# 		INTERFACE_INCLUDE_DIRECTORIES "${THIRD_PARTY_DIR}/tbb/include"
+# 	)
+# 	if(NOT MSVC)
+# 		set_target_properties(tbb_static PROPERTIES
+# 			COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-missing-field-initializers -Wno-unused-parameter -Wno-keyword-macro"
+# 		)
+# 		set_target_properties(tbb_static PROPERTIES POSITION_INDEPENDENT_CODE ON)
+# 	endif()
+# 	target_compile_definitions(tbb_static PUBLIC -DUSE_TBB)
+# 	add_library(tbb::tbb ALIAS tbb_static)
 
-	target_compile_definitions(tbb_static PUBLIC -DUSE_TBB)
-	target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
-	target_link_libraries(${PROJECT_NAME} PUBLIC tbb_static)
-endif()
+# 	set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
+# endif()
+# if(FAST_ENVELOPE_ENABLE_TBB)
+# 	target_link_libraries(${PROJECT_NAME} PUBLIC tbb::tbb)
+# endif()
 
 find_package(GMP)
 
