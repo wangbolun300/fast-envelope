@@ -118,12 +118,6 @@ find_package(LIBIGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC igl::core)
 
 
-# Geogram
-fast_envelope_download_geogram()
-include(geogram)
-target_link_libraries(${PROJECT_NAME} PUBLIC geogram)
-
-
 if(FAST_ENVELOPE_WITH_SANITIZERS)
 	add_sanitizers(${PROJECT_NAME})
 endif()
@@ -163,12 +157,6 @@ if(${FAST_ENVELOPE_USE_FLOAT})
 endif()
 
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	target_compile_options(${PROJECT_NAME} PRIVATE "/fp:strict")
-elseif(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-	target_compile_options(${PROJECT_NAME} PRIVATE "-frounding-math")
-endif()
-
 #spdlog
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PUBLIC CLI11::CLI11)
@@ -176,12 +164,35 @@ target_link_libraries(${PROJECT_NAME} PUBLIC CLI11::CLI11)
 target_include_directories(${PROJECT_NAME} PUBLIC ${GMP_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GMP_LIBRARIES})
 
+
+
+
+# Predicates
+set(INDIRECTPREDICATES_SOURCES
+	src/indirectPredicates/ip_filtered.cpp
+	src/indirectPredicates/ip_filtered.h
+)
+add_library(IndirectPredicates ${INDIRECTPREDICATES_SOURCES})
+target_include_directories(IndirectPredicates PRIVATE src/indirectPredicates/)
+
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	target_compile_options(IndirectPredicates PRIVATE "/fp:strict")
+elseif(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	target_compile_options(IndirectPredicates PRIVATE "-frounding-math")
+endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE IndirectPredicates)
+
+
+
 ################################################################################
 # Subdirectories
 ################################################################################
 
 # Sources
 add_subdirectory(src)
+
+
 
 
 ################################################################################
@@ -193,6 +204,13 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	add_executable(${PROJECT_NAME}_bin app/main.cpp)
 	add_subdirectory(app)
 	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+
+
+
+	# Geogram
+	fast_envelope_download_geogram()
+	include(geogram)
+	target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
 
 	target_link_libraries(${PROJECT_NAME}_bin
 		PUBLIC

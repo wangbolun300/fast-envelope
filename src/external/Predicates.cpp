@@ -1,18 +1,33 @@
 #include <fastenvelope/Predicates.hpp>
 
+extern "C" void exactinit();
 extern "C" fastEnvelope::Scalar orient3d(const fastEnvelope::Scalar *pa, const fastEnvelope::Scalar *pb, const fastEnvelope::Scalar *pc, const fastEnvelope::Scalar *pd);
 extern "C" fastEnvelope::Scalar orient2d(const fastEnvelope::Scalar *pa, const fastEnvelope::Scalar *pb, const fastEnvelope::Scalar *pc);
 
+#ifdef ENVELOPE_WITH_GEO
 #include <geogram/delaunay/delaunay_3d.h>
+#endif
+
 namespace fastEnvelope {
-#define GEO_PREDICATES true
+	namespace {
+		void init()
+		{
+#ifndef ENVELOPE_WITH_GEO
+			static bool initialized = false;
+			exactinit();
+			initialized=true;
+#endif
+		}
+	}
+
 	const int Predicates::ORI_POSITIVE;
 	const int Predicates::ORI_ZERO;
 	const int Predicates::ORI_NEGATIVE;
 	const int Predicates::ORI_UNKNOWN;
 
 	int Predicates::orient_3d(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4) {
-#if GEO_PREDICATES
+		init();
+#ifdef ENVELOPE_WITH_GEO
 		const int result = -GEO::PCK::orient_3d(p1.data(), p2.data(), p3.data(), p4.data());
 #else
 		const Scalar result = orient3d(p1.data(), p2.data(), p3.data(), p4.data());
@@ -50,7 +65,8 @@ namespace fastEnvelope {
 	// }
 
 	Scalar Predicates::orient_3d_volume(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4) {
-#if GEO_PREDICATES
+		init();
+#ifdef ENVELOPE_WITH_GEO
 		const int ori = -GEO::PCK::orient_3d(p1.data(), p2.data(), p3.data(), p4.data());
 #else
 		const Scalar ori = orient3d(p1.data(), p2.data(), p3.data(), p4.data());
@@ -62,7 +78,8 @@ namespace fastEnvelope {
 	}
 
 	int Predicates::orient_2d(const Vector2& p1, const Vector2& p2, const Vector2& p3) {
-#if GEO_PREDICATES
+		init();
+#ifdef ENVELOPE_WITH_GEO
 		const int result = -GEO::PCK::orient_2d(p1.data(), p2.data(), p3.data());
 #else
 		const Scalar result = orient2d(p1.data(), p2.data(), p3.data());
