@@ -32,7 +32,6 @@ namespace fastEnvelope {
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);
 		static void printnumber();
-		static void reset_time();
 		//check if tri is outside
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 
