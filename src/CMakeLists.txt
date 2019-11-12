@@ -4,11 +4,12 @@ set(SOURCES
         FastEnvelope.cpp
         FastEnvelope.h
         Logger.hpp
-obb.h
-obb.cpp
 Morton.h
 Morton.cpp
         Types.hpp
+common_algorithms.cpp
+common_algorithms.h
+
 )
 
 prepend_current_path(SOURCES)

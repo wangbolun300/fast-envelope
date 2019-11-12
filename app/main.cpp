@@ -82,20 +82,6 @@ void unordered_map_try() {
 	std::cout << "Found or not " << search->first << " size " << search->second.size() << '\n';
 }
 
-void get_triangle_corners(const std::array<Vector3, 3> &triangle, Vector3 &min, Vector3 &max) {
-	min[0] = std::min(std::min(triangle[0][0], triangle[1][0]), triangle[2][0]);
-	min[1] = std::min(std::min(triangle[0][1], triangle[1][1]), triangle[2][1]);
-	min[2] = std::min(std::min(triangle[0][2], triangle[1][2]), triangle[2][2]);
-	max[0] = std::max(std::max(triangle[0][0], triangle[1][0]), triangle[2][0]);
-	max[1] = std::max(std::max(triangle[0][1], triangle[1][1]), triangle[2][1]);
-	max[2] = std::max(std::max(triangle[0][2], triangle[1][2]), triangle[2][2]);
-
-}
-
-
-
-
-
 
 void testOrientation() {
 	std::array<Vector3, 3> tri = { { Vector3(0,0,0),Vector3(1,0,0),Vector3(0,1,0) } };// right hand law
@@ -468,9 +454,7 @@ void test_in_wild() {
 	int nbr = 0;
 	for (int i = 0; i < trindex2.size(); i++) {
 
-		if (FastEnvelope::is_triangle_degenerated(triangles[trindex2[i]][0], triangles[trindex2[i]][1], triangles[trindex2[i]][2]) != 0) {
-			nbr++;
-		}
+		
 
 	}
 	cout << "\ndegeneration counting: " << nbr << endl;
@@ -585,12 +569,12 @@ void test_in_wild() {
 
 
 
-void test_without_sampling(string inputFileName1, string input_surface_path1) {
-//void test_without_sampling() {
-//	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-//	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-//	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl_envelope_log.csv";
-//	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl";
+//void test_without_sampling(string inputFileName1, string input_surface_path1) {
+void test_without_sampling() {
+	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl_envelope_log.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl";
 
 
 	vector<int> outenvelope;
@@ -1040,16 +1024,16 @@ int main(int argc, char const *argv[])
 	/*test_without_sampling();
 	test_without_sampling();*/
 	
-	//test_without_sampling();
+	test_without_sampling();
 	/*bool a=true;
 	if (a) cout << "a true" <<a<< endl;
 	if (!a) cout << "a false" << endl;*/
 	//tryspeed();
 
-	for (int i = 0; i < (argc - 1) / 2; i++) {
+	/*for (int i = 0; i < (argc - 1) / 2; i++) {
 		test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
-	}
+	}*/
 
 
 //fordebug();
@@ -1069,7 +1053,7 @@ m(1, 0) = 1;
 m(1, 1) = 1;
 m(1, 2) = 1;
 */
-	obb::test();
+	
 
 
 

@@ -3,18 +3,7 @@
 #include <cassert>
 
 namespace fastEnvelope {
-	namespace {
-		bool box_box_intersection(const Vector3 &min1, const Vector3 &max1, const Vector3 &min2, const Vector3 &max2)
-		{
-			if (max1[0] < min2[0] || max1[1] < min2[1] || max1[2] < min2[2])
-				return 0;
-			if (max2[0] < min1[0] || max2[1] < min1[1] || max2[2] < min1[2])
-				return 0;
-			return 1;
-		}
-
-		
-	}
+	
 
 
 	void AABB::init_envelope_boxes_recursive(
@@ -163,8 +152,8 @@ namespace fastEnvelope {
 		const auto &bmax = boxlist[index][1];
 		Vector3 tmin, tmax;
 		
-		get_tri_corners(tri0, tri1, tri2, tmin, tmax);
-		bool cut= box_box_intersection(tmin, tmax, bmin, bmax);
+		algorithms::get_tri_corners(tri0, tri1, tri2, tmin, tmax);
+		bool cut=algorithms:: box_box_intersection(tmin, tmax, bmin, bmax);
 		if (cut == false) return false;
 		
 		if (cut) {
@@ -173,12 +162,12 @@ namespace fastEnvelope {
 			std::array<Vector2,4> mp;
 			int o0, o1, o2, o3, ori;
 			for (int i = 0; i < 3; i++) {
-				tri[0] = to_2d(tri0, i);
-				tri[1] = to_2d(tri1, i);
-				tri[2] = to_2d(tri2, i);
+				tri[0] = algorithms::to_2d(tri0, i);
+				tri[1] = algorithms::to_2d(tri1, i);
+				tri[2] = algorithms::to_2d(tri2, i);
 
-				mp[0] = to_2d(bmin, i);
-				mp[1] = to_2d(bmax, i);
+				mp[0] = algorithms::to_2d(bmin, i);
+				mp[1] = algorithms::to_2d(bmax, i);
 				mp[2][0] = mp[0][0]; mp[2][1] = mp[1][1];
 				mp[3][0] = mp[1][0]; mp[3][1] = mp[0][1];
 		
@@ -203,6 +192,6 @@ namespace fastEnvelope {
 		const auto &bmax = boxlist[index][1];
 
 		
-		return box_box_intersection(bbd0, bbd1, bmin, bmax);
+		return algorithms::box_box_intersection(bbd0, bbd1, bmin, bmax);
 	}
 }

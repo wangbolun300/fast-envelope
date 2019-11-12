@@ -17,6 +17,19 @@ namespace fastEnvelope {
 
 #endif
 
+
+	static const bool OUT_PRISM = 1;
+	static const bool IN_PRISM = 0;
+
+	static const int FE_CUT_COPLANAR = 4;//TODO move to an independent folder
+	static const int FE_CUT_EMPTY = -1;
+	static const int FE_CUT_FACE = 3;
+
+	static const int NOT_DEGENERATED = 0;//TODO
+	static const int NERLY_DEGENERATED = 1;
+	static const int DEGENERATED_SEGMENT = 2;
+	static const int DEGENERATED_POINT = 3;
+
     typedef Eigen::Matrix<Scalar, 3, 3> Matrix3;
 
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
@@ -27,7 +40,4 @@ namespace fastEnvelope {
     typedef Eigen::Matrix<int, 3, 1> Vector3i;
     typedef Eigen::Matrix<int, 2, 1> Vector2i;
 
-    typedef Eigen::Matrix < Vector3, Eigen::Dynamic, 1, 0, 12, 1> HalfPlanes;
-    //HalfPlanes hp(4, 1); hp(11, 1); no: hp(13, 1);
-    //hp.size() 4, 11
 }
