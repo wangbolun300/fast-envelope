@@ -37,6 +37,7 @@ include(Warnings)
 # Use C++11/14
 include(CXXFeatures)
 
+
 # Sort projects inside the solution
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -101,6 +102,7 @@ include(FastEnvelopeDependencies)
 
 # add_library() can only be called without any source since CMake 3.11 ...
 add_library(${PROJECT_NAME} src/Logger.cpp)
+target_compile_features(${PROJECT_NAME} PRIVATE ${CXX11_FEATURES})
 
 # Public include directory for FastEnvelope
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR}/include)
