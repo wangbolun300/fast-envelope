@@ -169,11 +169,11 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${GMP_LIBRARIES})
 
 # Predicates
 set(INDIRECTPREDICATES_SOURCES
-	src/indirectPredicates/ip_filtered.cpp
-	src/indirectPredicates/ip_filtered.h
+	indirectPredicates/ip_filtered.cpp
+	indirectPredicates/ip_filtered.h
 )
 add_library(IndirectPredicates ${INDIRECTPREDICATES_SOURCES})
-target_include_directories(IndirectPredicates PRIVATE src/indirectPredicates/)
+target_include_directories(IndirectPredicates PRIVATE indirectPredicates/)
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
