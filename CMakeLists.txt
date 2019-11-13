@@ -57,8 +57,9 @@ endif()
 ################################################################################
 
 # FastEnvelope options
-option(FAST_ENVELOPE_ENABLE_TBB         "Enable TBB"                    ON)
-option(FAST_ENVELOPE_USE_FLOAT          "Use floats instead of double"  OFF)
+# option(FAST_ENVELOPE_ENABLE_TBB        			"Enable TBB"                    ON)
+# option(FAST_ENVELOPE_USE_FLOAT          		"Use floats instead of double"  OFF)
+option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES    "Use Geogram predicates"        OFF)
 
 
 # Sanitizer options
@@ -86,6 +87,8 @@ option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   OFF)
 option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 OFF)
 option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            OFF)
 option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
+
+
 
 
 # Sanitizers
@@ -166,9 +169,9 @@ IF(NOT ${GMP_FOUND})
 ENDIF()
 
 
-if(${FAST_ENVELOPE_USE_FLOAT})
-	target_compile_definitions(${PROJECT_NAME} PUBLIC -DFAST_ENVELOPE_USE_FLOAT)
-endif()
+# if(${FAST_ENVELOPE_USE_FLOAT})
+# 	target_compile_definitions(${PROJECT_NAME} PUBLIC -DFAST_ENVELOPE_USE_FLOAT)
+# endif()
 
 
 #spdlog
@@ -178,6 +181,13 @@ target_link_libraries(${PROJECT_NAME} PUBLIC CLI11::CLI11)
 target_include_directories(${PROJECT_NAME} PUBLIC ${GMP_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GMP_LIBRARIES})
 
+
+if(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
+	fast_envelope_download_geogram()
+	include(geogram)
+	target_link_libraries(${PROJECT_NAME} PUBLIC geogram)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC ENVELOPE_WITH_GEO)
+endif()
 
 
 
@@ -221,11 +231,12 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
 
-
-	# Geogram
-	fast_envelope_download_geogram()
-	include(geogram)
-	target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
+	if(NOT FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
+		# Geogram
+		fast_envelope_download_geogram()
+		include(geogram)
+		target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
+	endif()
 
 	target_link_libraries(${PROJECT_NAME}_bin
 		PUBLIC
