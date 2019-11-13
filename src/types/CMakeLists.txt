@@ -1,5 +1,4 @@
 set(SOURCES
-	Multiprecision.hpp
 	Rational.hpp
 )
 

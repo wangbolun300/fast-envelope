@@ -286,7 +286,7 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 				if (!getline(ss, line, ','))
 					break;
 				try {
-					record[c] = stof(line);
+					record[c] = stod(line);
 					c++;
 				}
 				catch (const std::invalid_argument e) {
@@ -573,8 +573,8 @@ void test_in_wild() {
 void test_without_sampling() {
 	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
 	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl";
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl_envelope_log.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl";
 
 
 	vector<int> outenvelope;
