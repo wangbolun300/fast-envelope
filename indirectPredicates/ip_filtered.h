@@ -119,7 +119,7 @@ public:
 	inline interval_number(double a) : low(a), high(a) {}
 	inline interval_number(double a, double b) : low(a), high(b) {}
 	inline interval_number(const interval_number& b) : low(b.low), high(b.high) {}
-
+	friend bool isfinite(const interval_number& i);
 	inline bool signIsReliable() const { return ((low>0 || high <0) && isfinite(low) && isfinite(high)); }
 
 	inline int sign() const { return (low > 0) ? (1) : ((low < 0) ? (-1) : (0)); }
@@ -129,7 +129,7 @@ public:
 	inline interval_number operator-(const interval_number& b) const { return interval_number(-(b.high - low), high - b.low); }
 	interval_number operator*(const interval_number& b) const;
 
-	friend bool isfinite(const interval_number& i);
+	
 };
 #endif
 
