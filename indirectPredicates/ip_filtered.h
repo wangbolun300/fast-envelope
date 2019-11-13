@@ -89,7 +89,7 @@ the reference planes (see detailed comments below for usage examples).
 
 // Uncomment the following to use multi-stage filters instead of almost-static filter only
 #define USE_MULTISTAGE_FILTERS
-#include<cmath>
+#include<math.h>
 //
 // initFPU - Make sure to call this function before using the other functions in your code.
 // This appropriately sets the FPU mode to make sure that the error calculations are correct.
