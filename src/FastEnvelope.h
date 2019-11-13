@@ -34,7 +34,7 @@ namespace fastEnvelope {
 		static void printnumber();
 		//check if tri is outside
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
-
+		bool is_outside(const Vector3 &point) const;
 		
 
 

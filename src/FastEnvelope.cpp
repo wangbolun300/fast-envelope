@@ -152,7 +152,19 @@ namespace fastEnvelope
 		const auto res = FastEnvelopeTestImplicit(triangle, querylist);
 		return res;
 	}
+	bool FastEnvelope::is_outside(const Vector3 &point) const
+	{
 
+		std::vector<unsigned int> querylist;
+		tree.facet_in_envelope(point, point, point, querylist);//TODO make a separate function for point
+		bool out = point_out_prism(point, querylist, -1);
+		if (out == true)
+		{
+			return 1;
+		}
+		return 0;
+		
+	}
 
 	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int &pieces) const
 	{
