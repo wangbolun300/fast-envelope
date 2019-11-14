@@ -1,6 +1,6 @@
 ﻿#include <fastenvelope/FastEnvelope.h>
 #include <fastenvelope/MeshIO.hpp>
-#include <fastenvelope/Multiprecision.hpp>
+
 #include <fastenvelope/Predicates.hpp>
 #include <fastenvelope/Types.hpp>
 #include <fastenvelope/AABBWrapper.h>
@@ -13,7 +13,7 @@
 
 #include <geogram/basic/command_line_args.h>
 
-//#include<fastenvelope/EnvelopeTest.h>
+
 #include <unordered_map>
 
 #include <stdlib.h>
@@ -866,104 +866,7 @@ void writelist() {
 }
 
 #include <gmp.h>
-void testM() {
-	//{
-	//Rational r1(1);
-	//Rational r3(3);
 
-	//Rational rr = r1 / r3 / r3;
-	//Rational rrr = r3 * rr*r3;
-
-	//std::cout << rrr << std::endl;
-	//Scalar p = 1.3;
-	//Rational pr(p);
-	//pr = pr * pr;
-	//pr = pr * pr;
-	//pr = pr * pr;
-	//double pr1;
-	//std::cout << "rr "<<std::setprecision(17) << pr << std::endl;
-	//rational_try(Rational(0.7));
-	//}
-
-	{
-		Multiprecision r1(1);
-		Multiprecision r3(3);
-
-		Multiprecision rr = r1 / r3 / r3;
-		Multiprecision rrr = r3 * rr * r3;
-
-		std::cout << rrr << std::endl;
-		Scalar p = 1.473;
-		Multiprecision pr(p);
-		pr = pr * pr;//9 6
-		pr = pr * pr;//1 12
-		pr = Multiprecision(p) * pr;//3 15
-		//pr = pr * pr;
-
-		//std::cout << "mp " << pr << std::endl;
-		//std::cout << "mp " << std::setprecision(17) << pr << std::endl;
-	}
-
-	Rational r = double(1.473);
-	r = r * r;
-	r = r * r;
-	r = 1.473 * r;
-
-	//std::cout << "r  " << std::setprecision(16) << r << std::endl;
-
-
-
-	typedef Multiprecision T;
-	//typedef Rational T;
-	int prec = 100;
-
-	T a;
-	a.value->_mp_prec = prec;
-	a = T(141414) / T(100000);
-	T b;
-	b.value->_mp_prec = prec;
-	b = T(76) / T(100);
-	T result;
-	result.value->_mp_prec = prec;
-	result = (a * b);
-	cout << "result " << result << endl;
-	T b1;
-	b1.value->_mp_prec = prec;
-	b1 = T(76) / T(10);
-	T result1;
-	result1.value->_mp_prec = prec;
-	result1 = (a * b1);
-	cout << "result1 " << result1 << endl;
-	T n5;
-	n5.value->_mp_prec = prec;
-	n5 = T(1) / T(10);
-	T result2;
-	result2.value->_mp_prec = prec;
-	result2 = (result1 *n5);
-	cout << "result2 " << result2 << endl;
-	T minu;
-	minu.value->_mp_prec = prec;
-	minu = (result - result2);
-	cout << "check " << minu.get_sign() << endl;
-
-	if (minu == 0) {
-		cout << "=0" << endl;
-	}
-	Multiprecision multi;
-	multi.value->_mp_prec = 100;
-
-	mpf_t x;
-	mpf_init2(x, 512);
-
-	cout << "prec " << mpf_get_prec(x) << endl;
-
-	Multiprecision a1(3.14);
-	cout << "prec " << a1.get_prec_bits() << endl;
-
-	Multiprecision b2 = 3.14;
-	cout << "prec2 " << b2.get_prec_bits() << endl;
-
-}
 void try_eigen() {
 	Vector3 u;
 	u[0] = 0;
