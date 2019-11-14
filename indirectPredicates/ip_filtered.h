@@ -89,7 +89,7 @@ the reference planes (see detailed comments below for usage examples).
 
 // Uncomment the following to use multi-stage filters instead of almost-static filter only
 #define USE_MULTISTAGE_FILTERS
-#include<math.h>
+
 //
 // initFPU - Make sure to call this function before using the other functions in your code.
 // This appropriately sets the FPU mode to make sure that the error calculations are correct.
@@ -241,7 +241,7 @@ public:
 	double a11, a12, a13, d, fa11, fa12, fa13, max1, max2, max5;
 #ifdef USE_MULTISTAGE_FILTERS
 	interval_number ia11, ia12, ia13, id;
-	double qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz;
+//	double qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz;
 #endif
 
 	LPI_filtered_suppvars() {}
@@ -298,9 +298,9 @@ public:
 	double d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7;
 #ifdef USE_MULTISTAGE_FILTERS
 	interval_number id, in1, in2, in3;
-	double v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
-		w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
-		u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z;
+	//double v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
+	//	w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
+	//	u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z;
 #endif
 
 	TPI_filtered_suppvars() {}
