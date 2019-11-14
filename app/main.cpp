@@ -594,7 +594,7 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 
 
 
-	Scalar shrink = 2;
+	Scalar shrink = 5;
 	Scalar eps = 1e-3;
 	const int spac = 10;// space subdivision parameter
 	int ft;
