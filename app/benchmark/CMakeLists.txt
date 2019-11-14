@@ -10,6 +10,8 @@ set(SOURCES
 
 	AABBWrapper.cpp
 	AABBWrapper.h
+sampling.h
+sampling.cpp
 )
 
 prepend_current_path(SOURCES)

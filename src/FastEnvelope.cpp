@@ -1,7 +1,7 @@
 #include <fastenvelope/FastEnvelope.h>
 #include <fastenvelope/Predicates.hpp>
 #include <fastenvelope/Logger.hpp>
-#include<fastenvelope/Morton.h>
+#include <fastenvelope/Rational.hpp>
 #include<fastenvelope/common_algorithms.h>
 
 #include <fstream>
@@ -10,56 +10,7 @@
 
 namespace fastEnvelope
 {
-	namespace {
-		
-
-		//delete me in the future
-		void triangle_sample_segment(const std::array<Vector3, 3> &triangle, Vector3 &ps, const int &pieces, const int &nbr)
-		{
-			int t = pieces - 1;
-			if (triangle[1] - triangle[0] == Vector3(0, 0, 0))
-			{
-
-				ps = (triangle[0] + (triangle[2] - triangle[0]) * nbr / t);
-
-				return;
-			}
-			if (triangle[2] - triangle[0] == Vector3(0, 0, 0))
-			{
-
-				ps = (triangle[0] + (triangle[1] - triangle[0]) * nbr / t);
-
-				return;
-			}
-			if (triangle[2] - triangle[1] == Vector3(0, 0, 0))
-			{
-
-				ps = (triangle[0] + (triangle[1] - triangle[0]) * nbr / t);
-
-				return;
-			}
-
-			Scalar d1 = (triangle[1] - triangle[0]).norm(), d2 = (triangle[2] - triangle[0]).norm(), d3 = (triangle[1] - triangle[2]).norm();
-			if (d1 >= d2 && d1 >= d3)
-			{
-				ps = (triangle[0] + (triangle[1] - triangle[0]) * nbr / t);
-
-				return;
-			}
-			if (d2 >= d1 && d2 >= d3)
-			{
-				ps = (triangle[0] + (triangle[2] - triangle[0]) * nbr / t);
-
-				return;
-			}
-			if (d3 >= d1 && d3 >= d2)
-			{
-				ps = (triangle[1] + (triangle[2] - triangle[1]) * nbr / t);
-
-				return;
-			}
-		}
-	}
+	
 	void FastEnvelope::printnumber() {
 		
 	}
@@ -90,60 +41,22 @@ namespace fastEnvelope
 		std::vector<Vector3i> faces_new;
 
 	
-		resorting(m_ver, m_faces, faces_new);//resort the facets order
+		algorithms::resorting(m_ver, m_faces, faces_new);//resort the facets order
 		//----
 		
 
 		
 
-		halfspace_init(m_ver, faces_new, halfspace, cornerlist, epsilon);
+		algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, epsilon);
 
-
-		
-		
-
-
-		
 		tree.init_envelope(cornerlist);
-		
-		
 
 		//initializing types
 		initFPU();
 
 		
 	}
-	void FastEnvelope::resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew) {
-		std::vector<std::array<int,3>> ct;
-		struct sortstruct {
-			int order;
-			Resorting::MortonCode64 morton;
-		};
-		std::vector<sortstruct> list;
-		const int multi = 1000;
-		ct.resize(F.size());
-		list.resize(F.size());
-		
-		for (int i = 0; i < F.size(); i++) {
-			ct[i][0] = int(((V[F[i][0]] + V[F[i][1]] + V[F[i][2]])*multi)[0]);
-			ct[i][1] = int(((V[F[i][0]] + V[F[i][1]] + V[F[i][2]])*multi)[1]);
-			ct[i][2] = int(((V[F[i][0]] + V[F[i][1]] + V[F[i][2]])*multi)[2]);
-			list[i].morton = Resorting::MortonCode64(ct[i][0], ct[i][1], ct[i][2]);
-			list[i].order = i;
-		}
-		const auto morton_compare = [](const sortstruct &a, const sortstruct &b)
-		{
-			return (a.morton < b.morton);
-		};
-		std::sort(list.begin(), list.end(), morton_compare);
-
-		fnew.resize(F.size());
-		for (int i = 0; i < F.size(); i++) {
-			fnew[i] = F[list[i].order];
-		}
-
-
-	}
+	
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const
 	{
 
@@ -166,82 +79,7 @@ namespace fastEnvelope
 		
 	}
 
-	bool FastEnvelope::sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int &pieces) const
-	{
-
-		const auto triangle_sample_normal = [](const std::array<Vector3, 3> &triangle, Vector3 &ps, const int &pieces, const int &nbr1, const int &nbr2)
-		{
-			int l1s = pieces - 1; //
-			Vector3 p1 = triangle[0] + (triangle[1] - triangle[0]) * nbr1 / l1s, d = (triangle[2] - triangle[1]) / l1s;
-			ps = p1 + d * nbr2;
-		};
-
-		const auto triangle_sample_normal_rational = [](const std::array<Vector3, 3> &triangle, Rational &ps0, Rational &ps1, Rational &ps2, const int &pieces, const int &nbr1, const int &nbr2)
-		{
-			int l1s = pieces - 1; //
-			Rational t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]), t10(triangle[1][0]), t11(triangle[1][1]),
-				t12(triangle[1][2]), t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]), nbr1r(nbr1), nbr2r(nbr2), l1sr(l1s);
-
-			Rational p0 = t00 + (t10 - t00) * nbr1r / l1sr, d0 = (t20 - t10) / l1sr;
-			Rational p1 = t01 + (t11 - t01) * nbr1r / l1sr, d1 = (t21 - t11) / l1sr;
-			Rational p2 = t02 + (t12 - t02) * nbr1r / l1sr, d2 = (t22 - t12) / l1sr;
-			ps0 = p0 + d0 * nbr2;
-			ps1 = p1 + d1 * nbr2;
-			ps2 = p2 + d2 * nbr2;
-		};
-
-		bool out;
-		Vector3 point;
-		std::vector<unsigned int> querylist;
-		tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
-		int jump = -1;
-		if (querylist.size() == 0)
-			return 1;
-
-		int deg = algorithms::is_triangle_degenerated(triangle[0], triangle[1], triangle[2]);
-
-		if (deg == DEGENERATED_POINT)
-		{
-			out = point_out_prism(triangle[0], querylist, jump);
-			if (out == true)
-			{
-
-				return 1;
-			}
-			return 0;
-		}
-		if (deg == DEGENERATED_SEGMENT)
-		{
-			for (int i = 0; i < pieces; i++)
-			{
-				triangle_sample_segment(triangle, point, pieces, i);
-				out = point_out_prism(point, querylist, jump);
-				if (out == true)
-				{
-
-					return 1;
-				}
-			}
-			return 0;
-		}
-
-		for (int i = 0; i < pieces; i++)
-		{
-			for (int j = 0; j <= i; j++)
-			{
-				triangle_sample_normal(triangle, point, pieces, i, j);
-				out = point_out_prism(point, querylist, jump);
-				if (out == true)
-				{
-
-					return 1;
-				}
-			}
-		}
-
-		return 0;
-	}
-
+	
 
 	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const
 	{
@@ -2454,259 +2292,6 @@ namespace fastEnvelope
 		return true;
 	}
 	
-	void FastEnvelope::halfspace_init(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces,
-		std::vector<std::vector<std::array<Vector3, 3>>>& halfspace, std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon) {
-
-		const auto dot_sign = [](const Vector3 &a, const Vector3 &b)
-		{
-			Scalar t = a.dot(b);
-			if (t > SCALAR_ZERO)
-				return 1;
-			if (t < -1 * SCALAR_ZERO)
-				return -1;
-			Rational a0(a[0]), a1(a[1]), a2(a[2]), b0(b[0]), b1(b[1]), b2(b[2]), dot;
-			dot = a0 * b0 + a1 * b1 + a2 * b2;
-			if (dot.get_sign() > 0)
-				return 1;
-			if (dot.get_sign() < 0)
-				return -1;
-			return 0;
-		};
-		const auto get_bb_corners_12 = [](const std::array<Vector3, 12> &vertices) {//TODO why use this one
-			std::array<Vector3, 2> corners;
-			corners[0] = vertices[0];
-			corners[1] = vertices[0];
-
-			for (size_t j = 0; j < 12; j++) {
-				for (int i = 0; i < 3; i++) {
-					corners[0][i] = std::min(corners[0][i], vertices[j][i]);
-					corners[1][i] = std::max(corners[1][i], vertices[j][i]);
-				}
-			}
-
-			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-6;
-			for (int j = 0; j < 3; j++) {
-				corners[0][j] -= dis;
-				corners[1][j] += dis;
-			}
-			return corners;
-
-		};
-		const auto get_bb_corners_8 = [](const std::array<Vector3, 8> &vertices) {//TODO why use this one
-			std::array<Vector3, 2> corners;
-			corners[0] = vertices[0];
-			corners[1] = vertices[0];
-
-			for (size_t j = 0; j < 8; j++) {
-				for (int i = 0; i < 3; i++) {
-					corners[0][i] = std::min(corners[0][i], vertices[j][i]);
-					corners[1][i] = std::max(corners[1][i], vertices[j][i]);
-				}
-			}
-
-			//const Scalar dis = (max - min).minCoeff() * 3;//TODO  change to 1e-5 or sth
-			const Scalar dis = 1e-6;
-			for (int j = 0; j < 3; j++) {
-				corners[0][j] -= dis;
-				corners[1][j] += dis;
-			}
-			return corners;
-		};
-		static const fastEnvelope::Vector3 origin = fastEnvelope::Vector3(0, 0, 0);
-	
-		halfspace.resize(m_faces.size());
-		cornerlist.resize(m_faces.size());
-		
-		Vector3 AB, AC, BC, normal, vector1, ABn, min, max;
-		std::array<Vector3, 6> polygon;
-		std::array<Vector3, 12> polygonoff;
-		std::array<Vector3, 8> box;
-		static const std::array<Vector3, 8> boxorder = {
-			{
-				{1, 1, 1},
-				{-1, 1, 1},
-				{-1, -1, 1},
-				{1, -1, 1},
-				{1, 1, -1},
-				{-1, 1, -1},
-				{-1, -1, -1},
-				{1, -1, -1},
-			} };
-		static const int p_face[8][3] = { {0, 1, 3}, {7, 6, 9}, {1, 0, 7}, {2, 1, 7}, {3, 2, 8}, {3, 9, 10}, {5, 4, 11}, {0, 5, 6} }; //prism triangle index. all with orientation.
-		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
-	//	static const std::array<std::vector<int>, 8> p_facepoint = {
-	//	{{0,1,2,3,4,5},
-	//{8,7,6,11,10,9},
-	//{7,1,0,6},
-	//{2,1,7,8},
-	//{3,2,8,9},
-	//{4,3,9,10},
-	//{4,10,11,5},
-	//{6,0,5,11}}
-	//	};
-
-	//	static const std::array<std::array<int, 4>, 6> c_facepoint = {
-	//			{
-	//				{0,1,2,3},
-	//		{4,7,6,5},
-	//		{4,0,3,7},
-	//		{1,0,4,5},
-	//		{2,1,5,6},
-	//		{3,2,6,7}
-	//			}
-	//	};
-
-		Scalar tolerance = epsilon / sqrt(3);
-		Scalar de;
-
-		for (int i = 0; i < m_faces.size(); i++)
-		{
-			AB = m_ver[m_faces[i][1]] - m_ver[m_faces[i][0]];
-			AC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][0]];
-			BC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][1]];
-			de = algorithms::is_triangle_degenerated(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
-
-			if (de == DEGENERATED_POINT)
-			{
-				logger().debug("Envelope Triangle Degeneration- Point");
-				for (int j = 0; j < 8; j++)
-				{
-					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
-				}
-				halfspace[i].resize(6);
-				for (int j = 0; j < 6; j++) {
-					halfspace[i][j][0] = box[c_face[j][0]];
-					halfspace[i][j][1] = box[c_face[j][1]];
-					halfspace[i][j][2] = box[c_face[j][2]];
-				}
-				cornerlist[i] = (get_bb_corners_8(box));
-
-				
-				continue;
-			}
-			if (de == DEGENERATED_SEGMENT)
-			{
-				logger().debug("Envelope Triangle Degeneration- Segment");
-				Scalar length1 = AB.norm(), length2 = AC.norm(), length3 = BC.norm();
-				if (length1 >= length2 && length1 >= length3)
-				{
-					seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], tolerance, box);
-
-				}
-				if (length2 >= length1 && length2 >= length3)
-				{
-					seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][2]], tolerance, box);
-
-				}
-				if (length3 >= length1 && length3 >= length2)
-				{
-					seg_cube(m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tolerance, box);
-				}
-				halfspace[i].resize(6);
-				for (int j = 0; j < 6; j++) {
-					halfspace[i][j][0] = box[c_face[j][0]];
-					halfspace[i][j][1] = box[c_face[j][1]];
-					halfspace[i][j][2] = box[c_face[j][2]];
-				}
-				cornerlist[i] = (get_bb_corners_8(box));
-
-
-				continue;
-			}
-			if (de == NERLY_DEGENERATED)
-			{
-				logger().debug("Envelope Triangle Degeneration- Nearly");
-
-				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][0]], m_ver[m_faces[i][2]]);
-
-				vector1 = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], origin, normal);
-
-			}
-			else
-			{
-				normal = AB.cross(AC).normalized();
-				vector1 = AB.cross(normal).normalized();
-			}
-
-			ABn = AB.normalized();
-			polygon[0] = m_ver[m_faces[i][0]] + (vector1 - ABn) * tolerance;
-			polygon[1] = m_ver[m_faces[i][1]] + (vector1 + ABn) * tolerance;
-			if (dot_sign(AB, BC) < 0)
-			{
-				polygon[2] = m_ver[m_faces[i][1]] + (-vector1 + ABn) * tolerance;
-				polygon[3] = m_ver[m_faces[i][2]] + (-vector1 + ABn) * tolerance;
-				polygon[4] = m_ver[m_faces[i][2]] + (-vector1 - ABn) * tolerance;
-				if (dot_sign(AB, AC) < 0)
-				{
-					polygon[5] = m_ver[m_faces[i][2]] + (vector1 - ABn) * tolerance;
-				}
-				else
-				{
-					polygon[5] = m_ver[m_faces[i][0]] + (-vector1 - ABn) * tolerance;
-				}
-			}
-			else
-			{
-				polygon[2] = m_ver[m_faces[i][2]] + (vector1 + ABn) * tolerance;
-				polygon[3] = m_ver[m_faces[i][2]] + (-vector1 + ABn) * tolerance;
-				polygon[4] = m_ver[m_faces[i][2]] + (-vector1 - ABn) * tolerance;
-				polygon[5] = m_ver[m_faces[i][0]] + (-vector1 - ABn) * tolerance;
-			}
-
-			for (int j = 0; j < 6; j++)
-			{
-				polygonoff[j] = polygon[j] + normal * tolerance;
-			}
-			for (int j = 6; j < 12; j++)
-			{
-				polygonoff[j] = polygon[j - 6] - normal * tolerance;
-			}
-			halfspace[i].resize(8);
-			for (int j = 0; j < 8; j++) {
-				halfspace[i][j][0] = polygonoff[p_face[j][0]];
-				halfspace[i][j][1] = polygonoff[p_face[j][1]];
-				halfspace[i][j][2] = polygonoff[p_face[j][2]];
-			}
-			cornerlist[i] = (get_bb_corners_12(polygonoff));
-
-		}
-
-		
-	}
-
-	void FastEnvelope::seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox)
-	{
-		Vector3 v1, v2, v = p2 - p1; //p12
-		if (v[0] != 0)
-		{
-			v1 = Vector3((0 - v[1] - v[2]) / v[0], 1, 1);
-		}
-		else
-		{
-			if (v[1] != 0)
-			{
-				v1 = Vector3(1, (0 - v[2]) / v[1], 1);
-			}
-			else
-			{
-				v1 = Vector3(1, 1, 0);
-			}
-		}
-		v2 = v.cross(v1);
-		v = v.normalized();
-		v1 = v1.normalized();
-		v2 = v2.normalized();
-		envbox[0] = p2 + width * (v + v1 + v2);
-		envbox[1] = p2 + width * (v - v1 + v2);
-		envbox[2] = p2 + width * (v - v1 - v2);
-		envbox[3] = p2 + width * (v + v1 - v2); //right hand out direction
-		envbox[4] = p1 + width * (-v + v1 + v2);
-		envbox[5] = p1 + width * (-v - v1 + v2);
-		envbox[6] = p1 + width * (-v - v1 - v2);
-		envbox[7] = p1 + width * (-v + v1 - v2); //right hand in direction
-	}
-
 	
 	bool FastEnvelope::is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const {
 		static const int prism_map[64][2] = {

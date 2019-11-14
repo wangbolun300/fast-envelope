@@ -1,13 +1,7 @@
 ﻿#pragma once
 #include <fastenvelope/Types.hpp>
 #include <fastenvelope/AABB.h>
-
 #include <indirectpredicates/ip_filtered.h>
-
-
-#include <fastenvelope/Rational.hpp>
-
-
 
 #include <vector>
 #include <array>
@@ -28,20 +22,14 @@ namespace fastEnvelope {
 			std::vector<int> FACES;
 		};
 
-
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);
 		static void printnumber();
-		//check if tri is outside
+
+		//check if tri or point is outside
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		bool is_outside(const Vector3 &point) const;
 		
-
-
-
-		bool sample_triangle_outside(const std::array<Vector3, 3> &triangle, const int &pieces) const;
-
-
 
 	private:
 		AABB tree;
@@ -92,14 +80,6 @@ namespace fastEnvelope {
 
 		bool point_out_prism(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump) const;
 		bool point_out_prism_return_local_id(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, int &id)const;
-		void halfspace_init(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
-			std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon);
-		//generate a cube from a segment
-		void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox);
-
-		//resort the facets using Morton's code
-		static void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew);
-		
 
 		//heuristics to refine the box box guess from the tree
 		static int is_3_triangle_cut_float_fast(

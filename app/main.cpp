@@ -419,7 +419,7 @@ void test_in_wild() {
 		tri = triangles[i];
 		pieces = 20;
 		//l1 = (tri[0] - tri[1]).norm() / 30;
-		pos3[i] = fast_envelope.sample_triangle_outside(tri, pieces);
+		/*pos3[i] = fast_envelope.sample_triangle_outside(tri, pieces);*/
 	}
 
 	int count = 0, count1 = 0, count2 = 0, count3 = 0;
@@ -476,7 +476,7 @@ void test_in_wild() {
 			tri = triangles[ti[i]];
 
 
-			pos4[i] = fast_envelope.sample_triangle_outside(tri, lth[j]);
+			/*pos4[i] = fast_envelope.sample_triangle_outside(tri, lth[j]);*/
 			if (pos4[i] == 0) {
 				howmany++;
 				ti1.push_back(ti[i]);
