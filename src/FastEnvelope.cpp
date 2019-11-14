@@ -42,10 +42,6 @@ namespace fastEnvelope
 
 	
 		algorithms::resorting(m_ver, m_faces, faces_new);//resort the facets order
-		//----
-		
-
-		
 
 		algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, epsilon);
 
