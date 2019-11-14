@@ -27,7 +27,7 @@
 #include <ctime>
 #include <cstdlib>
 #include<igl/writeOBJ.h>
-#include<fastenvelope/obb.h>
+
 using namespace fastEnvelope;
 using namespace std;
 
