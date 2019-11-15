@@ -4,6 +4,9 @@ extern "C" void exactinit();
 extern "C" fastEnvelope::Scalar orient3d(const fastEnvelope::Scalar *pa, const fastEnvelope::Scalar *pb, const fastEnvelope::Scalar *pc, const fastEnvelope::Scalar *pd);
 extern "C" fastEnvelope::Scalar orient2d(const fastEnvelope::Scalar *pa, const fastEnvelope::Scalar *pb, const fastEnvelope::Scalar *pc);
 
+#ifdef ENVELOPE_WITH_GEO_PSM
+#include <Predicates_psm.h>
+#endif
 #ifdef ENVELOPE_WITH_GEO
 #include <geogram/delaunay/delaunay_3d.h>
 #endif

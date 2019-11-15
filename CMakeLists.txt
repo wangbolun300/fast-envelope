@@ -59,7 +59,8 @@ endif()
 # FastEnvelope options
 # option(FAST_ENVELOPE_ENABLE_TBB        			"Enable TBB"                    ON)
 # option(FAST_ENVELOPE_USE_FLOAT          		"Use floats instead of double"  OFF)
-option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES    "Use Geogram predicates"        OFF)
+option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES        "Use whole Geogram for predicates"        OFF)
+option(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES    "Use Geogram predicates only"             ON)
 
 
 # Sanitizer options
@@ -181,8 +182,17 @@ target_link_libraries(${PROJECT_NAME} PUBLIC CLI11::CLI11)
 target_include_directories(${PROJECT_NAME} PUBLIC ${GMP_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GMP_LIBRARIES})
 
+if(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES)
+	# fast_envelope_download_geogram_predicates()
 
-if(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
+	add_library(GeoPredicates geogram_predicates/Predicates_psm.cpp)
+	target_include_directories(GeoPredicates PUBLIC geogram_predicates/)
+	target_compile_features(GeoPredicates PRIVATE ${CXX11_FEATURES})
+
+	target_link_libraries(${PROJECT_NAME} PUBLIC GeoPredicates)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC ENVELOPE_WITH_GEO_PSM)
+
+elseif(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
 	fast_envelope_download_geogram()
 	include(geogram)
 	target_link_libraries(${PROJECT_NAME} PUBLIC geogram)

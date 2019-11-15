@@ -72,3 +72,12 @@ function(fast_envelope_download_geogram)
         GIT_TAG        v1.6.8
     )
 endfunction()
+
+
+# ## Geogram predicates LGPL
+# function(fast_envelope_download_geogram_predicates)
+#     fast_envelope_download_project(geogram_predicates
+#         URL     https://gforge.inria.fr/frs/download.php/file/38199/Predicates_psm_1.7.2.tar.gz
+#         URL_MD5 4635a4e19538514ee2d6183af791e280
+#     )
+# endfunction()
