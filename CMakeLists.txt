@@ -188,7 +188,8 @@ if(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES)
 	add_library(GeoPredicates geogram_predicates/Predicates_psm.cpp)
 	target_include_directories(GeoPredicates PUBLIC geogram_predicates/)
 	target_compile_features(GeoPredicates PRIVATE ${CXX11_FEATURES})
-
+	target_compile_definitions(GeoPredicates PRIVATE GEO_STATIC_LIBS)
+	
 	target_link_libraries(${PROJECT_NAME} PUBLIC GeoPredicates)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC ENVELOPE_WITH_GEO_PSM)
 
