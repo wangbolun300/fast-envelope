@@ -31,7 +31,7 @@ This code implements indirect 3D orientation predicates.
 
 A 3D orientation predicate takes four points (i, a, b, c) and
 returns the sign of the volume of the tetrahedron formed by i,a,b and c.
-Traditionally, each of the four points is explicitly represented by its 
+Traditionally, each of the four points is explicitly represented by its
 three coordinates.
 
 If a,b,c are not aligned they define an oriented plane.
@@ -46,7 +46,7 @@ Currently, 'i' can be represented as a:
 1) line-plane intersection (LPI)
 2) three planes intersection (TPI)
 
-In turn, lines and planes are represented by pairs and triples of explicit 
+In turn, lines and planes are represented by pairs and triples of explicit
 points respectively. Here, 'explicit' means that the point is represented
 by its three coordinates.
 
@@ -58,7 +58,7 @@ machines.
 Then, the easiest way to use this code is by calling either orient3D_LPI()
 or orient3D_TPI().
 
-Three versions are provided for each of the above two functions 
+Three versions are provided for each of the above two functions
 (* = LPI / TPI).
 
 1) orient3D_*_Filtered
@@ -72,7 +72,7 @@ Fast and always exact. Uses orient3D_Filtered for most of the cases, while
 switching to the Exact version only when necessary.
 
 
-When an implicit point 'i' must be checked against more than one reference 
+When an implicit point 'i' must be checked against more than one reference
 plane, avoid repeating part of the calculations by using the split versions
 of the predicates:
 
@@ -82,7 +82,7 @@ orient3D_*_pre_exact
 orient3D_*_post_exact
 
 where the "orient3D_*_pre*" function generates common support variables to
-be used by the "orient3D_*_post*" predicate to do the actual check for all 
+be used by the "orient3D_*_post*" predicate to do the actual check for all
 the reference planes (see detailed comments below for usage examples).
 
 ****************************************************************************/
@@ -154,7 +154,7 @@ enum Filtered_Orientation {
 // Let i be the exact intersection point between L and P1.
 // orient3D_LPI returns POSITIVE if the tetrahedron (i, a, b, c) has positive volume.
 // Returns NEGATIVE if it has negative volume.
-// Returns UNCERTAIN if point configuration is degenerate (L and P1 are 
+// Returns UNCERTAIN if point configuration is degenerate (L and P1 are
 // parallel, <r, s, t> are collinear, ...) or nearly so (FP precision not enough to guarantee)
 // or if one of the following conditions holds:
 // - i is exactly on P2
@@ -180,7 +180,7 @@ int orient3D_LPI_filtered(
 // Let i be the exact intersection point of the three planes PV, PW, PU
 // orient3D_TPI returns POSITIVE if the tetrahedron (i, q1, q2, q3) has positive volume.
 // Returns NEGATIVE if it has negative volume.
-// Returns UNCERTAIN if point configuration is degenerate (i is undefined) 
+// Returns UNCERTAIN if point configuration is degenerate (i is undefined)
 // or nearly so (FP precision not enough to guarantee).
 // or if one of the following conditions holds:
 // - i is exactly on PQ
@@ -345,7 +345,7 @@ bool orient3D_TPI_prefilter(
 
 int orient3D_TPI_postfilter(
 	const TPI_filtered_suppvars& s,
-	const double& q1x, const double& q1y, const double& q1z, const double& q2x, const double& q2y, 
+	const double& q1x, const double& q1y, const double& q1z, const double& q2x, const double& q2y,
 	const double& q2z, const double& q3x, const double& q3y, const double& q3z);
 
 
@@ -399,7 +399,7 @@ int orient3D_TPI_exact(
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //
-// Orient3D_LPI_exact (split version) - use these functions if the same intersection point 
+// Orient3D_LPI_exact (split version) - use these functions if the same intersection point
 // 'i' must be checked against several reference planes.
 //
 //
@@ -430,9 +430,9 @@ int orient3D_TPI_exact(
 //  int orientation_1, orientation_2;
 //	if (orient3D_LPI_pre_exact(px, py, pz, qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz, s))
 //  {
-//   orientation_1 = orient3D_LPI_post_exact(s, px, py, pz, 
+//   orientation_1 = orient3D_LPI_post_exact(s, px, py, pz,
 //											 a1x, a1y, a1z, b1x, b1y, b1z, c1x, c1y, c1z);
-//   orientation_2 = orient3D_LPI_post_exact(s, px, py, pz, 
+//   orientation_2 = orient3D_LPI_post_exact(s, px, py, pz,
 //											 a2x, a2y, a2z, b2x, b2y, b2z, c2x, c2y, c2z);
 //  }
 //	else orientation_1 = orientation_2 = 0; // 'i' is undefined
@@ -467,7 +467,7 @@ int orient3D_LPI_post_exact(
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //
-// Orient3D_TPI_exact (split version) - use these functions if the same intersection point 
+// Orient3D_TPI_exact (split version) - use these functions if the same intersection point
 // 'i' must be checked against several reference planes.
 //
 //
@@ -490,18 +490,18 @@ int orient3D_LPI_post_exact(
 //  TPI_exact_suppvars s;
 //
 //  int orientation_1, orientation_2;
-//	if (orient3D_TPI_pre_exact(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z, 
-//							   w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z, 
-//							   u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z, 
+//	if (orient3D_TPI_pre_exact(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
+//							   w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
+//							   u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z,
 //							   s))
 //  {
-//   orientation_1 = orient3D_TPI_post_exact(s, 
+//   orientation_1 = orient3D_TPI_post_exact(s,
 //											 a1x, a1y, a1z, b1x, b1y, b1z, c1x, c1y, c1z);
-//   orientation_2 = orient3D_TPI_post_exact(s, 
+//   orientation_2 = orient3D_TPI_post_exact(s,
 //											 a2x, a2y, a2z, b2x, b2y, b2z, c2x, c2y, c2z);
 //  }
 //	else orientation_1 = orientation_2 = 0; // 'i' is undefined
-//  
+//
 //  /* PLEASE NOTE  */
 //  /* Re-using 's' for another orient3D_TPI_pre_exact() call may cause memory leaks. */
 //  /* Create another one, or dynamically allocate 's' and destroy it by 'new/delete' */
@@ -582,3 +582,13 @@ int orient3D_TPI(
 	double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
 	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z);
 
+int get_projection_plane(
+	double ov1x, double ov1y, double ov1z,
+	double ov2x, double ov2y, double ov2z,
+	double ov3x, double ov3y, double ov3z);
+
+void triangle_normal_exact(
+	double ov1x, double ov1y, double ov1z,
+	double ov2x, double ov2y, double ov2z,
+	double ov3x, double ov3y, double ov3z,
+	double &nvxc, double &nvyc, double &nvzc);
