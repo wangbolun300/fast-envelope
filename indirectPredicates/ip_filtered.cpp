@@ -814,7 +814,10 @@ public:
 	expansionObject() {}
 
 	inline void two_Sum(const double& a, const double&b, double& x, double& y) { Two_Sum(a, b, x, y); }
+	inline void two_Sum(const double& a, const double&b, double *xy) { Two_Sum(a, b, xy[1], xy[0]); }
+
 	inline void two_Diff(const double& a, const double&b, double& x, double& y) { Two_Diff(a, b, x, y); }
+	inline void two_Diff(const double& a, const double&b, double *xy) { Two_Diff(a, b, xy[1], xy[0]); }
 
 	// [x,y] = [a]*[b]		 Multiplies two expansions [a] and [b] of length one
 	inline void Two_Prod(const double& a, const double&b, double& x, double& y)
