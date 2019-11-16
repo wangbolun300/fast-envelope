@@ -592,10 +592,27 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	}
 	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
 
+	Vector3 min, max;
+	min = env_vertices.front();
+	max = env_vertices.front();
 
+	for (size_t j = 0; j < env_vertices.size(); j++)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			min(i) = std::min(min(i), env_vertices[j](i));
+			max(i) = std::max(max(i), env_vertices[j](i));
+		}
+	}
+
+
+
+	const Scalar bbd = (max - min).norm();
+	
 
 	Scalar shrink = 5;
 	Scalar eps = 1e-3;
+	Scalar epsilon = bbd * eps; //eps*bounding box diagnal
 	const int spac = 10;// space subdivision parameter
 	int ft;
 	// if there are over one million triangles, then test maximal one million triangles
@@ -608,8 +625,8 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	//////////////////////////////////////////////////////////////
 	const int fn = ft;//test face number
 
-
 	eps = eps / shrink;
+	epsilon = epsilon / shrink;
 	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
 	igl::Timer timer, timer1, timer2;
 
@@ -635,7 +652,7 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	Scalar temptime = 0;
 	timer.start();
 	timer1.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps);
+	const FastEnvelope fast_envelope(env_vertices, env_faces, epsilon);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
 	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
 	// fast_envelope.print_ini_number(); //TODO
@@ -692,10 +709,10 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	// FastEnvelope::print_number(); //TODO
 
 ////for aabb method
-	Vector3 min, max;
+
 
 	Scalar dd;
-	get_bb_corners(env_vertices, min, max);
+
 	dd = ((max - min).norm()) *eps;
 	timer.start();
 	AABBWrapper sf_tree(envmesh);

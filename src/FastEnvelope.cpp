@@ -19,23 +19,7 @@ namespace fastEnvelope
 	FastEnvelope::FastEnvelope(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, const Scalar eps)
 	{
 	
-		Vector3 min, max;
-		min = m_ver.front();
-		max = m_ver.front();
-
-		for (size_t j = 0; j < m_ver.size(); j++)
-		{
-			for (int i = 0; i < 3; i++)
-			{
-				min(i) = std::min(min(i), m_ver[j](i));
-				max(i) = std::max(max(i), m_ver[j](i));
-			}
-		}
 		
-		
-
-		const Scalar bbd = (max - min).norm();
-		const Scalar epsilon = bbd * eps; //eps*bounding box diagnal
 		
 		
 		std::vector<Vector3i> faces_new;
@@ -43,7 +27,7 @@ namespace fastEnvelope
 	
 		algorithms::resorting(m_ver, m_faces, faces_new);//resort the facets order
 
-		algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, epsilon);
+		algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, eps);
 
 		tree.init_envelope(cornerlist);
 
