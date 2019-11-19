@@ -189,7 +189,7 @@ if(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES)
 	target_include_directories(GeoPredicates PUBLIC geogram_predicates/)
 	target_compile_features(GeoPredicates PRIVATE ${CXX11_FEATURES})
 	target_compile_definitions(GeoPredicates PRIVATE GEO_STATIC_LIBS)
-	
+
 	target_link_libraries(${PROJECT_NAME} PUBLIC GeoPredicates)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC ENVELOPE_WITH_GEO_PSM)
 
@@ -206,6 +206,8 @@ endif()
 set(INDIRECTPREDICATES_SOURCES
 	indirectPredicates/ip_filtered.cpp
 	indirectPredicates/ip_filtered.h
+
+	indirectPredicates/ip_filtered_ex.h
 )
 add_library(IndirectPredicates ${INDIRECTPREDICATES_SOURCES})
 indirect_predicates_copy_headers(${INDIRECTPREDICATES_SOURCES})

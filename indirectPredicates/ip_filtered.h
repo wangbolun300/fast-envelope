@@ -592,3 +592,5 @@ void triangle_normal_exact(
 	double ov2x, double ov2y, double ov2z,
 	double ov3x, double ov3y, double ov3z,
 	double &nvxc, double &nvyc, double &nvzc);
+
+#include "ip_filtered_ex.h"

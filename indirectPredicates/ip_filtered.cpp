@@ -383,7 +383,7 @@ bool orient3D_LPI_prefilter(
 	double pz_rz = pz - rz;
 
 	double n = ((((py_ry)* a2133) - ((px_rx)* a2233)) - ((pz_rz)* a2132));
-	
+
 	a11 *= n;
 	a12 *= n;
 	a13 *= n;
@@ -465,7 +465,7 @@ int orient3D_LPI_postfilter(const LPI_filtered_suppvars& svs,
 
 	if (!isfinite(det))
 //#ifdef USE_MULTISTAGE_FILTERS
-//		return orient3D_LPI_dfiltered(px, py, pz, svs.qx, svs.qy, svs.qz, svs.rx, svs.ry, svs.rz, 
+//		return orient3D_LPI_dfiltered(px, py, pz, svs.qx, svs.qy, svs.qz, svs.rx, svs.ry, svs.rz,
 //		        svs.sx, svs.sy, svs.sz, svs.tx, svs.ty, svs.tz,	ax, ay, az,	bx, by, bz,	cx, cy, cz);
 //#else
 		return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
@@ -615,7 +615,7 @@ bool orient3D_TPI_prefilter(
 	if (!isfinite(d) || (d <= deps && d >= -deps))
 #ifdef USE_MULTISTAGE_FILTERS
 		return orient3D_TPI_pre_dfilter(ov1x, ov1y, ov1z, ov2x, ov2y, ov2z, ov3x, ov3y, ov3z,
-			ow1x, ow1y, ow1z, ow2x, ow2y, ow2z, ow3x, ow3y, ow3z, ou1x, ou1y, ou1z, ou2x, ou2y, ou2z, 
+			ow1x, ow1y, ow1z, ow2x, ow2y, ow2z, ow3x, ow3y, ow3z, ou1x, ou1y, ou1z, ou2x, ou2y, ou2z,
 			ou3x, ou3y, ou3z, svs);
 #else
 	return false;
@@ -1326,7 +1326,7 @@ void initFPU()
 //	ss1l = o.Gen_Sum_With_PreAlloc(s1l, s1, s2l, s2, &ss1, ss1l); // ss1 = s1 - s2;
 //	detl = o.Gen_Sum_With_PreAlloc(ss1l, ss1, s3l, s3, &det, detl); // det = ss1 + s3; // = s1 - s2 + s3;
 //
-//	if (s1 != s1p) free(s1); 
+//	if (s1 != s1p) free(s1);
 //	if (s2 != s2p) free(s2);
 //	if (s3 != s3p) free(s3);
 //	if (ss1 != ss1p) free(ss1);
@@ -1627,7 +1627,7 @@ inline void o3dTPI_tf3(expansionObject& o, double *a, double *b, double *c, doub
 	if (ts != tsp) free(ts);
 }
 
-inline void o3dTPI_tf3s(expansionObject& o, double *a, double b, double *c, double d, double *e, double f, 
+inline void o3dTPI_tf3s(expansionObject& o, double *a, double b, double *c, double d, double *e, double f,
 	int al, int cl, int el,
 	double *g, int& gl)
 {
@@ -1744,7 +1744,7 @@ inline void o3dTPI_tf3s(expansionObject& o, double *a, double b, double *c, doub
 //	if (ee2 != ee2p) free(ee2);
 //	ee1l = o.Gen_Product_With_PreAlloc(a12l, a12, dd2l, dd2, &ee1, ee1l); // ee1 = a12*dd2;
 //
-//	if (a11 != a11p) free(a11); 
+//	if (a11 != a11p) free(a11);
 //	if (a12 != a12p) free(a12);
 //	if (a13 != a13p) free(a13);
 //
@@ -2065,3 +2065,5 @@ int triangle_normal_exact(double ov1x, double ov1y, double ov1z, double ov2x, do
 	if (nv == nvyc) return 1;
 	if (nv == nvzc) return 2;
 }
+
+#include "ip_filtered_ex.cpp"
