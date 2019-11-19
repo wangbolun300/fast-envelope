@@ -1,7 +1,7 @@
 ﻿#include <fastenvelope/FastEnvelope.h>
 #include <fastenvelope/MeshIO.hpp>
 
-#include <fastenvelope/Predicates.hpp>
+
 #include <fastenvelope/Types.hpp>
 #include <fastenvelope/AABBWrapper.h>
 #include <fastenvelope/Rational.hpp>
@@ -357,7 +357,7 @@ void test_in_wild() {
 
 	timer.start();
 	timer1.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, eps);
+	const fastEnvelope::FastEnvelope fast_envelope(env_vertices, env_faces, eps);
 	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
 	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
 	// fast_envelope.print_ini_number(); //TODO

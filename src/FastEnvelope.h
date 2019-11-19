@@ -14,14 +14,7 @@ namespace fastEnvelope {
 
 	class FastEnvelope
 	{
-	private:
-		
-		struct INDEX
-		{
-			int Pi;
-			std::vector<int> FACES;
-		};
-
+	
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);
 		static void printnumber();
@@ -30,6 +23,13 @@ namespace fastEnvelope {
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		bool is_outside(const Vector3 &point) const;
 		
+	private:
+
+		struct INDEX
+		{
+			int Pi;
+			std::vector<int> FACES;
+		};
 
 	private:
 		AABB tree;
