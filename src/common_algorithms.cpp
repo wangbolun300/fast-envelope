@@ -4,6 +4,7 @@
 #include<array>
 #include<fastenvelope/Morton.h>
 #include<fastenvelope/Logger.hpp>
+#include <indirectpredicates/ip_filtered_ex.h>
 namespace fastEnvelope {
 	namespace algorithms {
 		int seg_cut_plane(const Vector3 &seg0, const Vector3 &seg1, const Vector3 &t0, const Vector3 &t1, const Vector3 &t2)
@@ -84,33 +85,40 @@ namespace fastEnvelope {
 			return DEGENERATED_POINT;
 		}
 
+		//Vector3 accurate_normal_vector(const Vector3 &p0, const Vector3 &p1,
+		//	const Vector3 &q0, const Vector3 &q1)
+		//{
+
+		//	Rational p00r(p0[0]), p01r(p0[1]), p02r(p0[2]),
+		//		p10r(p1[0]), p11r(p1[1]), p12r(p1[2]),
+		//		q00r(q0[0]), q01r(q0[1]), q02r(q0[2]),
+		//		q10r(q1[0]), q11r(q1[1]), q12r(q1[2]);
+		//	Rational axr(p10r - p00r), ayr(p11r - p01r), azr(p12r - p02r),
+		//		bxr(q10r - q00r), byr(q11r - q01r), bzr(q12r - q02r);
+		//	Rational xr = ayr * bzr - azr * byr;
+		//	Rational yr = azr * bxr - axr * bzr;
+		//	Rational zr = axr * byr - ayr * bxr;//get the direction (x,y,z), now normalize
+		//	int xsign, ysign, zsign;
+		//	xsign = xr.get_sign();
+		//	ysign = yr.get_sign();
+		//	zsign = zr.get_sign();
+		//	Rational ssumr = xr * xr + yr * yr + zr * zr;
+		//	xr = xr * xr / ssumr;
+		//	yr = yr * yr / ssumr;
+		//	zr = zr * zr / ssumr;
+
+		//	Scalar x, y, z;
+		//	x = sqrt(xr.to_double())*xsign;
+		//	y = sqrt(yr.to_double())*ysign;
+		//	z = sqrt(zr.to_double())*zsign;
+		//	return Vector3(x, y, z);
+		//}
 		Vector3 accurate_normal_vector(const Vector3 &p0, const Vector3 &p1,
-			const Vector3 &q0, const Vector3 &q1)
+			const Vector3 &p2)
 		{
-
-			Rational p00r(p0[0]), p01r(p0[1]), p02r(p0[2]),
-				p10r(p1[0]), p11r(p1[1]), p12r(p1[2]),
-				q00r(q0[0]), q01r(q0[1]), q02r(q0[2]),
-				q10r(q1[0]), q11r(q1[1]), q12r(q1[2]);
-			Rational axr(p10r - p00r), ayr(p11r - p01r), azr(p12r - p02r),
-				bxr(q10r - q00r), byr(q11r - q01r), bzr(q12r - q02r);
-			Rational xr = ayr * bzr - azr * byr;
-			Rational yr = azr * bxr - axr * bzr;
-			Rational zr = axr * byr - ayr * bxr;//get the direction (x,y,z), now normalize
-			int xsign, ysign, zsign;
-			xsign = xr.get_sign();
-			ysign = yr.get_sign();
-			zsign = zr.get_sign();
-			Rational ssumr = xr * xr + yr * yr + zr * zr;
-			xr = xr * xr / ssumr;
-			yr = yr * yr / ssumr;
-			zr = zr * zr / ssumr;
-
-			Scalar x, y, z;
-			x = sqrt(xr.to_double())*xsign;
-			y = sqrt(yr.to_double())*ysign;
-			z = sqrt(zr.to_double())*zsign;
-			return Vector3(x, y, z);
+			Vector3 v;
+			triangle_normal_exact(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2],v[0],v[1],v[2]);
+			return v;
 		}
 
 		void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew) {
@@ -191,13 +199,7 @@ namespace fastEnvelope {
 				return 1;
 			if (t < -1 * SCALAR_ZERO)
 				return -1;
-			Rational a0(a[0]), a1(a[1]), a2(a[2]), b0(b[0]), b1(b[1]), b2(b[2]), dot;
-			dot = a0 * b0 + a1 * b1 + a2 * b2;
-			if (dot.get_sign() > 0)
-				return 1;
-			if (dot.get_sign() < 0)
-				return -1;
-			return 0;
+			return dot_product_sign(a[0], a[1], a[2], b[0], b[1], b[2]);
 		};
 		const auto get_bb_corners_12 = [](const std::array<Vector3, 12> &vertices) {//TODO why use this one
 			std::array<Vector3, 2> corners;
@@ -345,9 +347,9 @@ namespace fastEnvelope {
 			{
 				logger().debug("Envelope Triangle Degeneration- Nearly");
 
-				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][0]], m_ver[m_faces[i][2]]);
+				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
 
-				vector1 = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], origin, normal);
+				vector1 = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], normal + m_ver[m_faces[i][0]]);
 
 			}
 			else
@@ -359,6 +361,8 @@ namespace fastEnvelope {
 			ABn = AB.normalized();
 			polygon[0] = m_ver[m_faces[i][0]] + (vector1 - ABn) * tolerance;
 			polygon[1] = m_ver[m_faces[i][1]] + (vector1 + ABn) * tolerance;
+			
+			
 			if (dot_sign(AB, BC) < 0)
 			{
 				polygon[2] = m_ver[m_faces[i][1]] + (-vector1 + ABn) * tolerance;

@@ -569,13 +569,13 @@ void test_in_wild() {
 
 
 
-void test_without_sampling(string inputFileName1, string input_surface_path1) {
-//void test_without_sampling() {
-//	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-//	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-//	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl_envelope_log.csv";
-//	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl";
-//
+//void test_without_sampling(string inputFileName1, string input_surface_path1) {
+void test_without_sampling() {
+	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl_envelope_log.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl";
+
 
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
@@ -610,7 +610,7 @@ void test_without_sampling(string inputFileName1, string input_surface_path1) {
 	const Scalar bbd = (max - min).norm();
 	
 
-	Scalar shrink = 5;
+	Scalar shrink = 1;
 	Scalar eps = 1e-3;
 	Scalar epsilon = bbd * eps; //eps*bounding box diagnal
 	const int spac = 10;// space subdivision parameter
@@ -944,16 +944,16 @@ int main(int argc, char const *argv[])
 	/*test_without_sampling();
 	test_without_sampling();*/
 	
-	//test_without_sampling();
+	test_without_sampling();
 	/*bool a=true;
 	if (a) cout << "a true" <<a<< endl;
 	if (!a) cout << "a false" << endl;*/
 	//tryspeed();
 
-	for (int i = 0; i < (argc - 1) / 2; i++) {
+	/*for (int i = 0; i < (argc - 1) / 2; i++) {
 		test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
-	}
+	}*/
 
 
 //fordebug();

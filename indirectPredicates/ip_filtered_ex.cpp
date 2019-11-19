@@ -51,3 +51,22 @@ void triangle_normal_exact(double ov1x, double ov1y, double ov1z, double ov2x, d
     nvyc /= l;
     nvzc /= l;
 }
+
+int dot_product_sign(double vx, double vy, double vz,
+	double ux, double uy, double uz) {
+	expansionObject o;
+	double x[2];
+	o.Two_Prod(vx, ux, x);
+	double y[2];
+	o.Two_Prod(vy, uy, y);
+	double z[2];
+	o.Two_Prod(vz, uz, z);
+	double xsumy[4];
+	o.Two_Two_Sum(x[1], x[0], y[1], y[0], xsumy[3], xsumy[2], xsumy[1], xsumy[0]);
+	double sum[6];
+	o.Gen_Sum(4, xsumy, 2, z, sum);
+	double s = sum[5];
+	if (s > 0) return 1;
+	if (s < 0) return -1;
+	return 0;
+}
