@@ -1,6 +1,6 @@
 #include<fastenvelope/common_algorithms.h>
 #include<fastenvelope/Predicates.hpp>
-#include<fastenvelope/Rational.hpp>
+#include<iostream>
 #include<array>
 #include<fastenvelope/Morton.h>
 #include<fastenvelope/Logger.hpp>
@@ -199,6 +199,7 @@ namespace fastEnvelope {
 				return 1;
 			if (t < -1 * SCALAR_ZERO)
 				return -1;
+			std::cout << "need accurate dot sign" << std::endl;
 			return dot_product_sign(a[0], a[1], a[2], b[0], b[1], b[2]);
 		};
 		const auto get_bb_corners_12 = [](const std::array<Vector3, 12> &vertices) {//TODO why use this one
