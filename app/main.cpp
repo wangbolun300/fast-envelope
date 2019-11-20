@@ -4,7 +4,7 @@
 
 #include <fastenvelope/Types.hpp>
 #include <fastenvelope/AABBWrapper.h>
-#include <fastenvelope/Rational.hpp>
+
 
 #include <igl/Timer.h>
 
@@ -796,10 +796,7 @@ void try2() {
 	assert(axxy == 1);
 	cout << "here ！@！！！！！！！！！！" << endl;
 }
-void rational_try(const Rational &r) {
-	Rational c = Rational(1) / r;
-	cout << Rational(c*r) << endl;
-}
+
 
 void writelist() {
 	/*int list[64][2];
