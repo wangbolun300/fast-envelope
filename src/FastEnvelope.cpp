@@ -49,7 +49,8 @@ namespace fastEnvelope
 	{
 
 		std::vector<unsigned int> querylist;
-		tree.point_find_bbox(point, querylist);//TODO make a separate function for point
+		tree.point_find_bbox(point, querylist);
+		if (querylist.size() == 0) return true;
 		bool out = point_out_prism(point, querylist, -1);
 		if (out == true)
 		{
@@ -59,7 +60,11 @@ namespace fastEnvelope
 		
 	}
 	bool FastEnvelope::is_outside(const Vector3 &point0, const Vector3 &point1) const {
-
+		if (point0[0] == point1[0] && point0[1] == point1[1] && point0[2] == point1[2]) return is_outside(point0);
+		std::vector<unsigned int> querylist;
+		tree.segment_find_bbox(point0, point1, querylist);
+		const bool res = segment_out_of_envelope(point0, point1, querylist);
+		return res;
 	}
 	
 
@@ -381,6 +386,85 @@ namespace fastEnvelope
 
 
 	}
+	
+	bool FastEnvelope::segment_out_of_envelope(const Vector3& seg0, const Vector3 &seg1, const std::vector<unsigned int>& prismindex) const {
+		if (prismindex.size() == 0)
+		{
+			return true;
+		}
+
+
+		int jump1;
+
+
+		bool out, cut;
+
+		int inter,
+
+			tti; //triangle-triangle intersection
+
+		jump1 = -1;
+
+		int check_id, check_id1;
+
+		out = point_out_prism_return_local_id(seg0, prismindex, jump1, check_id);
+
+		if (out) {
+
+			return true;
+		}
+		out = point_out_prism_return_local_id(seg1, prismindex, jump1, check_id1);
+
+		if (out) {
+
+			return true;
+		}
+		if (check_id == check_id1) return false;
+
+		if (prismindex.size() == 1)
+			return false;
+
+
+		std::vector<unsigned int > queue, idlist;
+		queue.emplace_back(check_id);//queue contains the id in prismindex
+		idlist.emplace_back(prismindex[check_id]);
+
+		std::vector<int> cidl; cidl.reserve(8);
+		for (int i = 0; i < queue.size(); i++) {
+
+			jump1 = prismindex[queue[i]];
+
+			cut = is_seg_cut_polyhedra(jump1, seg0, seg1, cidl);
+			if (cut&&cidl.size() == 0)continue;
+			if (!cut) continue;
+			for (int j = 0; j < cidl.size(); j++) {
+
+				inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(seg0, seg1,
+					halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
+					idlist, jump1, check_id);
+
+				if (inter == 1)
+				{
+					inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(seg0, seg1,
+						halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
+						prismindex, jump1, check_id);
+
+					if (inter == 1) {
+
+						return true;
+					}
+					if (inter == 0) {
+						queue.emplace_back(check_id);
+						idlist.emplace_back(prismindex[check_id]);
+					}
+				}
+			}
+		}
+
+		return false;
+
+	}
+
 	bool FastEnvelope::debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const {
 		return false;
 	}

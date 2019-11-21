@@ -39,6 +39,7 @@ namespace fastEnvelope {
 
 		bool debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex)const;
 		bool triangle_out_of_envelope(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
+		bool segment_out_of_envelope(const Vector3& seg0, const Vector3 &seg1, const std::vector<unsigned int>& prismindex) const;
 		bool is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const;
 		
 	
