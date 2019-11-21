@@ -64,8 +64,9 @@ int dot_product_sign(double vx, double vy, double vz,
 	double xsumy[4];
 	o.Two_Two_Sum(x[1], x[0], y[1], y[0], xsumy[3], xsumy[2], xsumy[1], xsumy[0]);
 	double sum[6];
-	o.Gen_Sum(4, xsumy, 2, z, sum);
-	double s = sum[5];
+	int sl = o.Gen_Sum(4, xsumy, 2, z, sum);
+	double s = sum[sl - 1];
+
 	if (s > 0) return 1;
 	if (s < 0) return -1;
 	return 0;

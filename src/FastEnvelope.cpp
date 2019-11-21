@@ -469,9 +469,6 @@ namespace fastEnvelope
 		return false;
 	}
 
-	
-
-	
 
 	
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(
