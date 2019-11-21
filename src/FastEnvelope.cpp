@@ -29,7 +29,7 @@ namespace fastEnvelope
 
 		algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, eps);
 
-		tree.init_envelope(cornerlist);
+		tree.init(cornerlist);
 
 		//initializing types
 		initFPU();
@@ -41,15 +41,15 @@ namespace fastEnvelope
 	{
 
 		std::vector<unsigned int> querylist;
-		tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
-		const auto res = FastEnvelopeTestImplicit(triangle, querylist);
+		tree.triangle_find_bbox(triangle[0], triangle[1], triangle[2], querylist);
+		const auto res = triangle_out_of_envelope(triangle, querylist);
 		return res;
 	}
 	bool FastEnvelope::is_outside(const Vector3 &point) const
 	{
 
 		std::vector<unsigned int> querylist;
-		tree.facet_in_envelope(point, point, point, querylist);//TODO make a separate function for point
+		tree.point_find_bbox(point, querylist);//TODO make a separate function for point
 		bool out = point_out_prism(point, querylist, -1);
 		if (out == true)
 		{
@@ -58,10 +58,12 @@ namespace fastEnvelope
 		return 0;
 		
 	}
+	bool FastEnvelope::is_outside(const Vector3 &point0, const Vector3 &point1) const {
 
+	}
 	
 
-	bool FastEnvelope::FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const
+	bool FastEnvelope::triangle_out_of_envelope(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex) const
 	{
 		if (prismindex.size() == 0)
 		{
@@ -188,19 +190,7 @@ namespace fastEnvelope
 		}
 
 
-		//tree
-
-		AABB localtree;
-		std::vector<std::array<Vector3, 2>> localcorner;
-		localcorner.resize(filted_intersection.size());
-
-		for (int i = 0; i < filted_intersection.size(); i++) {
-			localcorner[i] = cornerlist[filted_intersection[i]];
-		}
-
-		localtree.init_envelope(localcorner);
-
-		//tree end
+		
 
 
 		std::vector<unsigned int > queue, idlist;
@@ -265,12 +255,26 @@ namespace fastEnvelope
 
 	
 		//tpi part
+
+		//tree
+
+		AABB localtree;
+		std::vector<std::array<Vector3, 2>> localcorner;
+		localcorner.resize(filted_intersection.size());
+
+		for (int i = 0; i < filted_intersection.size(); i++) {
+			localcorner[i] = cornerlist[filted_intersection[i]];
+		}
+
+		localtree.init(localcorner);
+
+		//tree end
 		
 		for (int i = 1; i < queue.size(); i++)
 		{
 			jump1 = filted_intersection[queue[i]];
 
-			localtree.bbd_finding_in_envelope(cornerlist[jump1][0], cornerlist[jump1][1], list);
+			localtree.bbox_find_bbox(cornerlist[jump1][0], cornerlist[jump1][1], list);
 			neighbours.clear();
 			neighbour_cover.clear();
 			neighbour_facets.clear();

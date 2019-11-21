@@ -36,7 +36,7 @@ namespace fastEnvelope {
 
 
 
-		tree.init_envelope(cornerlist);
+		tree.init(cornerlist);
 
 
 		//initializing types
@@ -115,7 +115,7 @@ namespace fastEnvelope {
 		bool out;
 		Vector3 point;
 		std::vector<unsigned int> querylist;
-		tree.facet_in_envelope(triangle[0], triangle[1], triangle[2], querylist);
+		tree.triangle_find_bbox(triangle[0], triangle[1], triangle[2], querylist);
 		int jump = -1;
 		if (querylist.size() == 0)
 			return 1;

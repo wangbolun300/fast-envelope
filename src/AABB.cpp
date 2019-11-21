@@ -3,7 +3,7 @@
 #include <cassert>
 
 namespace fastEnvelope {
-	
+
 
 
 	void AABB::init_envelope_boxes_recursive(
@@ -37,7 +37,7 @@ namespace fastEnvelope {
 		}
 	}
 
-	void AABB::facet_in_envelope_recursive(
+	void AABB::triangle_search_bbd_recursive(
 		const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2,
 		std::vector<unsigned int> &list,
 		int n, int b, int e) const
@@ -66,16 +66,95 @@ namespace fastEnvelope {
 
 		// Traverse the "nearest" child first, so that it has more chances
 		// to prune the traversal of the other child.
-		facet_in_envelope_recursive(
+		triangle_search_bbd_recursive(
 			triangle0, triangle1, triangle2, list,
 			childl, b, m
 		);
-		facet_in_envelope_recursive(
+		triangle_search_bbd_recursive(
 			triangle0, triangle1, triangle2, list,
 			childr, m, e
 		);
 	}
-	
+
+	void AABB::point_search_bbd_recursive(
+		const Vector3 &point,
+		std::vector<unsigned int> &list,
+		int n, int b, int e) const
+	{
+		assert(e != b);
+
+		assert(n < boxlist.size());
+		bool cut = is_point_cut_bounding_box(point, n);
+
+		if (cut == false) return;
+
+		// Leaf case
+		if (e == b + 1) {
+			list.emplace_back(b);
+			return;
+		}
+
+		int m = b + (e - b) / 2;
+		int childl = 2 * n;
+		int childr = 2 * n + 1;
+
+		//assert(childl < boxlist.size());
+		//assert(childr < boxlist.size());
+
+
+
+		// Traverse the "nearest" child first, so that it has more chances
+		// to prune the traversal of the other child.
+		point_search_bbd_recursive(
+			point, list,
+			childl, b, m
+		);
+		point_search_bbd_recursive(
+			point, list,
+			childr, m, e
+		);
+	}
+
+	void AABB::segment_search_bbd_recursive(
+		const Vector3 &seg0, const Vector3 &seg1,
+		std::vector<unsigned int> &list,
+		int n, int b, int e) const
+	{
+		assert(e != b);
+
+		assert(n < boxlist.size());
+		bool cut = is_segment_cut_bounding_box(seg0, seg1, n);
+
+		if (cut == false) return;
+
+		// Leaf case
+		if (e == b + 1) {
+			list.emplace_back(b);
+			return;
+		}
+
+		int m = b + (e - b) / 2;
+		int childl = 2 * n;
+		int childr = 2 * n + 1;
+
+		//assert(childl < boxlist.size());
+		//assert(childr < boxlist.size());
+
+
+
+		// Traverse the "nearest" child first, so that it has more chances
+		// to prune the traversal of the other child.
+		segment_search_bbd_recursive(
+			seg0, seg1, list,
+			childl, b, m
+		);
+		segment_search_bbd_recursive(
+			seg0, seg1, list,
+			childr, m, e
+		);
+	}
+
+
 	void AABB::bbd_searching_recursive(
 		const Vector3 &bbd0, const Vector3 &bbd1,
 		std::vector<unsigned int> &list,
@@ -128,7 +207,7 @@ namespace fastEnvelope {
 		);
 	}
 
-	void AABB::init_envelope(const std::vector<std::array<Vector3, 2>> &cornerlist)
+	void AABB::init(const std::vector<std::array<Vector3, 2>> &cornerlist)
 	{
 		n_corners = cornerlist.size();
 
@@ -140,7 +219,7 @@ namespace fastEnvelope {
 
 		init_envelope_boxes_recursive(cornerlist, 1, 0, n_corners);
 	}
-	
+
 
 
 
@@ -151,15 +230,15 @@ namespace fastEnvelope {
 		const auto &bmin = boxlist[index][0];
 		const auto &bmax = boxlist[index][1];
 		Vector3 tmin, tmax;
-		
+
 		algorithms::get_tri_corners(tri0, tri1, tri2, tmin, tmax);
-		bool cut=algorithms:: box_box_intersection(tmin, tmax, bmin, bmax);
+		bool cut = algorithms::box_box_intersection(tmin, tmax, bmin, bmax);
 		if (cut == false) return false;
-		
+
 		if (cut) {
-			
-			std::array<Vector2,3> tri;
-			std::array<Vector2,4> mp;
+
+			std::array<Vector2, 3> tri;
+			std::array<Vector2, 4> mp;
 			int o0, o1, o2, o3, ori;
 			for (int i = 0; i < 3; i++) {
 				tri[0] = algorithms::to_2d(tri0, i);
@@ -170,7 +249,7 @@ namespace fastEnvelope {
 				mp[1] = algorithms::to_2d(bmax, i);
 				mp[2][0] = mp[0][0]; mp[2][1] = mp[1][1];
 				mp[3][0] = mp[1][0]; mp[3][1] = mp[0][1];
-		
+
 				for (int j = 0; j < 3; j++) {
 					o0 = fastEnvelope::Predicates::orient_2d(mp[0], tri[j % 3], tri[(j + 1) % 3]);
 					o1 = fastEnvelope::Predicates::orient_2d(mp[1], tri[j % 3], tri[(j + 1) % 3]);
@@ -185,13 +264,38 @@ namespace fastEnvelope {
 
 		return cut;
 	}
+	bool AABB::is_point_cut_bounding_box(
+		const Vector3 &p, int index) const
+	{
+		const auto &bmin = boxlist[index][0];
+		const auto &bmax = boxlist[index][1];
+		if (p[0] < bmin[0] || p[1] < bmin[1] || p[2] < bmin[2]) return false;
+		if (p[0] > bmax[0] || p[1] > bmax[1] || p[2] > bmax[2]) return false;
+		return true;
+	}
+
+	bool AABB::is_segment_cut_bounding_box(const Vector3 &seg0, const Vector3 &seg1, int index) const
+	{
+		const auto &bmin = boxlist[index][0];
+		const auto &bmax = boxlist[index][1];
+		Scalar min[3], max[3];
+		min[0] = std::min(seg0[0], seg1[0]);
+		min[1] = std::min(seg0[1], seg1[1]);
+		min[2] = std::min(seg0[2], seg1[2]);
+		max[0] = std::max(seg0[0], seg1[0]);
+		max[1] = std::max(seg0[1], seg1[1]);
+		max[2] = std::max(seg0[2], seg1[2]);
+		if (max[0] < bmin[0] || max[1] < bmin[1] || max[2] < bmin[2]) return false;
+		if (min[0] > bmax[0] || min[1] > bmax[1] || min[2] > bmax[2]) return false;
+		return true;
+	}
 	bool AABB::is_bbd_cut_bounding_box(
 		const Vector3 &bbd0, const Vector3 &bbd1, int index) const
 	{
 		const auto &bmin = boxlist[index][0];
 		const auto &bmax = boxlist[index][1];
 
-		
+
 		return algorithms::box_box_intersection(bbd0, bbd1, bmin, bmax);
 	}
 }

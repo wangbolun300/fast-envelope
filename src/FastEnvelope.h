@@ -22,6 +22,7 @@ namespace fastEnvelope {
 		//check if tri or point is outside
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		bool is_outside(const Vector3 &point) const;
+		bool is_outside(const Vector3 &point0, const Vector3 &point1) const;
 		
 	private:
 
@@ -37,7 +38,7 @@ namespace fastEnvelope {
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 
 		bool debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex)const;
-		bool FastEnvelopeTestImplicit(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
+		bool triangle_out_of_envelope(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
 		bool is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const;
 		
 	
