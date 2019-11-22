@@ -23,4 +23,3 @@ target_sources(FastEnvelope PRIVATE ${SOURCES})
 ################################################################################
 
 add_subdirectory(external)
-add_subdirectory(types)
