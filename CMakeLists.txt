@@ -233,7 +233,6 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	add_executable(${PROJECT_NAME}_bin app/main.cpp)
 	add_subdirectory(app)
 	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
-
 	find_package(GMP)
 
 	IF(NOT ${GMP_FOUND})
@@ -241,7 +240,6 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	ENDIF()
 	target_include_directories(${PROJECT_NAME}_bin PUBLIC ${GMP_INCLUDE_DIRS})
 	target_link_libraries(${PROJECT_NAME}_bin PUBLIC ${GMP_LIBRARIES})
-
 
 	if(NOT FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
 		# Geogram
