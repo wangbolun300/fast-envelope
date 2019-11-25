@@ -199,7 +199,7 @@ namespace fastEnvelope {
 				return 1;
 			if (t < -1 * SCALAR_ZERO)
 				return -1;
-			std::cout << "need accurate dot sign" << std::endl;
+			
 			return dot_product_sign(a[0], a[1], a[2], b[0], b[1], b[2]);
 		};
 		const auto get_bb_corners_12 = [](const std::array<Vector3, 12> &vertices) {//TODO why use this one
@@ -244,7 +244,8 @@ namespace fastEnvelope {
 			return corners;
 		};
 		static const fastEnvelope::Vector3 origin = fastEnvelope::Vector3(0, 0, 0);
-
+		halfspace.clear();
+		cornerlist.clear();
 		halfspace.resize(m_faces.size());
 		cornerlist.resize(m_faces.size());
 
@@ -407,7 +408,226 @@ namespace fastEnvelope {
 
 	}
 
-	
-	
+	void algorithms::halfspace_get_prisms(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
+		std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon, std::vector<std::array<Vector3, 12>>& prisms,
+		std::vector<std::array<Vector3, 8>>& boxs) {
+
+		const auto dot_sign = [](const Vector3 &a, const Vector3 &b)
+		{
+			Scalar t = a.dot(b);
+			if (t > SCALAR_ZERO)
+				return 1;
+			if (t < -1 * SCALAR_ZERO)
+				return -1;
+
+			return dot_product_sign(a[0], a[1], a[2], b[0], b[1], b[2]);
+		};
+		const auto get_bb_corners_12 = [](const std::array<Vector3, 12> &vertices) {//TODO why use this one
+			std::array<Vector3, 2> corners;
+			corners[0] = vertices[0];
+			corners[1] = vertices[0];
+
+			for (size_t j = 0; j < 12; j++) {
+				for (int i = 0; i < 3; i++) {
+					corners[0][i] = std::min(corners[0][i], vertices[j][i]);
+					corners[1][i] = std::max(corners[1][i], vertices[j][i]);
+				}
+			}
+
+
+			const Scalar dis = 1e-6;
+			for (int j = 0; j < 3; j++) {
+				corners[0][j] -= dis;
+				corners[1][j] += dis;
+			}
+			return corners;
+
+		};
+		const auto get_bb_corners_8 = [](const std::array<Vector3, 8> &vertices) {//TODO why use this one
+			std::array<Vector3, 2> corners;
+			corners[0] = vertices[0];
+			corners[1] = vertices[0];
+
+			for (size_t j = 0; j < 8; j++) {
+				for (int i = 0; i < 3; i++) {
+					corners[0][i] = std::min(corners[0][i], vertices[j][i]);
+					corners[1][i] = std::max(corners[1][i], vertices[j][i]);
+				}
+			}
+
+
+			const Scalar dis = 1e-6;
+			for (int j = 0; j < 3; j++) {
+				corners[0][j] -= dis;
+				corners[1][j] += dis;
+			}
+			return corners;
+		};
+		static const fastEnvelope::Vector3 origin = fastEnvelope::Vector3(0, 0, 0);
+		halfspace.clear();
+		cornerlist.clear();
+		prisms.clear();
+		boxs.clear();
+		halfspace.resize(m_faces.size());
+		cornerlist.resize(m_faces.size());
+
+		Vector3 AB, AC, BC, normal, vector1, ABn, min, max;
+		std::array<Vector3, 6> polygon;
+		std::array<Vector3, 12> polygonoff;
+		std::array<Vector3, 8> box;
+		static const std::array<Vector3, 8> boxorder = {
+			{
+				{1, 1, 1},
+				{-1, 1, 1},
+				{-1, -1, 1},
+				{1, -1, 1},
+				{1, 1, -1},
+				{-1, 1, -1},
+				{-1, -1, -1},
+				{1, -1, -1},
+			} };
+		static const int p_face[8][3] = { {0, 1, 3}, {7, 6, 9}, {1, 0, 7}, {2, 1, 7}, {3, 2, 8}, {3, 9, 10}, {5, 4, 11}, {0, 5, 6} }; //prism triangle index. all with orientation.
+		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
+		//	static const std::array<std::vector<int>, 8> p_facepoint = {
+		//	{{0,1,2,3,4,5},
+		//{8,7,6,11,10,9},
+		//{7,1,0,6},
+		//{2,1,7,8},
+		//{3,2,8,9},
+		//{4,3,9,10},
+		//{4,10,11,5},
+		//{6,0,5,11}}
+		//	};
+
+		//	static const std::array<std::array<int, 4>, 6> c_facepoint = {
+		//			{
+		//				{0,1,2,3},
+		//		{4,7,6,5},
+		//		{4,0,3,7},
+		//		{1,0,4,5},
+		//		{2,1,5,6},
+		//		{3,2,6,7}
+		//			}
+		//	};
+
+		Scalar tolerance = epsilon / sqrt(3);
+		Scalar de;
+
+		for (int i = 0; i < m_faces.size(); i++)
+		{
+			AB = m_ver[m_faces[i][1]] - m_ver[m_faces[i][0]];
+			AC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][0]];
+			BC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][1]];
+			de = algorithms::is_triangle_degenerated(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
+
+			if (de == DEGENERATED_POINT)
+			{
+				logger().debug("Envelope Triangle Degeneration- Point");
+				for (int j = 0; j < 8; j++)
+				{
+					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
+				}
+				halfspace[i].resize(6);
+				for (int j = 0; j < 6; j++) {
+					halfspace[i][j][0] = box[c_face[j][0]];
+					halfspace[i][j][1] = box[c_face[j][1]];
+					halfspace[i][j][2] = box[c_face[j][2]];
+				}
+				cornerlist[i] = (get_bb_corners_8(box));
+
+				boxs.emplace_back(box);
+				continue;
+			}
+			if (de == DEGENERATED_SEGMENT)
+			{
+				logger().debug("Envelope Triangle Degeneration- Segment");
+				Scalar length1 = AB.norm(), length2 = AC.norm(), length3 = BC.norm();
+				if (length1 >= length2 && length1 >= length3)
+				{
+					algorithms::seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], tolerance, box);
+
+				}
+				if (length2 >= length1 && length2 >= length3)
+				{
+					algorithms::seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][2]], tolerance, box);
+
+				}
+				if (length3 >= length1 && length3 >= length2)
+				{
+					algorithms::seg_cube(m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tolerance, box);
+				}
+				halfspace[i].resize(6);
+				for (int j = 0; j < 6; j++) {
+					halfspace[i][j][0] = box[c_face[j][0]];
+					halfspace[i][j][1] = box[c_face[j][1]];
+					halfspace[i][j][2] = box[c_face[j][2]];
+				}
+				cornerlist[i] = (get_bb_corners_8(box));
+
+				boxs.emplace_back(box);
+				continue;
+			}
+			if (de == NERLY_DEGENERATED)
+			{
+				logger().debug("Envelope Triangle Degeneration- Nearly");
+
+				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
+
+				vector1 = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], normal + m_ver[m_faces[i][0]]);
+
+			}
+			else
+			{
+				normal = AB.cross(AC).normalized();
+				vector1 = AB.cross(normal).normalized();
+			}
+
+			ABn = AB.normalized();
+			polygon[0] = m_ver[m_faces[i][0]] + (vector1 - ABn) * tolerance;
+			polygon[1] = m_ver[m_faces[i][1]] + (vector1 + ABn) * tolerance;
+
+
+			if (dot_sign(AB, BC) < 0)
+			{
+				polygon[2] = m_ver[m_faces[i][1]] + (-vector1 + ABn) * tolerance;
+				polygon[3] = m_ver[m_faces[i][2]] + (-vector1 + ABn) * tolerance;
+				polygon[4] = m_ver[m_faces[i][2]] + (-vector1 - ABn) * tolerance;
+				if (dot_sign(AB, AC) < 0)
+				{
+					polygon[5] = m_ver[m_faces[i][2]] + (vector1 - ABn) * tolerance;
+				}
+				else
+				{
+					polygon[5] = m_ver[m_faces[i][0]] + (-vector1 - ABn) * tolerance;
+				}
+			}
+			else
+			{
+				polygon[2] = m_ver[m_faces[i][2]] + (vector1 + ABn) * tolerance;
+				polygon[3] = m_ver[m_faces[i][2]] + (-vector1 + ABn) * tolerance;
+				polygon[4] = m_ver[m_faces[i][2]] + (-vector1 - ABn) * tolerance;
+				polygon[5] = m_ver[m_faces[i][0]] + (-vector1 - ABn) * tolerance;
+			}
+
+			for (int j = 0; j < 6; j++)
+			{
+				polygonoff[j] = polygon[j] + normal * tolerance;
+			}
+			for (int j = 6; j < 12; j++)
+			{
+				polygonoff[j] = polygon[j - 6] - normal * tolerance;
+			}
+			
+			halfspace[i].resize(8);
+			for (int j = 0; j < 8; j++) {
+				halfspace[i][j][0] = polygonoff[p_face[j][0]];
+				halfspace[i][j][1] = polygonoff[p_face[j][1]];
+				halfspace[i][j][2] = polygonoff[p_face[j][2]];
+			}
+			cornerlist[i] = (get_bb_corners_12(polygonoff));
+			prisms.emplace_back(polygonoff);
+		}
+
+	}
 
 }
