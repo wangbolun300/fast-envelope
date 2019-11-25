@@ -163,12 +163,6 @@ endif()
 # 	target_link_libraries(${PROJECT_NAME} PUBLIC tbb::tbb)
 # endif()
 
-find_package(GMP)
-
-IF(NOT ${GMP_FOUND})
-        MESSAGE(FATAL_ERROR "Cannot find GMP")
-ENDIF()
-
 
 # if(${FAST_ENVELOPE_USE_FLOAT})
 # 	target_compile_definitions(${PROJECT_NAME} PUBLIC -DFAST_ENVELOPE_USE_FLOAT)
@@ -178,9 +172,6 @@ ENDIF()
 #spdlog
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PUBLIC CLI11::CLI11)
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${GMP_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${GMP_LIBRARIES})
 
 if(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES)
 	# fast_envelope_download_geogram_predicates()
@@ -242,6 +233,14 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	add_executable(${PROJECT_NAME}_bin app/main.cpp)
 	add_subdirectory(app)
 	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+
+	find_package(GMP)
+
+	IF(NOT ${GMP_FOUND})
+			MESSAGE(FATAL_ERROR "Cannot find GMP")
+	ENDIF()
+	target_include_directories(${PROJECT_NAME}_bin PUBLIC ${GMP_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME}_bin PUBLIC ${GMP_LIBRARIES})
 
 
 	if(NOT FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
