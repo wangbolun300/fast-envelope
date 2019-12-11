@@ -27,7 +27,8 @@
 #include <ctime>
 #include <cstdlib>
 #include<igl/writeOBJ.h>
-
+#include<igl/readSTL.h>
+#include<igl/writeOFF.h>
 using namespace fastEnvelope;
 using namespace std;
 
@@ -310,8 +311,8 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 
 //void test_in_wild(string inputFileName1, string input_surface_path1) {
 void test_in_wild() {
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\110027.stl";
+	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl_env.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.off";
 	///string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl_env.csv";
 	///string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl";
 	///
@@ -573,12 +574,20 @@ void test_in_wild() {
 void test_without_sampling() {
 	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
 	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\75147.stl";
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\109130.stl_env.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\109130.off";
 
 
 	vector<int> outenvelope;
 	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
+	int ft;
+	// if there are over one million triangles, then test maximal one million triangles
+	if (triangles.size() > 500000) {
+		ft = 500000;
+	}
+	else {
+		ft = triangles.size();//test face number
+	}
 	if (triangles.size() == 0) return;
 	std::vector<Vector3> env_vertices;
 	std::vector<Vector3i> env_faces;
@@ -591,7 +600,14 @@ void test_without_sampling() {
 		return;
 	}
 	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
-
+	// just for test validation
+	/*triangles.clear(); triangles.resize(env_faces.size());
+	for (int i = 0; i < env_faces.size(); i++) {
+		triangles[i][0] = env_vertices[env_faces[i][0]];
+		triangles[i][1] = env_vertices[env_faces[i][1]];
+		triangles[i][2] = env_vertices[env_faces[i][2]];
+	}*/
+	//
 	Vector3 min, max;
 	min = env_vertices.front();
 	max = env_vertices.front();
@@ -612,20 +628,14 @@ void test_without_sampling() {
 
 	Scalar shrink = 1;
 	Scalar eps = 1e-3;
+	eps = eps * sqrt(3);//make similar size to the original one
 	Scalar epsilon = bbd * eps; //eps*bounding box diagnal
 	const int spac = 10;// space subdivision parameter
-	int ft;
-	// if there are over one million triangles, then test maximal one million triangles
-	if (triangles.size() > 500000) {
-		ft = 500000;
-	}
-	else {
-		ft = triangles.size();//test face number
-	}
+	
 	//////////////////////////////////////////////////////////////
-	const int fn = ft;//test face number
+	int fn = std::min((int)triangles.size(),ft);//test face number
 
-	eps = eps / shrink;
+	
 	epsilon = epsilon / shrink;
 	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
 	igl::Timer timer, timer1, timer2;
@@ -920,8 +930,38 @@ void tryspeed() {
 	cout << "time reserve push " << timer.getElapsedTimeInSec() << endl;
 
 }
+void stl_to_off(string stlfile, string offfile) {
+	std::vector<std::vector<double> > vV,vN;
+	std::vector<std::vector<int> > vF;
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	bool read =igl::readSTL(stlfile, vV, vF, vN);
+	if (!read) std::cout << "read stl wrong" << std::endl;
+	igl::list_to_matrix(vV, V);
+	igl::list_to_matrix(vF, F);
+	igl::writeOFF(offfile, V, F);
+}
+double get_volume_of_real_envelope(const Vector3 p1, const Vector3 p2, const Vector3 p3, const double eps) {
+	double pi = 3.14159265358979323846;
+	double a = (p2 - p1).norm();
+	double b = (p3 - p1).norm();
+	double c = (p2 - p3).norm();
+	double cosA = (b*b + c * c - a * a) / (2 * b*c);
+	double cosB = (a*a + c * c - b * b) / (2 * a*c);
+	double cosC = (a*a + b * b - c * c) / (2 * a*b);
+	double A = acos(cosA);
+	double B = acos(cosB);
+	double C = acos(cosC);
+	double p = (a + b + c) / 2;
+	double T = sqrt(p*(p - a)*(p - b)*(p - c));
 
-
+	double s1 = T * 2 * eps;
+	double s2 = 0.5*pi*eps*eps*c;
+	double s3 = 0.5*pi*eps*eps*a;
+	double s4 = 0.5*pi*eps*eps*b;
+	double s5 = 4 * pi*eps*eps*eps / 3;
+	return (s1 + s2 + s3 + s4 + s5);
+}
 
 int main(int argc, char const *argv[])
 {
@@ -941,7 +981,7 @@ int main(int argc, char const *argv[])
 	/*test_without_sampling();
 	test_without_sampling();*/
 	
-	test_without_sampling();
+	//test_without_sampling();
 	/*bool a=true;
 	if (a) cout << "a true" <<a<< endl;
 	if (!a) cout << "a false" << endl;*/
@@ -951,8 +991,13 @@ int main(int argc, char const *argv[])
 		test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
 	}*/
-
-
+	//stl_to_off("d:\\vs\\fast_envelope_csv\\problems\\109130.stl", "d:\\vs\\fast_envelope_csv\\problems\\109130_.off");
+	/*for (int i = 0; i < (argc - 1) / 2; i++) {
+		string a = argv[2 * i + 2];
+		string b = a.append(".off");
+		stl_to_off(a, b);
+		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
+	}*/
 //fordebug();
 /*using namespace Eigen;
 MatrixXd ones = MatrixXd::Ones(3, 3);
