@@ -288,7 +288,8 @@ namespace fastEnvelope {
 		//			}
 		//	};
 
-		Scalar tolerance = epsilon / sqrt(3);
+		//Scalar tolerance = epsilon / sqrt(3);//this line make the triangle more conservative
+		Scalar tolerance = epsilon;
 		Scalar de;
 
 		for (int i = 0; i < m_faces.size(); i++)
@@ -510,7 +511,8 @@ namespace fastEnvelope {
 		//			}
 		//	};
 
-		Scalar tolerance = epsilon / sqrt(3);
+		/*Scalar tolerance = epsilon / sqrt(3);*/
+		Scalar tolerance = epsilon;
 		Scalar de;
 
 		for (int i = 0; i < m_faces.size(); i++)

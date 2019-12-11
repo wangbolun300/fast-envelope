@@ -941,7 +941,7 @@ void stl_to_off(string stlfile, string offfile) {
 	igl::list_to_matrix(vF, F);
 	igl::writeOFF(offfile, V, F);
 }
-double get_volume_of_real_envelope(const Vector3 p1, const Vector3 p2, const Vector3 p3, const double eps) {
+double get_volume_of_real_envelope(const Vector2 p1, const Vector2 p2, const Vector2 p3, const double eps) {
 	double pi = 3.14159265358979323846;
 	double a = (p2 - p1).norm();
 	double b = (p3 - p1).norm();
@@ -961,6 +961,67 @@ double get_volume_of_real_envelope(const Vector3 p1, const Vector3 p2, const Vec
 	double s4 = 0.5*pi*eps*eps*b;
 	double s5 = 4 * pi*eps*eps*eps / 3;
 	return (s1 + s2 + s3 + s4 + s5);
+}
+double get_triangle_area(Vector2 t0, Vector2 t1, Vector2 t2) {
+	double a = (t2 - t1).norm();
+	double b = (t0 - t1).norm();
+	double c = (t0 - t2).norm();
+	double p = (a + b + c) / 2;
+	double T = sqrt(p*(p - a)*(p - b)*(p - c));
+	return T;
+}
+double get_volume_of_our_envelope(const Vector2 p1, const Vector2 p2, const Vector2 p3, const double eps) {//clock order
+	std::cout << "get triangle_ area " << get_triangle_area(p1, p2, p3) << std::endl;
+	Vector2 AB = p2 - p1;
+	Vector2 BC = p3 - p2;
+	Vector2 AC = p3 - p1;
+	std::array<Vector2, 6> polygon;
+	Vector2 ABn = AB.normalized();
+	Vector2 vector1; vector1[0] = -1*ABn[1]; vector1[1] = ABn[0];
+	//std::cout << "abn " << ABn[0] << " " << ABn[1] << std::endl;
+	//std::cout << "vector1 " << vector1[0] << " " << vector1[1] << std::endl;
+	double tolerance = eps / sqrt(3);//this is half cube edge length
+	polygon[0] = p1 + (vector1 - ABn) * tolerance;
+	polygon[1] = p2 + (vector1 + ABn) * tolerance;
+	if (AB.dot(BC) < 0)
+	{
+		polygon[2] = p2 + (-vector1 + ABn) * tolerance;
+		polygon[3] = p3 + (-vector1 + ABn) * tolerance;
+		polygon[4] = p3 + (-vector1 - ABn) * tolerance;
+		if (AB.dot(AC) < 0)
+		{
+			polygon[5] = p3 + (vector1 - ABn) * tolerance;
+		}
+		else
+		{
+			polygon[5] = p1 + (-vector1 - ABn) * tolerance;
+		}
+	}
+	else
+	{
+		polygon[2] = p3 + (vector1 + ABn) * tolerance;
+		polygon[3] = p3 + (-vector1 + ABn) * tolerance;
+		polygon[4] = p3 + (-vector1 - ABn) * tolerance;
+		polygon[5] = p1 + (-vector1 - ABn) * tolerance;
+	}
+	Vector2 c = polygon[0];
+	double s1 = get_triangle_area(c, polygon[1], polygon[2]);
+	double s2 = get_triangle_area(c, polygon[2], polygon[3]);
+	double s3 = get_triangle_area(c, polygon[3], polygon[4]);
+	double s4 = get_triangle_area(c, polygon[4], polygon[5]);
+	return ((s1 + s2 + s3 + s4)*tolerance * 2);
+
+}
+void run_volume_compare() {
+	Vector2 t0(100, 0);
+	Vector2 t1(0, 0);
+	Vector2 t2(50, 50);
+	double eps = 100;
+	double real = get_volume_of_real_envelope(t0, t1, t2, eps);
+	double ours = get_volume_of_our_envelope(t0, t1, t2, eps);
+	std::cout << "real, ours, real/ours " << real << " " << " " << ours << " " << real / ours << std::endl;
+	double ours_enlarge = get_volume_of_our_envelope(t0, t1, t2, eps*sqrt(3));
+	std::cout << "real, ours_enlarge, real/ours_enlarge " << real << " " << " " << ours_enlarge << " " << real / ours_enlarge << std::endl;
 }
 
 int main(int argc, char const *argv[])
@@ -1017,7 +1078,7 @@ m(1, 2) = 1;
 */
 	
 
-
+	run_volume_compare();
 
 
 
