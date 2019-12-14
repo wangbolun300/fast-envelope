@@ -1117,8 +1117,8 @@ int main(int argc, char const *argv[])
 		test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
 	}*/
-	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\1517923.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\1517923.stl";
+	string inputFileName1 = "1517923.stl_envelope_log.csv";
+	string input_surface_path1 = "1517923.stl";
 	double s[10] = { 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 };
 	double time[10];
 	for (int i = 0; i < 10; i++) {
@@ -1129,12 +1129,12 @@ int main(int argc, char const *argv[])
 	std::cout << "time " << std::endl;
 	for (int i = 0; i < 10; i++) {
 		std::cout << time[i] << ",";
-	}*/
+	}
 	
 
 	//run_volume_compare();
 
-	test_original_surface();
+	//test_original_surface();
 
 
 
