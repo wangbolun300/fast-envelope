@@ -22,5 +22,8 @@ namespace fastEnvelope {
 		 void halfspace_get_prisms(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
 			 std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon, std::vector<std::array<Vector3, 12>>& prisms,
 			 std::vector<std::array<Vector3, 8>>& boxs);
+
+		 void halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
+			 std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon);
 	}
 }

@@ -17,6 +17,9 @@ namespace fastEnvelope {
 	
 	public:
 		FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);
+		FastEnvelope(){}
+
+		void init(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);
 		static void printnumber();
 
 		//check if tri or point is outside

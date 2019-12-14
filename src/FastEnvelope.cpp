@@ -17,22 +17,24 @@ namespace fastEnvelope
 
 	FastEnvelope::FastEnvelope(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, const Scalar eps)
 	{
+		cornerlist.clear();
+		halfspace.clear();
+		init(m_ver, m_faces, eps);
 
-
-
-
+	}
+	void FastEnvelope::init(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps) {
 		std::vector<Vector3i> faces_new;
 
 
 		algorithms::resorting(m_ver, m_faces, faces_new);//resort the facets order
 
-		algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, eps);
+		//algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, eps);
+		algorithms::halfspace_generation(m_ver, faces_new, halfspace, cornerlist, eps);
 
 		tree.init(cornerlist);
 
 		//initializing types
 		initFPU();
-
 
 	}
 
@@ -2220,7 +2222,7 @@ namespace fastEnvelope
 		std::vector<int> o1, o2;
 		o1.resize(halfspace[cindex].size());
 		o2.resize(halfspace[cindex].size());
-		int ori = 0, count = 0;
+		int ori = 0, count = 0;//ori=0 to avoid the case that there is only one cut plane
 		std::vector<int> cutp;
 
 		for (int i = 0; i < halfspace[cindex].size(); i++)
@@ -2253,7 +2255,7 @@ namespace fastEnvelope
 		LPI_filtered_suppvars sf;
 		for (int i = 0; i < cutp.size(); i++)
 		{
-
+			
 			bool precom = orient3D_LPI_prefilter( // it is boolean maybe need considering
 				seg0[0], seg0[1], seg0[2],
 				seg1[0], seg1[1], seg1[2],
@@ -2358,118 +2360,15 @@ namespace fastEnvelope
 
 
 	bool FastEnvelope::is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const {
-		static const int prism_map[64][2] = {
-	{-1, -1},
-	{-1, -1},
-	{0, 1},
-	{1, 2},
-	{2, 3},
-	{3, 4},
-	{4, 5},
-	{0, 5},
-	{-1, -1},
-	{-1, -1},
-	{6, 7},
-	{7, 8},
-	{8, 9},
-	{9, 10},
-	{10, 11},
-	{6, 11},
-	{0, 1},
-	{6, 7},
-	{-1, -1},
-	{1, 7},
-	{-1, -1},
-	{-1, -1},
-	{-1, -1},
-	{0, 6},
-	{1, 2},
-	{7, 8},
-	{1, 7},
-	{-1, -1},
-	{2, 8},
-	{-1, -1},
-	{-1, -1},
-	{-1, -1},
-	{2, 3},
-	{8, 9},
-	{-1, -1},
-	{2, 8},
-	{-1, -1},
-	{3, 9},
-	{-1, -1},
-	{-1, -1},
-	{3, 4},
-	{9, 10},
-	{-1, -1},
-	{-1, -1},
-	{3, 9},
-	{-1, -1},
-	{4, 10},
-	{-1, -1},
-	{4, 5},
-	{10, 11},
-	{-1, -1},
-	{-1, -1},
-	{-1, -1},
-	{4, 10},
-	{-1, -1},
-	{5, 11},
-	{0, 5},
-	{6, 11},
-	{0, 6},
-	{-1, -1},
-	{-1, -1},
-	{-1, -1},
-	{5, 11},
-	{-1, -1} };
-		static const int cubic_map[36][2] = {
-			{-1, -1},
-		 {-1, -1},
-		 {0, 3},
-		 {0, 1},
-		 {1, 2},
-		 {2, 3},
-		 {-1, -1},
-		 {-1, -1},
-		 {4, 7},
-		 {4, 5},
-		 {5, 6},
-		 {6, 7},
-		 {0, 3},
-		 {4, 7},
-		 {-1, -1},
-		 {0, 4},
-		 {-1, -1},
-		 {3, 7},
-		 {0, 1},
-		 {4, 5},
-		 {0, 4},
-		 {-1, -1},
-		 {1, 5},
-		 {-1, -1},
-		 {1, 2},
-		 {5, 6},
-		 {-1, -1},
-		 {1, 5},
-		 {-1, -1},
-		 {2, 6},
-		 {2, 3},
-		 {6, 7},
-		 {3, 7},
-		 {-1, -1},
-		 {2, 6},
-		 {-1, -1}
-		};
-		if (halfspace[pid].size() == 8) {
-			int id = i * 8 + j;
-			if (prism_map[id][0] == -1) return false;
-		}
-		if (halfspace[pid].size() == 6) {
-			int id = i * 6 + j;
-			if (cubic_map[id][0] == -1) return false;
-		}
-		return true;
+		int facesize = halfspace[pid].size();
+		if (i == j) return false;
+		if (i == 0 && j != 1) return true;
+		if (i == 1 && j != 0) return true;
+		if (j == 0 && i != 1) return true;
+		if (j == 1 && i != 0) return true;
+		if (i - j == 1 || j - i == 1) return true;
+		if (i == 2 && j == facesize - 1) return true;
+		if (j == 2 && i == facesize - 1) return true;
+		return false;
 	}
-
 }

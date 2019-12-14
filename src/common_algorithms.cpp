@@ -632,4 +632,196 @@ namespace fastEnvelope {
 
 	}
 
+	// this function provide an algorithm build halfspaces for a list of triangles. each prism has 7-8 facets
+	void algorithms::halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
+		std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon) {
+		Scalar tolerance = epsilon;// the envelope thickness
+		Vector3 AB, AC, BC, normal;
+		int de;
+		std::array<Vector3, 3> plane;
+		std::array<Vector3, 8> box;
+		Vector3 tmin, tmax;
+		Vector3 bbox_offset;
+		bbox_offset[0] = 1;
+		bbox_offset[1] = 1;
+		bbox_offset[2] = 1;
+		bbox_offset = bbox_offset * tolerance*sqrt(3)*(1 + 1e-6);
+
+		const auto get_triangle_obtuse_angle= [](const Vector3& p0, const Vector3& p1, const Vector3& p2) {
+			const auto dot_sign = [](const Vector3 &a, const Vector3 &b)
+			{
+				Scalar t = a.dot(b);
+				if (t > SCALAR_ZERO)
+					return 1;
+				if (t < -1 * SCALAR_ZERO)
+					return -1;
+
+				return dot_product_sign(a[0], a[1], a[2], b[0], b[1], b[2]);
+			};
+			
+			if (dot_sign(p1 - p0, p1 - p2) < 0) return 1;
+			if (dot_sign(p2 - p1, p2 - p0) < 0) return 2;
+			if (dot_sign(p0 - p1, p0 - p2) < 0) return 0;
+			return -1;
+
+		};
+		static const std::array<Vector3, 8> boxorder = {
+			{
+				{1, 1, 1},
+				{-1, 1, 1},
+				{-1, -1, 1},
+				{1, -1, 1},
+				{1, 1, -1},
+				{-1, 1, -1},
+				{-1, -1, -1},
+				{1, -1, -1},
+			} };
+		const auto get_corner_plane=[](const Vector3& p0, const Vector3& midp, const Vector3 &normal, const Scalar& distance,
+			Vector3& plane0, Vector3& plane1, Vector3& plane2) {
+			Scalar distance_small = distance * 0.999;
+			Vector3 direction = (p0 - midp).normalized();
+			plane0 = p0 + direction * distance_small;
+			plane1 = plane0 + normal;
+			Vector3 axis = direction.cross(normal).normalized();
+			plane2 = plane0 + axis;
+
+
+		};
+
+		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
+
+		halfspace.resize(m_faces.size());
+		cornerlist.resize(m_faces.size());
+		for (int i = 0; i < m_faces.size(); i++)
+		{
+			algorithms::get_tri_corners(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tmin, tmax);
+			cornerlist[i][0] = tmin - bbox_offset;
+			cornerlist[i][1] = tmax + bbox_offset;
+
+			AB = m_ver[m_faces[i][1]] - m_ver[m_faces[i][0]];
+			AC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][0]];
+			BC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][1]];
+			de = algorithms::is_triangle_degenerated(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
+
+			if (de == DEGENERATED_POINT)
+			{
+				logger().debug("Envelope Triangle Degeneration- Point");
+				for (int j = 0; j < 8; j++)
+				{
+					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
+				}
+				halfspace[i].resize(6);
+				for (int j = 0; j < 6; j++) {
+					halfspace[i][j][0] = box[c_face[j][0]];
+					halfspace[i][j][1] = box[c_face[j][1]];
+					halfspace[i][j][2] = box[c_face[j][2]];
+				}
+				//cornerlist[i] = (get_bb_corners_8(box));
+
+				
+				continue;
+			}
+			if (de == DEGENERATED_SEGMENT)
+			{
+				logger().debug("Envelope Triangle Degeneration- Segment");
+				Scalar length1 = AB.dot(AB), length2 = AC.dot(AC), length3 = BC.dot(BC);
+				if (length1 >= length2 && length1 >= length3)
+				{
+					algorithms::seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], tolerance, box);
+
+				}
+				if (length2 >= length1 && length2 >= length3)
+				{
+					algorithms::seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][2]], tolerance, box);
+
+				}
+				if (length3 >= length1 && length3 >= length2)
+				{
+					algorithms::seg_cube(m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tolerance, box);
+				}
+				halfspace[i].resize(6);
+				for (int j = 0; j < 6; j++) {
+					halfspace[i][j][0] = box[c_face[j][0]];
+					halfspace[i][j][1] = box[c_face[j][1]];
+					halfspace[i][j][2] = box[c_face[j][2]];
+				}
+				//cornerlist[i] = (get_bb_corners_8(box));
+
+			
+				continue;
+			}
+			if (de == NERLY_DEGENERATED)
+			{
+				logger().debug("Envelope Triangle Degeneration- Nearly");
+
+				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
+
+			}
+			else
+			{
+				normal = AB.cross(AC).normalized();
+			}
+			halfspace[i].reserve(8);
+			Vector3 normaldist = normal * tolerance;
+			Vector3 edgedire, edgenormaldist;
+			plane[0] = m_ver[m_faces[i][0]] + normaldist;
+			plane[1] = m_ver[m_faces[i][1]] + normaldist;
+			plane[2] = m_ver[m_faces[i][2]] + normaldist;
+			halfspace[i].emplace_back(plane);// number 0
+
+			plane[0] = m_ver[m_faces[i][0]] - normaldist;
+			plane[1] = m_ver[m_faces[i][2]] - normaldist;
+			plane[2] = m_ver[m_faces[i][1]] - normaldist;// order: 0, 2, 1
+			halfspace[i].emplace_back(plane);// number 1
+			
+			int obtuse = get_triangle_obtuse_angle(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
+
+
+			edgedire = AB.normalized();
+			edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
+			plane[0] = m_ver[m_faces[i][0]] + edgenormaldist;
+			plane[1] = m_ver[m_faces[i][1]] + edgenormaldist;
+			plane[2] = plane[0] + normal;
+			halfspace[i].emplace_back(plane);// number 2
+
+			
+			if (obtuse != 1) {
+				get_corner_plane(m_ver[m_faces[i][1]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][2]]) / 2, normal,
+					tolerance, plane[0], plane[1], plane[2]);
+				halfspace[i].emplace_back(plane);// number 3;
+
+			}
+
+			edgedire = BC.normalized();
+			edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
+			plane[0] = m_ver[m_faces[i][1]] + edgenormaldist;
+			plane[1] = m_ver[m_faces[i][2]] + edgenormaldist;
+			plane[2] = plane[0] + normal;
+			halfspace[i].emplace_back(plane);// number 4
+
+			if (obtuse != 2) {
+				get_corner_plane(m_ver[m_faces[i][2]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][1]]) / 2, normal,
+					tolerance, plane[0], plane[1], plane[2]);
+				halfspace[i].emplace_back(plane);// number 5;
+
+			}
+
+			edgedire = -AC.normalized();
+			edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
+			plane[0] = m_ver[m_faces[i][2]] + edgenormaldist;
+			plane[1] = m_ver[m_faces[i][0]] + edgenormaldist;
+			plane[2] = plane[1] + normal;
+			halfspace[i].emplace_back(plane);// number 6 
+
+			if (obtuse != 0) {
+				get_corner_plane(m_ver[m_faces[i][0]], (m_ver[m_faces[i][1]] + m_ver[m_faces[i][2]]) / 2, normal,
+					tolerance, plane[0], plane[1], plane[2]);
+				halfspace[i].emplace_back(plane);// number 7;
+
+			}
+		
+		}
+
+	}
+
 }
