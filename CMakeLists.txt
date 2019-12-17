@@ -105,7 +105,7 @@ include(FastEnvelopeDependencies)
 ################################################################################
 
 # add_library() can only be called without any source since CMake 3.11 ...
-add_library(${PROJECT_NAME} src/Logger.cpp)
+add_library(${PROJECT_NAME} src/common_algorithms.cpp)
 target_compile_features(${PROJECT_NAME} PRIVATE ${CXX11_FEATURES})
 
 # Public include directory for FastEnvelope

@@ -7,7 +7,7 @@ set(SOURCES
 Morton.h
 Morton.cpp
         Types.hpp
-common_algorithms.cpp
+#common_algorithms.cpp
 common_algorithms.h
 
 
