@@ -1,6 +1,6 @@
 #include "MeshIO.hpp"
 
-#include <fastenvelope/Logger.hpp>
+//#include <fastenvelope/////logger.hpp>
 
 
 #include <igl/Timer.h>
@@ -24,7 +24,7 @@ namespace fastEnvelope
 {
 	bool MeshIO::load_mesh(const std::string &path, std::vector<Vector3> &points, std::vector<Vector3i> &faces, GEO::Mesh& input)
 	{
-		logger().debug("Loading mesh at {}...", path);
+		//logger().debug("Loading mesh at {}...", path);
 		igl::Timer timer; timer.start();
 
 		input.clear(false,false);

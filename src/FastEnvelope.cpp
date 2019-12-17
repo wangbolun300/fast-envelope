@@ -541,8 +541,8 @@ namespace fastEnvelope
 		}
 		int tot;
 		int ori;
-		static INDEX index;
-		static std::vector<INDEX> recompute;
+		INDEX index;
+		std::vector<INDEX> recompute;
 
 		recompute.clear();
 		for (int i = 0; i < prismindex.size(); i++)
@@ -747,8 +747,8 @@ namespace fastEnvelope
 		}
 		int tot, fid;
 		int ori;
-		static INDEX index;
-		static std::vector<INDEX> recompute;
+		INDEX index;
+		std::vector<INDEX> recompute;
 
 		recompute.clear();
 		for (int i = 0; i < prismindex.size(); i++)
@@ -990,8 +990,8 @@ namespace fastEnvelope
 		}
 		int tot, fid;
 		int ori;
-		static INDEX index;
-		static std::vector<INDEX> recompute;
+		INDEX index;
+		std::vector<INDEX> recompute;
 
 		recompute.clear();
 		for (int i = 0; i < prismindex.size(); i++)
@@ -1214,8 +1214,8 @@ namespace fastEnvelope
 			return OUT_PRISM;
 		}
 
-		static INDEX index;
-		static std::vector<INDEX> recompute;
+		INDEX index;
+		std::vector<INDEX> recompute;
 		recompute.clear();
 
 
@@ -1445,8 +1445,8 @@ namespace fastEnvelope
 			return OUT_PRISM;
 		}
 
-		static INDEX index;
-		static std::vector<INDEX> recompute;
+		INDEX index;
+		std::vector<INDEX> recompute;
 		recompute.clear();
 
 
@@ -1593,7 +1593,7 @@ namespace fastEnvelope
 			//logger().debug("Degeneration happens");
 			n = { {Vector3(rand(), rand(), rand())} };
 		}
-		static Scalar
+		Scalar
 			t00,
 			t01, t02,
 			t10, t11, t12,
@@ -1645,7 +1645,7 @@ namespace fastEnvelope
 	{
 		TPI_filtered_suppvars st;
 		TPI_exact_suppvars s;
-		static Scalar
+		Scalar
 			t00, t01, t02,
 			t10, t11, t12,
 			t20, t21, t22,
