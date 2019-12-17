@@ -1644,7 +1644,7 @@ namespace fastEnvelope
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22)
 	{
 		TPI_filtered_suppvars st;
-		TPI_exact_suppvars s;
+		TPI_exact_suppvars  s;
 		Scalar
 			t00, t01, t02,
 			t10, t11, t12,
