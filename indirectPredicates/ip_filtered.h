@@ -1,3 +1,4 @@
+#include <math.h>
 /****************************************************************************
 * Indirect exact 3D orientation predicates with floating point filter       *
 *                                                                           *

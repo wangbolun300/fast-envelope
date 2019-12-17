@@ -3,7 +3,7 @@
 #include<iostream>
 #include<array>
 #include<fastenvelope/Morton.h>
-#include<fastenvelope/Logger.hpp>
+//#include<fastenvelope/ //logger.hpp>
 #include <indirectpredicates/ip_filtered_ex.h>
 namespace fastEnvelope {
 	namespace algorithms {
@@ -301,7 +301,7 @@ namespace fastEnvelope {
 
 			if (de == DEGENERATED_POINT)
 			{
-				logger().debug("Envelope Triangle Degeneration- Point");
+				 //logger().debug("Envelope Triangle Degeneration- Point");
 				for (int j = 0; j < 8; j++)
 				{
 					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
@@ -319,7 +319,7 @@ namespace fastEnvelope {
 			}
 			if (de == DEGENERATED_SEGMENT)
 			{
-				logger().debug("Envelope Triangle Degeneration- Segment");
+				 //logger().debug("Envelope Triangle Degeneration- Segment");
 				Scalar length1 = AB.norm(), length2 = AC.norm(), length3 = BC.norm();
 				if (length1 >= length2 && length1 >= length3)
 				{
@@ -348,7 +348,7 @@ namespace fastEnvelope {
 			}
 			if (de == NERLY_DEGENERATED)
 			{
-				logger().debug("Envelope Triangle Degeneration- Nearly");
+				 //logger().debug("Envelope Triangle Degeneration- Nearly");
 
 				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
 
@@ -524,7 +524,7 @@ namespace fastEnvelope {
 
 			if (de == DEGENERATED_POINT)
 			{
-				logger().debug("Envelope Triangle Degeneration- Point");
+				 //logger().debug("Envelope Triangle Degeneration- Point");
 				for (int j = 0; j < 8; j++)
 				{
 					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
@@ -542,7 +542,7 @@ namespace fastEnvelope {
 			}
 			if (de == DEGENERATED_SEGMENT)
 			{
-				logger().debug("Envelope Triangle Degeneration- Segment");
+				 //logger().debug("Envelope Triangle Degeneration- Segment");
 				Scalar length1 = AB.norm(), length2 = AC.norm(), length3 = BC.norm();
 				if (length1 >= length2 && length1 >= length3)
 				{
@@ -571,7 +571,7 @@ namespace fastEnvelope {
 			}
 			if (de == NERLY_DEGENERATED)
 			{
-				logger().debug("Envelope Triangle Degeneration- Nearly");
+				 //logger().debug("Envelope Triangle Degeneration- Nearly");
 
 				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
 
@@ -678,7 +678,7 @@ namespace fastEnvelope {
 			} };
 		const auto get_corner_plane=[](const Vector3& p0, const Vector3& midp, const Vector3 &normal, const Scalar& distance,
 			Vector3& plane0, Vector3& plane1, Vector3& plane2) {
-			Scalar distance_small = distance * 0.999;
+			Scalar distance_small = distance * 1;
 			Vector3 direction = (p0 - midp).normalized();
 			plane0 = p0 + direction * distance_small;
 			plane1 = plane0 + normal;
@@ -705,7 +705,7 @@ namespace fastEnvelope {
 
 			if (de == DEGENERATED_POINT)
 			{
-				logger().debug("Envelope Triangle Degeneration- Point");
+				 //logger().debug("Envelope Triangle Degeneration- Point");
 				for (int j = 0; j < 8; j++)
 				{
 					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
@@ -723,7 +723,7 @@ namespace fastEnvelope {
 			}
 			if (de == DEGENERATED_SEGMENT)
 			{
-				logger().debug("Envelope Triangle Degeneration- Segment");
+				 //logger().debug("Envelope Triangle Degeneration- Segment");
 				Scalar length1 = AB.dot(AB), length2 = AC.dot(AC), length3 = BC.dot(BC);
 				if (length1 >= length2 && length1 >= length3)
 				{
@@ -752,7 +752,7 @@ namespace fastEnvelope {
 			}
 			if (de == NERLY_DEGENERATED)
 			{
-				logger().debug("Envelope Triangle Degeneration- Nearly");
+				//logger().debug("Envelope Triangle Degeneration- Nearly");
 
 				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
 
@@ -819,6 +819,7 @@ namespace fastEnvelope {
 				halfspace[i].emplace_back(plane);// number 7;
 
 			}
+			//std::cout << "envelope face nbr " << halfspace[i].size() << std::endl;
 		
 		}
 

@@ -1,5 +1,5 @@
 #pragma once
-
+#include<math.h>
 int get_projection_plane(
     double ov1x, double ov1y, double ov1z,
     double ov2x, double ov2y, double ov2z,

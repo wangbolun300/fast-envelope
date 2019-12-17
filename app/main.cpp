@@ -574,8 +574,8 @@ void test_in_wild() {
 void test_without_sampling() {
 	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
 	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl";
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\exact_wrong\\55363.stl_envelope_log.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\exact_wrong\\55363.off";
 
 
 	vector<int> outenvelope;
@@ -626,9 +626,9 @@ void test_without_sampling() {
 	const Scalar bbd = (max - min).norm();
 	
 
-	Scalar shrink = 10;
+	Scalar shrink = 1;
 	Scalar eps = 1e-3;
-	eps = eps * sqrt(3);//make similar size to the original one
+	//eps = eps * sqrt(3);//make similar size to the original one
 	Scalar epsilon = bbd * eps; //eps*bounding box diagnal
 	const int spac = 10;// space subdivision parameter
 	
@@ -637,27 +637,10 @@ void test_without_sampling() {
 
 	
 	epsilon = epsilon / shrink;
+	std::cout << "epsilon " << epsilon << std::endl;
 	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
 	igl::Timer timer, timer1, timer2;
 
-
-	/////////////////////////////////
-	////for aabb method
-	//Vector3 min, max;
-	//Parameters params;
-	//Scalar dd;
-	//get_bb_corners(params, env_vertices, min, max);
-	//dd = ((max - min).norm()) / 1000 / shrink;
-	//timer.start();
-	//AABBWrapper sf_tree(envmesh);
-	//for (int i = 0; i < fn; i++) {
-
-	//	is_out_function(triangles[i], dd, sf_tree); ;
-	//}
-	//cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
-
-	//std::cout << "TEST aabb FINISHED  " << std::endl;
-	//////////////////////////////
 
 	Scalar temptime = 0;
 	timer.start();
@@ -677,14 +660,25 @@ void test_without_sampling() {
 		pos1[i] = outenvelope[i];
 		timer1.start();
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		//if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
-		/*if (timer1.getElapsedTimeInSec() > temptime) {
+		if (i % 100 == 0) {
+
+			cout << "ten thousand test over " << i<<" time "<<timer2.getElapsedTimeInSec() << endl;
+
+		}
+		if (timer1.getElapsedTimeInSec() > temptime) {
 			temptime = timer1.getElapsedTimeInSec();
 			cout << "time get longer " << i << ", " << temptime << std::endl;
 
-		}*/
+		}
 
 	}
+	std::ofstream fout;
+	fout.open("D:\\vs\\fast_envelope_csv\\problems\\exact_wrong\\our_result.csv");
+	for (int i = 0; i < fn; i++) {
+		fout << pos2[i] << std::endl;
+	}
+	fout.close();
+
 
 
 	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
@@ -912,11 +906,20 @@ double test_original_surface() {
 	Scalar eps = 1e-3;
 	eps = eps * sqrt(3);//make similar size to the original one
 	Scalar epsilon = bbd * eps; //eps*bounding box diagnal
-	const int spac = 10;// space subdivision parameter
+	
 
 	//////////////////////////////////////////////////////////////
 	int fn = std::min((int)triangles.size(), ft);//test face number
 
+	//////////////////////////////////////////////////////////////
+	/*std::vector<Vector3> points;
+	for (int i = 0; i < triangles.size(); i++) {
+		points.push_back(triangles[i][0]);
+		points.push_back(triangles[i][1]);
+		points.push_back(triangles[i][2]);
+	}
+	fn = points.size();*/
+	//////////////////////////////////////////////////////////////
 
 	epsilon = epsilon * shrinksize;
 	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
@@ -946,9 +949,9 @@ double test_original_surface() {
 	
 
 	}
-	std::cout << "total size " << env_faces.size() << std::endl;
+	std::cout << "total size " << triangles.size() << std::endl;
 	int count = 0;
-	for (int i = 0; i < env_faces.size(); i++) {
+	for (int i = 0; i < fn; i++) {
 		if (pos2[i] == 0) count++;
 	}
 	std::cout << "inside nbr " << count << std::endl;
@@ -1107,7 +1110,7 @@ int main(int argc, char const *argv[])
 	/*test_without_sampling();
 	test_without_sampling();*/
 	
-	//test_without_sampling();
+	test_without_sampling();
 	/*bool a=true;
 	if (a) cout << "a true" <<a<< endl;
 	if (!a) cout << "a false" << endl;*/
@@ -1117,8 +1120,8 @@ int main(int argc, char const *argv[])
 		test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
 	}*/
-	string inputFileName1 = "1517923.stl_envelope_log.csv";
-	string input_surface_path1 = "1517923.stl";
+	/*string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1517923.stl_envelope_log.csv";
+	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1517923.stl";
 	double s[10] = { 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 };
 	double time[10];
 	for (int i = 0; i < 10; i++) {
@@ -1129,7 +1132,7 @@ int main(int argc, char const *argv[])
 	std::cout << "time " << std::endl;
 	for (int i = 0; i < 10; i++) {
 		std::cout << time[i] << ",";
-	}
+	}*/
 	
 
 	//run_volume_compare();

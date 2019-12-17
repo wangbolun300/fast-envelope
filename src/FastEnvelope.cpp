@@ -1,6 +1,6 @@
 #include <fastenvelope/FastEnvelope.h>
 #include <fastenvelope/Predicates.hpp>
-#include <fastenvelope/Logger.hpp>
+//#include <fastenvelope/Logger.hpp>
 #include<fastenvelope/common_algorithms.h>
 
 #include <fstream>
@@ -1590,7 +1590,7 @@ namespace fastEnvelope
 
 		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0)
 		{
-			logger().debug("Degeneration happens");
+			//logger().debug("Degeneration happens");
 			n = { {Vector3(rand(), rand(), rand())} };
 		}
 		static Scalar
@@ -1680,7 +1680,7 @@ namespace fastEnvelope
 		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
 		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0)
 		{
-			logger().debug("Degeneration happens");
+			//logger().debug("Degeneration happens");
 			n = { {Vector3(rand(), rand(), rand())} };
 		}
 
@@ -1860,7 +1860,7 @@ namespace fastEnvelope
 
 		if (Predicates::orient_3d(n, tri0, tri1, tri2) == 0)
 		{
-			logger().debug("Degeneration happens !");
+			//logger().debug("Degeneration happens !");
 
 			n = { {Vector3(rand(), rand(), rand())} };
 		}
