@@ -2,16 +2,16 @@
 #include <fastenvelope/Predicates.hpp>
 //#include <fastenvelope/Logger.hpp>
 #include<fastenvelope/common_algorithms.h>
-
+#include <igl/Timer.h>
 #include <fstream>
-
+double timettt = 0;
 
 
 namespace fastEnvelope
 {
 
 	void FastEnvelope::printnumber() {
-
+		std::cout << "time for ttt " << timettt << std::endl;
 	}
 
 
@@ -303,7 +303,8 @@ namespace fastEnvelope
 					continue;
 				for (int k = 0; k < intersect_face[queue[i]].size(); k++) {
 					for (int h = 0; h < intersect_face[queue[j]].size(); h++) {
-
+						igl::Timer timer;
+						timer.start();
 						cut = is_3_triangle_cut(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -313,7 +314,7 @@ namespace fastEnvelope
 							halfspace[jump2][intersect_face[queue[j]][h]][1],
 							halfspace[jump2][intersect_face[queue[j]][h]][2]);
 
-
+						timettt += timer.getElapsedTimeInSec();
 						if (!cut) continue;
 
 
@@ -1995,7 +1996,7 @@ namespace fastEnvelope
 			for (int k = 0; k < 2; k++)
 			{
 
-				bool precom = orient3D_LPI_prefilter( // it is boolean maybe need considering
+				bool precom = orient3D_LPI_prefilter( 
 					seg00[k], seg01[k], seg02[k],
 					seg10[k], seg11[k], seg12[k],
 					halfspace[cindex][cutp[i]][0][0], halfspace[cindex][cutp[i]][0][1], halfspace[cindex][cutp[i]][0][2],

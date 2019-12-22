@@ -71,3 +71,29 @@ int dot_product_sign(double vx, double vy, double vz,
 	if (s < 0) return -1;
 	return 0;
 }
+//bool is_tpp_in_triangle(double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
+//	double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
+//	double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
+//	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z) {
+//	TPI_exact_suppvars s;
+//	bool exist = orient3D_TPI_pre_exact(//maybe no exact
+//		v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
+//		w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
+//		u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z,
+//		s);
+//	if (!exist) return false;
+//	int pro = get_projection_plane(q1x, q1y, q1z, q2x, q2y, q2z, q3x, q3y, q3z);
+//
+//}
+
+//int tpp_ori_2d_exact(const TPI_exact_suppvars s,
+//	double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
+//	int projection) {
+//
+//}
+//
+//int tpp_ori_2d_filtered(const TPI_filtered_suppvars& s, 
+//	double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
+//	int projection) {
+//
+//}

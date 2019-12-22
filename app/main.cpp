@@ -574,8 +574,8 @@ void test_in_wild() {
 void test_without_sampling() {
 	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
 	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\exact_wrong\\55363.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\exact_wrong\\55363.off";
+	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\1717685.stl_envelope_log.csv";
+	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\1717685.stl";
 
 
 	vector<int> outenvelope;
@@ -630,7 +630,7 @@ void test_without_sampling() {
 	Scalar eps = 1e-3;
 	//eps = eps * sqrt(3);//make similar size to the original one
 	Scalar epsilon = bbd * eps; //eps*bounding box diagnal
-	const int spac = 10;// space subdivision parameter
+	
 	
 	//////////////////////////////////////////////////////////////
 	int fn = std::min((int)triangles.size(),ft);//test face number
@@ -660,10 +660,10 @@ void test_without_sampling() {
 		pos1[i] = outenvelope[i];
 		timer1.start();
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		if (i % 100 == 0) {
+		if (i % 200 == 0) {
 
 			cout << "ten thousand test over " << i<<" time "<<timer2.getElapsedTimeInSec() << endl;
-
+			fast_envelope.printnumber();
 		}
 		if (timer1.getElapsedTimeInSec() > temptime) {
 			temptime = timer1.getElapsedTimeInSec();

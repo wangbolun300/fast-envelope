@@ -2066,4 +2066,5 @@ int triangle_normal_exact(double ov1x, double ov1y, double ov1z, double ov2x, do
 	if (nv == nvzc) return 2;
 }
 
+
 #include "ip_filtered_ex.cpp"
