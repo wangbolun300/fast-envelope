@@ -4,14 +4,14 @@
 #include<fastenvelope/common_algorithms.h>
 #include <igl/Timer.h>
 #include <fstream>
-double timettt = 0;
+//double timettt = 0;
 
 
 namespace fastEnvelope
 {
 
 	void FastEnvelope::printnumber() {
-		std::cout << "time for ttt " << timettt << std::endl;
+		//std::cout << "time for ttt " << timettt << std::endl;
 	}
 
 
@@ -303,8 +303,8 @@ namespace fastEnvelope
 					continue;
 				for (int k = 0; k < intersect_face[queue[i]].size(); k++) {
 					for (int h = 0; h < intersect_face[queue[j]].size(); h++) {
-						igl::Timer timer;
-						timer.start();
+						//igl::Timer timer;
+						//timer.start();
 						cut = is_3_triangle_cut(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -314,7 +314,7 @@ namespace fastEnvelope
 							halfspace[jump2][intersect_face[queue[j]][h]][1],
 							halfspace[jump2][intersect_face[queue[j]][h]][2]);
 
-						timettt += timer.getElapsedTimeInSec();
+						//timettt += timer.getElapsedTimeInSec();
 						if (!cut) continue;
 
 
@@ -498,7 +498,7 @@ namespace fastEnvelope
 				triangle1[0], triangle1[1], triangle1[2],
 				triangle2[0], triangle2[1], triangle2[2], s);
 
-			// time_multi += timer.getElapsedTimeInSec();
+			
 			if (premulti == false) return 2;
 			for (int i = 0; i < prismindex.size(); i++)
 			{
@@ -510,7 +510,7 @@ namespace fastEnvelope
 
 				for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
 
-					// timer.start();
+					
 					ori = orient3D_LPI_post_exact(s,
 						segpoint0[0], segpoint0[1], segpoint0[2],
 
@@ -596,7 +596,7 @@ namespace fastEnvelope
 		if (!recompute.empty())
 		{
 
-			// timer.start();
+			
 			LPI_exact_suppvars s;
 			bool premulti = orient3D_LPI_pre_exact(
 				segpoint0[0], segpoint0[1], segpoint0[2],
@@ -605,7 +605,7 @@ namespace fastEnvelope
 				triangle1[0], triangle1[1], triangle1[2],
 				triangle2[0], triangle2[1], triangle2[2],
 				s);
-			// time_multi += timer.getElapsedTimeInSec();
+			
 
 			for (int k = 0; k < recompute.size(); k++)
 			{
@@ -618,7 +618,7 @@ namespace fastEnvelope
 						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
 						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
 						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
-					// time_multi += timer.getElapsedTimeInSec();
+					
 					if (ori == 1 || ori == 0)
 						break;
 
@@ -839,7 +839,7 @@ namespace fastEnvelope
 		if (!recompute.empty())
 		{
 
-			// timer.start();
+			
 			LPI_exact_suppvars s;
 			bool premulti = orient3D_LPI_pre_exact(
 				segpoint0[0], segpoint0[1], segpoint0[2],
@@ -848,7 +848,7 @@ namespace fastEnvelope
 				triangle1[0], triangle1[1], triangle1[2],
 				triangle2[0], triangle2[1], triangle2[2],
 				s);
-			// time_multi += timer.getElapsedTimeInSec();
+			
 
 			for (int k = 0; k < recompute.size(); k++)
 			{
@@ -861,7 +861,7 @@ namespace fastEnvelope
 						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
 						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
 						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
-					// time_multi += timer.getElapsedTimeInSec();
+					
 					if (ori == 1 || ori == 0)
 						break;
 
@@ -1082,7 +1082,7 @@ namespace fastEnvelope
 		if (!recompute.empty())
 		{
 
-			// timer.start();
+			
 			LPI_exact_suppvars s;
 			bool premulti = orient3D_LPI_pre_exact(
 				segpoint0[0], segpoint0[1], segpoint0[2],
@@ -1091,7 +1091,7 @@ namespace fastEnvelope
 				triangle1[0], triangle1[1], triangle1[2],
 				triangle2[0], triangle2[1], triangle2[2],
 				s);
-			// time_multi += timer.getElapsedTimeInSec();
+			
 
 			for (int k = 0; k < recompute.size(); k++)
 			{
@@ -1104,7 +1104,7 @@ namespace fastEnvelope
 						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
 						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
 						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
-					// time_multi += timer.getElapsedTimeInSec();
+					
 					if (ori == 1 || ori == 0)
 						break;
 
@@ -1311,7 +1311,7 @@ namespace fastEnvelope
 
 		if (recompute.size() > 0)
 		{
-			// timer.start();
+			
 			bool premulti = orient3D_TPI_pre_exact(
 				triangle[0][0], triangle[0][1], triangle[0][2],
 				triangle[1][0], triangle[1][1], triangle[1][2],
@@ -1542,7 +1542,7 @@ namespace fastEnvelope
 
 		if (recompute.size() > 0)
 		{
-			// timer.start();
+			
 			bool premulti = orient3D_TPI_pre_exact(
 				triangle[0][0], triangle[0][1], triangle[0][2],
 				triangle[1][0], triangle[1][1], triangle[1][2],
@@ -1777,7 +1777,7 @@ namespace fastEnvelope
 				f221 = (facet22[1]);
 				f222 = (facet22[2]);
 
-				// timer.start();
+				
 				premulti = orient3D_TPI_pre_exact(
 					t00, t01, t02, t10, t11, t12, t20, t21, t22,
 					f100, f101, f102, f110, f111, f112, f120, f121, f122,

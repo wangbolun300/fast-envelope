@@ -32,7 +32,7 @@ namespace fastEnvelope {
 
 
 
-		algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, epsilon);
+		algorithms::halfspace_generation(m_ver, faces_new, halfspace, cornerlist, epsilon);
 
 
 
