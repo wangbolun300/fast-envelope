@@ -46,18 +46,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ################################################################################
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	foreach(config ${CMAKE_CONFIGURATION_TYPES})
-		string(TOUPPER ${config} config)
-		string(REPLACE /MT /MD CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-		string(REPLACE /MT /MD CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
-	endforeach()
-endif()
 
 ################################################################################
 
 # FastEnvelope options
-# option(FAST_ENVELOPE_ENABLE_TBB        			"Enable TBB"                    ON)
+option(FAST_ENVELOPE_ENABLE_TBB        			"Enable TBB"                    ON)
 # option(FAST_ENVELOPE_USE_FLOAT          		"Use floats instead of double"  OFF)
 option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES        "Use whole Geogram for predicates"        OFF)
 option(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES    "Use Geogram predicates only"             ON)
@@ -135,33 +128,30 @@ endif()
 
 
 # TBB
-# if(FAST_ENVELOPE_ENABLE_TBB AND NOT TARGET tbb::tbb)
-# 	fast_envelope_download_tbb()
-# 	set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
-# 	set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-# 	set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
-# 	set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
-# 	set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-# 	set(TBB_NO_DATE ON CACHE BOOL " " FORCE)
+if(FAST_ENVELOPE_ENABLE_TBB AND NOT TARGET tbb::tbb)
+	fast_envelope_download_tbb()
+	set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
+	set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+	set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
+	set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
+	set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+	set(TBB_NO_DATE ON CACHE BOOL " " FORCE)
 
-# 	add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
-# 	set_target_properties(tbb_static PROPERTIES
-# 		INTERFACE_INCLUDE_DIRECTORIES "${THIRD_PARTY_DIR}/tbb/include"
-# 	)
-# 	if(NOT MSVC)
-# 		set_target_properties(tbb_static PROPERTIES
-# 			COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-missing-field-initializers -Wno-unused-parameter -Wno-keyword-macro"
-# 		)
-# 		set_target_properties(tbb_static PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# 	endif()
-# 	target_compile_definitions(tbb_static PUBLIC -DUSE_TBB)
-# 	add_library(tbb::tbb ALIAS tbb_static)
+	add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
+	set_target_properties(tbb_static PROPERTIES
+		INTERFACE_INCLUDE_DIRECTORIES "${THIRD_PARTY_DIR}/tbb/include"
+	)
+	if(NOT MSVC)
+		set_target_properties(tbb_static PROPERTIES
+			COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-missing-field-initializers -Wno-unused-parameter -Wno-keyword-macro"
+		)
+		set_target_properties(tbb_static PROPERTIES POSITION_INDEPENDENT_CODE ON)
+	endif()
+	target_compile_definitions(tbb_static PUBLIC -DUSE_TBB)
+	add_library(tbb::tbb ALIAS tbb_static)
 
-# 	set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
-# endif()
-# if(FAST_ENVELOPE_ENABLE_TBB)
-# 	target_link_libraries(${PROJECT_NAME} PUBLIC tbb::tbb)
-# endif()
+	set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
+endif()
 
 
 # if(${FAST_ENVELOPE_USE_FLOAT})
@@ -223,7 +213,6 @@ add_subdirectory(src)
 
 
 
-
 ################################################################################
 # FastEnvelope binary
 ################################################################################
@@ -258,7 +247,21 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 		add_sanitizers(${PROJECT_NAME}_bin)
 	endif()
 
+	
+	if(FAST_ENVELOPE_ENABLE_TBB)
+		target_link_libraries(${PROJECT_NAME}_bin PUBLIC tbb::tbb)
+	endif()
+
 	if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
 		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
 	endif()
+endif()
+
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	foreach(config ${CMAKE_CONFIGURATION_TYPES})
+		string(TOUPPER ${config} config)
+		string(REPLACE /MT /MD CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
+		string(REPLACE /MT /MD CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+	endforeach()
 endif()

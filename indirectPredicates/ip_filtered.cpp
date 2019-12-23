@@ -706,8 +706,9 @@ int orient3D_TPI_postfilter(
 	double a33 = q2z - q3z;
 
 	double det = a11*(a22*a33 - a23*a32) - a12*(a21*a33 - a23*a31) + a13*(a21*a32 - a22*a31);
-
-	if (!isfinite(det))
+	bool infinite = true;
+	infinite = isfinite(det);
+	if (!infinite)
 //#ifdef USE_MULTISTAGE_FILTERS
 //	return orient3D_TPI_dfiltered(svs.v1x, svs.v1y, svs.v1z, svs.v2x, svs.v2y, svs.v2z, svs.v3x, svs.v3y, svs.v3z,
 //		svs.w1x, svs.w1y, svs.w1z, svs.w2x, svs.w2y, svs.w2z, svs.w3x, svs.w3y, svs.w3z, svs.u1x, svs.u1y, svs.u1z, svs.u2x, svs.u2y, svs.u2z,

@@ -46,12 +46,13 @@ namespace fastEnvelope {
 		bool is_bbd_cut_bounding_box(const Vector3 &bbd0, const Vector3 &bbd1, int index) const;
 	public:
 		void init(const std::vector<std::array<Vector3, 2>> &cornerlist);
-
+		bool is_initialized = false;
 		inline void triangle_find_bbox(
 			const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2,
 			std::vector<unsigned int> &list) const
 		{
 			assert(n_corners >= 0);
+			assert(boxlist.size() > 0);
 			int de = algorithms::is_triangle_degenerated(triangle0, triangle1, triangle2);
 			if (de == DEGENERATED_SEGMENT) {
 				Vector3 tmin, tmax;
@@ -71,6 +72,7 @@ namespace fastEnvelope {
 			const Vector3 &p,
 			std::vector<unsigned int> &list) const
 		{
+			assert(boxlist.size() > 0);
 			point_search_bbd_recursive(
 				p, list, 1, 0, n_corners);
 		}
@@ -78,6 +80,7 @@ namespace fastEnvelope {
 			const Vector3 &seg0, const Vector3 &seg1,
 			std::vector<unsigned int> &list) const
 		{
+			assert(boxlist.size() > 0);
 			segment_search_bbd_recursive(
 				seg0, seg1, list, 1, 0, n_corners);
 		}

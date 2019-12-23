@@ -13,6 +13,9 @@
 
 #include <geogram/basic/command_line_args.h>
 
+#ifdef USE_TBB
+#include <tbb/tbb.h>
+#endif
 
 #include <unordered_map>
 
@@ -34,28 +37,6 @@ using namespace std;
 
 
 
-void tri_tri_cutting_try() {
-
-	Vector3 p1, p2, p3, q1, q2, q3;
-
-	p1 = { 1,0,0 };
-
-	p2 = { 0,1,0 };
-
-	p3 = { 0,0,0 };
-
-
-	q1 = { 0,0,1 };
-
-	q2 = { -0.5,-0.5,-0.5 };
-
-	q3 = { -0.5,-0.5,-0.5 };
-
-
-	//FastEnvelope::test_tri_tri_cut( q1, q2, q3,p1, p2, p3);
-	//FastEnvelope::test_tri_tri_cut( p1, p2, p3, q1, q2, q3 );
-
-}
 void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
 	min = vertices.front();
 	max = vertices.front();
@@ -67,29 +48,7 @@ void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 
 		}
 	}
 }
-void unordered_map_try() {
-	std::vector<int> a, b;
-	a.push_back(0);
-	a.push_back(2);
-	b.push_back(7);
-	std::unordered_map<int, std::vector<int>> letter;
-	letter[1] = a;
-	letter[3] = b;
-	letter[4].push_back(1);
-	auto search = letter.find(4);
-	if (search == letter.end()) {
-		std::cout << "no find" << std::endl;
-	}
-	std::cout << "Found or not " << search->first << " size " << search->second.size() << '\n';
-}
 
-
-void testOrientation() {
-	std::array<Vector3, 3> tri = { { Vector3(0,0,0),Vector3(1,0,0),Vector3(0,1,0) } };// right hand law
-	Vector3 p = { 0,0,1 };
-	int ori = Predicates::orient_3d(p, tri[0], tri[1], tri[2]);
-	std::cout << "orientation test : " << ori << std::endl;
-}
 void sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& ps, Scalar sampling_dist) {
 	Scalar sqrt3_2 = std::sqrt(3) / 2;
 
@@ -185,79 +144,6 @@ bool is_out_function(const std::array<Vector3, 3>& triangle, const Scalar& dd, A
 	return sf_tree.is_out_sf_envelope(ps, pow(dd*(1 - (1 / sqrt(3))), 2));
 
 }
-
-
-
-
-
-
-
-void calculation() {
-	Eigen::Matrix<Scalar, 4, 4> biga, bigb;
-	Eigen::Matrix<Scalar, 3, 3> a;
-	Eigen::Matrix<Scalar, 3, 4> b;
-	Eigen::Matrix<Scalar, 3, 1> c0;
-	Eigen::Matrix<Scalar, 1, 3> r0;
-	Eigen::Matrix<Scalar, 4, 6> bigc;
-	a << 1, 2, 3,
-		4, 5, 6,
-		7, 8, 9;
-	c0 << 0,
-		0,
-		0;
-	r0 << 0, 0, 0;
-	biga << a, c0,
-		r0, 1;
-	b << 1, 2, 3, 4,
-		5, 6, 7, 8,
-		9, 10, 11, 12;
-	bigb << b,
-		1, 1, 1, 1;
-	//std::cout << biga*bigb<<"\n" << std::endl;
-	//std::cout << a*b<< "\n" << std::endl;
-
-	a.setZero();
-	std::array<Vector3, 3> triangle0;
-	triangle0[0] = { {Vector3(0,0,1)} };
-	triangle0[1] = { {Vector3(0,1,1)} };
-	triangle0[2] = { {Vector3(7,0,1)} };
-	a.transpose() << (triangle0[0] - triangle0[1]).cross(triangle0[0] - triangle0[2]),
-		(triangle0[0] - triangle0[1]).cross(triangle0[0] - triangle0[2]),
-		(triangle0[0] - triangle0[1]).cross(triangle0[0] - triangle0[2]);
-	bigc << a, a,
-		1, 1, 1, 1, 1, 1;
-	std::cout << a << "\n" << std::endl;
-	std::cout << bigc << "\n" << std::endl;
-}
-
-void test_ttt() {
-	std::array<Vector3, 3> triangle, facet1, facet2, facet3;
-	Eigen::Matrix<Scalar, 3, 3> A, AT, ATA;
-	Eigen::Matrix<Scalar, 3, 1> B;
-	Eigen::Matrix<Scalar, 4, 4> C;
-	triangle = { { Vector3(0,0,0),Vector3(1,0,0),Vector3(0,1,0)} };
-	facet1 = { { Vector3(0,0,0),Vector3(0,0,1),Vector3(1,0,0)} };
-	facet2 = { { Vector3(0,0,0),Vector3(0,0,1),Vector3(0,1,0)} };
-	facet3 = { { Vector3(0,0,0),Vector3(1,0,0),Vector3(0,1,0)} };
-	AT << (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]),
-		(facet1[0] - facet1[1]).cross(facet1[0] - facet1[2]),
-		(facet2[0] - facet2[1]).cross(facet2[0] - facet2[2]);
-	B << triangle[0], facet1[0], facet2[0];
-	A = AT.transpose();
-	B = A * B;
-	ATA = AT * A;
-	std::cout << A << std::endl;
-	// if (FastEnvelope::determinant(A) == 0) { //mmnnmnmmnnnnnnnnnnnnnnnnnnnnnnmnmmmnmnmmmnmnmmmmmmnmn
-	// 	std::cout << "A singular" << std::endl;
-	// }
-	int ori = -1; // FastEnvelope::orient_3triangles(A, AT, ATA, B, facet3); //FIXME maybe
-	std::cout << ori << std::endl;
-}
-
-
-
-
-
 
 std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName, vector<int>& inenvelope) {
 
@@ -367,7 +253,13 @@ void test_in_wild() {
 	pos1.resize(fn);
 	pos2.resize(fn);
 
-	for (int i = 0; i < fn; i++) {
+//#ifdef USE_TBB
+//	tbb::parallel_for(0, fn, [&](int i)
+//#else
+//	for (int i = 0; i < fn; i++) 
+//#endif
+	for (int i = 0; i < fn; i++)
+	{
 
 		pos1[i] = outenvelope[i];
 		//fast_envelope.print_prisms(triangles[i], "D:\\vs\\fast_envelope_csv\\problems\\");
@@ -375,6 +267,9 @@ void test_in_wild() {
 		//if (i - i / 1000*1000 == 0) cout << "ten thousand test over " << i / 1000 << endl;
 
 	}
+//#ifdef USE_TBB
+//	);
+//#endif
 	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
 	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
 
@@ -992,7 +887,72 @@ void sample_triangle_test() {
 	fout.close();
 
 }
+void pure_sampling(string queryfile, string model,string resultfile, bool csv_model, Scalar shrinksize) {
 
+	vector<int> outenvelope;
+	std::vector<Vector3> env_vertices, v;
+	std::vector<Vector3i> env_faces, f;
+	GEO::Mesh envmesh, mesh;
+
+	///////////////////////////////////////////////////////
+	
+
+
+	std::vector<std::array<Vector3, 3>> triangles;
+	if (csv_model) {
+		triangles = read_CSV_triangle(queryfile, outenvelope);
+	}
+	else {
+		bool ok1 = MeshIO::load_mesh(queryfile, v, f, mesh);
+		if (!ok1) {
+			std::cout << ("Unable to load query mesh") << std::endl;
+			return;
+		}
+		triangles.resize(f.size());
+		for (int i = 0; i < f.size(); i++) {
+			for (int j = 0; j < 3; j++) {
+				triangles[i][j][0] = v[f[i][j]][0];
+				triangles[i][j][1] = v[f[i][j]][1];
+				triangles[i][j][2] = v[f[i][j]][2];
+			}
+		}
+	}
+
+	bool ok = MeshIO::load_mesh(model, env_vertices, env_faces, envmesh);
+	if (!ok) {
+		std::cout << ("Unable to load mesh") << std::endl;
+		return;
+	}
+
+	Vector3 min, max;
+	Scalar eps = 1e-3;
+	eps = eps * shrinksize;
+	Scalar dd;
+	get_bb_corners(env_vertices, min, max);
+	dd = ((max - min).norm()) *eps;
+	igl::Timer timer;
+	timer.start();
+	AABBWrapper sf_tree(envmesh);
+	int fn = max(triangles.size(), 100000);
+	std::cout << "total query size, " << fn << std::endl;
+	std::vector<bool> results;
+	results.resize(fn);
+	for (int i = 0; i < fn; i++) {
+
+		results[i] = is_out_function(triangles[i], dd, sf_tree); ;
+	}
+	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
+
+	std::ofstream fout;
+	fout.open(resultfile);
+	
+	for (int i = 0; i < fn; i++) {
+
+		fout << results[i] << endl;
+
+	}
+	fout.close();
+}
 
 
 
