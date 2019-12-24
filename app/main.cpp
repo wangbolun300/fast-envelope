@@ -1161,7 +1161,7 @@ int main(int argc, char const *argv[])
 	
 	//run_volume_compare();
 	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
-	pure_sampling(argv[1], argv[2], argv[3], 1, argv[5]);
+	pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 
 
 
