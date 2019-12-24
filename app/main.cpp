@@ -840,7 +840,7 @@ double test_original_surface() {
 								  //34783,89402,
 
 		
-		timer1.start();
+		//timer1.start();
 		pos2[i] = fast_envelope.is_outside(triangles[i]);
 	
 
@@ -855,7 +855,7 @@ double test_original_surface() {
 	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
 
 	//////////
-
+	return 0;
 }
 void sample_triangle_test() {
 	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";

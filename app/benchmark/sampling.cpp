@@ -1,7 +1,7 @@
 #include<fastenvelope/sampling.h>
 #include<fastenvelope/common_algorithms.h>
 #include <fastenvelope/Rational.hpp>
-#include<fastenvelope/Logger.hpp>
+//#include<fastenvelope/Logger.hpp>
 namespace fastEnvelope {
 	sampling::sampling(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps) {
 		Vector3 min, max;
