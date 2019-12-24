@@ -210,14 +210,15 @@ namespace fastEnvelope {
 	void AABB::init(const std::vector<std::array<Vector3, 2>> &cornerlist)
 	{
 		n_corners = cornerlist.size();
-
+		
 		boxlist.resize(
 			envelope_max_node_index(
 				1, 0, n_corners) +
 			1 // <-- this is because size == max_index + 1 !!!
 		);
-
+		
 		init_envelope_boxes_recursive(cornerlist, 1, 0, n_corners);
+
 	}
 
 

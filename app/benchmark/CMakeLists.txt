@@ -10,6 +10,8 @@ set(SOURCES
 
 	AABBWrapper.cpp
 	AABBWrapper.h
+
+getRSS.hpp
 sampling.h
 sampling.cpp
 )

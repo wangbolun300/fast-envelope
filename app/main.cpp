@@ -32,6 +32,7 @@
 #include<igl/writeOBJ.h>
 #include<igl/readSTL.h>
 #include<igl/writeOFF.h>
+#include <fastenvelope/getRSS.hpp>
 using namespace fastEnvelope;
 using namespace std;
 
@@ -887,7 +888,9 @@ void sample_triangle_test() {
 	fout.close();
 
 }
-void pure_sampling(string queryfile, string model,string resultfile, bool csv_model, Scalar shrinksize) {
+
+
+void pure_sampling(string queryfile, string model,string resultfile, Scalar shrinksize, bool csv_model) {
 
 	vector<int> outenvelope;
 	std::vector<Vector3> env_vertices, v;
@@ -933,16 +936,18 @@ void pure_sampling(string queryfile, string model,string resultfile, bool csv_mo
 	igl::Timer timer;
 	timer.start();
 	AABBWrapper sf_tree(envmesh);
+	std::cout << "sampling initialization time " << timer.getElapsedTimeInSec() << std::endl;
 	int fn = max(triangles.size(), 100000);
 	std::cout << "total query size, " << fn << std::endl;
 	std::vector<bool> results;
 	results.resize(fn);
+	timer.start();
 	for (int i = 0; i < fn; i++) {
 
 		results[i] = is_out_function(triangles[i], dd, sf_tree); ;
 	}
-	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
-
+	cout << "sampling method time " << timer.getElapsedTimeInSec() << endl;
+	cout << "memory use, " << getPeakRSS() << std::endl;
 	std::ofstream fout;
 	fout.open(resultfile);
 	
@@ -952,6 +957,7 @@ void pure_sampling(string queryfile, string model,string resultfile, bool csv_mo
 
 	}
 	fout.close();
+	
 }
 
 
