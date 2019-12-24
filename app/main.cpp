@@ -937,7 +937,7 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 	timer.start();
 	AABBWrapper sf_tree(envmesh);
 	std::cout << "sampling initialization time " << timer.getElapsedTimeInSec() << std::endl;
-	int fn = max(triangles.size(), 100000);
+	int fn = triangles.size() > 100000 ? 100000 : triangles.size();
 	std::cout << "total query size, " << fn << std::endl;
 	std::vector<bool> results;
 	results.resize(fn);
@@ -950,7 +950,7 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 	cout << "memory use, " << getPeakRSS() << std::endl;
 	std::ofstream fout;
 	fout.open(resultfile);
-	
+	fout << "results" << endl;
 	for (int i = 0; i < fn; i++) {
 
 		fout << results[i] << endl;
@@ -1007,7 +1007,7 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar s
 	timer.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, dd);
 	std::cout << "ours initialization time " << timer.getElapsedTimeInSec() << std::endl;
-	int fn = max(triangles.size(), 100000);
+	int fn = triangles.size() > 100000 ? 100000 : triangles.size();
 	std::cout << "total query size, " << fn << std::endl;
 	std::vector<bool> results;
 	results.resize(fn);
@@ -1020,7 +1020,7 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar s
 	cout << "memory use, " << getPeakRSS() << std::endl;
 	std::ofstream fout;
 	fout.open(resultfile);
-
+	fout << "results" << endl;
 	for (int i = 0; i < fn; i++) {
 
 		fout << results[i] << endl;
