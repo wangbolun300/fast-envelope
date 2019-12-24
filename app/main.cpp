@@ -889,7 +889,7 @@ void sample_triangle_test() {
 
 }
 
-
+//can get the time, memory and all the result for queries of sampling method
 void pure_sampling(string queryfile, string model,string resultfile, Scalar shrinksize, bool csv_model) {
 
 	vector<int> outenvelope;
@@ -957,10 +957,78 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 
 	}
 	fout.close();
-	
+	std::cout << model << " done! " << std::endl;
 }
 
+void pure_our_method(string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model) {
 
+	vector<int> outenvelope;
+	std::vector<Vector3> env_vertices, v;
+	std::vector<Vector3i> env_faces, f;
+	GEO::Mesh envmesh, mesh;
+
+	///////////////////////////////////////////////////////
+
+
+
+	std::vector<std::array<Vector3, 3>> triangles;
+	if (csv_model) {
+		triangles = read_CSV_triangle(queryfile, outenvelope);
+	}
+	else {
+		bool ok1 = MeshIO::load_mesh(queryfile, v, f, mesh);
+		if (!ok1) {
+			std::cout << ("Unable to load query mesh") << std::endl;
+			return;
+		}
+		triangles.resize(f.size());
+		for (int i = 0; i < f.size(); i++) {
+			for (int j = 0; j < 3; j++) {
+				triangles[i][j][0] = v[f[i][j]][0];
+				triangles[i][j][1] = v[f[i][j]][1];
+				triangles[i][j][2] = v[f[i][j]][2];
+			}
+		}
+	}
+
+	bool ok = MeshIO::load_mesh(model, env_vertices, env_faces, envmesh);
+	if (!ok) {
+		std::cout << ("Unable to load mesh") << std::endl;
+		return;
+	}
+
+	Vector3 min, max;
+	Scalar eps = 1e-3;
+	eps = eps * shrinksize;
+	Scalar dd;
+	get_bb_corners(env_vertices, min, max);
+	dd = ((max - min).norm()) *eps;
+	igl::Timer timer;
+	timer.start();
+	const FastEnvelope fast_envelope(env_vertices, env_faces, dd);
+	std::cout << "ours initialization time " << timer.getElapsedTimeInSec() << std::endl;
+	int fn = max(triangles.size(), 100000);
+	std::cout << "total query size, " << fn << std::endl;
+	std::vector<bool> results;
+	results.resize(fn);
+	timer.start();
+	for (int i = 0; i < fn; i++) {
+
+		results[i] = fast_envelope.is_outside(triangles[i]);
+	}
+	cout << "ours method time " << timer.getElapsedTimeInSec() << endl;
+	cout << "memory use, " << getPeakRSS() << std::endl;
+	std::ofstream fout;
+	fout.open(resultfile);
+
+	for (int i = 0; i < fn; i++) {
+
+		fout << results[i] << endl;
+
+	}
+	fout.close();
+	std::cout << model << " done! " << std::endl;
+}
 
 
 
@@ -1070,18 +1138,9 @@ int main(int argc, char const *argv[])
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
 
-
-	//test_in_wild(argv[1],argv[2]);
-	//test_in_wild();
-	/*test_without_sampling();
-	test_without_sampling();*/
 	
-	test_without_sampling();
-	/*bool a=true;
-	if (a) cout << "a true" <<a<< endl;
-	if (!a) cout << "a false" << endl;*/
-	//tryspeed();
-
+	//test_without_sampling();
+	
 	/*for (int i = 0; i < (argc - 1) / 2; i++) {
 		test_without_sampling(argv[2*i+1], argv[2*i+2]);
 		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
@@ -1100,10 +1159,9 @@ int main(int argc, char const *argv[])
 		std::cout << time[i] << ",";
 	}*/
 	
-
 	//run_volume_compare();
-
-	//test_original_surface();
+	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
+	pure_sampling(argv[1], argv[2], argv[3], 1, argv[5]);
 
 
 
