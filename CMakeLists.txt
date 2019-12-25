@@ -112,10 +112,11 @@ target_compile_features(${PROJECT_NAME} PUBLIC ${CXX14_FEATURES})
 
 
 # libigl
-fast_envelope_download_libigl()
-find_package(LIBIGL REQUIRED)
+if(NOT TARGET igl::core)
+	fast_envelope_download_libigl()
+	find_package(LIBIGL REQUIRED)
+endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC igl::core)
-
 
 if(FAST_ENVELOPE_WITH_SANITIZERS)
 	add_sanitizers(${PROJECT_NAME})
@@ -175,8 +176,10 @@ if(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC ENVELOPE_WITH_GEO_PSM)
 
 elseif(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
-	fast_envelope_download_geogram()
-	include(geogram)
+	if(NOT TARGET geogram)
+		fast_envelope_download_geogram()
+		include(geogram)
+	endif()
 	target_link_libraries(${PROJECT_NAME} PUBLIC geogram)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC ENVELOPE_WITH_GEO)
 endif()
