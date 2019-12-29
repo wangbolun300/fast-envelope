@@ -936,19 +936,40 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 	igl::Timer timer;
 	timer.start();
 	AABBWrapper sf_tree(envmesh);
-	std::cout << "sampling initialization time " << timer.getElapsedTimeInSec() << std::endl;
+	const double init_time = timer.getElapsedTimeInSec();
+	std::cout << "sampling initialization time " << init_time<< std::endl;
 	int fn = triangles.size() > 100000 ? 100000 : triangles.size();
 	std::cout << "total query size, " << fn << std::endl;
 	std::vector<bool> results;
 	results.resize(fn);
 	timer.start();
+	int inbr = 0;
 	for (int i = 0; i < fn; i++) {
 
 		results[i] = is_out_function(triangles[i], dd, sf_tree); ;
+		if (results[i] == 0) inbr++;
+
 	}
 	cout << "sampling method time " << timer.getElapsedTimeInSec() << endl;
 	cout << "memory use, " << getPeakRSS() << std::endl;
 	std::ofstream fout;
+
+	
+	fout.open(resultfile + ".json");
+	fout << "{\n";
+
+	fout << "\"method\": " << "\"sampling\"" << ",\n";
+	fout << "\"init_time\": " << init_time << ",\n";
+	fout << "\"query_time\": " << timer.getElapsedTimeInSec() << ",\n";
+	fout << "\"memory\": " << getPeakRSS() << ",\n";
+	fout << "\"inside\": " << double(inbr) / double(fn) << ",\n";
+	fout << "\"queries\": " << fn << ",\n";
+	fout << "\"vertices\": " << env_vertices.size() << ",\n";
+	fout << "\"facets\": " << env_faces.size() << "\n";
+	fout << "}";
+	fout.close();
+
+
 	fout.open(resultfile);
 	fout << "results" << endl;
 	for (int i = 0; i < fn; i++) {
@@ -1006,19 +1027,45 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar s
 	igl::Timer timer;
 	timer.start();
 	const FastEnvelope fast_envelope(env_vertices, env_faces, dd);
+
+	timer.stop();
+	const auto init_time = timer.getElapsedTimeInSec();
 	std::cout << "ours initialization time " << timer.getElapsedTimeInSec() << std::endl;
 	int fn = triangles.size() > 100000 ? 100000 : triangles.size();
 	std::cout << "total query size, " << fn << std::endl;
 	std::vector<bool> results;
 	results.resize(fn);
 	timer.start();
+	int inbr = 0;
 	for (int i = 0; i < fn; i++) {
 
 		results[i] = fast_envelope.is_outside(triangles[i]);
+		if (results[i] == 0) inbr++;
 	}
+	timer.stop();
 	cout << "ours method time " << timer.getElapsedTimeInSec() << endl;
 	cout << "memory use, " << getPeakRSS() << std::endl;
+	cout << "inside percentage, " << float(inbr) / float(fn) << std::endl;
+
 	std::ofstream fout;
+	fout.open(resultfile + ".json");
+	fout << "{\n";
+
+	fout << "\"method\": " << "\"ours\"" << ",\n";
+	fout << "\"init_time\": " << init_time << ",\n";
+	fout << "\"query_time\": " << timer.getElapsedTimeInSec() << ",\n";
+	fout << "\"memory\": " << getPeakRSS() << ",\n";
+	fout << "\"inside\": " << double(inbr) / double(fn) << ",\n";
+	fout << "\"queries\": " << fn << ",\n";
+	fout << "\"vertices\": " << env_vertices.size() << ",\n";
+	fout << "\"facets\": " << env_faces.size() << "\n";
+	fout << "}";
+	fout.close();
+
+
+
+
+
 	fout.open(resultfile);
 	fout << "results" << endl;
 	for (int i = 0; i < fn; i++) {
@@ -1029,8 +1076,6 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar s
 	fout.close();
 	std::cout << model << " done! " << std::endl;
 }
-
-
 
 void stl_to_off(string stlfile, string offfile) {
 	std::vector<std::vector<double> > vV,vN;
@@ -1072,59 +1117,16 @@ double get_triangle_area(Vector2 t0, Vector2 t1, Vector2 t2) {
 	double T = sqrt(p*(p - a)*(p - b)*(p - c));
 	return T;
 }
-double get_volume_of_our_envelope(const Vector2 p1, const Vector2 p2, const Vector2 p3, const double eps) {//clock order
-	std::cout << "get triangle_ area " << get_triangle_area(p1, p2, p3) << std::endl;
-	Vector2 AB = p2 - p1;
-	Vector2 BC = p3 - p2;
-	Vector2 AC = p3 - p1;
-	std::array<Vector2, 6> polygon;
-	Vector2 ABn = AB.normalized();
-	Vector2 vector1; vector1[0] = -1*ABn[1]; vector1[1] = ABn[0];
-	//std::cout << "abn " << ABn[0] << " " << ABn[1] << std::endl;
-	//std::cout << "vector1 " << vector1[0] << " " << vector1[1] << std::endl;
-	double tolerance = eps / sqrt(3);//this is half cube edge length
-	polygon[0] = p1 + (vector1 - ABn) * tolerance;
-	polygon[1] = p2 + (vector1 + ABn) * tolerance;
-	if (AB.dot(BC) < 0)
-	{
-		polygon[2] = p2 + (-vector1 + ABn) * tolerance;
-		polygon[3] = p3 + (-vector1 + ABn) * tolerance;
-		polygon[4] = p3 + (-vector1 - ABn) * tolerance;
-		if (AB.dot(AC) < 0)
-		{
-			polygon[5] = p3 + (vector1 - ABn) * tolerance;
-		}
-		else
-		{
-			polygon[5] = p1 + (-vector1 - ABn) * tolerance;
-		}
-	}
-	else
-	{
-		polygon[2] = p3 + (vector1 + ABn) * tolerance;
-		polygon[3] = p3 + (-vector1 + ABn) * tolerance;
-		polygon[4] = p3 + (-vector1 - ABn) * tolerance;
-		polygon[5] = p1 + (-vector1 - ABn) * tolerance;
-	}
-	Vector2 c = polygon[0];
-	double s1 = get_triangle_area(c, polygon[1], polygon[2]);
-	double s2 = get_triangle_area(c, polygon[2], polygon[3]);
-	double s3 = get_triangle_area(c, polygon[3], polygon[4]);
-	double s4 = get_triangle_area(c, polygon[4], polygon[5]);
-	return ((s1 + s2 + s3 + s4)*tolerance * 2);
 
-}
-void run_volume_compare() {
-	Vector2 t0(100, 0);
-	Vector2 t1(0, 0);
-	Vector2 t2(50, 50);
-	double eps = 100;
-	double real = get_volume_of_real_envelope(t0, t1, t2, eps);
-	double ours = get_volume_of_our_envelope(t0, t1, t2, eps);
-	std::cout << "real, ours, real/ours " << real << " " << " " << ours << " " << real / ours << std::endl;
-	double ours_enlarge = get_volume_of_our_envelope(t0, t1, t2, eps*sqrt(3));
-	std::cout << "real, ours_enlarge, real/ours_enlarge " << real << " " << " " << ours_enlarge << " " << real / ours_enlarge << std::endl;
-}
+//double get_volume_of_our_envelope(const Vector2 p1, const Vector2 p2, const Vector2 p3, const double eps) {
+//	double tolerance = eps / sqrt(3);
+//	double edgelength = tolerance * 2;
+//	int de = algorithms::is_triangle_degenerated(p1, p2, p3);
+//	//if (de== DEGENERATED_POINT) return edgelength*edge*
+//	return 0;
+//}
+
+
 
 int main(int argc, char const *argv[])
 {
