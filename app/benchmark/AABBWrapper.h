@@ -289,5 +289,27 @@ namespace fastEnvelope {
 				return true;
 			return false;
 		}
+
+		//
+        inline bool is_out_sf_envelope(const Vector3& p, const Scalar eps_2,
+                GEO::index_t& prev_facet, double& sq_dist, GEO::vec3& nearest_p) const {
+            GEO::vec3 geo_p(p[0], p[1], p[2]);
+            return is_out_sf_envelope(geo_p, eps_2, prev_facet, sq_dist, nearest_p);
+        }
+
+        inline bool is_out_sf_envelope(const GEO::vec3& geo_p, const Scalar eps_2,
+                                       GEO::index_t& prev_facet, double& sq_dist, GEO::vec3& nearest_p) const {
+//            prev_facet = sf_tree.facet_in_envelope(geo_p, eps_2, nearest_p, sq_dist);
+            if (prev_facet != GEO::NO_FACET) {
+                get_point_facet_nearest_point(sf_mesh, geo_p, prev_facet, nearest_p, sq_dist);
+            }
+            if (Scalar(sq_dist) > eps_2) {
+                sf_tree.facet_in_envelope_with_hint(geo_p, eps_2, prev_facet, nearest_p, sq_dist);
+            }
+
+            if (Scalar(sq_dist) > eps_2)
+                return true;
+            return false;
+        }
 	};
 }
