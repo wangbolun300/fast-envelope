@@ -143,5 +143,5 @@ void fastEnvelope::AABBWrapper::init_tmp_b_mesh_and_tree(const std::vector<Vecto
         }
     }
     mesh_reorder(tmp_b_mesh, GEO::MESH_ORDER_MORTON);
-    tmp_b_tree = std::make_shared<GEO::MeshFacetsAABBWithEps>(tmp_b_mesh);
+    tmp_b_tree = std::make_shared<floatTetWild::MeshFacetsAABBWithEps>(tmp_b_mesh);
 }

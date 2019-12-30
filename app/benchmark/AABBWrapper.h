@@ -8,7 +8,8 @@
 #include<fastenvelope/Types.hpp>
 #include<array>
 namespace fastEnvelope {
-	
+
+    using namespace floatTetWild;
 
 
 	class AABBWrapper {
@@ -17,9 +18,9 @@ namespace fastEnvelope {
 		GEO::Mesh tmp_b_mesh;
 		const GEO::Mesh &sf_mesh;
 
-		std::shared_ptr<GEO::MeshFacetsAABBWithEps> b_tree;
-		std::shared_ptr<GEO::MeshFacetsAABBWithEps> tmp_b_tree;
-		GEO::MeshFacetsAABBWithEps sf_tree;
+		std::shared_ptr<floatTetWild::MeshFacetsAABBWithEps> b_tree;
+		std::shared_ptr<floatTetWild::MeshFacetsAABBWithEps> tmp_b_tree;
+		floatTetWild::MeshFacetsAABBWithEps sf_tree;
 
 		void init_b_mesh(const std::vector<Vector3>& input_vertices, const std::vector<Vector3i>& input_faces);
 
@@ -120,7 +121,7 @@ namespace fastEnvelope {
 
 		void init_b_mesh_and_tree(const std::vector<Vector3> &input_vertices, const std::vector<Vector3i> &input_faces) {
 			init_b_mesh(input_vertices, input_faces);
-			b_tree = std::make_shared<GEO::MeshFacetsAABBWithEps>(b_mesh);
+			b_tree = std::make_shared<MeshFacetsAABBWithEps>(b_mesh);
 		}
 
 
@@ -299,6 +300,16 @@ namespace fastEnvelope {
 
         inline bool is_out_sf_envelope(const GEO::vec3& geo_p, const Scalar eps_2,
                                        GEO::index_t& prev_facet, double& sq_dist, GEO::vec3& nearest_p) const {
+////			prev_facet = sf_tree.facet_in_envelope(geo_p, eps_2, nearest_p, sq_dist);
+////			double sq_dist = std::numeric_limits<double>::max(); //??
+//			sf_tree.nearest_facet(geo_p, nearest_p, sq_dist);
+//
+//			if (Scalar(sq_dist) > eps_2)
+//				return true;
+//			return false;
+//			/////////
+
+
 //            prev_facet = sf_tree.facet_in_envelope(geo_p, eps_2, nearest_p, sq_dist);
             if (prev_facet != GEO::NO_FACET) {
                 get_point_facet_nearest_point(sf_mesh, geo_p, prev_facet, nearest_p, sq_dist);
