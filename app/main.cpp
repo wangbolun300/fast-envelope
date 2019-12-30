@@ -77,12 +77,10 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 	Scalar N = sqrt(ls[max_i]) / sampling_dist;
 	if (N <= 1) {
 		for (int i = 0; i < 3; i++) {
-            ps.push_back(GEO::vec3(vs[i][0], vs[i][1], vs[i][2]));
-//            if(sf_tree.is_out_sf_envelope(vs[i], eps_2, prev_facet, sq_dist, nearest_point)) {
-//                cout<<sq_dist<<endl;
-//                cout<<1111<<endl;
-//                return true;
-//            }
+//            ps.push_back(GEO::vec3(vs[i][0], vs[i][1], vs[i][2]));
+            if(sf_tree.is_out_sf_envelope(vs[i], eps_2, prev_facet, sq_dist, nearest_point)) {
+                return true;
+            }
         }
 		return false;
 	}
@@ -95,17 +93,15 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 
 	GEO::vec3 n_v0v1 = GEO::normalize(v1 - v0);
 	for (int n = 0; n <= N; n++) {
-		ps.push_back(v0 + n_v0v1 * sampling_dist * n);
-//        if(sf_tree.is_out_sf_envelope(v0 + n_v0v1 * sampling_dist * n, eps_2, prev_facet, sq_dist, nearest_point)) {
-//            cout<<2222<<endl;
-//            return true;
-//        }
+//		ps.push_back(v0 + n_v0v1 * sampling_dist * n);
+        if(sf_tree.is_out_sf_envelope(v0 + n_v0v1 * sampling_dist * n, eps_2, prev_facet, sq_dist, nearest_point)) {
+            return true;
+        }
 	}
-	ps.push_back(v1);
-//    if(sf_tree.is_out_sf_envelope(v1, eps_2, prev_facet, sq_dist, nearest_point)) {
-//        cout<<3333<<endl;
-//        return true;
-//    }
+//	ps.push_back(v1);
+    if(sf_tree.is_out_sf_envelope(v1, eps_2, prev_facet, sq_dist, nearest_point)) {
+        return true;
+    }
 
 	Scalar h = GEO::distance(GEO::dot((v2 - v0), (v1 - v0)) * (v1 - v0) / ls[max_i] + v0, v2);
 	int M = h / (sqrt3_2 * sampling_dist);
@@ -138,14 +134,14 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 		GEO::vec3 v = v0_m + delta_d * n_v0v1;
 		int N1 = GEO::distance(v, v1_m) / sampling_dist;
 		for (int i = 0; i <= N1; i++) {
-			ps.push_back(v + i * n_v0v1 * sampling_dist);
-//            if(sf_tree.is_out_sf_envelope(v + i * n_v0v1 * sampling_dist, eps_2, prev_facet, sq_dist, nearest_point))
-//                return true;
+//			ps.push_back(v + i * n_v0v1 * sampling_dist);
+            if(sf_tree.is_out_sf_envelope(v + i * n_v0v1 * sampling_dist, eps_2, prev_facet, sq_dist, nearest_point))
+                return true;
 		}
 	}
-	ps.push_back(v2);
-//    if(sf_tree.is_out_sf_envelope(v2, eps_2, prev_facet, sq_dist, nearest_point))
-//        return true;
+//	ps.push_back(v2);
+    if(sf_tree.is_out_sf_envelope(v2, eps_2, prev_facet, sq_dist, nearest_point))
+        return true;
 
 	//sample edges
 	N = sqrt(ls[(max_i + 1) % 3]) / sampling_dist;
@@ -154,9 +150,9 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 			N -= 1;
 		GEO::vec3 n_v1v2 = GEO::normalize(v2 - v1);
 		for (int n = 1; n <= N; n++) {
-			ps.push_back(v1 + n_v1v2 * sampling_dist * n);
-//            if(sf_tree.is_out_sf_envelope(v1 + n_v1v2 * sampling_dist * n, eps_2, prev_facet, sq_dist, nearest_point))
-//                return true;
+//			ps.push_back(v1 + n_v1v2 * sampling_dist * n);
+            if(sf_tree.is_out_sf_envelope(v1 + n_v1v2 * sampling_dist * n, eps_2, prev_facet, sq_dist, nearest_point))
+                return true;
 		}
 	}
 
@@ -166,9 +162,9 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 			N -= 1;
 		GEO::vec3 n_v2v0 = GEO::normalize(v0 - v2);
 		for (int n = 1; n <= N; n++) {
-			ps.push_back(v2 + n_v2v0 * sampling_dist * n);
-//            if(sf_tree.is_out_sf_envelope(v2 + n_v2v0 * sampling_dist * n, eps_2, prev_facet, sq_dist, nearest_point))
-//                return true;
+//			ps.push_back(v2 + n_v2v0 * sampling_dist * n);
+            if(sf_tree.is_out_sf_envelope(v2 + n_v2v0 * sampling_dist * n, eps_2, prev_facet, sq_dist, nearest_point))
+                return true;
 		}
 	}
 
@@ -178,9 +174,9 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 
 bool is_out_function(const std::array<Vector3, 3>& triangle, const Scalar& dd, AABBWrapper& sf_tree) {
 	std::vector<GEO::vec3> ps;
-//	return sample_trianglex(triangle, ps, dd, sf_tree);//dd is used for sapmling
-    sample_trianglex(triangle, ps, dd, sf_tree);//dd is used for sapmling
-	return sf_tree.is_out_sf_envelope(ps, pow(dd*(1 - (1 / sqrt(3))), 2));
+	return sample_trianglex(triangle, ps, dd, sf_tree);//dd is used for sapmling
+//    sample_trianglex(triangle, ps, dd, sf_tree);//dd is used for sapmling
+//	return sf_tree.is_out_sf_envelope(ps, pow(dd*(1 - (1 / sqrt(3))), 2));
 
 }
 
