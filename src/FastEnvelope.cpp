@@ -2330,11 +2330,16 @@ namespace fastEnvelope
 	}
 	bool FastEnvelope::point_out_prism_return_local_id(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const
 	{
-
+		Vector3 bmin, bmax;
+		
 		int ori;
 
 		for (int i = 0; i < prismindex.size(); i++)
 		{
+			bmin = cornerlist[prismindex[i]][0];
+			bmax = cornerlist[prismindex[i]][1];
+			if (point[0] < bmin[0] || point[1] < bmin[1] || point[2] < bmin[2]) continue;
+			if (point[0] > bmax[0] || point[1] > bmax[1] || point[2] > bmax[2]) continue;
 			if (prismindex[i] == jump)
 				continue;
 
