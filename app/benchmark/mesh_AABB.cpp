@@ -136,7 +136,7 @@ namespace {
         geo_debug_assert(childr < bboxes.size());
         bbox_union(bboxes[node_index], bboxes[childl], bboxes[childr]);
     }
-	
+
     /**
      * \brief Finds the nearest point in a mesh facet from a query point.
      * \param[in] M the mesh
@@ -348,7 +348,7 @@ namespace {
 
 /****************************************************************************/
 
-namespace GEO {
+namespace floatTetWild {
 
     MeshFacetsAABBWithEps::MeshFacetsAABBWithEps(const Mesh& M)
      : mesh_(M) {
@@ -474,7 +474,74 @@ namespace GEO {
         }
     }
 
-	
+    void MeshFacetsAABBWithEps::facet_in_envelope_recursive(
+        const vec3& p, double sq_epsilon,
+        index_t& nearest_f, vec3& nearest_point, double& sq_dist,
+        index_t n, index_t b, index_t e
+    ) const {
+        geo_debug_assert(e > b);
+
+        if (sq_dist <= sq_epsilon) {
+            return;
+        }
+
+        // If node is a leaf: compute point-facet distance
+        // and replace current if nearer
+        if(b + 1 == e) {
+            vec3 cur_nearest_point;
+            double cur_sq_dist;
+            get_point_facet_nearest_point(
+                mesh_, p, b, cur_nearest_point, cur_sq_dist
+            );
+            if(cur_sq_dist < sq_dist) {
+                nearest_f = b;
+                nearest_point = cur_nearest_point;
+                sq_dist = cur_sq_dist;
+            }
+            return;
+        }
+        index_t m = b + (e - b) / 2;
+        index_t childl = 2 * n;
+        index_t childr = 2 * n + 1;
+
+        double dl = point_box_signed_squared_distance(p, bboxes_[childl]);
+        double dr = point_box_signed_squared_distance(p, bboxes_[childr]);
+
+        // Traverse the "nearest" child first, so that it has more chances
+        // to prune the traversal of the other child.
+        if(dl < dr) {
+            if(dl < sq_dist && dl <= sq_epsilon) {
+                facet_in_envelope_recursive(
+                    p, sq_epsilon,
+                    nearest_f, nearest_point, sq_dist,
+                    childl, b, m
+                );
+            }
+            if(dr < sq_dist && dr <= sq_epsilon) {
+                facet_in_envelope_recursive(
+                    p, sq_epsilon,
+                    nearest_f, nearest_point, sq_dist,
+                    childr, m, e
+                );
+            }
+        } else {
+            if(dr < sq_dist && dr <= sq_epsilon) {
+                facet_in_envelope_recursive(
+                    p, sq_epsilon,
+                    nearest_f, nearest_point, sq_dist,
+                    childr, m, e
+                );
+            }
+            if(dl < sq_dist && dl <= sq_epsilon) {
+                facet_in_envelope_recursive(
+                    p, sq_epsilon,
+                    nearest_f, nearest_point, sq_dist,
+                    childl, b, m
+                );
+            }
+        }
+    }
+
 
     bool MeshFacetsAABBWithEps::segment_intersection(const vec3& q1, const vec3& q2) const {
         return segment_intersection_recursive(q1, q2, 1, 0, mesh_.facets.nb());

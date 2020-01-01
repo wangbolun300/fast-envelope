@@ -37,6 +37,11 @@ using namespace fastEnvelope;
 using namespace std;
 
 
+void pausee(){
+	cout<<"pausing..."<<endl;
+	char c;
+	cin>>c;
+}
 
 void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
 	min = vertices.front();
@@ -56,6 +61,8 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
     double sq_dist = std::numeric_limits<double>::max();
     GEO::index_t prev_facet = GEO::NO_FACET;
     Scalar eps_2 = pow(sampling_dist*(1 - (1 / sqrt(3))), 2);
+//    cout<<"eps_2 = "<<eps_2<<endl;
+//    pausee();
     ////
 
     Scalar sqrt3_2 = std::sqrt(3) / 2;
@@ -71,8 +78,9 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 	if (N <= 1) {
 		for (int i = 0; i < 3; i++) {
 //            ps.push_back(GEO::vec3(vs[i][0], vs[i][1], vs[i][2]));
-            if(sf_tree.is_out_sf_envelope(vs[i], eps_2, prev_facet, sq_dist, nearest_point))
+            if(sf_tree.is_out_sf_envelope(vs[i], eps_2, prev_facet, sq_dist, nearest_point)) {
                 return true;
+            }
         }
 		return false;
 	}
@@ -86,19 +94,21 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 	GEO::vec3 n_v0v1 = GEO::normalize(v1 - v0);
 	for (int n = 0; n <= N; n++) {
 //		ps.push_back(v0 + n_v0v1 * sampling_dist * n);
-        if(sf_tree.is_out_sf_envelope(v0 + n_v0v1 * sampling_dist * n, eps_2, prev_facet, sq_dist, nearest_point))
+        if(sf_tree.is_out_sf_envelope(v0 + n_v0v1 * sampling_dist * n, eps_2, prev_facet, sq_dist, nearest_point)) {
             return true;
+        }
 	}
 //	ps.push_back(v1);
-    if(sf_tree.is_out_sf_envelope(v1, eps_2, prev_facet, sq_dist, nearest_point))
+    if(sf_tree.is_out_sf_envelope(v1, eps_2, prev_facet, sq_dist, nearest_point)) {
         return true;
+    }
 
 	Scalar h = GEO::distance(GEO::dot((v2 - v0), (v1 - v0)) * (v1 - v0) / ls[max_i] + v0, v2);
 	int M = h / (sqrt3_2 * sampling_dist);
 	if (M < 1) {
-//		ps.push_back(v2);
-//		return;
-        return sf_tree.is_out_sf_envelope(v2, eps_2, prev_facet, sq_dist, nearest_point);
+		ps.push_back(v2);
+		return false;
+//        return sf_tree.is_out_sf_envelope(v2, eps_2, prev_facet, sq_dist, nearest_point);
 	}
 
 	GEO::vec3 n_v0v2 = GEO::normalize(v2 - v0);
@@ -165,6 +175,7 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 bool is_out_function(const std::array<Vector3, 3>& triangle, const Scalar& dd, AABBWrapper& sf_tree) {
 	std::vector<GEO::vec3> ps;
 	return sample_trianglex(triangle, ps, dd, sf_tree);//dd is used for sapmling
+//    sample_trianglex(triangle, ps, dd, sf_tree);//dd is used for sapmling
 //	return sf_tree.is_out_sf_envelope(ps, pow(dd*(1 - (1 / sqrt(3))), 2));
 
 }
@@ -913,6 +924,7 @@ void sample_triangle_test() {
 }
 
 //can get the time, memory and all the result for queries of sampling method
+#include <geogram/mesh/mesh_AABB.h>
 void pure_sampling(string queryfile, string model,string resultfile, Scalar shrinksize, bool csv_model) {
 
 	vector<int> outenvelope;
@@ -937,9 +949,7 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 		triangles.resize(f.size());
 		for (int i = 0; i < f.size(); i++) {
 			for (int j = 0; j < 3; j++) {
-				triangles[i][j][0] = v[f[i][j]][0];
-				triangles[i][j][1] = v[f[i][j]][1];
-				triangles[i][j][2] = v[f[i][j]][2];
+				triangles[i][j] = v[f[i][j]];
 			}
 		}
 	}
@@ -959,6 +969,31 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 	igl::Timer timer;
 	timer.start();
 	AABBWrapper sf_tree(envmesh);
+
+//	//fortest
+//	Scalar eps_2 = pow(dd*(1 - (1 / sqrt(3))), 2);
+//	GEO::MeshFacetsAABB tree(envmesh);
+//	for(int i=0;i<triangles.size();i++) {
+//		for(int j=0;j<3;j++) {
+//			auto& vi = triangles[i][j];
+//			double sq_dist = tree.squared_distance(GEO::vec3(vi[0], vi[1], vi[2]));
+//			if (sq_dist > eps_2) {
+//				cout << "sq_dist>eps_2!! " << sq_dist << endl;
+//				pausee();
+//			} else {
+//				GEO::vec3 nearest_point;
+//				double sq_dist1 = std::numeric_limits<double>::max();
+//				GEO::index_t prev_facet = GEO::NO_FACET;
+//				if (sf_tree.is_out_sf_envelope(GEO::vec3(vi[0], vi[1], vi[2]), eps_2, prev_facet, sq_dist1,
+//											   nearest_point)) {
+//					cout << "sf_tree.is_out_sf_envelope!! " << sq_dist1 << " (" << sq_dist << endl;
+//					pausee();
+//				}
+//			}
+//		}
+//	}
+//	//fortest
+
 	const double init_time = timer.getElapsedTimeInSec();
 	std::cout << "sampling initialization time " << init_time<< std::endl;
 	int fn = triangles.size() > 100000 ? 100000 : triangles.size();
@@ -967,6 +1002,7 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 	results.resize(fn);
 	timer.start();
 	int inbr = 0;
+	cout<<"dd = "<<dd<<endl;
 	for (int i = 0; i < fn; i++) {
 
 		results[i] = is_out_function(triangles[i], dd, sf_tree); ;
@@ -975,6 +1011,7 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 	}
 	cout << "sampling method time " << timer.getElapsedTimeInSec() << endl;
 	cout << "memory use, " << getPeakRSS() << std::endl;
+	cout <<"inside% = "<<(inbr/double(fn))<<endl;
 	std::ofstream fout;
 
 	
@@ -1240,10 +1277,12 @@ int main(int argc, char const *argv[])
 	}*/
 	
 	//run_volume_compare();
+
 	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
 	//pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//read_CSV_triangle_write_csv("D:\\vs\\fast_envelope_csv\\python\\differenteps\\37402_tem.csv");
+
 
 	return 0;
 }
