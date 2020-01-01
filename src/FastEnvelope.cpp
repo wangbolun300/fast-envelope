@@ -39,7 +39,7 @@ namespace fastEnvelope
 	}
 
 	void FastEnvelope::init(const std::vector<std::vector<std::array<Vector3, 3>>> halfspace_input, 
-		const std::vector<std::array<Vector3, 2>> cornerlist_input,const std::vector<Vector3i>& m_faces, const Scalar eps) {
+		const std::vector<std::array<Vector3, 2>> cornerlist_input, const Scalar eps) {
 		std::vector<Vector3i> faces_new;
 
 		halfspace = halfspace_input;
