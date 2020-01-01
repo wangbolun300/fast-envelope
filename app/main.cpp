@@ -1149,6 +1149,61 @@ double get_triangle_area(Vector2 t0, Vector2 t1, Vector2 t2) {
 //	return 0;
 //}
 
+void read_CSV_triangle_write_csv(const string inputFileName) {
+
+	std::vector<std::array<Vector3, 3>> triangle;
+	
+
+
+	ifstream infile;
+	infile.open(inputFileName);
+	if (!infile.is_open())
+	{
+		cout << "Path Wrong!!!!" << endl;
+		return;
+	}
+	std::ofstream fout;
+	fout.open("D:\\vs\\fast_envelope_csv\\python\\differenteps\\short.csv");
+
+	int l = 0;
+	while (infile) // there is input overload classfile
+	{
+		l++;
+		string s;
+		if (!getline(infile, s)) break;
+		if (s[0] != '#') {
+			istringstream ss(s);
+			array<double, 11> record;
+			int c = 0;
+			while (ss) {
+				string line;
+				if (!getline(ss, line, ','))
+					break;
+				try {
+					record[c] = stod(line);
+					c++;
+				}
+				catch (const std::invalid_argument e) {
+					cout << "NaN found in file " << inputFileName << " line " << l
+						<< endl;
+					e.what();
+				}
+			}
+			if (record[10] < 1) {
+				fout << std::setprecision(17) << record[0]<<","<<record[1] << ","<<record[2] << ","
+					<<record[3] << "," <<record[4] << "," <<record[5] << "," 
+					<<record[6] << "," <<record[7] << "," <<record[8] << "," <<record[9]  << endl;
+			}
+			
+		}
+	}
+	if (!infile.eof()) {
+		cerr << "Could not read file " << inputFileName << "\n";
+	}
+	cout << "triangle size " << triangle.size() << endl;
+	fout.close();
+	infile.close();
+}
 
 
 int main(int argc, char const *argv[])
@@ -1188,7 +1243,7 @@ int main(int argc, char const *argv[])
 	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
 	//pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-
+	//read_CSV_triangle_write_csv("D:\\vs\\fast_envelope_csv\\python\\differenteps\\37402_tem.csv");
 
 	return 0;
 }

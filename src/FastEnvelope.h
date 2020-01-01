@@ -20,6 +20,8 @@ namespace fastEnvelope {
 		FastEnvelope(){}
 
 		void init(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);
+		void init(const std::vector<std::vector<std::array<Vector3, 3>>> halfspace_input,
+			const std::vector<std::array<Vector3, 2>> cornerlist_input, const std::vector<Vector3i>& m_faces, const Scalar eps);
 		static void printnumber();
 
 		//check if tri or point is outside
@@ -39,6 +41,7 @@ namespace fastEnvelope {
 		AABB tree;
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
+		bool USE_ADJACENT_INFORMATION = true;
 
 		bool debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex)const;
 		bool triangle_out_of_envelope(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;

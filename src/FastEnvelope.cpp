@@ -38,6 +38,19 @@ namespace fastEnvelope
 
 	}
 
+	void FastEnvelope::init(const std::vector<std::vector<std::array<Vector3, 3>>> halfspace_input, 
+		const std::vector<std::array<Vector3, 2>> cornerlist_input,const std::vector<Vector3i>& m_faces, const Scalar eps) {
+		std::vector<Vector3i> faces_new;
+
+		halfspace = halfspace_input;
+		cornerlist = cornerlist_input;
+		tree.init(cornerlist);
+		USE_ADJACENT_INFORMATION = false;
+		//initializing types
+		initFPU();
+
+	}
+
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const
 	{
 
@@ -2051,10 +2064,10 @@ namespace fastEnvelope
 			{
 				if (cut[cutp[i]] == true && cut[cutp[j]] == true)
 					continue;
-
-				bool neib = is_two_facets_neighbouring(cindex, cutp[i], cutp[j]);
-				if (neib == false) continue;
-
+				if (USE_ADJACENT_INFORMATION) {
+					bool neib = is_two_facets_neighbouring(cindex, cutp[i], cutp[j]);
+					if (neib == false) continue;
+				}
 
 				int inter = is_3_triangle_cut_float_fast(
 					tri0, tri1, tri2,
@@ -2140,7 +2153,7 @@ namespace fastEnvelope
 				st);
 		if (pre == true) {
 			for (int i = 0; i < halfspace[prismid].size(); i++) {
-				/*bool neib = is_two_facets_neighbouring(prismid, i, faceid);// this works only when the polyhedron is convax and no two neighbour facets are coplanar
+				/*bool neib = is_two_facets_neighbouring(prismid, i, faceid);// this works only when the polyhedron is convex and no two neighbour facets are coplanar
 				if (neib == false) continue;*/
 				if (i == faceid) continue;
 				ori =
@@ -2193,7 +2206,7 @@ namespace fastEnvelope
 				s);
 			if (premulti == false) return false;
 			for (int i = 0; i < halfspace[prismid].size(); i++) {
-				/*bool neib = is_two_facets_neighbouring(prismid, i, faceid);// this works only when the polyhedron is convax and no two neighbour facets are coplanar
+				/*bool neib = is_two_facets_neighbouring(prismid, i, faceid);// this works only when the polyhedron is convex and no two neighbour facets are coplanar
 				if (neib == false) continue;*/
 				if (i == faceid) continue;
 				ori = orient3D_TPI_post_exact(s,
