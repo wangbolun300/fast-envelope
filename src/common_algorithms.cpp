@@ -85,34 +85,7 @@ namespace fastEnvelope {
 			return DEGENERATED_POINT;
 		}
 
-		//Vector3 accurate_normal_vector(const Vector3 &p0, const Vector3 &p1,
-		//	const Vector3 &q0, const Vector3 &q1)
-		//{
-
-		//	Rational p00r(p0[0]), p01r(p0[1]), p02r(p0[2]),
-		//		p10r(p1[0]), p11r(p1[1]), p12r(p1[2]),
-		//		q00r(q0[0]), q01r(q0[1]), q02r(q0[2]),
-		//		q10r(q1[0]), q11r(q1[1]), q12r(q1[2]);
-		//	Rational axr(p10r - p00r), ayr(p11r - p01r), azr(p12r - p02r),
-		//		bxr(q10r - q00r), byr(q11r - q01r), bzr(q12r - q02r);
-		//	Rational xr = ayr * bzr - azr * byr;
-		//	Rational yr = azr * bxr - axr * bzr;
-		//	Rational zr = axr * byr - ayr * bxr;//get the direction (x,y,z), now normalize
-		//	int xsign, ysign, zsign;
-		//	xsign = xr.get_sign();
-		//	ysign = yr.get_sign();
-		//	zsign = zr.get_sign();
-		//	Rational ssumr = xr * xr + yr * yr + zr * zr;
-		//	xr = xr * xr / ssumr;
-		//	yr = yr * yr / ssumr;
-		//	zr = zr * zr / ssumr;
-
-		//	Scalar x, y, z;
-		//	x = sqrt(xr.to_double())*xsign;
-		//	y = sqrt(yr.to_double())*ysign;
-		//	z = sqrt(zr.to_double())*zsign;
-		//	return Vector3(x, y, z);
-		//}
+		
 		Vector3 accurate_normal_vector(const Vector3 &p0, const Vector3 &p1,
 			const Vector3 &p2)
 		{
@@ -120,6 +93,15 @@ namespace fastEnvelope {
 			triangle_normal_exact(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2],v[0],v[1],v[2]);
 			return v;
 		}
+		Vector3 accurate_cross_product_direction(const Vector3 &p0, const Vector3 &p1,
+			const Vector3 &q0, const Vector3 &q1)
+		{
+			Vector3 v;
+			cross_product_normalized_exact(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], q0[0], q0[1], q0[2], q1[0], q1[1], q1[2],
+				v[0], v[1], v[2]);
+			return v;
+		}
+
 
 		void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew) {
 			std::vector<std::array<int, 3>> ct;
@@ -236,16 +218,19 @@ namespace fastEnvelope {
 				{1, -1, -1},
 			} };
 		const auto get_corner_plane=[](const Vector3& p0, const Vector3& midp, const Vector3 &normal, const Scalar& distance,
-			Vector3& plane0, Vector3& plane1, Vector3& plane2) {
-			Scalar distance_small = distance * 1;
+			Vector3& plane0, Vector3& plane1, Vector3& plane2, const bool use_exact) {
+			Scalar distance_small = distance * 1;// to be conservative to reduce numerical error, can set the Scalar as 0.999
 			Vector3 direction = (p0 - midp).normalized();
 			plane0 = p0 + direction * distance_small;
 			plane1 = plane0 + normal;
-			Vector3 axis = direction.cross(normal).normalized();
+			Vector3 origin = Vector3(0, 0, 0);
+			Vector3 axis;
+			if (use_exact) axis = accurate_cross_product_direction(midp, p0, origin, normal);
+			else axis = direction.cross(normal).normalized();
 			plane2 = plane0 + axis;
-
-
 		};
+		bool use_accurate_cross = false;
+		Vector3 origin = Vector3(0, 0, 0);
 
 		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
 
@@ -312,6 +297,7 @@ namespace fastEnvelope {
 			if (de == NERLY_DEGENERATED)
 			{
 				//logger().debug("Envelope Triangle Degeneration- Nearly");
+				use_accurate_cross = true;
 
 				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
 
@@ -337,7 +323,8 @@ namespace fastEnvelope {
 
 
 			edgedire = AB.normalized();
-			edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
+			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal);
+			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
 			plane[0] = m_ver[m_faces[i][0]] + edgenormaldist;
 			plane[1] = m_ver[m_faces[i][1]] + edgenormaldist;
 			plane[2] = plane[0] + normal;
@@ -346,13 +333,15 @@ namespace fastEnvelope {
 			
 			if (obtuse != 1) {
 				get_corner_plane(m_ver[m_faces[i][1]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][2]]) / 2, normal,
-					tolerance, plane[0], plane[1], plane[2]);
+					tolerance, plane[0], plane[1], plane[2],use_accurate_cross);
 				halfspace[i].emplace_back(plane);// number 3;
 
 			}
 
 			edgedire = BC.normalized();
-			edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
+			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal);
+			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
+
 			plane[0] = m_ver[m_faces[i][1]] + edgenormaldist;
 			plane[1] = m_ver[m_faces[i][2]] + edgenormaldist;
 			plane[2] = plane[0] + normal;
@@ -360,13 +349,15 @@ namespace fastEnvelope {
 
 			if (obtuse != 2) {
 				get_corner_plane(m_ver[m_faces[i][2]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][1]]) / 2, normal,
-					tolerance, plane[0], plane[1], plane[2]);
+					tolerance, plane[0], plane[1], plane[2],use_accurate_cross);
 				halfspace[i].emplace_back(plane);// number 5;
 
 			}
 
 			edgedire = -AC.normalized();
-			edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
+			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal);
+			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
+			
 			plane[0] = m_ver[m_faces[i][2]] + edgenormaldist;
 			plane[1] = m_ver[m_faces[i][0]] + edgenormaldist;
 			plane[2] = plane[1] + normal;
@@ -374,12 +365,220 @@ namespace fastEnvelope {
 
 			if (obtuse != 0) {
 				get_corner_plane(m_ver[m_faces[i][0]], (m_ver[m_faces[i][1]] + m_ver[m_faces[i][2]]) / 2, normal,
-					tolerance, plane[0], plane[1], plane[2]);
+					tolerance, plane[0], plane[1], plane[2],use_accurate_cross);
 				halfspace[i].emplace_back(plane);// number 7;
 
 			}
 			//std::cout << "envelope face nbr " << halfspace[i].size() << std::endl;
 		
+		}
+
+	}
+
+	// use user defined epsilon list to initialize adaptive envelope
+	void algorithms::halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
+		std::vector<std::array<Vector3, 2>>& cornerlist, const std::vector<Scalar>& epsilons) {
+		std::vector<Scalar> tolerance; tolerance.resize(epsilons.size());
+		for (int i = 0; i < epsilons.size(); i++) {
+			tolerance[i] = epsilons[i] / sqrt(3);// the envelope thickness, to be conservative
+		}
+		
+		
+		Vector3 AB, AC, BC, normal;
+		int de;
+		std::array<Vector3, 3> plane;
+		std::array<Vector3, 8> box;
+		Vector3 tmin, tmax;
+		std::vector<Vector3> bbox_offset; bbox_offset.resize(epsilons.size());
+		for (int i = 0; i < epsilons.size(); i++) {
+			bbox_offset[i][0] = 1;
+			bbox_offset[i][1] = 1;
+			bbox_offset[i][2] = 1;
+			bbox_offset[i] = bbox_offset[i] * tolerance[i]*sqrt(3)*(1 + 1e-6);
+		}
+
+		
+
+		const auto get_triangle_obtuse_angle = [](const Vector3& p0, const Vector3& p1, const Vector3& p2) {
+			const auto dot_sign = [](const Vector3 &a, const Vector3 &b)
+			{
+				Scalar t = a.dot(b);
+				if (t > SCALAR_ZERO)
+					return 1;
+				if (t < -1 * SCALAR_ZERO)
+					return -1;
+
+				return dot_product_sign(a[0], a[1], a[2], b[0], b[1], b[2]);
+			};
+
+			if (dot_sign(p1 - p0, p1 - p2) < 0) return 1;
+			if (dot_sign(p2 - p1, p2 - p0) < 0) return 2;
+			if (dot_sign(p0 - p1, p0 - p2) < 0) return 0;
+			return -1;
+
+		};
+		static const std::array<Vector3, 8> boxorder = {
+			{
+				{1, 1, 1},
+				{-1, 1, 1},
+				{-1, -1, 1},
+				{1, -1, 1},
+				{1, 1, -1},
+				{-1, 1, -1},
+				{-1, -1, -1},
+				{1, -1, -1},
+			} };
+		const auto get_corner_plane = [](const Vector3& p0, const Vector3& midp, const Vector3 &normal, const Scalar& distance,
+			Vector3& plane0, Vector3& plane1, Vector3& plane2, const bool use_exact) {
+			Scalar distance_small = distance * 1;// to be conservative to reduce numerical error, can set the Scalar as 0.999
+			Vector3 direction = (p0 - midp).normalized();
+			plane0 = p0 + direction * distance_small;
+			plane1 = plane0 + normal;
+			Vector3 origin = Vector3(0, 0, 0);
+			Vector3 axis;
+			if (use_exact) axis = accurate_cross_product_direction(midp, p0, origin, normal);
+			else axis = direction.cross(normal).normalized();
+			plane2 = plane0 + axis;
+		};
+		bool use_accurate_cross = false;
+		Vector3 origin = Vector3(0, 0, 0);
+
+		static const int c_face[6][3] = { {0, 1, 2}, {4, 7, 6}, {0, 3, 4}, {1, 0, 4}, {1, 5, 2}, {2, 6, 3} };
+
+		halfspace.resize(m_faces.size());
+		cornerlist.resize(m_faces.size());
+		for (int i = 0; i < m_faces.size(); i++)
+		{
+			algorithms::get_tri_corners(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tmin, tmax);
+			cornerlist[i][0] = tmin - bbox_offset[i];
+			cornerlist[i][1] = tmax + bbox_offset[i];
+
+			AB = m_ver[m_faces[i][1]] - m_ver[m_faces[i][0]];
+			AC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][0]];
+			BC = m_ver[m_faces[i][2]] - m_ver[m_faces[i][1]];
+			de = algorithms::is_triangle_degenerated(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
+
+			if (de == DEGENERATED_POINT)
+			{
+				//logger().debug("Envelope Triangle Degeneration- Point");
+				for (int j = 0; j < 8; j++)
+				{
+					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance[i];
+				}
+				halfspace[i].resize(6);
+				for (int j = 0; j < 6; j++) {
+					halfspace[i][j][0] = box[c_face[j][0]];
+					halfspace[i][j][1] = box[c_face[j][1]];
+					halfspace[i][j][2] = box[c_face[j][2]];
+				}
+				//cornerlist[i] = (get_bb_corners_8(box));
+
+
+				continue;
+			}
+			if (de == DEGENERATED_SEGMENT)
+			{
+				//logger().debug("Envelope Triangle Degeneration- Segment");
+				Scalar length1 = AB.dot(AB), length2 = AC.dot(AC), length3 = BC.dot(BC);
+				if (length1 >= length2 && length1 >= length3)
+				{
+					algorithms::seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], tolerance[i], box);
+
+				}
+				if (length2 >= length1 && length2 >= length3)
+				{
+					algorithms::seg_cube(m_ver[m_faces[i][0]], m_ver[m_faces[i][2]], tolerance[i], box);
+
+				}
+				if (length3 >= length1 && length3 >= length2)
+				{
+					algorithms::seg_cube(m_ver[m_faces[i][1]], m_ver[m_faces[i][2]], tolerance[i], box);
+				}
+				halfspace[i].resize(6);
+				for (int j = 0; j < 6; j++) {
+					halfspace[i][j][0] = box[c_face[j][0]];
+					halfspace[i][j][1] = box[c_face[j][1]];
+					halfspace[i][j][2] = box[c_face[j][2]];
+				}
+				//cornerlist[i] = (get_bb_corners_8(box));
+
+
+				continue;
+			}
+			if (de == NERLY_DEGENERATED)
+			{
+				//logger().debug("Envelope Triangle Degeneration- Nearly");
+
+				normal = algorithms::accurate_normal_vector(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
+				use_accurate_cross = true;
+			}
+			else
+			{
+				normal = AB.cross(AC).normalized();
+			}
+			halfspace[i].reserve(8);
+			Vector3 normaldist = normal * tolerance[i];
+			Vector3 edgedire, edgenormaldist;
+			plane[0] = m_ver[m_faces[i][0]] + normaldist;
+			plane[1] = m_ver[m_faces[i][1]] + normaldist;
+			plane[2] = m_ver[m_faces[i][2]] + normaldist;
+			halfspace[i].emplace_back(plane);// number 0
+
+			plane[0] = m_ver[m_faces[i][0]] - normaldist;
+			plane[1] = m_ver[m_faces[i][2]] - normaldist;
+			plane[2] = m_ver[m_faces[i][1]] - normaldist;// order: 0, 2, 1
+			halfspace[i].emplace_back(plane);// number 1
+
+			int obtuse = get_triangle_obtuse_angle(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
+
+
+			edgedire = AB.normalized();
+			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal);
+			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance[i];
+			plane[0] = m_ver[m_faces[i][0]] + edgenormaldist;
+			plane[1] = m_ver[m_faces[i][1]] + edgenormaldist;
+			plane[2] = plane[0] + normal;
+			halfspace[i].emplace_back(plane);// number 2
+
+
+			if (obtuse != 1) {
+				get_corner_plane(m_ver[m_faces[i][1]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][2]]) / 2, normal,
+					tolerance[i], plane[0], plane[1], plane[2],use_accurate_cross);
+				halfspace[i].emplace_back(plane);// number 3;
+
+			}
+
+			edgedire = BC.normalized();
+			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal);
+			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance[i];
+			plane[0] = m_ver[m_faces[i][1]] + edgenormaldist;
+			plane[1] = m_ver[m_faces[i][2]] + edgenormaldist;
+			plane[2] = plane[0] + normal;
+			halfspace[i].emplace_back(plane);// number 4
+
+			if (obtuse != 2) {
+				get_corner_plane(m_ver[m_faces[i][2]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][1]]) / 2, normal,
+					tolerance[i], plane[0], plane[1], plane[2],use_accurate_cross);
+				halfspace[i].emplace_back(plane);// number 5;
+
+			}
+
+			edgedire = -AC.normalized();
+			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal);
+			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance[i];
+			plane[0] = m_ver[m_faces[i][2]] + edgenormaldist;
+			plane[1] = m_ver[m_faces[i][0]] + edgenormaldist;
+			plane[2] = plane[1] + normal;
+			halfspace[i].emplace_back(plane);// number 6 
+
+			if (obtuse != 0) {
+				get_corner_plane(m_ver[m_faces[i][0]], (m_ver[m_faces[i][1]] + m_ver[m_faces[i][2]]) / 2, normal,
+					tolerance[i], plane[0], plane[1], plane[2],use_accurate_cross);
+				halfspace[i].emplace_back(plane);// number 7;
+
+			}
+			//std::cout << "envelope face nbr " << halfspace[i].size() << std::endl;
+
 		}
 
 	}

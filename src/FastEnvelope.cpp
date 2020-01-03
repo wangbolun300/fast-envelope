@@ -38,6 +38,21 @@ namespace fastEnvelope
 
 	}
 
+	void FastEnvelope::init(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const std::vector<Scalar> eps) {
+		std::vector<Vector3i> faces_new;
+
+
+		algorithms::resorting(m_ver, m_faces, faces_new);//resort the facets order
+
+		//algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, eps);
+		algorithms::halfspace_generation(m_ver, faces_new, halfspace, cornerlist, eps);
+
+		tree.init(cornerlist);
+
+		//initializing types
+		initFPU();
+	}
+
 	void FastEnvelope::init(const std::vector<std::vector<std::array<Vector3, 3>>> halfspace_input, 
 		const std::vector<std::array<Vector3, 2>> cornerlist_input, const Scalar eps) {
 		std::vector<Vector3i> faces_new;
@@ -50,6 +65,8 @@ namespace fastEnvelope
 		initFPU();
 
 	}
+
+
 
 	bool FastEnvelope::is_outside(const std::array<Vector3, 3> &triangle) const
 	{

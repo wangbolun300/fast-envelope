@@ -20,6 +20,7 @@ namespace fastEnvelope {
 		FastEnvelope(){}
 
 		void init(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);
+		void init(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const std::vector<Scalar> eps);
 		void init(const std::vector<std::vector<std::array<Vector3, 3>>> halfspace_input,
 			const std::vector<std::array<Vector3, 2>> cornerlist_input, const Scalar eps);
 		static void printnumber();
