@@ -1241,6 +1241,84 @@ void read_CSV_triangle_write_csv(const string inputFileName) {
 	fout.close();
 	infile.close();
 }
+void pure_our_method_detailed(string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model) {
+
+	vector<int> outenvelope;
+	std::vector<Vector3> env_vertices, v;
+	std::vector<Vector3i> env_faces, f;
+	GEO::Mesh envmesh, mesh;
+
+	///////////////////////////////////////////////////////
+
+
+
+	std::vector<std::array<Vector3, 3>> triangles;
+	if (csv_model) {
+		triangles = read_CSV_triangle(queryfile, outenvelope);
+	}
+	else {
+		bool ok1 = MeshIO::load_mesh(queryfile, v, f, mesh);
+		if (!ok1) {
+			std::cout << ("Unable to load query mesh") << std::endl;
+			return;
+		}
+		triangles.resize(f.size());
+		for (int i = 0; i < f.size(); i++) {
+			for (int j = 0; j < 3; j++) {
+				triangles[i][j][0] = v[f[i][j]][0];
+				triangles[i][j][1] = v[f[i][j]][1];
+				triangles[i][j][2] = v[f[i][j]][2];
+			}
+		}
+	}
+
+	bool ok = MeshIO::load_mesh(model, env_vertices, env_faces, envmesh);
+	if (!ok) {
+		std::cout << ("Unable to load mesh") << std::endl;
+		return;
+	}
+
+	Vector3 min, max;
+	Scalar eps = 1e-3;
+	eps = eps * shrinksize;
+	Scalar dd;
+	get_bb_corners(env_vertices, min, max);
+	dd = ((max - min).norm()) *eps;
+	igl::Timer timer, timerdetail;
+	timer.start();
+	const FastEnvelope fast_envelope(env_vertices, env_faces, dd);
+
+	timer.stop();
+	const auto init_time = timer.getElapsedTimeInSec();
+	std::cout << "ours initialization time " << timer.getElapsedTimeInSec() << std::endl;
+	int fn = triangles.size() > 100000 ? 100000 : triangles.size();
+	std::cout << "total query size, " << fn << std::endl;
+	std::vector<bool> results;
+	std::vector<double> timerlist;
+	timerlist.resize(fn);
+	results.resize(fn);
+	timer.start();
+	int inbr = 0;
+	for (int i = 0; i < fn; i++) {
+		timerdetail.start();
+		results[i] = fast_envelope.is_outside(triangles[i]);
+		timerlist[i] = timerdetail.getElapsedTimeInSec();
+		if (results[i] == 0) inbr++;
+	}
+	timer.stop();
+	cout << "ours method time " << timer.getElapsedTimeInSec() << endl;
+	cout << "memory use, " << getPeakRSS() << std::endl;
+	cout << "inside percentage, " << float(inbr) / float(fn) << std::endl;
+
+	std::ofstream fout;
+	fout.open(resultfile + "_detail.csv");
+	fout << "triangle,time, out" << std::endl;
+	for (int i = 0; i < fn; i++) {
+		fout << i << "," << timerlist[i] << "," << results[i] << std::endl;
+	}
+
+	fout.close();
+}
 
 
 int main(int argc, char const *argv[])
@@ -1280,7 +1358,8 @@ int main(int argc, char const *argv[])
 
 	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
 	//pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	//pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//read_CSV_triangle_write_csv("D:\\vs\\fast_envelope_csv\\python\\differenteps\\37402_tem.csv");
 
 
