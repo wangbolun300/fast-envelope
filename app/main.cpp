@@ -1320,10 +1320,42 @@ void pure_our_method_detailed(string queryfile, string model, string resultfile,
 	fout.close();
 }
 
+void write_duplicated_csv() {
+	std::vector<std::array<Vector3, 3>> triangles;
+	std::vector<int> outenvelope;
+	const int tid = 2471;
+	std::string queryfile = "D:\\vs\\fast_envelope_csv\\python\\extreme_case\\110907.csv";
+	std::string outfile = "D:\\vs\\fast_envelope_csv\\python\\extreme_case\\nbr2471_noised.csv";
+	triangles = read_CSV_triangle(queryfile, outenvelope);
+
+	bool addnoise = true;
+	//srand(22);
+
+
+	std::ofstream fout;
+	fout.open(outfile);
+	for (int i = 0; i < 500; i++) {
+		std::cout << "i " << i << std::endl;
+		if (addnoise) {
+			triangles[tid][0] -= Vector3::Random()*1e-3;
+			triangles[tid][1] -= Vector3::Random()*1e-3;
+			triangles[tid][2] -= Vector3::Random()*1e-3;
+		}
+		for (int j = 0; j < 3; j++) {
+			fout << std::setprecision(16) << triangles[tid][j][0] << "," << triangles[tid][j][1] << "," << triangles[tid][j][2] << ",";
+		}
+		fout << outenvelope[tid] << std::endl;
+	}
+	fout.close();
+	
+}
+
+
+
 
 int main(int argc, char const *argv[])
 {
-	srand(42);
+	//srand(42);
 
 #ifndef WIN32
 	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
@@ -1359,9 +1391,9 @@ int main(int argc, char const *argv[])
 	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
 	//pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	//pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//read_CSV_triangle_write_csv("D:\\vs\\fast_envelope_csv\\python\\differenteps\\37402_tem.csv");
-
+	write_duplicated_csv();
 
 	return 0;
 }

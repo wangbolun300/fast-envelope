@@ -135,6 +135,41 @@ namespace fastEnvelope {
 
 		}
 
+		void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew, std::vector<int>& new2old){
+			std::vector<std::array<int, 3>> ct;
+			struct sortstruct {
+				int order;
+				Resorting::MortonCode64 morton;
+			};
+			std::vector<sortstruct> list;
+			const int multi = 1000;
+			ct.resize(F.size());
+			list.resize(F.size());
+
+			for (int i = 0; i < F.size(); i++) {
+				ct[i][0] = int(((V[F[i][0]] + V[F[i][1]] + V[F[i][2]])*multi)[0]);
+				ct[i][1] = int(((V[F[i][0]] + V[F[i][1]] + V[F[i][2]])*multi)[1]);
+				ct[i][2] = int(((V[F[i][0]] + V[F[i][1]] + V[F[i][2]])*multi)[2]);
+				list[i].morton = Resorting::MortonCode64(ct[i][0], ct[i][1], ct[i][2]);
+				list[i].order = i;
+			}
+			const auto morton_compare = [](const sortstruct &a, const sortstruct &b)
+			{
+				return (a.morton < b.morton);
+			};
+			std::sort(list.begin(), list.end(), morton_compare);
+
+			fnew.resize(F.size());
+			for (int i = 0; i < F.size(); i++) {
+				fnew[i] = F[list[i].order];
+			}
+			new2old.resize(F.size());
+
+			for (int i = 0; i < F.size(); i++) {
+				new2old[i] = list[i].order;
+			}
+
+		}
 
 
 		void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox)

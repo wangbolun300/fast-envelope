@@ -40,12 +40,15 @@ namespace fastEnvelope
 
 	void FastEnvelope::init(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const std::vector<Scalar> eps) {
 		std::vector<Vector3i> faces_new;
-
-
-		algorithms::resorting(m_ver, m_faces, faces_new);//resort the facets order
-
+		std::vector<Scalar> epsnew;
+		epsnew.resize(eps.size());
+		std::vector<int> new2old;
+		algorithms::resorting(m_ver, m_faces, faces_new, new2old);//resort the facets order
+		for (int i = 0; i < eps.size(); i++) {
+			epsnew[i] = eps[new2old[i]];
+		}
 		//algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, eps);
-		algorithms::halfspace_generation(m_ver, faces_new, halfspace, cornerlist, eps);
+		algorithms::halfspace_generation(m_ver, faces_new, halfspace, cornerlist, epsnew);
 
 		tree.init(cornerlist);
 

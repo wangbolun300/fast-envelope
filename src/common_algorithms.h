@@ -14,7 +14,7 @@ namespace fastEnvelope {
 		 Vector2 to_2d(const Vector3 &p, int t);
 		 //resort the facets using Morton's code
 		 void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew);
-
+		 void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew, std::vector<int>& new2old);
 		 void seg_cube(const Vector3 &p1, const Vector3 &p2, const Scalar &width, std::array<Vector3, 8> &envbox);
 		 
 		 void halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
