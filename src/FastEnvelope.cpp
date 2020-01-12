@@ -1,11 +1,12 @@
 #include <fastenvelope/FastEnvelope.h>
 #include <fastenvelope/Predicates.hpp>
+#ifdef ENVELOPE_WITH_GMP
 #include <fastenvelope/Rational.hpp>
+#endif
 #include<fastenvelope/common_algorithms.h>
 #include <igl/Timer.h>
 #include <fstream>
-//double timettt = 0;
-#define USE_RATIONAL_COMPUTATION
+//double timettt = 0
 
 namespace fastEnvelope
 {
@@ -14,6 +15,7 @@ namespace fastEnvelope
 		//std::cout << "time for ttt " << timettt << std::endl;
 	}
 
+#ifdef ENVELOPE_WITH_GMP
 	static const   std::function<int(fastEnvelope::Rational)> check_rational = [](fastEnvelope::Rational v) {
 
 		if (v.get_sign() > 0)
@@ -23,6 +25,7 @@ namespace fastEnvelope
 		return 0;
 
 	};
+#endif
 
 	FastEnvelope::FastEnvelope(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, const Scalar eps)
 	{
@@ -189,7 +192,7 @@ namespace fastEnvelope
 					if (!cut) continue;
 					
 					for (int j = 0; j < cidl.size(); j++) {
-#ifdef USE_RATIONAL_COMPUTATION
+#ifdef ENVELOPE_WITH_GMP
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
 							idlist, jump1, check_id);
@@ -203,7 +206,7 @@ namespace fastEnvelope
 
 						if (inter == 1)
 						{
-#ifdef USE_RATIONAL_COMPUTATION
+#ifdef ENVELOPE_WITH_GMP
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
 								halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
 								prismindex, jump1, check_id);
@@ -294,7 +297,7 @@ namespace fastEnvelope
 					tti = algorithms::seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
 						halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2]);
 					if (tti != FE_CUT_FACE) continue;
-#ifdef USE_RATIONAL_COMPUTATION
+#ifdef ENVELOPE_WITH_GMP
 					inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
 						halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
 						idlist, idlistorder, jump1, check_id);
@@ -307,7 +310,7 @@ namespace fastEnvelope
 
 					if (inter == 1)
 					{
-#ifdef USE_RATIONAL_COMPUTATION
+#ifdef ENVELOPE_WITH_GMP
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
 							filted_intersection, intersect_face, coverlist, jump1, check_id);
@@ -380,7 +383,7 @@ namespace fastEnvelope
 				for (int k = 0; k < intersect_face[queue[i]].size(); k++) {
 					for (int h = 0; h < intersect_face[queue[j]].size(); h++) {
 						
-#ifdef USE_RATIONAL_COMPUTATION
+#ifdef ENVELOPE_WITH_GMP
 						cut = is_3_triangle_cut_Rational(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -455,7 +458,7 @@ namespace fastEnvelope
 #endif
 						
 
-#ifdef USE_RATIONAL_COMPUTATION
+#ifdef ENVELOPE_WITH_GMP
 						inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -482,7 +485,7 @@ namespace fastEnvelope
 
 						if (inter == 1) {
 
-#ifdef USE_RATIONAL_COMPUTATION
+#ifdef ENVELOPE_WITH_GMP
 							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(triangle,
 								halfspace[jump1][intersect_face[queue[i]][k]][0],
 								halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -772,6 +775,9 @@ namespace fastEnvelope
 
 		return OUT_PRISM;
 	}
+
+
+#ifdef ENVELOPE_WITH_GMP
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_Rational (
 		const Vector3 &segpoint0, const Vector3 &segpoint1,
 		const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2,
@@ -836,6 +842,7 @@ namespace fastEnvelope
 		}
 		return OUT_PRISM;
 	}
+#endif
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
@@ -1082,6 +1089,7 @@ namespace fastEnvelope
 		return OUT_PRISM;
 	}
 
+#ifdef ENVELOPE_WITH_GMP
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
@@ -1190,6 +1198,7 @@ namespace fastEnvelope
 
 		return OUT_PRISM;
 	}
+#endif
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
@@ -1436,6 +1445,7 @@ namespace fastEnvelope
 		return OUT_PRISM;
 	}
 
+#ifdef ENVELOPE_WITH_GMP
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over_Rational(
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
@@ -1544,7 +1554,7 @@ namespace fastEnvelope
 
 		return OUT_PRISM;
 	}
-
+#endif
 
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
 		const std::array<Vector3, 3> &triangle,
@@ -1779,7 +1789,7 @@ namespace fastEnvelope
 
 	}
 
-
+#ifdef ENVELOPE_WITH_GMP
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(
 		const std::array<Vector3, 3> &triangle,
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
@@ -1901,7 +1911,7 @@ namespace fastEnvelope
 		return OUT_PRISM;
 
 	}
-
+#endif
 
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(
 		const std::array<Vector3, 3> &triangle,
@@ -2403,6 +2413,7 @@ namespace fastEnvelope
 		return true;
 	}
 
+#ifdef ENVELOPE_WITH_GMP
 	bool FastEnvelope::is_3_triangle_cut_Rational(const std::array<Vector3, 3>& triangle,
 		const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22) {
 
@@ -2477,6 +2488,7 @@ namespace fastEnvelope
 
 		return true;
 	}
+#endif
 
 	int FastEnvelope::is_3_triangle_cut_float_fast(
 		const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2,
@@ -2586,7 +2598,7 @@ namespace fastEnvelope
 		{
 			return 0;
 		}
-#ifdef USE_RATIONAL_COMPUTATION
+#ifdef ENVELOPE_WITH_GMP
 		cid = cutp;
 		return 1;
 #endif
@@ -2838,6 +2850,7 @@ namespace fastEnvelope
 		return true;
 	}
 
+#ifdef ENVELOPE_WITH_GMP
 	bool FastEnvelope::is_tpp_on_polyhedra_Rational(
 		const std::array<Vector3, 3> &triangle,
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
@@ -2900,7 +2913,7 @@ namespace fastEnvelope
 		
 		return true;
 	}
-
+#endif
 
 	bool FastEnvelope::is_seg_cut_polyhedra(const int &cindex,
 		const Vector3 &seg0, const Vector3 &seg1, std::vector<int> &cid) const
@@ -2948,7 +2961,7 @@ namespace fastEnvelope
 		{
 			return false;
 		}
-#ifdef USE_RATIONAL_COMPUTATION
+#ifdef ENVELOPE_WITH_GMP
 		cid = cutp;
 		return true;
 #endif
