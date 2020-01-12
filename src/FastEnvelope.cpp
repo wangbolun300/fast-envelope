@@ -1,11 +1,11 @@
 #include <fastenvelope/FastEnvelope.h>
 #include <fastenvelope/Predicates.hpp>
-//#include <fastenvelope/Logger.hpp>
+#include <fastenvelope/Rational.hpp>
 #include<fastenvelope/common_algorithms.h>
 #include <igl/Timer.h>
 #include <fstream>
 //double timettt = 0;
-
+#define USE_RATIONAL_COMPUTATION
 
 namespace fastEnvelope
 {
@@ -14,6 +14,15 @@ namespace fastEnvelope
 		//std::cout << "time for ttt " << timettt << std::endl;
 	}
 
+	static const   std::function<int(fastEnvelope::Rational)> check_rational = [](fastEnvelope::Rational v) {
+
+		if (v.get_sign() > 0)
+			return 1;
+		if (v.get_sign() < 0)
+			return -1;
+		return 0;
+
+	};
 
 	FastEnvelope::FastEnvelope(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, const Scalar eps)
 	{
@@ -666,6 +675,70 @@ namespace fastEnvelope
 
 		return OUT_PRISM;
 	}
+	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_Rational (
+		const Vector3 &segpoint0, const Vector3 &segpoint1,
+		const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2,
+		const std::vector<unsigned int> &prismindex, const int &jump, int &id) const {
+		
+
+		Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
+			t00(triangle0[0]), t01(triangle0[1]), t02(triangle0[2]),
+			t10(triangle1[0]), t11(triangle1[1]), t12(triangle1[2]),
+			t20(triangle2[0]), t21(triangle2[1]), t22(triangle2[2]),
+			a11, a12, a13, d;
+		bool precom =
+			orient3D_LPI_prefilter_multiprecision(
+				s00, s01, s02, s10, s11, s12,
+				t00, t01, t02, t10, t11, t12, t20, t21, t22,
+				a11, a12, a13, d, check_rational);
+		
+		if (precom == false) {
+			return 2;
+		}
+		int tot;
+		int ori;
+
+		for (int i = 0; i < prismindex.size(); i++)
+		{
+			if (prismindex[i] == jump) continue;
+
+			
+			tot = 0;
+
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
+				Rational
+					h00(halfspace[prismindex[i]][j][0][0]), h01(halfspace[prismindex[i]][j][0][1]), h02(halfspace[prismindex[i]][j][0][2]),
+					h10(halfspace[prismindex[i]][j][1][0]), h11(halfspace[prismindex[i]][j][1][1]), h12(halfspace[prismindex[i]][j][1][2]),
+					h20(halfspace[prismindex[i]][j][2][0]), h21(halfspace[prismindex[i]][j][2][1]), h22(halfspace[prismindex[i]][j][2][2]);
+				ori =
+					orient3D_LPI_postfilter_multiprecision(
+						a11, a12, a13, d,
+						s00, s01, s02,
+						h00, h01, h02, h10, h11, h12, h20, h21, h22,check_rational);
+
+				if (ori == 1)
+				{
+					break;
+				}
+				if (ori == 0)
+				{
+					break;
+				}
+
+				else if (ori == -1)
+				{
+					tot++;
+				}
+
+			}
+			if (tot == halfspace[prismindex[i]].size())
+			{
+				id = i;
+				return IN_PRISM;
+			}	
+		}
+		return OUT_PRISM;
+	}
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
@@ -905,6 +978,114 @@ namespace fastEnvelope
 					return IN_PRISM;
 				}
 			}
+		}
+
+		return OUT_PRISM;
+	}
+
+	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(
+		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
+		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
+		const std::vector<std::vector<int>>& intersect_face, const int &jump, int &id) const {
+		
+		Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
+			t00(triangle0[0]), t01(triangle0[1]), t02(triangle0[2]),
+			t10(triangle1[0]), t11(triangle1[1]), t12(triangle1[2]),
+			t20(triangle2[0]), t21(triangle2[1]), t22(triangle2[2]),
+			a11, a12, a13, d;
+		bool precom =
+			orient3D_LPI_prefilter_multiprecision(
+				s00, s01, s02, s10, s11, s12,
+				t00, t01, t02, t10, t11, t12, t20, t21, t22,
+				a11, a12, a13, d, check_rational);
+
+		if (precom == false) {
+			return 2;
+		}
+		
+		int tot, fid;
+		int ori;
+
+		for (int i = 0; i < prismindex.size(); i++)
+		{
+			if (prismindex[i] == jump) continue;
+
+			tot = 0; fid = 0;
+
+
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
+				if (intersect_face[i][fid] == j)
+				{
+					if (fid + 1 < intersect_face[i].size()) fid++;
+				}
+				else continue;
+
+				Rational
+					h00(halfspace[prismindex[i]][j][0][0]), h01(halfspace[prismindex[i]][j][0][1]), h02(halfspace[prismindex[i]][j][0][2]),
+					h10(halfspace[prismindex[i]][j][1][0]), h11(halfspace[prismindex[i]][j][1][1]), h12(halfspace[prismindex[i]][j][1][2]),
+					h20(halfspace[prismindex[i]][j][2][0]), h21(halfspace[prismindex[i]][j][2][1]), h22(halfspace[prismindex[i]][j][2][2]);
+				ori =
+					orient3D_LPI_postfilter_multiprecision(
+						a11, a12, a13, d,
+						s00, s01, s02,
+						h00, h01, h02, h10, h11, h12, h20, h21, h22, check_rational);
+
+
+				if (ori == 1)
+				{
+					break;
+				}
+				if (ori == 0)
+				{
+					break;
+				}
+
+				else if (ori == -1)
+				{
+					tot++;
+				}
+
+			}
+			if (ori == 1 || ori == 0) continue;
+			fid = 0;
+			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
+				if (intersect_face[i][fid] == j)
+				{
+					if (fid + 1 < intersect_face[i].size()) fid++;
+					continue;
+				}
+				Rational
+					h00(halfspace[prismindex[i]][j][0][0]), h01(halfspace[prismindex[i]][j][0][1]), h02(halfspace[prismindex[i]][j][0][2]),
+					h10(halfspace[prismindex[i]][j][1][0]), h11(halfspace[prismindex[i]][j][1][1]), h12(halfspace[prismindex[i]][j][1][2]),
+					h20(halfspace[prismindex[i]][j][2][0]), h21(halfspace[prismindex[i]][j][2][1]), h22(halfspace[prismindex[i]][j][2][2]);
+				ori =
+					orient3D_LPI_postfilter_multiprecision(
+						a11, a12, a13, d,
+						s00, s01, s02,
+						h00, h01, h02, h10, h11, h12, h20, h21, h22, check_rational);
+
+				if (ori == 1)
+				{
+					break;
+				}
+				if (ori == 0)
+				{
+					break;
+				}
+
+				else if (ori == -1)
+				{
+					tot++;
+				}
+
+			}
+			if (ori == 1 || ori == 0) continue;
+			if (tot == halfspace[prismindex[i]].size())
+			{
+				id = i;
+				return IN_PRISM;
+			}
+
 		}
 
 		return OUT_PRISM;

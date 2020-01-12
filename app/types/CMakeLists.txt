@@ -1,5 +1,5 @@
 set(SOURCES
-	Rational.hpp
+	#Rational.hpp
 )
 
 prepend_current_path(SOURCES)
