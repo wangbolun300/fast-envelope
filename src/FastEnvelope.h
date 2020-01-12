@@ -88,6 +88,11 @@ namespace fastEnvelope {
 			const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>&intersect_face, const int &jump1, const int &jump2,
 			int &id) const;
 
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(
+			const std::array<Vector3, 3> &triangle,
+			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
+			const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>&intersect_face, const int &jump1, const int &jump2,
+			int &id) const;
 		static bool is_3_triangle_cut_pure_multiprecision(const std::array<Vector3, 3> &triangle, TPI_exact_suppvars &s);
 
 		
@@ -108,12 +113,16 @@ namespace fastEnvelope {
 			const Vector3& tri0, const Vector3& tri1, const Vector3& tri2,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12,
 			const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
-
+		static bool FastEnvelope::is_3_triangle_cut_Rational(const std::array<Vector3, 3>& triangle,
+			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
 		int is_triangle_cut_envelope_polyhedra(const int &cindex,
 			const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, std::vector<int> &cid) const;
 		bool is_seg_cut_polyhedra(const int &cindex,
 			const Vector3 &seg0, const Vector3 &seg1, std::vector<int> &cid) const;
-
+		bool is_tpp_on_polyhedra_Rational(
+			const std::array<Vector3, 3> &triangle,
+			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
+			const int &prismid, const int &faceid)const;
 		template<typename T>
 		static bool orient3D_LPI_prefilter_multiprecision(
 			const T& px, const T& py, const T& pz, const T& qx, const T& qy, const T& qz,
