@@ -189,16 +189,30 @@ namespace fastEnvelope
 					if (!cut) continue;
 					
 					for (int j = 0; j < cidl.size(); j++) {
-
-						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(triangle[triseg[k][0]], triangle[triseg[k][1]],
+#ifdef USE_RATIONAL_COMPUTATION
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
 							idlist, jump1, check_id);
 
+#else
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(triangle[triseg[k][0]], triangle[triseg[k][1]],
+							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
+							idlist, jump1, check_id);
+#endif
+						
+
 						if (inter == 1)
 						{
+#ifdef USE_RATIONAL_COMPUTATION
+							inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
+								halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
+								prismindex, jump1, check_id);
+#else
 							inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(triangle[triseg[k][0]], triangle[triseg[k][1]],
 								halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
 								prismindex, jump1, check_id);
+#endif
+							
 
 							if (inter == 1) {
 
@@ -226,7 +240,7 @@ namespace fastEnvelope
 				triangle[0], triangle[1], triangle[2], cidl);
 			if (tti == 2) {
 
-				return false;
+				return false;//totally inside of this polyhedron
 			}
 			else if (tti == 1 && cidl.size() > 0) {
 
@@ -251,7 +265,7 @@ namespace fastEnvelope
 		std::vector<bool> coverlist;
 		coverlist.resize(filted_intersection.size());
 		for (int i = 0; i < coverlist.size(); i++) {
-			coverlist[i] = false;
+			coverlist[i] = false;// coverlist shows if the element in filtered_intersection is one of the current covers
 		}
 		queue.emplace_back(0);//queue contains the id in filted_intersection
 		idlist.emplace_back(filted_intersection[queue[0]]);// idlist contains the id in prismid//it is fine maybe it is not really intersected
@@ -280,16 +294,30 @@ namespace fastEnvelope
 					tti = algorithms::seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
 						halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2]);
 					if (tti != FE_CUT_FACE) continue;
+#ifdef USE_RATIONAL_COMPUTATION
+					inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
+						halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
+						idlist, idlistorder, jump1, check_id);
+#else
 					inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle[triseg[k][0]], triangle[triseg[k][1]],
 						halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
 						idlist, idlistorder, jump1, check_id);
+#endif
+					
 
 					if (inter == 1)
 					{
+#ifdef USE_RATIONAL_COMPUTATION
+						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
+							halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
+							filted_intersection, intersect_face, coverlist, jump1, check_id);
+#else
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
 							filted_intersection, intersect_face, coverlist, jump1, check_id);
-						assert(inter != 2);// the point must exist
+#endif
+						
+						assert(inter != 2);// the point must exist because it is a seg-halfplane intersection
 						if (inter == 1) {
 
 							return true;
@@ -351,8 +379,44 @@ namespace fastEnvelope
 					continue;
 				for (int k = 0; k < intersect_face[queue[i]].size(); k++) {
 					for (int h = 0; h < intersect_face[queue[j]].size(); h++) {
-						//igl::Timer timer;
-						//timer.start();
+						
+#ifdef USE_RATIONAL_COMPUTATION
+						cut = is_3_triangle_cut_Rational(triangle,
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
+
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2]);
+
+						//timettt += timer.getElapsedTimeInSec();
+						if (!cut) continue;
+
+
+						cut = is_tpp_on_polyhedra_Rational(triangle,
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
+
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2], jump1, intersect_face[queue[i]][k]);
+
+						if (!cut) continue;
+
+
+						cut = is_tpp_on_polyhedra_Rational(triangle,
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
+
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2], jump2, intersect_face[queue[j]][h]);
+
+						if (!cut) continue;
+#else
 						cut = is_3_triangle_cut(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -388,9 +452,20 @@ namespace fastEnvelope
 							halfspace[jump2][intersect_face[queue[j]][h]][2], jump2, intersect_face[queue[j]][h]);
 
 						if (!cut) continue;
+#endif
+						
 
+#ifdef USE_RATIONAL_COMPUTATION
+						inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(triangle,
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2],
+							idlist, idlistorder, jump1, jump2, check_id);
+#else
 						inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -400,10 +475,24 @@ namespace fastEnvelope
 							halfspace[jump2][intersect_face[queue[j]][h]][1],
 							halfspace[jump2][intersect_face[queue[j]][h]][2],
 							idlist, idlistorder, jump1, jump2, check_id);
+#endif
+
+						
 
 
 						if (inter == 1) {
 
+#ifdef USE_RATIONAL_COMPUTATION
+							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(triangle,
+								halfspace[jump1][intersect_face[queue[i]][k]][0],
+								halfspace[jump1][intersect_face[queue[i]][k]][1],
+								halfspace[jump1][intersect_face[queue[i]][k]][2],
+
+								halfspace[jump2][intersect_face[queue[j]][h]][0],
+								halfspace[jump2][intersect_face[queue[j]][h]][1],
+								halfspace[jump2][intersect_face[queue[j]][h]][2],
+								neighbours, neighbour_facets, jump1, jump2, check_id);
+#else
 							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(triangle,
 								halfspace[jump1][intersect_face[queue[i]][k]][0],
 								halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -413,6 +502,8 @@ namespace fastEnvelope
 								halfspace[jump2][intersect_face[queue[j]][h]][1],
 								halfspace[jump2][intersect_face[queue[j]][h]][2],
 								neighbours, neighbour_facets, neighbour_cover, jump1, jump2, check_id);
+#endif
+							
 
 
 							if (inter == 1) {
@@ -423,7 +514,7 @@ namespace fastEnvelope
 								idlistorder.emplace_back(intersect_face[list[check_id]]);
 								queue.emplace_back(list[check_id]);
 								idlist.emplace_back(filted_intersection[list[check_id]]);
-								coverlist[list[check_id]] = true;
+								coverlist[list[check_id]] = true;//TODO can we upload local_cover_list here? no, because it all depends on list[]
 							}
 						}
 					}
@@ -720,7 +811,7 @@ namespace fastEnvelope
 					orient3D_LPI_postfilter_multiprecision(
 						a11, a12, a13, d,
 						s00, s01, s02,
-						h00, h01, h02, h10, h11, h12, h20, h21, h22,check_rational);
+						h00, h01, h02, h10, h11, h12, h20, h21, h22, check_rational);
 
 				if (ori == 1)
 				{
