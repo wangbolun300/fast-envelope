@@ -122,7 +122,7 @@ namespace fastEnvelope {
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12,
 			const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
 #ifdef ENVELOPE_WITH_GMP
-		static bool FastEnvelope::is_3_triangle_cut_Rational(const std::array<Vector3, 3>& triangle,
+		static bool is_3_triangle_cut_Rational(const std::array<Vector3, 3>& triangle,
 			const Vector3& facet10, const Vector3& facet11, const Vector3& facet12, const Vector3& facet20, const Vector3& facet21, const Vector3& facet22);
 #endif
 		int is_triangle_cut_envelope_polyhedra(const int &cindex,
