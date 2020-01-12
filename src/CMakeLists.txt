@@ -9,9 +9,11 @@ Morton.cpp
         Types.hpp
 #common_algorithms.cpp
 common_algorithms.h
-Rational.hpp
-
 )
+
+if(ENVELOPE_WITH_GMP)
+SET(SOURCES ${SOURCES} Rational.hpp)
+endif()
 
 prepend_current_path(SOURCES)
 fast_envelope_copy_headers(${SOURCES})

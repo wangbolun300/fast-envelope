@@ -54,7 +54,7 @@ option(FAST_ENVELOPE_ENABLE_TBB        			"Enable TBB"                    ON)
 # option(FAST_ENVELOPE_USE_FLOAT          		"Use floats instead of double"  OFF)
 option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES        "Use whole Geogram for predicates"        OFF)
 option(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES    "Use Geogram predicates only"             ON)
-
+option(FAST_ENVELOPE_WITH_GMP						"Use gmp to have rational predicates"	  ON)
 
 # Sanitizer options
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
@@ -220,6 +220,17 @@ target_link_libraries(${PROJECT_NAME} PRIVATE IndirectPredicates)
 # Sources
 add_subdirectory(src)
 
+if(FAST_ENVELOPE_WITH_GMP)
+	find_package(GMP)
+
+	IF(NOT ${GMP_FOUND})
+			MESSAGE(FATAL_ERROR "Cannot find GMP")
+	ENDIF()
+	target_include_directories(${PROJECT_NAME} PUBLIC ${GMP_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} PUBLIC ${GMP_LIBRARIES})
+	target_compile_definitions(${PROJECT_NAME} PUBLIC ENVELOPE_WITH_GMP)
+
+endif()
 
 
 ################################################################################
@@ -231,13 +242,7 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	add_executable(${PROJECT_NAME}_bin app/main.cpp)
 	add_subdirectory(app)
 	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
-	find_package(GMP)
-
-	IF(NOT ${GMP_FOUND})
-			MESSAGE(FATAL_ERROR "Cannot find GMP")
-	ENDIF()
-	target_include_directories(${PROJECT_NAME}_bin PUBLIC ${GMP_INCLUDE_DIRS})
-	target_link_libraries(${PROJECT_NAME}_bin PUBLIC ${GMP_LIBRARIES})
+	
 
 	if(NOT FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
 		# Geogram
