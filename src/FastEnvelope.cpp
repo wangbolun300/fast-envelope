@@ -177,11 +177,17 @@ namespace fastEnvelope
 			for (int i = 0; i < queue.size(); i++) {
 
 				jump1 = prismindex[queue[i]];
-
+				int seg_inside = 0;
 				for (int k = 0; k < 3; k++) {
+
 					cut = is_seg_cut_polyhedra(jump1, triangle[triseg[k][0]], triangle[triseg[k][1]], cidl);
-					if (cut&&cidl.size() == 0)continue;
+					if (cut&&cidl.size() == 0) {
+						seg_inside++;
+						if (seg_inside == 3) return false;// 3 segs are all totally inside of some polyhedrons
+						continue;// means this seg is inside, check next seg
+					}
 					if (!cut) continue;
+					
 					for (int j = 0; j < cidl.size(); j++) {
 
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(triangle[triseg[k][0]], triangle[triseg[k][1]],
@@ -479,7 +485,7 @@ namespace fastEnvelope
 			jump1 = prismindex[queue[i]];
 
 			cut = is_seg_cut_polyhedra(jump1, seg0, seg1, cidl);
-			if (cut&&cidl.size() == 0)continue;
+			if (cut&&cidl.size() == 0) return false;
 			if (!cut) continue;
 			for (int j = 0; j < cidl.size(); j++) {
 
@@ -2456,9 +2462,9 @@ namespace fastEnvelope
 			{
 				return 0;
 			}
-			if (o1[i] == -1) ct1++;
-			if (o2[i] == -1) ct2++;
-			if (o3[i] == -1) ct3++;
+			if (o1[i] == 1) ct1++;
+			if (o2[i] == 1) ct2++;
+			if (o3[i] == 1) ct3++;// if ct1 or ct2 or ct3 >0, then NOT totally inside, otherwise, totally inside
 			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 1)
 			{
 				return 0;
@@ -2471,17 +2477,17 @@ namespace fastEnvelope
 			{
 				return 0;
 			}
-			if (o1[i] == 0 && o2[i] == 0 && o3[i] == 0)
-			{
-				return 0;
-			}
+			//if (o1[i] == 0 && o2[i] == 0 && o3[i] == 0)
+			//{
+			//	//return 0;// TODO dangerous, there is another case that the triangle is inside
+			//}
 
 			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)
 				cutp.emplace_back(i);
 		}
 		if (cutp.size() == 0) {
-			if (ct1 == halfspace[cindex].size()|| ct2 == halfspace[cindex].size()|| ct3 == halfspace[cindex].size()) {
-				return 2;
+			if (ct1 == 0 && ct2 == 0 && ct3 == 0) {
+				return 2;// totally inside
 			}
 		}
 
@@ -2489,7 +2495,10 @@ namespace fastEnvelope
 		{
 			return 0;
 		}
-
+#ifdef USE_RATIONAL_COMPUTATION
+		cid = cutp;
+		return 1;
+#endif
 		LPI_filtered_suppvars sl;
 		std::array<Scalar, 2> seg00, seg01, seg02, seg10, seg11, seg12;
 		for (int i = 0; i < cutp.size(); i++)
@@ -2645,7 +2654,7 @@ namespace fastEnvelope
 			if (cut[i] == true)
 				cid.emplace_back(i);
 		}
-
+		if (cid.size() == 0) return 0;// not cut and facets, and not totally inside, then not intersected
 		return 1;
 	}
 	bool FastEnvelope::is_tpp_on_polyhedra(
@@ -2817,7 +2826,7 @@ namespace fastEnvelope
 		std::vector<int> o1, o2;
 		o1.resize(halfspace[cindex].size());
 		o2.resize(halfspace[cindex].size());
-		int ori = 0, count = 0;//ori=0 to avoid the case that there is only one cut plane
+		int ori = 0, ct1 = 0, ct2 = 0;//ori=0 to avoid the case that there is only one cut plane
 		std::vector<int> cutp;
 
 		for (int i = 0; i < halfspace[cindex].size(); i++)
@@ -2839,14 +2848,19 @@ namespace fastEnvelope
 
 			if (o1[i] * o2[i] == -1)
 				cutp.emplace_back(i);
-			if (o1[i] == -1) count++;
+			if (o1[i] == 1) ct1++;
+			if (o2[i] == 1) ct2++;// if ct1 or ct2 >0, then NOT totally inside
 		}
-		if (cutp.size() == 0 && count == halfspace[cindex].size()) return true;
+		if (cutp.size() == 0 && ct1 == 0 && ct2 == 0) return true;// no intersected planes, and both two points are in one facet, 
+																	//then totally inside
 		if (cutp.size() == 0)
 		{
 			return false;
 		}
-
+#ifdef USE_RATIONAL_COMPUTATION
+		cid = cutp;
+		return true;
+#endif
 		LPI_filtered_suppvars sf;
 		for (int i = 0; i < cutp.size(); i++)
 		{
@@ -2890,7 +2904,7 @@ namespace fastEnvelope
 			if (cut[i] == true)
 				cid.emplace_back(i);
 		}
-
+		if (cid.size() == 0) return false;// if no intersection points, and segment not totally inside, then not intersected
 		return true;
 	}
 	bool FastEnvelope::point_out_prism(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump) const
