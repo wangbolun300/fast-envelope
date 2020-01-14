@@ -2833,8 +2833,8 @@ namespace fastEnvelope
 		Vector3 n = (triangle[0] - triangle[1]).cross(triangle[0] - triangle[2]) + triangle[0];
 
 		if (Predicates::orient_3d(n, triangle[0], triangle[1], triangle[2]) == 0) {
-			std::cout << "Degeneration happens" << std::endl;
-
+			//std::cout << "Degeneration happens" << std::endl;
+			n = { {Vector3(rand(), rand(), rand())} };
 		}
 		Rational
 			t00, t01, t02,
