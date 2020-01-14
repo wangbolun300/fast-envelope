@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bw1760/rational/fast-envelope/indirectPredicates/ip_filtered.cpp
+stdio.h
+-
+stdlib.h
+-
+stdint.h
+-
+float.h
+-
+math.h
+-
+fenv.h
+-
+ip_filtered.h
+/home/bw1760/rational/fast-envelope/indirectPredicates/ip_filtered.h
+fenv.h
+-
+fpu_control.h
+-
+ip_filtered_ex.cpp
+/home/bw1760/rational/fast-envelope/indirectPredicates/ip_filtered_ex.cpp
+
+/home/bw1760/rational/fast-envelope/indirectPredicates/ip_filtered.h
+math.h
+-
+ip_filtered_ex.h
+/home/bw1760/rational/fast-envelope/indirectPredicates/ip_filtered_ex.h
+
+/home/bw1760/rational/fast-envelope/indirectPredicates/ip_filtered_ex.cpp
+
+/home/bw1760/rational/fast-envelope/indirectPredicates/ip_filtered_ex.h
+math.h
+-
+

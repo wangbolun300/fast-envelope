@@ -1,0 +1,11 @@
+#define __TBB_VERSION_STRINGS(N) \
+#N": BUILD_HOST         Linux" ENDL \
+#N": BUILD_OS           Linux-3.10.0-514.10.2.el7.x86_64" ENDL \
+#N": BUILD_KERNEL       3.10.0-514.10.2.el7.x86_64" ENDL \
+#N": BUILD_GCC          GNU" ENDL \
+#N": BUILD_LIBC         Unknown" ENDL \
+#N": BUILD_LD           Unknown" ENDL \
+#N": BUILD_TARGET       Unknown" ENDL \
+#N": BUILD_COMMAND      Unknown" ENDL
+
+#define __TBB_DATETIME "Unknown"

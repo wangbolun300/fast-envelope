@@ -1,0 +1,2 @@
+/usr/bin/ar qc libIndirectPredicates.a  CMakeFiles/IndirectPredicates.dir/indirectPredicates/ip_filtered.cpp.o
+/usr/bin/ranlib libIndirectPredicates.a

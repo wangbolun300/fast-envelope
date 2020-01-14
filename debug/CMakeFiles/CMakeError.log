@@ -1,0 +1,66 @@
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wswitch-unreachable failed with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_16fa7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_16fa7.dir/build.make CMakeFiles/cmTC_16fa7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_16fa7.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wswitch-unreachable   -Wswitch-unreachable -o CMakeFiles/cmTC_16fa7.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[Kg++:[m[K [01;31m[Kerror: [m[Kunrecognized command line option '[01m[K-Wswitch-unreachable[m[K'; did you mean '[01m[K-fsanitize=unreachable[m[K'?
+gmake[1]: *** [CMakeFiles/cmTC_16fa7.dir/src.cxx.o] Error 1
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_16fa7/fast] Error 2
+
+Source file was:
+int main() { return 0; }
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_c6e5a/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_c6e5a.dir/build.make CMakeFiles/cmTC_c6e5a.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_c6e5a.dir/CheckSymbolExists.c.o
+/share/apps/gcc/6.3.0/bin/gcc   -fdiagnostics-color=always -fPIC  -fPIE   -o CMakeFiles/cmTC_c6e5a.dir/CheckSymbolExists.c.o   -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_c6e5a
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c6e5a.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc  -fdiagnostics-color=always -fPIC     -rdynamic CMakeFiles/cmTC_c6e5a.dir/CheckSymbolExists.c.o  -o cmTC_c6e5a 
+CMakeFiles/cmTC_c6e5a.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_c6e5a] Error 1
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_c6e5a/fast] Error 2
+
+File /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_642af/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_642af.dir/build.make CMakeFiles/cmTC_642af.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_642af.dir/CheckFunctionExists.c.o
+/share/apps/gcc/6.3.0/bin/gcc   -fdiagnostics-color=always -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create -fPIE   -o CMakeFiles/cmTC_642af.dir/CheckFunctionExists.c.o   -c /share/apps/cmake/3.11.4/intel/share/cmake-3.11/Modules/CheckFunctionExists.c
+Linking C executable cmTC_642af
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_642af.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc  -fdiagnostics-color=always -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_642af.dir/CheckFunctionExists.c.o  -o cmTC_642af -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_642af] Error 1
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_642af/fast] Error 2
+
+

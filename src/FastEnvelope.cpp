@@ -549,7 +549,7 @@ namespace fastEnvelope
 		};
 		bool out, cut;
 		int inter, check_id;
-
+		jump1 = -1;
 		for (int i = 0; i < 3; i++) {
 			out = point_out_prism(triangle[i], prismindex, jump1);
 

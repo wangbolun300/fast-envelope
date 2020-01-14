@@ -11,7 +11,7 @@ Morton.cpp
 common_algorithms.h
 )
 
-if(ENVELOPE_WITH_GMP)
+if(FAST_ENVELOPE_WITH_GMP)
 SET(SOURCES ${SOURCES} Rational.hpp)
 endif()
 

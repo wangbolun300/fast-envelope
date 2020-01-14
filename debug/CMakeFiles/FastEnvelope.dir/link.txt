@@ -1,0 +1,2 @@
+/usr/bin/ar qc libFastEnvelope.a  CMakeFiles/FastEnvelope.dir/src/common_algorithms.cpp.o CMakeFiles/FastEnvelope.dir/src/AABB.cpp.o CMakeFiles/FastEnvelope.dir/src/FastEnvelope.cpp.o CMakeFiles/FastEnvelope.dir/src/Morton.cpp.o CMakeFiles/FastEnvelope.dir/src/external/predicates.c.o CMakeFiles/FastEnvelope.dir/src/external/Predicates.cpp.o CMakeFiles/FastEnvelope.dir/src/external/triangle_triangle_intersection.cpp.o
+/usr/bin/ranlib libFastEnvelope.a

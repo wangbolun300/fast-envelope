@@ -1,0 +1,8 @@
+\\V (O |R |P /A |L |I |N |E
+(C) Bruno Levy, INRIA - ALICE, 2012-2020
+
+Vorpaline Version: 1.6.8
+Build Date: 2020-01-14 17:19:56
+Build Number: 
+SVN Revision: 
+

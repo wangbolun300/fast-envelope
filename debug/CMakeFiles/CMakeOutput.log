@@ -1,0 +1,1944 @@
+The system is: Linux - 3.10.0-514.10.2.el7.x86_64 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /share/apps/gcc/6.3.0/bin/gcc 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is GNU, found in "/home/bw1760/rational/fast-envelope/debug/CMakeFiles/3.11.4/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /share/apps/gcc/6.3.0/bin/g++ 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is GNU, found in "/home/bw1760/rational/fast-envelope/debug/CMakeFiles/3.11.4/CompilerIdCXX/a.out"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_c7d4c/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_c7d4c.dir/build.make CMakeFiles/cmTC_c7d4c.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_c7d4c.dir/testCCompiler.c.o
+/share/apps/gcc/6.3.0/bin/gcc    -o CMakeFiles/cmTC_c7d4c.dir/testCCompiler.c.o   -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTC_c7d4c
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c7d4c.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc      -rdynamic CMakeFiles/cmTC_c7d4c.dir/testCCompiler.c.o  -o cmTC_c7d4c 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_513f7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_513f7.dir/build.make CMakeFiles/cmTC_513f7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_513f7.dir/CMakeCCompilerABI.c.o
+/share/apps/gcc/6.3.0/bin/gcc    -o CMakeFiles/cmTC_513f7.dir/CMakeCCompilerABI.c.o   -c /share/apps/cmake/3.11.4/intel/share/cmake-3.11/Modules/CMakeCCompilerABI.c
+Linking C executable cmTC_513f7
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_513f7.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc     -v -rdynamic CMakeFiles/cmTC_513f7.dir/CMakeCCompilerABI.c.o  -o cmTC_513f7 
+Using built-in specs.
+COLLECT_GCC=/share/apps/gcc/6.3.0/bin/gcc
+COLLECT_LTO_WRAPPER=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper
+Target: x86_64-centos-linux
+Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib
+Thread model: posix
+gcc version 6.3.0 (GCC) 
+COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/
+LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_513f7' '-mtune=generic' '-march=x86-64'
+ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2 -plugin /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so -plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccfs3J0u.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_513f7 /lib/../lib64/crt1.o /lib/../lib64/crti.o /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../.. CMakeFiles/cmTC_513f7.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o /lib/../lib64/crtn.o
+COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_513f7' '-mtune=generic' '-march=x86-64'
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:"/usr/bin/gmake" "cmTC_513f7/fast"]
+  ignore line: [/usr/bin/gmake -f CMakeFiles/cmTC_513f7.dir/build.make CMakeFiles/cmTC_513f7.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp']
+  ignore line: [Building C object CMakeFiles/cmTC_513f7.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/share/apps/gcc/6.3.0/bin/gcc    -o CMakeFiles/cmTC_513f7.dir/CMakeCCompilerABI.c.o   -c /share/apps/cmake/3.11.4/intel/share/cmake-3.11/Modules/CMakeCCompilerABI.c]
+  ignore line: [Linking C executable cmTC_513f7]
+  ignore line: [/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_513f7.dir/link.txt --verbose=1]
+  ignore line: [/share/apps/gcc/6.3.0/bin/gcc     -v -rdynamic CMakeFiles/cmTC_513f7.dir/CMakeCCompilerABI.c.o  -o cmTC_513f7 ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/share/apps/gcc/6.3.0/bin/gcc]
+  ignore line: [COLLECT_LTO_WRAPPER=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper]
+  ignore line: [Target: x86_64-centos-linux]
+  ignore line: [Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 6.3.0 (GCC) ]
+  ignore line: [COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/]
+  ignore line: [LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_513f7' '-mtune=generic' '-march=x86-64']
+  link line: [ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2 -plugin /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so -plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccfs3J0u.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_513f7 /lib/../lib64/crt1.o /lib/../lib64/crti.o /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../.. CMakeFiles/cmTC_513f7.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o /lib/../lib64/crtn.o]
+    arg [/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccfs3J0u.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_513f7] ==> ignore
+    arg [/lib/../lib64/crt1.o] ==> ignore
+    arg [/lib/../lib64/crti.o] ==> ignore
+    arg [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o] ==> ignore
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0]
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..]
+    arg [CMakeFiles/cmTC_513f7.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o] ==> ignore
+    arg [/lib/../lib64/crtn.o] ==> ignore
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0] ==> [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0]
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64] ==> [/share/apps/gcc/6.3.0/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..] ==> [/share/apps/gcc/6.3.0/lib]
+  implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+  implicit dirs: [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0;/share/apps/gcc/6.3.0/lib64;/lib64;/usr/lib64;/share/apps/gcc/6.3.0/lib]
+  implicit fwks: []
+
+
+
+
+Detecting C [-std=c11] compiler features compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_b2c6a/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_b2c6a.dir/build.make CMakeFiles/cmTC_b2c6a.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b2c6a.dir/feature_tests.c.o
+/share/apps/gcc/6.3.0/bin/gcc   -std=c11 -o CMakeFiles/cmTC_b2c6a.dir/feature_tests.c.o   -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/feature_tests.c
+Linking C executable cmTC_b2c6a
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b2c6a.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc      -rdynamic CMakeFiles/cmTC_b2c6a.dir/feature_tests.c.o  -o cmTC_b2c6a 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_restrict
+    Feature record: C_FEATURE:1c_static_assert
+    Feature record: C_FEATURE:1c_variadic_macros
+
+
+Detecting C [-std=c99] compiler features compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_bc977/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_bc977.dir/build.make CMakeFiles/cmTC_bc977.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_bc977.dir/feature_tests.c.o
+/share/apps/gcc/6.3.0/bin/gcc   -std=c99 -o CMakeFiles/cmTC_bc977.dir/feature_tests.c.o   -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/feature_tests.c
+Linking C executable cmTC_bc977
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bc977.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc      -rdynamic CMakeFiles/cmTC_bc977.dir/feature_tests.c.o  -o cmTC_bc977 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_restrict
+    Feature record: C_FEATURE:0c_static_assert
+    Feature record: C_FEATURE:1c_variadic_macros
+
+
+Detecting C [-std=c90] compiler features compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_db8d7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_db8d7.dir/build.make CMakeFiles/cmTC_db8d7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_db8d7.dir/feature_tests.c.o
+/share/apps/gcc/6.3.0/bin/gcc   -std=c90 -o CMakeFiles/cmTC_db8d7.dir/feature_tests.c.o   -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/feature_tests.c
+Linking C executable cmTC_db8d7
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_db8d7.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc      -rdynamic CMakeFiles/cmTC_db8d7.dir/feature_tests.c.o  -o cmTC_db8d7 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:0c_restrict
+    Feature record: C_FEATURE:0c_static_assert
+    Feature record: C_FEATURE:0c_variadic_macros
+Determining if the CXX compiler works passed with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_19fd9/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_19fd9.dir/build.make CMakeFiles/cmTC_19fd9.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_19fd9.dir/testCXXCompiler.cxx.o
+/share/apps/gcc/6.3.0/bin/g++     -o CMakeFiles/cmTC_19fd9.dir/testCXXCompiler.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTC_19fd9
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_19fd9.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++       -rdynamic CMakeFiles/cmTC_19fd9.dir/testCXXCompiler.cxx.o  -o cmTC_19fd9 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_007dd/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_007dd.dir/build.make CMakeFiles/cmTC_007dd.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_007dd.dir/CMakeCXXCompilerABI.cpp.o
+/share/apps/gcc/6.3.0/bin/g++     -o CMakeFiles/cmTC_007dd.dir/CMakeCXXCompilerABI.cpp.o -c /share/apps/cmake/3.11.4/intel/share/cmake-3.11/Modules/CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTC_007dd
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_007dd.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++      -v -rdynamic CMakeFiles/cmTC_007dd.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_007dd 
+Using built-in specs.
+COLLECT_GCC=/share/apps/gcc/6.3.0/bin/g++
+COLLECT_LTO_WRAPPER=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper
+Target: x86_64-centos-linux
+Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib
+Thread model: posix
+gcc version 6.3.0 (GCC) 
+COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/
+LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_007dd' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2 -plugin /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so -plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cctgGS6u.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_007dd /lib/../lib64/crt1.o /lib/../lib64/crti.o /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../.. CMakeFiles/cmTC_007dd.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o /lib/../lib64/crtn.o
+COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_007dd' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:"/usr/bin/gmake" "cmTC_007dd/fast"]
+  ignore line: [/usr/bin/gmake -f CMakeFiles/cmTC_007dd.dir/build.make CMakeFiles/cmTC_007dd.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp']
+  ignore line: [Building CXX object CMakeFiles/cmTC_007dd.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/share/apps/gcc/6.3.0/bin/g++     -o CMakeFiles/cmTC_007dd.dir/CMakeCXXCompilerABI.cpp.o -c /share/apps/cmake/3.11.4/intel/share/cmake-3.11/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Linking CXX executable cmTC_007dd]
+  ignore line: [/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_007dd.dir/link.txt --verbose=1]
+  ignore line: [/share/apps/gcc/6.3.0/bin/g++      -v -rdynamic CMakeFiles/cmTC_007dd.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_007dd ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/share/apps/gcc/6.3.0/bin/g++]
+  ignore line: [COLLECT_LTO_WRAPPER=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper]
+  ignore line: [Target: x86_64-centos-linux]
+  ignore line: [Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 6.3.0 (GCC) ]
+  ignore line: [COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/]
+  ignore line: [LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-rdynamic' '-o' 'cmTC_007dd' '-shared-libgcc' '-mtune=generic' '-march=x86-64']
+  link line: [ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2 -plugin /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so -plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cctgGS6u.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_007dd /lib/../lib64/crt1.o /lib/../lib64/crti.o /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../.. CMakeFiles/cmTC_007dd.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o /lib/../lib64/crtn.o]
+    arg [/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/cctgGS6u.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_007dd] ==> ignore
+    arg [/lib/../lib64/crt1.o] ==> ignore
+    arg [/lib/../lib64/crti.o] ==> ignore
+    arg [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o] ==> ignore
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0]
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..]
+    arg [CMakeFiles/cmTC_007dd.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o] ==> ignore
+    arg [/lib/../lib64/crtn.o] ==> ignore
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0] ==> [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0]
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64] ==> [/share/apps/gcc/6.3.0/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..] ==> [/share/apps/gcc/6.3.0/lib]
+  implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+  implicit dirs: [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0;/share/apps/gcc/6.3.0/lib64;/lib64;/usr/lib64;/share/apps/gcc/6.3.0/lib]
+  implicit fwks: []
+
+
+
+
+Detecting CXX [-std=c++1z] compiler features compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_e2a19/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_e2a19.dir/build.make CMakeFiles/cmTC_e2a19.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_e2a19.dir/feature_tests.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -std=c++1z -o CMakeFiles/cmTC_e2a19.dir/feature_tests.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_e2a19
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e2a19.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++       -rdynamic CMakeFiles/cmTC_e2a19.dir/feature_tests.cxx.o  -o cmTC_e2a19 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+
+
+Detecting CXX [-std=c++14] compiler features compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_471d2/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_471d2.dir/build.make CMakeFiles/cmTC_471d2.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_471d2.dir/feature_tests.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -std=c++14 -o CMakeFiles/cmTC_471d2.dir/feature_tests.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_471d2
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_471d2.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++       -rdynamic CMakeFiles/cmTC_471d2.dir/feature_tests.cxx.o  -o cmTC_471d2 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+
+
+Detecting CXX [-std=c++11] compiler features compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_78340/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_78340.dir/build.make CMakeFiles/cmTC_78340.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_78340.dir/feature_tests.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -std=c++11 -o CMakeFiles/cmTC_78340.dir/feature_tests.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_78340
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_78340.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++       -rdynamic CMakeFiles/cmTC_78340.dir/feature_tests.cxx.o  -o cmTC_78340 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:0cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:0cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:0cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:0cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:0cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:0cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:0cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:0cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:0cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:0cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+
+
+Detecting CXX [-std=c++98] compiler features compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_84c7d/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_84c7d.dir/build.make CMakeFiles/cmTC_84c7d.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_84c7d.dir/feature_tests.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -std=c++98 -o CMakeFiles/cmTC_84c7d.dir/feature_tests.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_84c7d
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_84c7d.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++       -rdynamic CMakeFiles/cmTC_84c7d.dir/feature_tests.cxx.o  -o cmTC_84c7d 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:0cxx_alias_templates
+    Feature record: CXX_FEATURE:0cxx_alignas
+    Feature record: CXX_FEATURE:0cxx_alignof
+    Feature record: CXX_FEATURE:0cxx_attributes
+    Feature record: CXX_FEATURE:0cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:0cxx_auto_type
+    Feature record: CXX_FEATURE:0cxx_binary_literals
+    Feature record: CXX_FEATURE:0cxx_constexpr
+    Feature record: CXX_FEATURE:0cxx_contextual_conversions
+    Feature record: CXX_FEATURE:0cxx_decltype
+    Feature record: CXX_FEATURE:0cxx_decltype_auto
+    Feature record: CXX_FEATURE:0cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:0cxx_default_function_template_args
+    Feature record: CXX_FEATURE:0cxx_defaulted_functions
+    Feature record: CXX_FEATURE:0cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:0cxx_delegating_constructors
+    Feature record: CXX_FEATURE:0cxx_deleted_functions
+    Feature record: CXX_FEATURE:0cxx_digit_separators
+    Feature record: CXX_FEATURE:0cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:0cxx_explicit_conversions
+    Feature record: CXX_FEATURE:0cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:0cxx_extern_templates
+    Feature record: CXX_FEATURE:0cxx_final
+    Feature record: CXX_FEATURE:0cxx_func_identifier
+    Feature record: CXX_FEATURE:0cxx_generalized_initializers
+    Feature record: CXX_FEATURE:0cxx_generic_lambdas
+    Feature record: CXX_FEATURE:0cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:0cxx_inline_namespaces
+    Feature record: CXX_FEATURE:0cxx_lambdas
+    Feature record: CXX_FEATURE:0cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:0cxx_local_type_template_args
+    Feature record: CXX_FEATURE:0cxx_long_long_type
+    Feature record: CXX_FEATURE:0cxx_noexcept
+    Feature record: CXX_FEATURE:0cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:0cxx_nullptr
+    Feature record: CXX_FEATURE:0cxx_override
+    Feature record: CXX_FEATURE:0cxx_range_for
+    Feature record: CXX_FEATURE:0cxx_raw_string_literals
+    Feature record: CXX_FEATURE:0cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:0cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:0cxx_return_type_deduction
+    Feature record: CXX_FEATURE:0cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:0cxx_rvalue_references
+    Feature record: CXX_FEATURE:0cxx_sizeof_member
+    Feature record: CXX_FEATURE:0cxx_static_assert
+    Feature record: CXX_FEATURE:0cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:0cxx_thread_local
+    Feature record: CXX_FEATURE:0cxx_trailing_return_types
+    Feature record: CXX_FEATURE:0cxx_unicode_literals
+    Feature record: CXX_FEATURE:0cxx_uniform_initialization
+    Feature record: CXX_FEATURE:0cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:0cxx_user_literals
+    Feature record: CXX_FEATURE:0cxx_variable_templates
+    Feature record: CXX_FEATURE:0cxx_variadic_macros
+    Feature record: CXX_FEATURE:0cxx_variadic_templates
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wall succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_c752e/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_c752e.dir/build.make CMakeFiles/cmTC_c752e.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_c752e.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wall   -Wall -o CMakeFiles/cmTC_c752e.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_c752e
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c752e.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wall    -rdynamic CMakeFiles/cmTC_c752e.dir/src.cxx.o  -o cmTC_c752e 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wextra succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_7d026/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_7d026.dir/build.make CMakeFiles/cmTC_7d026.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_7d026.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wextra   -Wextra -o CMakeFiles/cmTC_7d026.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_7d026
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7d026.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wextra    -rdynamic CMakeFiles/cmTC_7d026.dir/src.cxx.o  -o cmTC_7d026 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-pedantic succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_5b67b/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_5b67b.dir/build.make CMakeFiles/cmTC_5b67b.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_5b67b.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-pedantic   -pedantic -o CMakeFiles/cmTC_5b67b.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_5b67b
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5b67b.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-pedantic    -rdynamic CMakeFiles/cmTC_5b67b.dir/src.cxx.o  -o cmTC_5b67b 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wunused succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_a1907/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_a1907.dir/build.make CMakeFiles/cmTC_a1907.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_a1907.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wunused   -Wunused -o CMakeFiles/cmTC_a1907.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_a1907
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a1907.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wunused    -rdynamic CMakeFiles/cmTC_a1907.dir/src.cxx.o  -o cmTC_a1907 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wno-long-long succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_13e8f/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_13e8f.dir/build.make CMakeFiles/cmTC_13e8f.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_13e8f.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-long-long   -Wno-long-long -o CMakeFiles/cmTC_13e8f.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_13e8f
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_13e8f.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-long-long    -rdynamic CMakeFiles/cmTC_13e8f.dir/src.cxx.o  -o cmTC_13e8f 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wpointer-arith succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_3842d/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_3842d.dir/build.make CMakeFiles/cmTC_3842d.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_3842d.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wpointer-arith   -Wpointer-arith -o CMakeFiles/cmTC_3842d.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_3842d
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3842d.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wpointer-arith    -rdynamic CMakeFiles/cmTC_3842d.dir/src.cxx.o  -o cmTC_3842d 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wformat-2 succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_f676f/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_f676f.dir/build.make CMakeFiles/cmTC_f676f.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_f676f.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wformat-2   -Wformat=2 -o CMakeFiles/cmTC_f676f.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_f676f
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f676f.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wformat-2    -rdynamic CMakeFiles/cmTC_f676f.dir/src.cxx.o  -o cmTC_f676f 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wuninitialized succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_49291/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_49291.dir/build.make CMakeFiles/cmTC_49291.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_49291.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wuninitialized   -Wuninitialized -o CMakeFiles/cmTC_49291.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_49291
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_49291.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wuninitialized    -rdynamic CMakeFiles/cmTC_49291.dir/src.cxx.o  -o cmTC_49291 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wcast-qual succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_87c9c/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_87c9c.dir/build.make CMakeFiles/cmTC_87c9c.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_87c9c.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wcast-qual   -Wcast-qual -o CMakeFiles/cmTC_87c9c.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_87c9c
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_87c9c.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wcast-qual    -rdynamic CMakeFiles/cmTC_87c9c.dir/src.cxx.o  -o cmTC_87c9c 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wmissing-noreturn succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_718a9/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_718a9.dir/build.make CMakeFiles/cmTC_718a9.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_718a9.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wmissing-noreturn   -Wmissing-noreturn -o CMakeFiles/cmTC_718a9.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_718a9
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_718a9.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wmissing-noreturn    -rdynamic CMakeFiles/cmTC_718a9.dir/src.cxx.o  -o cmTC_718a9 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wmissing-format-attribute succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_4bb87/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_4bb87.dir/build.make CMakeFiles/cmTC_4bb87.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4bb87.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wmissing-format-attribute   -Wmissing-format-attribute -o CMakeFiles/cmTC_4bb87.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_4bb87
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4bb87.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wmissing-format-attribute    -rdynamic CMakeFiles/cmTC_4bb87.dir/src.cxx.o  -o cmTC_4bb87 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wredundant-decls succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_30a27/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_30a27.dir/build.make CMakeFiles/cmTC_30a27.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_30a27.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wredundant-decls   -Wredundant-decls -o CMakeFiles/cmTC_30a27.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_30a27
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_30a27.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wredundant-decls    -rdynamic CMakeFiles/cmTC_30a27.dir/src.cxx.o  -o cmTC_30a27 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-implicit succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_af373/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_af373.dir/build.make CMakeFiles/cmTC_af373.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_af373.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-implicit   -Werror=implicit -o CMakeFiles/cmTC_af373.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_af373
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_af373.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-implicit    -rdynamic CMakeFiles/cmTC_af373.dir/src.cxx.o  -o cmTC_af373 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-nonnull succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_e5da5/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_e5da5.dir/build.make CMakeFiles/cmTC_e5da5.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_e5da5.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-nonnull   -Werror=nonnull -o CMakeFiles/cmTC_e5da5.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_e5da5
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e5da5.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-nonnull    -rdynamic CMakeFiles/cmTC_e5da5.dir/src.cxx.o  -o cmTC_e5da5 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-init-self succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_75909/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_75909.dir/build.make CMakeFiles/cmTC_75909.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_75909.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-init-self   -Werror=init-self -o CMakeFiles/cmTC_75909.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_75909
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_75909.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-init-self    -rdynamic CMakeFiles/cmTC_75909.dir/src.cxx.o  -o cmTC_75909 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-main succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_8da75/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_8da75.dir/build.make CMakeFiles/cmTC_8da75.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_8da75.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-main   -Werror=main -o CMakeFiles/cmTC_8da75.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_8da75
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8da75.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-main    -rdynamic CMakeFiles/cmTC_8da75.dir/src.cxx.o  -o cmTC_8da75 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-missing-braces succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_6dc03/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_6dc03.dir/build.make CMakeFiles/cmTC_6dc03.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_6dc03.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-missing-braces   -Werror=missing-braces -o CMakeFiles/cmTC_6dc03.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_6dc03
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6dc03.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-missing-braces    -rdynamic CMakeFiles/cmTC_6dc03.dir/src.cxx.o  -o cmTC_6dc03 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-sequence-point succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_3ecaa/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_3ecaa.dir/build.make CMakeFiles/cmTC_3ecaa.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_3ecaa.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-sequence-point   -Werror=sequence-point -o CMakeFiles/cmTC_3ecaa.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_3ecaa
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3ecaa.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-sequence-point    -rdynamic CMakeFiles/cmTC_3ecaa.dir/src.cxx.o  -o cmTC_3ecaa 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-return-type succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_8cc62/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_8cc62.dir/build.make CMakeFiles/cmTC_8cc62.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_8cc62.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-return-type   -Werror=return-type -o CMakeFiles/cmTC_8cc62.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_8cc62
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8cc62.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-return-type    -rdynamic CMakeFiles/cmTC_8cc62.dir/src.cxx.o  -o cmTC_8cc62 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-trigraphs succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_bcc0c/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_bcc0c.dir/build.make CMakeFiles/cmTC_bcc0c.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_bcc0c.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-trigraphs   -Werror=trigraphs -o CMakeFiles/cmTC_bcc0c.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_bcc0c
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bcc0c.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-trigraphs    -rdynamic CMakeFiles/cmTC_bcc0c.dir/src.cxx.o  -o cmTC_bcc0c 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-array-bounds succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_fbcef/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_fbcef.dir/build.make CMakeFiles/cmTC_fbcef.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_fbcef.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-array-bounds   -Werror=array-bounds -o CMakeFiles/cmTC_fbcef.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_fbcef
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fbcef.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-array-bounds    -rdynamic CMakeFiles/cmTC_fbcef.dir/src.cxx.o  -o cmTC_fbcef 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-write-strings succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_cafee/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_cafee.dir/build.make CMakeFiles/cmTC_cafee.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_cafee.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-write-strings   -Werror=write-strings -o CMakeFiles/cmTC_cafee.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_cafee
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cafee.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-write-strings    -rdynamic CMakeFiles/cmTC_cafee.dir/src.cxx.o  -o cmTC_cafee 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-address succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_b9bc7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_b9bc7.dir/build.make CMakeFiles/cmTC_b9bc7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_b9bc7.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-address   -Werror=address -o CMakeFiles/cmTC_b9bc7.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_b9bc7
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b9bc7.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-address    -rdynamic CMakeFiles/cmTC_b9bc7.dir/src.cxx.o  -o cmTC_b9bc7 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-int-to-pointer-cast succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_fd054/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_fd054.dir/build.make CMakeFiles/cmTC_fd054.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_fd054.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-int-to-pointer-cast   -Werror=int-to-pointer-cast -o CMakeFiles/cmTC_fd054.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_fd054
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fd054.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-int-to-pointer-cast    -rdynamic CMakeFiles/cmTC_fd054.dir/src.cxx.o  -o cmTC_fd054 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-pointer-to-int-cast succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_83cfd/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_83cfd.dir/build.make CMakeFiles/cmTC_83cfd.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_83cfd.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-pointer-to-int-cast   -Werror=pointer-to-int-cast -o CMakeFiles/cmTC_83cfd.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_83cfd
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_83cfd.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-pointer-to-int-cast    -rdynamic CMakeFiles/cmTC_83cfd.dir/src.cxx.o  -o cmTC_83cfd 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wno-unused-variable succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_389f2/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_389f2.dir/build.make CMakeFiles/cmTC_389f2.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_389f2.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-unused-variable   -Wno-unused-variable -o CMakeFiles/cmTC_389f2.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_389f2
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_389f2.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-unused-variable    -rdynamic CMakeFiles/cmTC_389f2.dir/src.cxx.o  -o cmTC_389f2 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wunused-but-set-variable succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_11c7f/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_11c7f.dir/build.make CMakeFiles/cmTC_11c7f.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_11c7f.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wunused-but-set-variable   -Wunused-but-set-variable -o CMakeFiles/cmTC_11c7f.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_11c7f
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_11c7f.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wunused-but-set-variable    -rdynamic CMakeFiles/cmTC_11c7f.dir/src.cxx.o  -o cmTC_11c7f 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wno-unused-parameter succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_7f17b/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_7f17b.dir/build.make CMakeFiles/cmTC_7f17b.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_7f17b.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-unused-parameter   -Wno-unused-parameter -o CMakeFiles/cmTC_7f17b.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_7f17b
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7f17b.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-unused-parameter    -rdynamic CMakeFiles/cmTC_7f17b.dir/src.cxx.o  -o cmTC_7f17b 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wno-old-style-cast succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_8030e/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_8030e.dir/build.make CMakeFiles/cmTC_8030e.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_8030e.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-old-style-cast   -Wno-old-style-cast -o CMakeFiles/cmTC_8030e.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_8030e
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8030e.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-old-style-cast    -rdynamic CMakeFiles/cmTC_8030e.dir/src.cxx.o  -o cmTC_8030e 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wshadow succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_708bd/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_708bd.dir/build.make CMakeFiles/cmTC_708bd.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_708bd.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wshadow   -Wshadow -o CMakeFiles/cmTC_708bd.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_708bd
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_708bd.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wshadow    -rdynamic CMakeFiles/cmTC_708bd.dir/src.cxx.o  -o cmTC_708bd 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wstrict-null-sentinel succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_d48f1/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_d48f1.dir/build.make CMakeFiles/cmTC_d48f1.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_d48f1.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-null-sentinel   -Wstrict-null-sentinel -o CMakeFiles/cmTC_d48f1.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_d48f1
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d48f1.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-null-sentinel    -rdynamic CMakeFiles/cmTC_d48f1.dir/src.cxx.o  -o cmTC_d48f1 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Woverloaded-virtual succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_c57c6/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_c57c6.dir/build.make CMakeFiles/cmTC_c57c6.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_c57c6.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Woverloaded-virtual   -Woverloaded-virtual -o CMakeFiles/cmTC_c57c6.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_c57c6
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c57c6.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Woverloaded-virtual    -rdynamic CMakeFiles/cmTC_c57c6.dir/src.cxx.o  -o cmTC_c57c6 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wsign-promo succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_e8e1e/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_e8e1e.dir/build.make CMakeFiles/cmTC_e8e1e.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_e8e1e.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wsign-promo   -Wsign-promo -o CMakeFiles/cmTC_e8e1e.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_e8e1e
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e8e1e.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wsign-promo    -rdynamic CMakeFiles/cmTC_e8e1e.dir/src.cxx.o  -o cmTC_e8e1e 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wstack-protector succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_76373/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_76373.dir/build.make CMakeFiles/cmTC_76373.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_76373.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wstack-protector   -Wstack-protector -o CMakeFiles/cmTC_76373.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_76373
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_76373.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wstack-protector    -rdynamic CMakeFiles/cmTC_76373.dir/src.cxx.o  -o cmTC_76373 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wstrict-aliasing succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_8e466/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_8e466.dir/build.make CMakeFiles/cmTC_8e466.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_8e466.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-aliasing   -Wstrict-aliasing -o CMakeFiles/cmTC_8e466.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_8e466
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8e466.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-aliasing    -rdynamic CMakeFiles/cmTC_8e466.dir/src.cxx.o  -o cmTC_8e466 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wstrict-aliasing-2 succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_356c7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_356c7.dir/build.make CMakeFiles/cmTC_356c7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_356c7.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-aliasing-2   -Wstrict-aliasing=2 -o CMakeFiles/cmTC_356c7.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_356c7
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_356c7.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-aliasing-2    -rdynamic CMakeFiles/cmTC_356c7.dir/src.cxx.o  -o cmTC_356c7 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wswitch-default succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_ec954/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_ec954.dir/build.make CMakeFiles/cmTC_ec954.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_ec954.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wswitch-default   -Wswitch-default -o CMakeFiles/cmTC_ec954.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_ec954
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ec954.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wswitch-default    -rdynamic CMakeFiles/cmTC_ec954.dir/src.cxx.o  -o cmTC_ec954 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wswitch-enum succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_7eda7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_7eda7.dir/build.make CMakeFiles/cmTC_7eda7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_7eda7.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wswitch-enum   -Wswitch-enum -o CMakeFiles/cmTC_7eda7.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_7eda7
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7eda7.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wswitch-enum    -rdynamic CMakeFiles/cmTC_7eda7.dir/src.cxx.o  -o cmTC_7eda7 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wcast-align succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_2773f/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_2773f.dir/build.make CMakeFiles/cmTC_2773f.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_2773f.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wcast-align   -Wcast-align -o CMakeFiles/cmTC_2773f.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_2773f
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2773f.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wcast-align    -rdynamic CMakeFiles/cmTC_2773f.dir/src.cxx.o  -o cmTC_2773f 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wdisabled-optimization succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_aa84c/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_aa84c.dir/build.make CMakeFiles/cmTC_aa84c.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_aa84c.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wdisabled-optimization   -Wdisabled-optimization -o CMakeFiles/cmTC_aa84c.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_aa84c
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_aa84c.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wdisabled-optimization    -rdynamic CMakeFiles/cmTC_aa84c.dir/src.cxx.o  -o cmTC_aa84c 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Winvalid-pch succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_193f7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_193f7.dir/build.make CMakeFiles/cmTC_193f7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_193f7.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Winvalid-pch   -Winvalid-pch -o CMakeFiles/cmTC_193f7.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_193f7
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_193f7.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Winvalid-pch    -rdynamic CMakeFiles/cmTC_193f7.dir/src.cxx.o  -o cmTC_193f7 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wpacked succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_e5cc9/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_e5cc9.dir/build.make CMakeFiles/cmTC_e5cc9.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_e5cc9.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wpacked   -Wpacked -o CMakeFiles/cmTC_e5cc9.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_e5cc9
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e5cc9.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wpacked    -rdynamic CMakeFiles/cmTC_e5cc9.dir/src.cxx.o  -o cmTC_e5cc9 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wno-padded succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_ed924/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_ed924.dir/build.make CMakeFiles/cmTC_ed924.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_ed924.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-padded   -Wno-padded -o CMakeFiles/cmTC_ed924.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_ed924
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ed924.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-padded    -rdynamic CMakeFiles/cmTC_ed924.dir/src.cxx.o  -o cmTC_ed924 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wstrict-overflow succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_3a29d/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_3a29d.dir/build.make CMakeFiles/cmTC_3a29d.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_3a29d.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-overflow   -Wstrict-overflow -o CMakeFiles/cmTC_3a29d.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_3a29d
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3a29d.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-overflow    -rdynamic CMakeFiles/cmTC_3a29d.dir/src.cxx.o  -o cmTC_3a29d 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wstrict-overflow-2 succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_79ef8/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_79ef8.dir/build.make CMakeFiles/cmTC_79ef8.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_79ef8.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-overflow-2   -Wstrict-overflow=2 -o CMakeFiles/cmTC_79ef8.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_79ef8
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_79ef8.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wstrict-overflow-2    -rdynamic CMakeFiles/cmTC_79ef8.dir/src.cxx.o  -o cmTC_79ef8 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wctor-dtor-privacy succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_90b22/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_90b22.dir/build.make CMakeFiles/cmTC_90b22.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_90b22.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wctor-dtor-privacy   -Wctor-dtor-privacy -o CMakeFiles/cmTC_90b22.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_90b22
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_90b22.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wctor-dtor-privacy    -rdynamic CMakeFiles/cmTC_90b22.dir/src.cxx.o  -o cmTC_90b22 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wlogical-op succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_0c92c/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_0c92c.dir/build.make CMakeFiles/cmTC_0c92c.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_0c92c.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wlogical-op   -Wlogical-op -o CMakeFiles/cmTC_0c92c.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_0c92c
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0c92c.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wlogical-op    -rdynamic CMakeFiles/cmTC_0c92c.dir/src.cxx.o  -o cmTC_0c92c 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wnoexcept succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_4efd3/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_4efd3.dir/build.make CMakeFiles/cmTC_4efd3.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4efd3.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wnoexcept   -Wnoexcept -o CMakeFiles/cmTC_4efd3.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_4efd3
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4efd3.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wnoexcept    -rdynamic CMakeFiles/cmTC_4efd3.dir/src.cxx.o  -o cmTC_4efd3 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wnon-virtual-dtor succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_5174e/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_5174e.dir/build.make CMakeFiles/cmTC_5174e.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_5174e.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wnon-virtual-dtor   -Wnon-virtual-dtor -o CMakeFiles/cmTC_5174e.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_5174e
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5174e.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wnon-virtual-dtor    -rdynamic CMakeFiles/cmTC_5174e.dir/src.cxx.o  -o cmTC_5174e 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wdelete-non-virtual-dtor succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_b9420/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_b9420.dir/build.make CMakeFiles/cmTC_b9420.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_b9420.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wdelete-non-virtual-dtor   -Wdelete-non-virtual-dtor -o CMakeFiles/cmTC_b9420.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_b9420
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b9420.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wdelete-non-virtual-dtor    -rdynamic CMakeFiles/cmTC_b9420.dir/src.cxx.o  -o cmTC_b9420 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-non-virtual-dtor succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_73fc1/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_73fc1.dir/build.make CMakeFiles/cmTC_73fc1.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_73fc1.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-non-virtual-dtor   -Werror=non-virtual-dtor -o CMakeFiles/cmTC_73fc1.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_73fc1
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_73fc1.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-non-virtual-dtor    -rdynamic CMakeFiles/cmTC_73fc1.dir/src.cxx.o  -o cmTC_73fc1 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Werror-delete-non-virtual-dtor succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_be55f/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_be55f.dir/build.make CMakeFiles/cmTC_be55f.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_be55f.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-delete-non-virtual-dtor   -Werror=delete-non-virtual-dtor -o CMakeFiles/cmTC_be55f.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_be55f
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_be55f.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Werror-delete-non-virtual-dtor    -rdynamic CMakeFiles/cmTC_be55f.dir/src.cxx.o  -o cmTC_be55f 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wno-sign-compare succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_6e586/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_6e586.dir/build.make CMakeFiles/cmTC_6e586.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_6e586.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-sign-compare   -Wno-sign-compare -o CMakeFiles/cmTC_6e586.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_6e586
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6e586.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wno-sign-compare    -rdynamic CMakeFiles/cmTC_6e586.dir/src.cxx.o  -o cmTC_6e586 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wnull-dereference succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_aa6a7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_aa6a7.dir/build.make CMakeFiles/cmTC_aa6a7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_aa6a7.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wnull-dereference   -Wnull-dereference -o CMakeFiles/cmTC_aa6a7.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_aa6a7
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_aa6a7.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wnull-dereference    -rdynamic CMakeFiles/cmTC_aa6a7.dir/src.cxx.o  -o cmTC_aa6a7 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-fdelete-null-pointer-checks succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_46aaa/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_46aaa.dir/build.make CMakeFiles/cmTC_46aaa.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_46aaa.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-fdelete-null-pointer-checks   -fdelete-null-pointer-checks -o CMakeFiles/cmTC_46aaa.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_46aaa
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_46aaa.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-fdelete-null-pointer-checks    -rdynamic CMakeFiles/cmTC_46aaa.dir/src.cxx.o  -o cmTC_46aaa 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wduplicated-cond succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_064f7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_064f7.dir/build.make CMakeFiles/cmTC_064f7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_064f7.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wduplicated-cond   -Wduplicated-cond -o CMakeFiles/cmTC_064f7.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_064f7
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_064f7.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wduplicated-cond    -rdynamic CMakeFiles/cmTC_064f7.dir/src.cxx.o  -o cmTC_064f7 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-Wmisleading-indentation succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_28ad5/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_28ad5.dir/build.make CMakeFiles/cmTC_28ad5.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_28ad5.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-Wmisleading-indentation   -Wmisleading-indentation -o CMakeFiles/cmTC_28ad5.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_28ad5
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_28ad5.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-Wmisleading-indentation    -rdynamic CMakeFiles/cmTC_28ad5.dir/src.cxx.o  -o cmTC_28ad5 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-fno-omit-frame-pointer succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_afd41/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_afd41.dir/build.make CMakeFiles/cmTC_afd41.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_afd41.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-fno-omit-frame-pointer   -fno-omit-frame-pointer -o CMakeFiles/cmTC_afd41.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_afd41
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_afd41.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-fno-omit-frame-pointer    -rdynamic CMakeFiles/cmTC_afd41.dir/src.cxx.o  -o cmTC_afd41 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test IS_SUPPORTED_-fno-optimize-sibling-calls succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_2cca4/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_2cca4.dir/build.make CMakeFiles/cmTC_2cca4.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_2cca4.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -DIS_SUPPORTED_-fno-optimize-sibling-calls   -fno-optimize-sibling-calls -o CMakeFiles/cmTC_2cca4.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+[01m[K<command-line>:0:14:[m[K [01;35m[Kwarning: [m[KISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_2cca4
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2cca4.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -DIS_SUPPORTED_-fno-optimize-sibling-calls    -rdynamic CMakeFiles/cmTC_2cca4.dir/src.cxx.o  -o cmTC_2cca4 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Determining if the include file pthread.h exists passed with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_e1e3d/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_e1e3d.dir/build.make CMakeFiles/cmTC_e1e3d.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_e1e3d.dir/CheckIncludeFile.c.o
+/share/apps/gcc/6.3.0/bin/gcc   -fdiagnostics-color=always -fPIC  -fPIE   -o CMakeFiles/cmTC_e1e3d.dir/CheckIncludeFile.c.o   -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_e1e3d
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e1e3d.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc  -fdiagnostics-color=always -fPIC     -rdynamic CMakeFiles/cmTC_e1e3d.dir/CheckIncludeFile.c.o  -o cmTC_e1e3d 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+Determining if the function pthread_create exists in the pthread passed with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_7e78e/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_7e78e.dir/build.make CMakeFiles/cmTC_7e78e.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_7e78e.dir/CheckFunctionExists.c.o
+/share/apps/gcc/6.3.0/bin/gcc   -fdiagnostics-color=always -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create -fPIE   -o CMakeFiles/cmTC_7e78e.dir/CheckFunctionExists.c.o   -c /share/apps/cmake/3.11.4/intel/share/cmake-3.11/Modules/CheckFunctionExists.c
+Linking C executable cmTC_7e78e
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7e78e.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc  -fdiagnostics-color=always -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_7e78e.dir/CheckFunctionExists.c.o  -o cmTC_7e78e -lpthread 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+Performing C++ SOURCE FILE Test SUPPORTS_STDCXX11 succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_ce25a/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_ce25a.dir/build.make CMakeFiles/cmTC_ce25a.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_ce25a.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -fPIC -DSUPPORTS_STDCXX11 -fPIE   -std=c++11 -o CMakeFiles/cmTC_ce25a.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_ce25a
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ce25a.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -fPIC -DSUPPORTS_STDCXX11    -rdynamic CMakeFiles/cmTC_ce25a.dir/src.cxx.o  -o cmTC_ce25a 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test SUPPORTS_MRTM succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_459ae/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_459ae.dir/build.make CMakeFiles/cmTC_459ae.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_459ae.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -std=c++11  -fdiagnostics-color=always -fPIC -DSUPPORTS_MRTM -fPIE   -mrtm -Werror -o CMakeFiles/cmTC_459ae.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_459ae
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_459ae.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++  -std=c++11  -fdiagnostics-color=always -fPIC -DSUPPORTS_MRTM    -rdynamic CMakeFiles/cmTC_459ae.dir/src.cxx.o  -o cmTC_459ae 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test SUPPORTS_FLIFETIME succeeded with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_d368f/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_d368f.dir/build.make CMakeFiles/cmTC_d368f.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_d368f.dir/src.cxx.o
+/share/apps/gcc/6.3.0/bin/g++    -mrtm -std=c++11  -fdiagnostics-color=always -fPIC -DSUPPORTS_FLIFETIME -fPIE   -flifetime-dse=1 -o CMakeFiles/cmTC_d368f.dir/src.cxx.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_d368f
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d368f.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++  -mrtm -std=c++11  -fdiagnostics-color=always -fPIC -DSUPPORTS_FLIFETIME    -rdynamic CMakeFiles/cmTC_d368f.dir/src.cxx.o  -o cmTC_d368f 
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }
+Detecting C OpenMP compiler ABI info compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_0cd3b/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_0cd3b.dir/build.make CMakeFiles/cmTC_0cd3b.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o
+/share/apps/gcc/6.3.0/bin/gcc   -fdiagnostics-color=always -fPIC -fopenmp -v -fPIE   -o CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o   -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+Using built-in specs.
+COLLECT_GCC=/share/apps/gcc/6.3.0/bin/gcc
+Target: x86_64-centos-linux
+Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib
+Thread model: posix
+gcc version 6.3.0 (GCC) 
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o' '-c' '-mtune=generic' '-march=x86-64' '-pthread'
+ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/cc1 -quiet -v -D_REENTRANT /home/bw1760/rational/fast-envelope/debug/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -quiet -dumpbase OpenMPTryFlag.c -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o -version -fdiagnostics-color=always -fopenmp -fPIE -o /tmp/ccZSXAhm.s
+GNU C11 (GCC) version 6.3.0 (x86_64-centos-linux)
+	compiled by GNU C version 6.3.0, GMP version 6.1.2, MPFR version 3.1.5, MPC version 1.0.3, isl version none
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring nonexistent directory "/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../x86_64-centos-linux/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/include
+ /usr/local/include
+ /share/apps/gcc/6.3.0/include
+ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/include-fixed
+ /usr/include
+End of search list.
+GNU C11 (GCC) version 6.3.0 (x86_64-centos-linux)
+	compiled by GNU C version 6.3.0, GMP version 6.1.2, MPFR version 3.1.5, MPC version 1.0.3, isl version none
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: 58abf56034efe1373f7f4ca2cc10df9b
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o' '-c' '-mtune=generic' '-march=x86-64' '-pthread'
+ as -v --64 -o CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o /tmp/ccZSXAhm.s
+GNU assembler version 2.25.1 (x86_64-redhat-linux) using BFD version version 2.25.1-22.base.el7 
+COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/
+LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o' '-c' '-mtune=generic' '-march=x86-64' '-pthread'
+Linking C executable cmTC_0cd3b
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0cd3b.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/gcc  -fdiagnostics-color=always -fPIC -fopenmp -v    -rdynamic CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o  -o cmTC_0cd3b -v 
+Using built-in specs.
+COLLECT_GCC=/share/apps/gcc/6.3.0/bin/gcc
+COLLECT_LTO_WRAPPER=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper
+Target: x86_64-centos-linux
+Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib
+Thread model: posix
+gcc version 6.3.0 (GCC) 
+COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/
+LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/
+Reading specs from /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/libgomp.spec
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fPIC' '-fopenmp' '-v' '-rdynamic' '-o' 'cmTC_0cd3b' '-v' '-mtune=generic' '-march=x86-64' '-pthread'
+ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2 -plugin /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so -plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccjVfYhr.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_0cd3b /lib/../lib64/crt1.o /lib/../lib64/crti.o /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../.. CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o -lgomp -lgcc --as-needed -lgcc_s --no-as-needed -lpthread -lc -lgcc --as-needed -lgcc_s --no-as-needed /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o /lib/../lib64/crtn.o
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fPIC' '-fopenmp' '-v' '-rdynamic' '-o' 'cmTC_0cd3b' '-v' '-mtune=generic' '-march=x86-64' '-pthread'
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+Parsed C OpenMP implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:"/usr/bin/gmake" "cmTC_0cd3b/fast"]
+  ignore line: [/usr/bin/gmake -f CMakeFiles/cmTC_0cd3b.dir/build.make CMakeFiles/cmTC_0cd3b.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp']
+  ignore line: [Building C object CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o]
+  ignore line: [/share/apps/gcc/6.3.0/bin/gcc   -fdiagnostics-color=always -fPIC -fopenmp -v -fPIE   -o CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o   -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/FindOpenMP/OpenMPTryFlag.c]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/share/apps/gcc/6.3.0/bin/gcc]
+  ignore line: [Target: x86_64-centos-linux]
+  ignore line: [Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 6.3.0 (GCC) ]
+  ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o' '-c' '-mtune=generic' '-march=x86-64' '-pthread']
+  ignore line: [ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/cc1 -quiet -v -D_REENTRANT /home/bw1760/rational/fast-envelope/debug/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -quiet -dumpbase OpenMPTryFlag.c -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o -version -fdiagnostics-color=always -fopenmp -fPIE -o /tmp/ccZSXAhm.s]
+  ignore line: [GNU C11 (GCC) version 6.3.0 (x86_64-centos-linux)]
+  ignore line: [	compiled by GNU C version 6.3.0, GMP version 6.1.2, MPFR version 3.1.5, MPC version 1.0.3, isl version none]
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [ignoring nonexistent directory "/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../x86_64-centos-linux/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/include]
+  ignore line: [ /usr/local/include]
+  ignore line: [ /share/apps/gcc/6.3.0/include]
+  ignore line: [ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/include-fixed]
+  ignore line: [ /usr/include]
+  ignore line: [End of search list.]
+  ignore line: [GNU C11 (GCC) version 6.3.0 (x86_64-centos-linux)]
+  ignore line: [	compiled by GNU C version 6.3.0, GMP version 6.1.2, MPFR version 3.1.5, MPC version 1.0.3, isl version none]
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [Compiler executable checksum: 58abf56034efe1373f7f4ca2cc10df9b]
+  ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o' '-c' '-mtune=generic' '-march=x86-64' '-pthread']
+  ignore line: [ as -v --64 -o CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o /tmp/ccZSXAhm.s]
+  ignore line: [GNU assembler version 2.25.1 (x86_64-redhat-linux) using BFD version version 2.25.1-22.base.el7 ]
+  ignore line: [COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/]
+  ignore line: [LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o' '-c' '-mtune=generic' '-march=x86-64' '-pthread']
+  ignore line: [Linking C executable cmTC_0cd3b]
+  ignore line: [/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0cd3b.dir/link.txt --verbose=1]
+  ignore line: [/share/apps/gcc/6.3.0/bin/gcc  -fdiagnostics-color=always -fPIC -fopenmp -v    -rdynamic CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o  -o cmTC_0cd3b -v ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/share/apps/gcc/6.3.0/bin/gcc]
+  ignore line: [COLLECT_LTO_WRAPPER=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper]
+  ignore line: [Target: x86_64-centos-linux]
+  ignore line: [Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 6.3.0 (GCC) ]
+  ignore line: [COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/]
+  ignore line: [LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/]
+  ignore line: [Reading specs from /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/libgomp.spec]
+  ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fPIC' '-fopenmp' '-v' '-rdynamic' '-o' 'cmTC_0cd3b' '-v' '-mtune=generic' '-march=x86-64' '-pthread']
+  link line: [ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2 -plugin /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so -plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccjVfYhr.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_0cd3b /lib/../lib64/crt1.o /lib/../lib64/crti.o /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../.. CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o -lgomp -lgcc --as-needed -lgcc_s --no-as-needed -lpthread -lc -lgcc --as-needed -lgcc_s --no-as-needed /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o /lib/../lib64/crtn.o]
+    arg [/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccjVfYhr.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lpthread] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_0cd3b] ==> ignore
+    arg [/lib/../lib64/crt1.o] ==> ignore
+    arg [/lib/../lib64/crti.o] ==> ignore
+    arg [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o] ==> ignore
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0]
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..]
+    arg [CMakeFiles/cmTC_0cd3b.dir/OpenMPTryFlag.c.o] ==> ignore
+    arg [-lgomp] ==> lib [gomp]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lpthread] ==> lib [pthread]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o] ==> ignore
+    arg [/lib/../lib64/crtn.o] ==> ignore
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0] ==> [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0]
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64] ==> [/share/apps/gcc/6.3.0/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..] ==> [/share/apps/gcc/6.3.0/lib]
+  implicit libs: [gomp;gcc;gcc_s;pthread;c;gcc;gcc_s]
+  implicit dirs: [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0;/share/apps/gcc/6.3.0/lib64;/lib64;/usr/lib64;/share/apps/gcc/6.3.0/lib]
+  implicit fwks: []
+
+
+Detecting CXX OpenMP compiler ABI info compiled with the following output:
+Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_3abb7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_3abb7.dir/build.make CMakeFiles/cmTC_3abb7.dir/build
+gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o
+/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -fPIC -fopenmp -fopenmp -v -fPIE   -o CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+Using built-in specs.
+COLLECT_GCC=/share/apps/gcc/6.3.0/bin/g++
+Target: x86_64-centos-linux
+Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib
+Thread model: posix
+gcc version 6.3.0 (GCC) 
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread'
+ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/cc1plus -quiet -v -D_GNU_SOURCE -D_REENTRANT /home/bw1760/rational/fast-envelope/debug/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -quiet -dumpbase OpenMPTryFlag.cpp -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o -version -fdiagnostics-color=always -fopenmp -fPIE -o /tmp/ccD48aSC.s
+GNU C++14 (GCC) version 6.3.0 (x86_64-centos-linux)
+	compiled by GNU C version 6.3.0, GMP version 6.1.2, MPFR version 3.1.5, MPC version 1.0.3, isl version none
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring nonexistent directory "/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../x86_64-centos-linux/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../include/c++/6.3.0
+ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../include/c++/6.3.0/x86_64-centos-linux
+ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../include/c++/6.3.0/backward
+ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/include
+ /usr/local/include
+ /share/apps/gcc/6.3.0/include
+ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/include-fixed
+ /usr/include
+End of search list.
+GNU C++14 (GCC) version 6.3.0 (x86_64-centos-linux)
+	compiled by GNU C version 6.3.0, GMP version 6.1.2, MPFR version 3.1.5, MPC version 1.0.3, isl version none
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: 1e2cfee9752174d704b3295f7094ddef
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread'
+ as -v --64 -o CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o /tmp/ccD48aSC.s
+GNU assembler version 2.25.1 (x86_64-redhat-linux) using BFD version version 2.25.1-22.base.el7 
+COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/
+LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread'
+Linking CXX executable cmTC_3abb7
+/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3abb7.dir/link.txt --verbose=1
+/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -fPIC -fopenmp -fopenmp -v    -rdynamic CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o  -o cmTC_3abb7 -v 
+Using built-in specs.
+COLLECT_GCC=/share/apps/gcc/6.3.0/bin/g++
+COLLECT_LTO_WRAPPER=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper
+Target: x86_64-centos-linux
+Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib
+Thread model: posix
+gcc version 6.3.0 (GCC) 
+COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/
+LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/
+Reading specs from /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/libgomp.spec
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fPIC' '-fopenmp' '-v' '-rdynamic' '-o' 'cmTC_3abb7' '-v' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread'
+ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2 -plugin /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so -plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cc38xYPw.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_3abb7 /lib/../lib64/crt1.o /lib/../lib64/crti.o /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../.. CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o -lstdc++ -lm -lgomp -lgcc_s -lgcc -lpthread -lc -lgcc_s -lgcc /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o /lib/../lib64/crtn.o
+COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fPIC' '-fopenmp' '-v' '-rdynamic' '-o' 'cmTC_3abb7' '-v' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread'
+gmake[1]: Leaving directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp'
+
+
+Parsed CXX OpenMP implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:"/usr/bin/gmake" "cmTC_3abb7/fast"]
+  ignore line: [/usr/bin/gmake -f CMakeFiles/cmTC_3abb7.dir/build.make CMakeFiles/cmTC_3abb7.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/bw1760/rational/fast-envelope/debug/CMakeFiles/CMakeTmp']
+  ignore line: [Building CXX object CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o]
+  ignore line: [/share/apps/gcc/6.3.0/bin/g++    -fdiagnostics-color=always -fPIC -fopenmp -fopenmp -v -fPIE   -o CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o -c /home/bw1760/rational/fast-envelope/debug/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/share/apps/gcc/6.3.0/bin/g++]
+  ignore line: [Target: x86_64-centos-linux]
+  ignore line: [Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 6.3.0 (GCC) ]
+  ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread']
+  ignore line: [ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/cc1plus -quiet -v -D_GNU_SOURCE -D_REENTRANT /home/bw1760/rational/fast-envelope/debug/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -quiet -dumpbase OpenMPTryFlag.cpp -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o -version -fdiagnostics-color=always -fopenmp -fPIE -o /tmp/ccD48aSC.s]
+  ignore line: [GNU C++14 (GCC) version 6.3.0 (x86_64-centos-linux)]
+  ignore line: [	compiled by GNU C version 6.3.0, GMP version 6.1.2, MPFR version 3.1.5, MPC version 1.0.3, isl version none]
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [ignoring nonexistent directory "/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../x86_64-centos-linux/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../include/c++/6.3.0]
+  ignore line: [ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../include/c++/6.3.0/x86_64-centos-linux]
+  ignore line: [ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../include/c++/6.3.0/backward]
+  ignore line: [ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/include]
+  ignore line: [ /usr/local/include]
+  ignore line: [ /share/apps/gcc/6.3.0/include]
+  ignore line: [ /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/include-fixed]
+  ignore line: [ /usr/include]
+  ignore line: [End of search list.]
+  ignore line: [GNU C++14 (GCC) version 6.3.0 (x86_64-centos-linux)]
+  ignore line: [	compiled by GNU C version 6.3.0, GMP version 6.1.2, MPFR version 3.1.5, MPC version 1.0.3, isl version none]
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [Compiler executable checksum: 1e2cfee9752174d704b3295f7094ddef]
+  ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread']
+  ignore line: [ as -v --64 -o CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o /tmp/ccD48aSC.s]
+  ignore line: [GNU assembler version 2.25.1 (x86_64-redhat-linux) using BFD version version 2.25.1-22.base.el7 ]
+  ignore line: [COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/]
+  ignore line: [LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fopenmp' '-v' '-fPIE' '-o' 'CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread']
+  ignore line: [Linking CXX executable cmTC_3abb7]
+  ignore line: [/share/apps/cmake/3.11.4/intel/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3abb7.dir/link.txt --verbose=1]
+  ignore line: [/share/apps/gcc/6.3.0/bin/g++   -fdiagnostics-color=always -fPIC -fopenmp -fopenmp -v    -rdynamic CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o  -o cmTC_3abb7 -v ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/share/apps/gcc/6.3.0/bin/g++]
+  ignore line: [COLLECT_LTO_WRAPPER=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper]
+  ignore line: [Target: x86_64-centos-linux]
+  ignore line: [Configured with: ../gcc-6.3.0/configure -v --build=x86_64-centos-linux --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=all --with-ppl --with-cloog --with-tune=generic --enable-gold=yes --with-gmp=/share/apps/gmp/6.1.2/gnu --with-mpfr=/share/apps/mpfr/3.1.5/gnu --with-mpc=/share/apps/mpc/1.0.3/gnu --prefix=/share/apps/gcc/6.3.0 -disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 6.3.0 (GCC) ]
+  ignore line: [COMPILER_PATH=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/]
+  ignore line: [LIBRARY_PATH=/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../:/lib/:/usr/lib/]
+  ignore line: [Reading specs from /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64/libgomp.spec]
+  ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-fPIC' '-fopenmp' '-v' '-rdynamic' '-o' 'cmTC_3abb7' '-v' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread']
+  link line: [ /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2 -plugin /share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so -plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cc38xYPw.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_3abb7 /lib/../lib64/crt1.o /lib/../lib64/crti.o /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../.. CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o -lstdc++ -lm -lgomp -lgcc_s -lgcc -lpthread -lc -lgcc_s -lgcc /share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o /lib/../lib64/crtn.o]
+    arg [/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/share/apps/gcc/6.3.0/libexec/gcc/x86_64-centos-linux/6.3.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/cc38xYPw.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lpthread] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_3abb7] ==> ignore
+    arg [/lib/../lib64/crt1.o] ==> ignore
+    arg [/lib/../lib64/crti.o] ==> ignore
+    arg [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtbegin.o] ==> ignore
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0]
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..] ==> dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..]
+    arg [CMakeFiles/cmTC_3abb7.dir/OpenMPTryFlag.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgomp] ==> lib [gomp]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lpthread] ==> lib [pthread]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/crtend.o] ==> ignore
+    arg [/lib/../lib64/crtn.o] ==> ignore
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0] ==> [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0]
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../../../lib64] ==> [/share/apps/gcc/6.3.0/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0/../../..] ==> [/share/apps/gcc/6.3.0/lib]
+  implicit libs: [stdc++;m;gomp;gcc_s;gcc;pthread;c;gcc_s;gcc]
+  implicit dirs: [/share/apps/gcc/6.3.0/lib/gcc/x86_64-centos-linux/6.3.0;/share/apps/gcc/6.3.0/lib64;/lib64;/usr/lib64;/share/apps/gcc/6.3.0/lib]
+  implicit fwks: []
+
+
