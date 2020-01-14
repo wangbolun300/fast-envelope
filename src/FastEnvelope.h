@@ -47,6 +47,9 @@ namespace fastEnvelope {
 		bool USE_ADJACENT_INFORMATION = true;
 
 		bool debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex)const;
+#ifdef ENVELOPE_WITH_GMP
+		bool triangle_out_simple(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
+#endif
 		bool triangle_out_of_envelope(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
 		bool segment_out_of_envelope(const Vector3& seg0, const Vector3 &seg1, const std::vector<unsigned int>& prismindex) const;
 		bool is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const;
@@ -86,7 +89,16 @@ namespace fastEnvelope {
 			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
 			const std::vector<std::vector<int>>& intersect_face, const std::vector<bool>& coverlist, const int &jump, int &id) const;
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_Rational(
+			const std::array<Vector3, 3> &triangle,
+			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
+			const std::vector<unsigned int> &prismindex, const int &jump1, const int &jump2) const;
+		
 #endif
+		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism(
+			const std::array<Vector3, 3> &triangle,
+			const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
+			const std::vector<unsigned int> &prismindex, const int &jump1, const int &jump2) const;
 		// this function check the adjacent polyhedrons and jump over the polyhedrons that already in the cover list
 		int Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(
 			const std::array<Vector3, 3> &triangle,
