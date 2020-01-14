@@ -637,11 +637,12 @@ namespace fastEnvelope
 			jump1 = prismindex[i];
 
 			for (int j = 0; j < i; j++) {
-				if (i == j) continue;
+				jump2 = prismindex[j];
+				
 				if (!algorithms::box_box_intersection(cornerlist[jump1][0], cornerlist[jump1][1], cornerlist[jump2][0], cornerlist[jump2][1]))
 					continue;
 
-				jump2 = prismindex[i];
+				
 
 				for (int k = 0; k < halfspace[jump1].size(); k++) {
 					for (int h = 0; h < halfspace[jump2].size(); h++) {
