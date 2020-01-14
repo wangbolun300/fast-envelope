@@ -39,8 +39,7 @@ namespace fastEnvelope
 
 
 		algorithms::resorting(m_ver, m_faces, faces_new);//resort the facets order
-		m_ver_p = m_ver;
-		m_faces_p = faces_new;
+
 		//algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, eps);
 		algorithms::halfspace_generation(m_ver, faces_new, halfspace, cornerlist, eps);
 
@@ -60,7 +59,6 @@ namespace fastEnvelope
 		for (int i = 0; i < eps.size(); i++) {
 			epsnew[i] = eps[new2old[i]];
 		}
-		
 		//algorithms::halfspace_init(m_ver, faces_new, halfspace, cornerlist, eps);
 		algorithms::halfspace_generation(m_ver, faces_new, halfspace, cornerlist, epsnew);
 
@@ -70,7 +68,7 @@ namespace fastEnvelope
 		initFPU();
 	}
 
-	void FastEnvelope::init(const std::vector<std::vector<std::array<Vector3, 3>>> halfspace_input, 
+	void FastEnvelope::init(const std::vector<std::vector<std::array<Vector3, 3>>> halfspace_input,
 		const std::vector<std::array<Vector3, 2>> cornerlist_input, const Scalar eps) {
 		std::vector<Vector3i> faces_new;
 
@@ -192,7 +190,7 @@ namespace fastEnvelope
 						continue;// means this seg is inside, check next seg
 					}
 					if (!cut) continue;
-					
+
 					for (int j = 0; j < cidl.size(); j++) {
 #ifdef ENVELOPE_WITH_GMP
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
@@ -204,7 +202,7 @@ namespace fastEnvelope
 							halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
 							idlist, jump1, check_id);
 #endif
-						
+
 
 						if (inter == 1)
 						{
@@ -217,10 +215,10 @@ namespace fastEnvelope
 								halfspace[prismindex[queue[i]]][cidl[j]][0], halfspace[prismindex[queue[i]]][cidl[j]][1], halfspace[prismindex[queue[i]]][cidl[j]][2],
 								prismindex, jump1, check_id);
 #endif
-							
+
 
 							if (inter == 1) {
-								std::cout << "here deg" << std::endl;
+
 								return true;
 							}
 							if (inter == 0) {
@@ -238,7 +236,7 @@ namespace fastEnvelope
 		////////////////////////////////degeneration fix over
 
 
-		std::cout << "before filted size " << prismindex.size() << std::endl;
+
 		std::vector<int> cidl; cidl.reserve(8);
 		for (int i = 0; i < prismindex.size(); i++) {
 			tti = is_triangle_cut_envelope_polyhedra(prismindex[i],
@@ -256,11 +254,7 @@ namespace fastEnvelope
 			}
 		}
 
-		std::cout << "filted intersection size " << filted_intersection.size() << std::endl;
-		for (int i = 0; i < filted_intersection.size(); i++) {
-			std::cout << filted_intersection[i] << " ";
-		}
-		std::cout<<std::endl;
+
 		if (filted_intersection.size() == 0) {
 
 			return false;
@@ -300,7 +294,6 @@ namespace fastEnvelope
 
 			for (int k = 0; k < 3; k++) {
 				for (int j = 0; j < intersect_face[queue[i]].size(); j++) {
-					std::cout << "here we check a new intersection" << std::endl;
 					tti = algorithms::seg_cut_plane(triangle[triseg[k][0]], triangle[triseg[k][1]],
 						halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2]);
 					if (tti != FE_CUT_FACE) continue;
@@ -313,39 +306,23 @@ namespace fastEnvelope
 						halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
 						idlist, idlistorder, jump1, check_id);
 #endif
-					
+
 
 					if (inter == 1)
 					{
 #ifdef ENVELOPE_WITH_GMP
-						check_id = -1;
-						int id_new = -1;
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over_Rational(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
 							filted_intersection, intersect_face, coverlist, jump1, check_id);
-						int inter1 = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(triangle[triseg[k][0]], triangle[triseg[k][1]],
-							halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
-							filted_intersection, intersect_face, coverlist, jump1, id_new);
-						//check_id = id_new;
-						/*int inter1 = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over_Multiprecision(triangle[triseg[k][0]], triangle[triseg[k][1]],
-							halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
-							filted_intersection, intersect_face, coverlist, jump1, id_new); */
-						if (check_id != id_new) {
-							std::cout << "**id different " << filted_intersection[check_id] << " " << filted_intersection[id_new] << std::endl;
-							std::cout << "**id different " << check_id << " " << id_new << std::endl;
-						}
-						if (inter != inter1) {
-							std::cout << "**here is diff in lpi " << inter << " " << inter1 << std::endl;
-						}
 #else
 						inter = Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(triangle[triseg[k][0]], triangle[triseg[k][1]],
 							halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][0], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][1], halfspace[filted_intersection[queue[i]]][intersect_face[queue[i]][j]][2],
 							filted_intersection, intersect_face, coverlist, jump1, check_id);
 #endif
-						
+
 						assert(inter != 2);// the point must exist because it is a seg-halfplane intersection
 						if (inter == 1) {
-							std::cout << "out here lpi" << std::endl;
+
 							return true;
 						}
 						if (inter == 0) {
@@ -358,64 +335,10 @@ namespace fastEnvelope
 				}
 			}
 		}
-		std::cout << "current queue " << std::endl;
-		for (int i = 0; i < queue.size(); i++) {
-			std::cout << idlist[i] << " ";
-			
-		}
-		std::cout << std::endl;
-
-#ifdef ENVELOPE_WITH_GMP
-		std::vector<unsigned int> asd;
-		asd.insert(asd.end(), queue.begin(), queue.end());
-		for (int k = 0; k < 3; k++) {
-			const bool res = segment_out_of_envelope(triangle[triseg[k][0]], triangle[triseg[k][1]], asd);
-			if (!res)
-				std::cout << "aaaaaaaaout" << std::endl;
-		}
-
-		std::ofstream xxxx("bla.obj");
-		xxxx << "v " << triangle[0][0] << " " << triangle[0][1] << " " << triangle[0][2] << "\n";
-		xxxx << "v " << triangle[1][0] << " " << triangle[1][1] << " " << triangle[1][2] << "\n";
-		xxxx << "v " << triangle[2][0] << " " << triangle[2][1] << " " << triangle[2][2] << "\n";
-		xxxx << "f 1 2 3\n";
-		xxxx.close();
 
 
-		for (int i = 0; i < queue.size(); i++) {
-			std::ofstream xxx("bla"+std::to_string(i)+".obj");
 
-			int xxxi = 1;
-			int pid = idlist[i];
-			for (const auto &f : halfspace[pid])
-			{
-				const Vector3 e1 = f[1] - f[0];
-				const Vector3 e2 = f[2] - f[0];
 
-				const Vector3 p3 = f[0] + e1 + e2;
-
-				xxx << "v " << f[0][0] << " " << f[0][1] << " " << f[0][2] << "\n";
-				xxx << "v " << f[1][0] << " " << f[1][1] << " " << f[1][2] << "\n";
-				xxx << "v " << f[2][0] << " " << f[2][1] << " " << f[2][2] << "\n";
-				xxx << "v " << p3[0] << " " << p3[1] << " " << p3[2] << "\n";
-
-				xxx << "f " << xxxi << " " << xxxi + 1 << " " << xxxi + 3 << " " << xxxi + 2 << "\n";
-				xxxi += 4;
-			}
-
-			xxx.close();
-			std::cout << "tri" + std::to_string(i) + ".obj "<< (m_ver_p[m_faces_p[pid][0]]- 
-				m_ver_p[m_faces_p[pid][1]]).cross(m_ver_p[m_faces_p[pid][0]] -m_ver_p[m_faces_p[pid][1]]).norm()/2 << std::endl;
-			std::ofstream nxxxx("tri"+ std::to_string(i) +".obj");
-			nxxxx << "v " << m_ver_p[m_faces_p[pid][0]][0] << " " << m_ver_p[m_faces_p[pid][0]][1] << " " << m_ver_p[m_faces_p[pid][0]][2] << "\n";
-			nxxxx << "v " << m_ver_p[m_faces_p[pid][1]][0] << " " << m_ver_p[m_faces_p[pid][1]][1] << " " << m_ver_p[m_faces_p[pid][1]][2] << "\n";
-			nxxxx << "v " << m_ver_p[m_faces_p[pid][2]][0] << " " << m_ver_p[m_faces_p[pid][2]][1] << " " << m_ver_p[m_faces_p[pid][2]][2] << "\n";
-			nxxxx << "f 1 2 3\n";
-			nxxxx.close();
-		}
-
-			
-#endif
 		//tpi part
 
 		//tree
@@ -436,7 +359,7 @@ namespace fastEnvelope
 		{
 			jump1 = filted_intersection[queue[i]];
 
-			localtree.bbox_find_bbox(cornerlist[jump1][0], cornerlist[jump1][1], list);//list is the ids of filted_intersection 
+			localtree.bbox_find_bbox(cornerlist[jump1][0], cornerlist[jump1][1], list);
 			neighbours.clear();
 			neighbour_cover.clear();
 			neighbour_facets.clear();
@@ -450,247 +373,149 @@ namespace fastEnvelope
 				if (coverlist[list[j]] == true) neighbour_cover[j] = true;
 				else neighbour_cover[j] = false;
 			}
-			
-				std::cout <<"see neighours of  "<< jump1<<" " <<neighbours.size() << std::endl;
-				for (int j = 0; j < neighbours.size(); j++) {
-					std::cout << neighbours[j] << " ";
-				}
-				std::cout << std::endl;
-			
+
 
 
 			for (int j = 0; j < i; j++) {
-			//for (int j = 0; j < queue.size(); j++) {
-				if (i == j)
-					continue;
-				std::cout << "i " << idlist[i] << " j " << idlist[j] << std::endl;
 				jump2 = filted_intersection[queue[j]];
-
-				
 				if (!algorithms::box_box_intersection(cornerlist[jump1][0], cornerlist[jump1][1], cornerlist[jump2][0], cornerlist[jump2][1]))
 					continue;
-				std::cout << "i " << idlist[i] << " j " << idlist[j] << std::endl;
-				/*for (int k = 0; k < intersect_face[queue[i]].size(); k++) {
+				for (int k = 0; k < intersect_face[queue[i]].size(); k++) {
 					for (int h = 0; h < intersect_face[queue[j]].size(); h++) {
-						const int intersect_faceik = intersect_face[queue[i]][k];
-						const int intersect_facejh = intersect_face[queue[j]][h];*/
-				for (int k = 0; k < halfspace[jump1].size(); k++) {
-					for (int h = 0; h < halfspace[jump2].size(); h++) {
-						const int intersect_faceik = k;
-						const int intersect_facejh = h; 
-						
+
 #ifdef ENVELOPE_WITH_GMP
 						cut = is_3_triangle_cut_Rational(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2]);
-						int cut1;
-						cut1 = is_3_triangle_cut(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2]);
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2]);
-						if (cut != cut1)
-							std::cout << "3 triangle cut different " <<cut<<" "<<cut1<< std::endl;
-
-						
-						//std::cout << "cutt 1" << cut << std::endl;
+						//timettt += timer.getElapsedTimeInSec();
 						if (!cut) continue;
 
 
 						cut = is_tpp_on_polyhedra_Rational(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2], jump1, intersect_faceik);
-						/*cut1 = is_tpp_on_polyhedra(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
-
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2], jump1, intersect_faceik);
-						if (cut != cut1)
-							std::cout << "tpp on face 1 wrong " << cut << " " << cut1 << std::endl;*/
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2], jump1, intersect_face[queue[i]][k]);
 
 						if (!cut) continue;
 
 
 						cut = is_tpp_on_polyhedra_Rational(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2], jump2, intersect_facejh);
-						cut1 = is_tpp_on_polyhedra(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2], jump2, intersect_face[queue[j]][h]);
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2], jump2, intersect_facejh);
-						if (cut != cut1)
-							std::cout << "tpp on face 2 wrong " << cut << " " << cut1 << std::endl;
 						if (!cut) continue;
-
-						std::cout << "here is a real intersection need to be check" << std::endl;
 #else
-						if (jump1 == 1404 && jump2 == 1391) {
-							std::cout << "should out here " << inter << std::endl;
-						}
 						cut = is_3_triangle_cut(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2]);
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2]);
 
 						//timettt += timer.getElapsedTimeInSec();
 						if (!cut) continue;
 
 
 						cut = is_tpp_on_polyhedra(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2], jump1, intersect_faceik);
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2], jump1, intersect_face[queue[i]][k]);
 
 						if (!cut) continue;
 
 
 						cut = is_tpp_on_polyhedra(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2], jump2, intersect_facejh);
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2], jump2, intersect_face[queue[j]][h]);
 
 						if (!cut) continue;
 #endif
-						
+
 
 #ifdef ENVELOPE_WITH_GMP
 						inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2],
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2],
 							idlist, idlistorder, jump1, jump2, check_id);
-						/*int inter1 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
-
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2],
-							idlist, idlistorder, jump1, jump2, check_id);
-						if (inter != inter1) {
-							std::cout << "here is diff cover tpp " << inter << " " << inter1 << std::endl;
-					}*/
 #else
 						inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
-							halfspace[jump1][intersect_faceik][0],
-							halfspace[jump1][intersect_faceik][1],
-							halfspace[jump1][intersect_faceik][2],
+							halfspace[jump1][intersect_face[queue[i]][k]][0],
+							halfspace[jump1][intersect_face[queue[i]][k]][1],
+							halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-							halfspace[jump2][intersect_facejh][0],
-							halfspace[jump2][intersect_facejh][1],
-							halfspace[jump2][intersect_facejh][2],
+							halfspace[jump2][intersect_face[queue[j]][h]][0],
+							halfspace[jump2][intersect_face[queue[j]][h]][1],
+							halfspace[jump2][intersect_face[queue[j]][h]][2],
 							idlist, idlistorder, jump1, jump2, check_id);
-
 #endif
 
-						
+
 
 
 						if (inter == 1) {
 
 #ifdef ENVELOPE_WITH_GMP
-							std::cout << "cover dont cover this p" << std::endl;
 							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_Rational(triangle,
-								halfspace[jump1][intersect_faceik][0],
-								halfspace[jump1][intersect_faceik][1],
-								halfspace[jump1][intersect_faceik][2],
+								halfspace[jump1][intersect_face[queue[i]][k]][0],
+								halfspace[jump1][intersect_face[queue[i]][k]][1],
+								halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-								halfspace[jump2][intersect_facejh][0],
-								halfspace[jump2][intersect_facejh][1],
-								halfspace[jump2][intersect_facejh][2],
+								halfspace[jump2][intersect_face[queue[j]][h]][0],
+								halfspace[jump2][intersect_face[queue[j]][h]][1],
+								halfspace[jump2][intersect_face[queue[j]][h]][2],
 								neighbours, neighbour_facets, jump1, jump2, check_id);
-
-							int inter1 = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(triangle,
-								halfspace[jump1][intersect_faceik][0],
-								halfspace[jump1][intersect_faceik][1],
-								halfspace[jump1][intersect_faceik][2],
-
-								halfspace[jump2][intersect_facejh][0],
-								halfspace[jump2][intersect_facejh][1],
-								halfspace[jump2][intersect_facejh][2],
-								neighbours, neighbour_facets, jump1, jump2, check_id);
-							//std::cout << "we went to search neighbours " << std::endl;
-							std::cout << "prisms " << jump1 << " f "<< intersect_faceik<<" " << jump2 << " f "<< intersect_facejh << std::endl;
-							std::cout << "tpi result " << inter << " " << inter1 << std::endl;
-							if (inter != inter1) {
-								std::cout << "here is diff "<<inter<<" "<<inter1 << std::endl;
-							}
 #else
 							inter = Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(triangle,
-								halfspace[jump1][intersect_faceik][0],
-								halfspace[jump1][intersect_faceik][1],
-								halfspace[jump1][intersect_faceik][2],
+								halfspace[jump1][intersect_face[queue[i]][k]][0],
+								halfspace[jump1][intersect_face[queue[i]][k]][1],
+								halfspace[jump1][intersect_face[queue[i]][k]][2],
 
-								halfspace[jump2][intersect_facejh][0],
-								halfspace[jump2][intersect_facejh][1],
-								halfspace[jump2][intersect_facejh][2],
+								halfspace[jump2][intersect_face[queue[j]][h]][0],
+								halfspace[jump2][intersect_face[queue[j]][h]][1],
+								halfspace[jump2][intersect_face[queue[j]][h]][2],
 								neighbours, neighbour_facets, neighbour_cover, jump1, jump2, check_id);
-							
-
-							if (jump1 == 1404 && jump2 == 1391) {
-								std::cout << "should out here " <<inter <<std::endl;
-							}
 #endif
-							
+
 
 
 							if (inter == 1) {
 
-								std::cout << "out tpi " <<inter<<" "<<inter1<< std::endl;
-								std::cout << "current queue xxxx" << std::endl;
-								for (int i = 0; i < queue.size(); i++) {
-									std::cout << idlist[i] << " ";
-
-								}
-								std::cout << std::endl;
 								return true;
 							}
 							if (inter == 0) {
 								idlistorder.emplace_back(intersect_face[list[check_id]]);
 								queue.emplace_back(list[check_id]);
-								std::cout << "---------added " << list[check_id] << std::endl;
 								idlist.emplace_back(filted_intersection[list[check_id]]);
 								coverlist[list[check_id]] = true;//TODO can we upload local_cover_list here? no, because it all depends on list[]
 							}
@@ -699,13 +524,8 @@ namespace fastEnvelope
 				}
 			}
 		}
-		std::cout << "current queue " << std::endl;
-		for (int i = 0; i < queue.size(); i++) {
-			std::cout << idlist[i] << " ";
 
-		}
-		std::cout << std::endl;
-		std::cout << "here inside " << std::endl;
+
 		return false;
 
 
@@ -797,7 +617,7 @@ namespace fastEnvelope
 
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id(
 		const Vector3 &segpoint0, const Vector3 &segpoint1,
-		const Vector3 &triangle0,const Vector3 &triangle1, const Vector3 &triangle2,
+		const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2,
 		const std::vector<unsigned int> &prismindex, const int &jump, int &id) const {
 		LPI_filtered_suppvars sf;
 		bool precom = orient3D_LPI_prefilter( //
@@ -820,7 +640,7 @@ namespace fastEnvelope
 				triangle1[0], triangle1[1], triangle1[2],
 				triangle2[0], triangle2[1], triangle2[2], s);
 
-			
+
 			if (premulti == false) return 2;
 			for (int i = 0; i < prismindex.size(); i++)
 			{
@@ -832,7 +652,7 @@ namespace fastEnvelope
 
 				for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
 
-					
+
 					ori = orient3D_LPI_post_exact(s,
 						segpoint0[0], segpoint0[1], segpoint0[2],
 
@@ -918,7 +738,7 @@ namespace fastEnvelope
 		if (!recompute.empty())
 		{
 
-			
+
 			LPI_exact_suppvars s;
 			bool premulti = orient3D_LPI_pre_exact(
 				segpoint0[0], segpoint0[1], segpoint0[2],
@@ -927,7 +747,7 @@ namespace fastEnvelope
 				triangle1[0], triangle1[1], triangle1[2],
 				triangle2[0], triangle2[1], triangle2[2],
 				s);
-			
+
 
 			for (int k = 0; k < recompute.size(); k++)
 			{
@@ -940,7 +760,7 @@ namespace fastEnvelope
 						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
 						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
 						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
-					
+
 					if (ori == 1 || ori == 0)
 						break;
 
@@ -958,11 +778,11 @@ namespace fastEnvelope
 
 
 #ifdef ENVELOPE_WITH_GMP
-	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_Rational (
+	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_Rational(
 		const Vector3 &segpoint0, const Vector3 &segpoint1,
 		const Vector3 &triangle0, const Vector3 &triangle1, const Vector3 &triangle2,
 		const std::vector<unsigned int> &prismindex, const int &jump, int &id) const {
-		
+
 
 		Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
 			t00(triangle0[0]), t01(triangle0[1]), t02(triangle0[2]),
@@ -974,7 +794,7 @@ namespace fastEnvelope
 				s00, s01, s02, s10, s11, s12,
 				t00, t01, t02, t10, t11, t12, t20, t21, t22,
 				a11, a12, a13, d, check_rational);
-		
+
 		if (precom == false) {
 			return 2;
 		}
@@ -985,7 +805,7 @@ namespace fastEnvelope
 		{
 			if (prismindex[i] == jump) continue;
 
-			
+
 			tot = 0;
 
 			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
@@ -1018,7 +838,7 @@ namespace fastEnvelope
 			{
 				id = i;
 				return IN_PRISM;
-			}	
+			}
 		}
 		return OUT_PRISM;
 	}
@@ -1231,7 +1051,7 @@ namespace fastEnvelope
 		if (!recompute.empty())
 		{
 
-			
+
 			LPI_exact_suppvars s;
 			bool premulti = orient3D_LPI_pre_exact(
 				segpoint0[0], segpoint0[1], segpoint0[2],
@@ -1240,7 +1060,7 @@ namespace fastEnvelope
 				triangle1[0], triangle1[1], triangle1[2],
 				triangle2[0], triangle2[1], triangle2[2],
 				s);
-			
+
 
 			for (int k = 0; k < recompute.size(); k++)
 			{
@@ -1253,7 +1073,7 @@ namespace fastEnvelope
 						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
 						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
 						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
-					
+
 					if (ori == 1 || ori == 0)
 						break;
 
@@ -1274,7 +1094,7 @@ namespace fastEnvelope
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
 		const std::vector<std::vector<int>>& intersect_face, const int &jump, int &id) const {
-		
+
 		Rational s00(segpoint0[0]), s01(segpoint0[1]), s02(segpoint0[2]), s10(segpoint1[0]), s11(segpoint1[1]), s12(segpoint1[2]),
 			t00(triangle0[0]), t01(triangle0[1]), t02(triangle0[2]),
 			t10(triangle1[0]), t11(triangle1[1]), t12(triangle1[2]),
@@ -1289,7 +1109,7 @@ namespace fastEnvelope
 		if (precom == false) {
 			return 2;
 		}
-		
+
 		int tot, fid;
 		int ori;
 
@@ -1382,7 +1202,7 @@ namespace fastEnvelope
 	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(
 		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
-		const std::vector<std::vector<int>>& intersect_face,const std::vector<bool>& coverlist, const int &jump, int &id) const {
+		const std::vector<std::vector<int>>& intersect_face, const std::vector<bool>& coverlist, const int &jump, int &id) const {
 		LPI_filtered_suppvars sl;
 		bool precom = orient3D_LPI_prefilter( //
 			segpoint0[0], segpoint0[1], segpoint0[2],
@@ -1392,7 +1212,6 @@ namespace fastEnvelope
 			triangle2[0], triangle2[1], triangle2[2],
 			sl);
 		if (precom == false) {
-			std::cout << "go inside lpi " << std::endl;
 			int tot, ori, fid;
 
 			LPI_exact_suppvars s;
@@ -1500,28 +1319,15 @@ namespace fastEnvelope
 		std::vector<INDEX> recompute;
 
 		recompute.clear();
-		//for debug
-		LPI_exact_suppvars sp;
-		bool premulti = orient3D_LPI_pre_exact(
-			segpoint0[0], segpoint0[1], segpoint0[2],
-			segpoint1[0], segpoint1[1], segpoint1[2],
-			triangle0[0], triangle0[1], triangle0[2],
-			triangle1[0], triangle1[1], triangle1[2],
-			triangle2[0], triangle2[1], triangle2[2],
-			sp);
-
-		//for debug
 		for (int i = 0; i < prismindex.size(); i++)
 		{
 			if (prismindex[i] == jump) continue;
 			if (coverlist[i] == true) continue;
-			index.Pi = -1;
-			index.FACES.clear();// the id of facets are in
+			index.FACES.clear();
 			tot = 0; fid = 0;
 			ori = -1;
 
 			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-				std::cout << "check face nbr " <<prismindex[i]<<" "<< j << std::endl;
 				if (intersect_face[i][fid] == j)
 				{
 					if (fid + 1 < intersect_face[i].size()) fid++;
@@ -1535,24 +1341,13 @@ namespace fastEnvelope
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
 						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
 
-				int ori1 = orient3D_LPI_post_exact(sp, segpoint0[0], segpoint0[1], segpoint0[2],
-					halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-					halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-					halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-				if (ori != ori1) {
-					std::cout << "**haha, here1 " << ori<<" "<<ori1 <<" pid "<< prismindex[i]<< " f " << j << std::endl;
-				}
-
-
 				if (ori == 1)
 				{
-					std::cout << "**lpi filtered out nbr1 " << prismindex[i] <<" f "<<j<< std::endl;
 					break;
 				}
 				if (ori == 0)
 				{
 					index.FACES.emplace_back(j);
-					std::cout << "index face size " << index.FACES.size() << std::endl;
 				}
 
 				else if (ori == -1)
@@ -1562,11 +1357,9 @@ namespace fastEnvelope
 
 			}
 			if (ori == 1) continue;
-
 			fid = 0;
 			ori = -1;
 			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-				std::cout << "check face nbr " << prismindex[i] << " " << j << std::endl;
 				if (intersect_face[i][fid] == j)
 				{
 					if (fid + 1 < intersect_face[i].size()) fid++;
@@ -1580,17 +1373,9 @@ namespace fastEnvelope
 						halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
 						halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
 						halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-				int ori1 = orient3D_LPI_post_exact(sp, segpoint0[0], segpoint0[1], segpoint0[2],
-					halfspace[prismindex[i]][j][0][0], halfspace[prismindex[i]][j][0][1], halfspace[prismindex[i]][j][0][2],
-					halfspace[prismindex[i]][j][1][0], halfspace[prismindex[i]][j][1][1], halfspace[prismindex[i]][j][1][2],
-					halfspace[prismindex[i]][j][2][0], halfspace[prismindex[i]][j][2][1], halfspace[prismindex[i]][j][2][2]);
-				if (ori != ori1) {
-					std::cout << "**haha, here2 " << ori << " " << ori1 <<" f "<<j<< std::endl;
-				}
 
 				if (ori == 1)
 				{
-					std::cout << "**lpi filtered out nbr2 " << prismindex[i]<<" f "<<j << std::endl;
 					break;
 				}
 				if (ori == 0)
@@ -1605,25 +1390,24 @@ namespace fastEnvelope
 
 			}
 			if (ori == 1) continue;
-
 			if (tot == halfspace[prismindex[i]].size())
 			{
 				id = i;
 				return IN_PRISM;
 			}
 
-			assert(ori != 1);
-			
-			assert(!index.FACES.empty());
-			index.Pi = i;//local id
-			recompute.emplace_back(index);
-			
+			if (ori != 1)
+			{
+				assert(!index.FACES.empty());
+				index.Pi = i;//local id
+				recompute.emplace_back(index);
+			}
 		}
 
 		if (!recompute.empty())
 		{
-			std::cout << "** here we use expansion in lpi " << std::endl;
-			
+
+
 			LPI_exact_suppvars s;
 			bool premulti = orient3D_LPI_pre_exact(
 				segpoint0[0], segpoint0[1], segpoint0[2],
@@ -1632,7 +1416,7 @@ namespace fastEnvelope
 				triangle1[0], triangle1[1], triangle1[2],
 				triangle2[0], triangle2[1], triangle2[2],
 				s);
-			
+
 
 			for (int k = 0; k < recompute.size(); k++)
 			{
@@ -1645,7 +1429,7 @@ namespace fastEnvelope
 						halfspace[in1][in2][0][0], halfspace[in1][in2][0][1], halfspace[in1][in2][0][2],
 						halfspace[in1][in2][1][0], halfspace[in1][in2][1][1], halfspace[in1][in2][1][2],
 						halfspace[in1][in2][2][0], halfspace[in1][in2][2][1], halfspace[in1][in2][2][2]);
-					
+
 					if (ori == 1 || ori == 0)
 						break;
 
@@ -1763,120 +1547,15 @@ namespace fastEnvelope
 			if (tot == halfspace[prismindex[i]].size())
 			{
 				id = i;
-				return 0;
-			}
-
-		}
-
-		return 1;
-	}
-#endif
-	int FastEnvelope::Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over_Multiprecision(
-		const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
-		const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
-		const std::vector<std::vector<int>>& intersect_face, const std::vector<bool>& coverlist, const int &jump, int &id) const {
-
-		int tot, ori, fid;
-
-		LPI_exact_suppvars s;
-		bool premulti = orient3D_LPI_pre_exact(
-			segpoint0[0], segpoint0[1], segpoint0[2],
-			segpoint1[0], segpoint1[1], segpoint1[2],
-
-			triangle0[0], triangle0[1], triangle0[2],
-			triangle1[0], triangle1[1], triangle1[2],
-			triangle2[0], triangle2[1], triangle2[2], s);
-
-
-		if (premulti == false) return 2;
-		for (int i = 0; i < prismindex.size(); i++)
-		{
-			if (prismindex[i] == jump)
-			{
-				continue;
-			}
-			if (coverlist[i] == true) continue;
-			tot = 0; fid = 0;
-			ori = -1;
-			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-
-
-				if (intersect_face[i][fid] == j)
-				{
-					if (fid + 1 < intersect_face[i].size()) fid++;
-				}
-				else continue;
-				ori = orient3D_LPI_post_exact(s,
-					segpoint0[0], segpoint0[1], segpoint0[2],
-
-					halfspace[prismindex[i]][j][0][0],
-					halfspace[prismindex[i]][j][0][1],
-					halfspace[prismindex[i]][j][0][2],
-
-					halfspace[prismindex[i]][j][1][0],
-					halfspace[prismindex[i]][j][1][1],
-					halfspace[prismindex[i]][j][1][2],
-
-					halfspace[prismindex[i]][j][2][0],
-					halfspace[prismindex[i]][j][2][1],
-					halfspace[prismindex[i]][j][2][2]);
-				if (ori == 1 || ori == 0)
-				{
-					break;
-				}
-
-				if (ori == -1)
-				{
-					tot++;
-				}
-			}
-			if (ori == 1 || ori == 0) continue;
-			fid = 0;
-			ori = -1;
-			for (int j = 0; j < halfspace[prismindex[i]].size(); j++) {
-
-
-				if (intersect_face[i][fid] == j)
-				{
-					if (fid + 1 < intersect_face[i].size()) fid++;
-					continue;
-				}
-
-				ori = orient3D_LPI_post_exact(s,
-					segpoint0[0], segpoint0[1], segpoint0[2],
-
-					halfspace[prismindex[i]][j][0][0],
-					halfspace[prismindex[i]][j][0][1],
-					halfspace[prismindex[i]][j][0][2],
-
-					halfspace[prismindex[i]][j][1][0],
-					halfspace[prismindex[i]][j][1][1],
-					halfspace[prismindex[i]][j][1][2],
-
-					halfspace[prismindex[i]][j][2][0],
-					halfspace[prismindex[i]][j][2][1],
-					halfspace[prismindex[i]][j][2][2]);
-				if (ori == 1 || ori == 0)
-				{
-					break;
-				}
-
-				if (ori == -1)
-				{
-					tot++;
-				}
-			}
-			if (ori == 1 || ori == 0) continue;
-			if (tot == halfspace[prismindex[i]].size())
-			{
-				id = i;
 				return IN_PRISM;
 			}
-		}
 
+		}
 
 		return OUT_PRISM;
 	}
+#endif
+
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order(
 		const std::array<Vector3, 3> &triangle,
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
@@ -2069,7 +1748,7 @@ namespace fastEnvelope
 
 		if (recompute.size() > 0)
 		{
-			
+
 			bool premulti = orient3D_TPI_pre_exact(
 				triangle[0][0], triangle[0][1], triangle[0][2],
 				triangle[1][0], triangle[1][1], triangle[1][2],
@@ -2116,7 +1795,7 @@ namespace fastEnvelope
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
 		const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>&intersect_face, const int &jump1, const int &jump2,
 		int &id) const {
-		std::cout << "()we are here in tpp check" << std::endl;
+
 		int tot, ori, fid;
 
 		Rational
@@ -2208,7 +1887,7 @@ namespace fastEnvelope
 					h00, h01, h02,
 					h10, h11, h12,
 					h20, h21, h22, check_rational);
-				
+
 
 				if (ori == 1 || ori == 0)
 				{
@@ -2223,13 +1902,12 @@ namespace fastEnvelope
 			if (ori == 1 || ori == 0) continue;
 			if (tot == halfspace[prismindex[i]].size())
 			{
-				std::cout << " in tpi check, inside of " << prismindex[i] << std::endl;
 				id = i;
 				return IN_PRISM;
 			}
 
 		}
-		std::cout << " in tpi check, outside of " << std::endl;
+
 		return OUT_PRISM;
 
 	}
@@ -2238,7 +1916,7 @@ namespace fastEnvelope
 	int FastEnvelope::Implicit_Tri_Facet_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over(
 		const std::array<Vector3, 3> &triangle,
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22,
-		const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>&intersect_face,const std::vector<bool>& coverlist, const int &jump1, const int &jump2,
+		const std::vector<unsigned int> &prismindex, const std::vector<std::vector<int>>&intersect_face, const std::vector<bool>& coverlist, const int &jump1, const int &jump2,
 		int &id) const {
 
 		TPI_exact_suppvars s;
@@ -2427,7 +2105,7 @@ namespace fastEnvelope
 
 		if (recompute.size() > 0)
 		{
-			
+
 			bool premulti = orient3D_TPI_pre_exact(
 				triangle[0][0], triangle[0][1], triangle[0][2],
 				triangle[1][0], triangle[1][1], triangle[1][2],
@@ -2662,7 +2340,7 @@ namespace fastEnvelope
 				f221 = (facet22[1]);
 				f222 = (facet22[2]);
 
-				
+
 				premulti = orient3D_TPI_pre_exact(
 					t00, t01, t02, t10, t11, t12, t20, t21, t22,
 					f100, f101, f102, f110, f111, f112, f120, f121, f122,
@@ -2781,13 +2459,13 @@ namespace fastEnvelope
 			f200, f201, f202, f210, f211, f212, f220, f221, f222,
 			dr, n1r, n2r, n3r, check_rational);
 		if (premulti == false) return false;// point not exist
-		
+
 		int o1 = orient3D_TPI_postfilter_multiprecision(
 			dr, n1r, n2r, n3r,
 			nr0, nr1, nr2,
 			t00, t01, t02,
 			t10, t11, t12, check_rational);
-		
+
 		if (o1 == 0) return false;
 
 		int o2 = orient3D_TPI_postfilter_multiprecision(
@@ -2795,7 +2473,7 @@ namespace fastEnvelope
 			nr0, nr1, nr2,
 			t10, t11, t12,
 			t20, t21, t22, check_rational);
-		
+
 		if (o2 == 0 || o1 + o2 == 0) return false;
 
 		int o3 = orient3D_TPI_postfilter_multiprecision(
@@ -2803,7 +2481,7 @@ namespace fastEnvelope
 			nr0, nr1, nr2,
 			t20, t21, t22,
 			t00, t01, t02, check_rational);
-		
+
 		if (o3 == 0 || o1 + o3 == 0 || o2 + o3 == 0) {
 			return false;
 		}
@@ -2924,8 +2602,6 @@ namespace fastEnvelope
 		cid = cutp;
 		return 1;
 #endif
-		cid = cutp;
-		return 1;
 		LPI_filtered_suppvars sl;
 		std::array<Scalar, 2> seg00, seg01, seg02, seg10, seg11, seg12;
 		for (int i = 0; i < cutp.size(); i++)
@@ -2962,7 +2638,7 @@ namespace fastEnvelope
 			for (int k = 0; k < 2; k++)
 			{
 
-				bool precom = orient3D_LPI_prefilter( 
+				bool precom = orient3D_LPI_prefilter(
 					seg00[k], seg01[k], seg02[k],
 					seg10[k], seg11[k], seg12[k],
 					halfspace[cindex][cutp[i]][0][0], halfspace[cindex][cutp[i]][0][1], halfspace[cindex][cutp[i]][0][2],
@@ -3208,7 +2884,7 @@ namespace fastEnvelope
 		f200 = (facet20[0]); f201 = (facet20[1]); f202 = (facet20[2]);
 		f210 = (facet21[0]); f211 = (facet21[1]); f212 = (facet21[2]);
 		f220 = (facet22[0]); f221 = (facet22[1]); f222 = (facet22[2]);
-		
+
 		bool premulti = orient3D_TPI_prefilter_multiprecision(
 			t00, t01, t02, t10, t11, t12, t20, t21, t22,
 			f100, f101, f102, f110, f111, f112, f120, f121, f122,
@@ -3234,7 +2910,7 @@ namespace fastEnvelope
 			if (ori == 1) return false;
 
 		}
-		
+
 		return true;
 	}
 #endif
@@ -3292,7 +2968,7 @@ namespace fastEnvelope
 		LPI_filtered_suppvars sf;
 		for (int i = 0; i < cutp.size(); i++)
 		{
-			
+
 			bool precom = orient3D_LPI_prefilter( // it is boolean maybe need considering
 				seg0[0], seg0[1], seg0[2],
 				seg1[0], seg1[1], seg1[2],
@@ -3367,7 +3043,7 @@ namespace fastEnvelope
 	bool FastEnvelope::point_out_prism_return_local_id(const Vector3 &point, const std::vector<unsigned int> &prismindex, const int &jump, int &id) const
 	{
 		Vector3 bmin, bmax;
-		
+
 		int ori;
 
 		for (int i = 0; i < prismindex.size(); i++)
