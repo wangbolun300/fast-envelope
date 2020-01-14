@@ -358,7 +358,7 @@ namespace fastEnvelope {
 
 
 			edgedire = AB.normalized();
-			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal);
+			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal)*tolerance;
 			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
 			plane[0] = m_ver[m_faces[i][0]] + edgenormaldist;
 			plane[1] = m_ver[m_faces[i][1]] + edgenormaldist;
@@ -374,7 +374,7 @@ namespace fastEnvelope {
 			}
 
 			edgedire = BC.normalized();
-			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal);
+			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal)*tolerance;
 			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
 
 			plane[0] = m_ver[m_faces[i][1]] + edgenormaldist;
@@ -390,7 +390,7 @@ namespace fastEnvelope {
 			}
 
 			edgedire = -AC.normalized();
-			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal);
+			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal)*tolerance;
 			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
 			
 			plane[0] = m_ver[m_faces[i][2]] + edgenormaldist;

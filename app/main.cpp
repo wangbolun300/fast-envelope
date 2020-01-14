@@ -1299,11 +1299,12 @@ void pure_our_method_detailed(string queryfile, string model, string resultfile,
 	results.resize(fn);
 	timer.start();
 	int inbr = 0;
-	for (int i = 0; i < fn; i++) {
+	for (int i = 17698; i < 17699; i++) {
 		timerdetail.start();
 		results[i] = fast_envelope.is_outside(triangles[i]);
 		timerlist[i] = timerdetail.getElapsedTimeInSec();
 		if (results[i] == 0) inbr++;
+		cout << "result for this one " << i << " " << results[i] << std::endl;
 	}
 	timer.stop();
 	cout << "ours method time " << timer.getElapsedTimeInSec() << endl;
@@ -1390,10 +1391,12 @@ int main(int argc, char const *argv[])
 
 	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
 	//pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	/*pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));*/
 	//pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//read_CSV_triangle_write_csv("D:\\vs\\fast_envelope_csv\\python\\differenteps\\37402_tem.csv");
 	//write_duplicated_csv();
-
+	pure_our_method_detailed("D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\904474.csv",
+		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\904474.off", 
+		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\result_r.csv", 1,1);
 	return 0;
 }

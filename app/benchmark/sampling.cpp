@@ -1,6 +1,6 @@
 #include<fastenvelope/sampling.h>
 #include<fastenvelope/common_algorithms.h>
-#include <fastenvelope/Rational.hpp>
+//#include <fastenvelope/Rational.hpp>
 //#include<fastenvelope/Logger.hpp>
 namespace fastEnvelope {
 	sampling::sampling(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps) {
@@ -98,19 +98,19 @@ namespace fastEnvelope {
 			ps = p1 + d * nbr2;
 		};
 
-		const auto triangle_sample_normal_rational = [](const std::array<Vector3, 3> &triangle, Rational &ps0, Rational &ps1, Rational &ps2, const int &pieces, const int &nbr1, const int &nbr2)
-		{
-			int l1s = pieces - 1; //
-			Rational t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]), t10(triangle[1][0]), t11(triangle[1][1]),
-				t12(triangle[1][2]), t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]), nbr1r(nbr1), nbr2r(nbr2), l1sr(l1s);
+		//const auto triangle_sample_normal_rational = [](const std::array<Vector3, 3> &triangle, Rational &ps0, Rational &ps1, Rational &ps2, const int &pieces, const int &nbr1, const int &nbr2)
+		//{
+		//	int l1s = pieces - 1; //
+		//	Rational t00(triangle[0][0]), t01(triangle[0][1]), t02(triangle[0][2]), t10(triangle[1][0]), t11(triangle[1][1]),
+		//		t12(triangle[1][2]), t20(triangle[2][0]), t21(triangle[2][1]), t22(triangle[2][2]), nbr1r(nbr1), nbr2r(nbr2), l1sr(l1s);
 
-			Rational p0 = t00 + (t10 - t00) * nbr1r / l1sr, d0 = (t20 - t10) / l1sr;
-			Rational p1 = t01 + (t11 - t01) * nbr1r / l1sr, d1 = (t21 - t11) / l1sr;
-			Rational p2 = t02 + (t12 - t02) * nbr1r / l1sr, d2 = (t22 - t12) / l1sr;
-			ps0 = p0 + d0 * nbr2;
-			ps1 = p1 + d1 * nbr2;
-			ps2 = p2 + d2 * nbr2;
-		};
+		//	Rational p0 = t00 + (t10 - t00) * nbr1r / l1sr, d0 = (t20 - t10) / l1sr;
+		//	Rational p1 = t01 + (t11 - t01) * nbr1r / l1sr, d1 = (t21 - t11) / l1sr;
+		//	Rational p2 = t02 + (t12 - t02) * nbr1r / l1sr, d2 = (t22 - t12) / l1sr;
+		//	ps0 = p0 + d0 * nbr2;
+		//	ps1 = p1 + d1 * nbr2;
+		//	ps2 = p2 + d2 * nbr2;
+		//};
 
 		bool out;
 		Vector3 point;

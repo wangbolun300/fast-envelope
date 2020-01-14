@@ -40,6 +40,8 @@ namespace fastEnvelope {
 
 	private:
 		AABB tree;
+		std::vector<Vector3> m_ver_p;
+		std::vector<Vector3i> m_faces_p;
 		std::vector<std::array<Vector3, 2>> cornerlist;
 		std::vector<std::vector<std::array<Vector3, 3>>> halfspace;
 		bool USE_ADJACENT_INFORMATION = true;
@@ -77,6 +79,10 @@ namespace fastEnvelope {
 
 #ifdef ENVELOPE_WITH_GMP
 		int Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over_Rational(
+			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
+			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
+			const std::vector<std::vector<int>>& intersect_face, const std::vector<bool>& coverlist, const int &jump, int &id) const;
+		int Implicit_Seg_Facet_interpoint_Out_Prism_return_local_id_with_face_order_jump_over_Multiprecision(
 			const Vector3 &segpoint0, const Vector3 &segpoint1, const Vector3 &triangle0,
 			const Vector3 &triangle1, const Vector3 &triangle2, const std::vector<unsigned int> &prismindex,
 			const std::vector<std::vector<int>>& intersect_face, const std::vector<bool>& coverlist, const int &jump, int &id) const;
