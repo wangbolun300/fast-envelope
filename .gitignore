@@ -4,3 +4,4 @@ bin*
 *.code-workspace
 *build*
 .idea*
+*debug*
