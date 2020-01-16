@@ -779,8 +779,8 @@ double test_shrink_envelope(string inputFileName1, string input_surface_path1,do
 	}
 	return timer2.getElapsedTimeInSec();
 
-	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
-	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
+	//std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
+	//std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
 	
 	//////////
 

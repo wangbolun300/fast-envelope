@@ -606,7 +606,7 @@ bool orient3D_TPI_prefilter(
 	if (max9 < fu3y) max9 = fu3y;
 	if (max9 < fw2y) max9 = fw2y;
 	if (max9 < fw3y) max9 = fw3y;
-	double max10 = fu2y;
+	double max10 = fu2z;
 	if (max10 < fu3z) max10 = fu3z;
 	if (max10 < fw2z) max10 = fw2z;
 	if (max10 < fw3z) max10 = fw3z;
