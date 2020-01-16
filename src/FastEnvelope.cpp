@@ -560,10 +560,7 @@ namespace fastEnvelope
 		};
 		bool out, cut;
 		int inter, check_id;
-<<<<<<< HEAD
-		
-=======
->>>>>>> 3366e7720a0bbeef8b8a58f8df723ecda9aefbe9
+
 		jump1 = -1;
 		for (int i = 0; i < 3; i++) {
 			out = point_out_prism(triangle[i], prismindex, jump1);
