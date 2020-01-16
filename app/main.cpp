@@ -33,6 +33,10 @@
 #include<igl/readSTL.h>
 #include<igl/writeOFF.h>
 #include <fastenvelope/getRSS.hpp>
+
+#ifdef ENVELOPE_WITH_GMP
+#include <fastenvelope/Rational.hpp>
+#endif
 using namespace fastEnvelope;
 using namespace std;
 
@@ -1297,10 +1301,12 @@ void pure_our_method_detailed(string queryfile, string model, string resultfile,
 	std::vector<double> timerlist;
 	timerlist.resize(fn);
 	results.resize(fn);
+	
 	timer.start();
 	int inbr = 0;
 	for (int i = 0; i < fn; i++) {
 		timerdetail.start();
+		results[i] = 0;
 		results[i] = fast_envelope.is_outside(triangles[i]);
 		timerlist[i] = timerdetail.getElapsedTimeInSec();
 		if (results[i] == 0) inbr++;
@@ -1350,7 +1356,170 @@ void write_duplicated_csv() {
 	fout.close();
 	
 }
+#ifdef ENVELOPE_WITH_GMP
+double get_oriented_volume(Vector3 p, Vector3 pl1, Vector3 pl2, Vector3 pl3) {
+	Vector3 v1 = pl1 - pl2;
+	Vector3 v2 = pl1 - pl3;
+	Vector3 v3 = pl1 - p;
+	//V=(1/3)*S*h
+	/*Rational t11, t12, t13;
+	t11=*/
+	Vector3 t1 = v1.cross(v2) / 2;// get area S
+	double t2 = t1.dot(v3) / 3;
+	return t2;
+}
+#include<igl/readOFF.h>
+bool read_file(const std::string filename, std::vector<fastEnvelope::Vector3>& v, std::vector<fastEnvelope::Vector3i>& f) {
+	std::vector<std::vector<double > >  V;
+	std::vector<std::vector<int > >  F;
+	std::vector<std::vector<double > >  N;
+	std::vector<std::vector<double > >  C;
+	bool OK = igl::readOFF(filename, V, F, N, C);
+	if (!OK) {
+		std::cout << "read file wrong" << std::endl;
+		return false;
+	}
+	v.resize(V.size());
+	f.resize(F.size());
+	for (int i = 0; i < V.size(); i++) {
+		v[i][0] = V[i][0];
+		v[i][1] = V[i][1];
+		v[i][2] = V[i][2];
+	}
+	for (int i = 0; i < F.size(); i++) {
+		f[i][0] = F[i][0];
+		f[i][1] = F[i][1];
+		f[i][2] = F[i][2];
+	}
+	/*std::cout << "v size " << v.size() << std::endl;
+	std::cout << "f size " << f.size() << std::endl;*/
 
+}
+double get_polyhedron_volume(std::string file) {
+	std::vector<fastEnvelope::Vector3> v;
+	std::vector<fastEnvelope::Vector3i> f;
+	read_file(file, v, f);
+	///////////////////////////this is just for debug
+	//for (int i = 0; i < v.size(); i++) {//enlarge the axis to see the volume
+	//	v[i][0] *= int(1024);
+	//	v[i][1] *= int(1024);
+	//	v[i][2] *= int(1024);
+	//}
+
+	////////////////////////////just for debug
+	double volume = 0;
+	Vector3 origin = Vector3(0, 0, 0);
+	for (int i = 0; i < v.size(); i++) {
+		origin += v[i];
+	}
+	origin = origin / v.size();
+
+
+	for (int i = 0; i < f.size(); i++) {
+		volume += get_oriented_volume(origin, v[f[i][0]], v[f[i][1]], v[f[i][2]]);
+	}
+
+	return fabs(volume);
+
+}
+
+
+#endif
+void pure_our_method_no_optimization(string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model) {
+
+	vector<int> outenvelope;
+	std::vector<Vector3> env_vertices, v;
+	std::vector<Vector3i> env_faces, f;
+	GEO::Mesh envmesh, mesh;
+
+	///////////////////////////////////////////////////////
+
+
+
+	std::vector<std::array<Vector3, 3>> triangles;
+	if (csv_model) {
+		triangles = read_CSV_triangle(queryfile, outenvelope);
+	}
+	else {
+		bool ok1 = MeshIO::load_mesh(queryfile, v, f, mesh);
+		if (!ok1) {
+			std::cout << ("Unable to load query mesh") << std::endl;
+			return;
+		}
+		triangles.resize(f.size());
+		for (int i = 0; i < f.size(); i++) {
+			for (int j = 0; j < 3; j++) {
+				triangles[i][j][0] = v[f[i][j]][0];
+				triangles[i][j][1] = v[f[i][j]][1];
+				triangles[i][j][2] = v[f[i][j]][2];
+			}
+		}
+	}
+
+	bool ok = MeshIO::load_mesh(model, env_vertices, env_faces, envmesh);
+	if (!ok) {
+		std::cout << ("Unable to load mesh") << std::endl;
+		return;
+	}
+
+	Vector3 min, max;
+	Scalar eps = 1e-3;
+	eps = eps * shrinksize;
+	Scalar dd;
+	get_bb_corners(env_vertices, min, max);
+	dd = ((max - min).norm()) *eps;
+	igl::Timer timer;
+	timer.start();
+	const FastEnvelope fast_envelope(env_vertices, env_faces, dd);
+	
+	timer.stop();
+	const auto init_time = timer.getElapsedTimeInSec();
+	std::cout << "ours initialization time " << timer.getElapsedTimeInSec() << std::endl;
+	int fn = triangles.size() > 100000 ? 100000 : triangles.size();
+	std::cout << "total query size, " << fn << std::endl;
+	std::vector<bool> results;
+	results.resize(fn);
+	timer.start();
+	int inbr = 0;
+	for (int i = 0; i < fn; i++) {
+
+		results[i] = fast_envelope.is_outside_no_optimazation(triangles[i]);
+		if (results[i] == 0) inbr++;
+	}
+	timer.stop();
+	cout << "ours method time " << timer.getElapsedTimeInSec() << endl;
+	cout << "memory use, " << getPeakRSS() << std::endl;
+	cout << "inside percentage, " << float(inbr) / float(fn) << std::endl;
+
+	std::ofstream fout;
+	fout.open(resultfile + ".json");
+	fout << "{\n";
+
+	fout << "\"method\": " << "\"ours\"" << ",\n";
+	fout << "\"init_time\": " << init_time << ",\n";
+	fout << "\"query_time\": " << timer.getElapsedTimeInSec() << ",\n";
+	fout << "\"memory\": " << getPeakRSS() << ",\n";
+	fout << "\"inside\": " << double(inbr) / double(fn) << ",\n";
+	fout << "\"queries\": " << fn << ",\n";
+	fout << "\"vertices\": " << env_vertices.size() << ",\n";
+	fout << "\"facets\": " << env_faces.size() << "\n";
+	fout << "}";
+	fout.close();
+
+
+
+
+
+	fout.open(resultfile);
+	fout << "results" << endl;
+	for (int i = 0; i < fn; i++) {
+
+		fout << results[i] << endl;
+
+	}
+	fout.close();
+	std::cout << model << " done! " << std::endl;
+}
 
 
 
@@ -1365,38 +1534,21 @@ int main(int argc, char const *argv[])
 	GEO::CmdLine::import_arg_group("standard");
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
+#ifdef ENVELOPE_WITH_GMP
+	
 
-	
-	//test_without_sampling();
-	
-	/*for (int i = 0; i < (argc - 1) / 2; i++) {
-		test_without_sampling(argv[2*i+1], argv[2*i+2]);
-		std::cout << argv[2 * i + 1] <<" done!\n" << std::endl;
-	}*/
-	/*string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1517923.stl_envelope_log.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1517923.stl";
-	double s[10] = { 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 };
-	double time[10];
-	for (int i = 0; i < 10; i++) {
-		std::cout << "the ith " << i << std::endl;
-		time[i] = test_shrink_envelope(inputFileName1, input_surface_path1,s[i]);
 
-	}
-	std::cout << "time " << std::endl;
-	for (int i = 0; i < 10; i++) {
-		std::cout << time[i] << ",";
-	}*/
-	
-	//run_volume_compare();
+#endif
 
 	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
 	//pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	//pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//read_CSV_triangle_write_csv("D:\\vs\\fast_envelope_csv\\python\\differenteps\\37402_tem.csv");
 	//write_duplicated_csv();
-	//pure_our_method("D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\904474.csv",
-	//	"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\904474.off", 
-	//	"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\result_r.csv", 1,1);
+	/*pure_our_method_detailed("D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\63447.csv",
+		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\63447.off", 
+		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\result_r.csv", 1,1);*/
+	pure_our_method_no_optimization(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	return 0;
 }

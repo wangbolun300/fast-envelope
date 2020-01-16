@@ -29,7 +29,7 @@ namespace fastEnvelope {
 		bool is_outside(const std::array<Vector3, 3> &triangle) const;
 		bool is_outside(const Vector3 &point) const;
 		bool is_outside(const Vector3 &point0, const Vector3 &point1) const;
-		
+		bool is_outside_no_optimazation(const std::array<Vector3, 3> &triangle)const ;
 	private:
 
 		struct INDEX
@@ -47,9 +47,8 @@ namespace fastEnvelope {
 		bool USE_ADJACENT_INFORMATION = true;
 
 		bool debugcode(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int> &prismindex)const;
-#ifdef ENVELOPE_WITH_GMP
 		bool triangle_out_simple(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
-#endif
+
 		bool triangle_out_of_envelope(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const;
 		bool segment_out_of_envelope(const Vector3& seg0, const Vector3 &seg1, const std::vector<unsigned int>& prismindex) const;
 		bool is_two_facets_neighbouring(const int & pid, const int &i, const int &j)const;

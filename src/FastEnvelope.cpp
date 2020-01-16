@@ -90,12 +90,23 @@ namespace fastEnvelope
 		tree.triangle_find_bbox(triangle[0], triangle[1], triangle[2], querylist);
 #ifdef ENVELOPE_WITH_GMP
 		const auto res = triangle_out_simple(triangle, querylist);
+		//const auto res = triangle_out_of_envelope(triangle, querylist);
 #else
 		const auto res = triangle_out_of_envelope(triangle, querylist);
 #endif
 		
 		return res;
 	}
+	bool FastEnvelope::is_outside_no_optimazation(const std::array<Vector3, 3> &triangle)const 
+	{
+
+		std::vector<unsigned int> querylist;
+		tree.triangle_find_bbox(triangle[0], triangle[1], triangle[2], querylist);
+		const auto res = triangle_out_simple(triangle, querylist);
+		return res;
+	}
+
+
 	bool FastEnvelope::is_outside(const Vector3 &point) const
 	{
 
@@ -535,7 +546,7 @@ namespace fastEnvelope
 
 
 	}
-#ifdef ENVELOPE_WITH_GMP
+
 	bool FastEnvelope::triangle_out_simple(const std::array<Vector3, 3> &triangle, const std::vector<unsigned int>& prismindex) const {
 		if (prismindex.size() == 0)
 		{
@@ -549,7 +560,8 @@ namespace fastEnvelope
 		};
 		bool out, cut;
 		int inter, check_id;
-
+		
+		jump1 = -1;
 		for (int i = 0; i < 3; i++) {
 			out = point_out_prism(triangle[i], prismindex, jump1);
 
@@ -702,7 +714,7 @@ namespace fastEnvelope
 		return false;
 	}
 
-#endif
+
 
 	bool FastEnvelope::segment_out_of_envelope(const Vector3& seg0, const Vector3 &seg1, const std::vector<unsigned int>& prismindex) const {
 		if (prismindex.size() == 0)
@@ -2993,10 +3005,7 @@ namespace fastEnvelope
 			{
 				return 0;
 			}
-			//if (o1[i] == 0 && o2[i] == 0 && o3[i] == 0)
-			//{
-			//	//return 0;// TODO dangerous, there is another case that the triangle is inside
-			//}
+			
 
 			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)
 				cutp.emplace_back(i);
