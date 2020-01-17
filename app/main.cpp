@@ -1549,6 +1549,6 @@ int main(int argc, char const *argv[])
 	/*pure_our_method_detailed("D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\63447.csv",
 		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\63447.off", 
 		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\result_r.csv", 1,1);*/
-	pure_our_method_no_optimization(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	//pure_our_method_no_optimization(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	return 0;
 }
