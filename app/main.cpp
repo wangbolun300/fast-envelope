@@ -1290,8 +1290,19 @@ void pure_our_method_detailed(string queryfile, string model, string resultfile,
 	dd = ((max - min).norm()) *eps;
 	igl::Timer timer, timerdetail;
 	timer.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, dd);
-
+	/////////////////////////////////////////////////////////////
+	FastEnvelope fast_envelope;
+	fast_envelope.init(env_vertices, env_faces, dd);
+	/////////////////////////////////////////////////////////////
+	//FastEnvelope fast_envelope;
+	//std::vector<Scalar> ddlist;
+	//ddlist.resize(env_faces.size());
+	//for (int i = 0; i < env_faces.size(); i++) {
+	//	ddlist[i] = dd;
+	//}
+	//std::cout<<"using adaptive"<<std::endl;
+	//fast_envelope.init(env_vertices, env_faces, ddlist);
+	/////////////////////////////////////////////////////////////
 	timer.stop();
 	const auto init_time = timer.getElapsedTimeInSec();
 	std::cout << "ours initialization time " << timer.getElapsedTimeInSec() << std::endl;
@@ -1546,9 +1557,9 @@ int main(int argc, char const *argv[])
 	//pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//read_CSV_triangle_write_csv("D:\\vs\\fast_envelope_csv\\python\\differenteps\\37402_tem.csv");
 	//write_duplicated_csv();
-	/*pure_our_method_detailed("D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\63447.csv",
-		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\63447.off", 
-		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\result_r.csv", 1,1);*/
+	pure_our_method_detailed("D:\\vs\\fast_envelope_csv\\python\\extreme_case\\110907.csv",
+		"D:\\vs\\fast_envelope_csv\\python\\extreme_case\\110907.off",
+		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\result_r.csv", 1,1);
 	//pure_our_method_no_optimization(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	return 0;
 }

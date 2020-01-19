@@ -2961,7 +2961,7 @@ namespace fastEnvelope
 
 
 
-	int FastEnvelope::is_triangle_cut_envelope_polyhedra(const int &cindex,
+	int FastEnvelope::is_triangle_cut_envelope_polyhedra(const int &cindex,//the triangle is not degenerated
 		const Vector3 &tri0, const Vector3 &tri1, const Vector3 &tri2, std::vector<int> &cid) const
 	{
 
@@ -2986,7 +2986,7 @@ namespace fastEnvelope
 			o1[i] = Predicates::orient_3d(tri0, halfspace[cindex][i][0], halfspace[cindex][i][1], halfspace[cindex][i][2]);
 			o2[i] = Predicates::orient_3d(tri1, halfspace[cindex][i][0], halfspace[cindex][i][1], halfspace[cindex][i][2]);
 			o3[i] = Predicates::orient_3d(tri2, halfspace[cindex][i][0], halfspace[cindex][i][1], halfspace[cindex][i][2]);
-			if (o1[i] + o2[i] + o3[i] >= 3)
+			if (o1[i] + o2[i] + o3[i] >= 2)//1,1,0 case
 			{
 				return 0;
 			}
@@ -3009,10 +3009,13 @@ namespace fastEnvelope
 
 			if (o1[i] * o2[i] == -1 || o1[i] * o3[i] == -1 || o3[i] * o2[i] == -1)
 				cutp.emplace_back(i);
+			else if (o1[i] + o2[i] + o3[i] == -1 && o1[i] * o2[i] == 0) {//0,0,-1 case, we also want this face,really rare to happen
+				cutp.emplace_back(i);
+			}
 		}
 		if (cutp.size() == 0) {
 			if (ct1 == 0 && ct2 == 0 && ct3 == 0) {
-				return 2;// totally inside
+				return 2;// totally inside, or not any edge is on the facet
 			}
 		}
 
@@ -3028,8 +3031,9 @@ namespace fastEnvelope
 		std::array<Scalar, 2> seg00, seg01, seg02, seg10, seg11, seg12;
 		for (int i = 0; i < cutp.size(); i++)
 		{
+			
 			int temp = 0;
-			if (o1[cutp[i]] * o2[cutp[i]] == -1) {
+			if (o1[cutp[i]] * o2[cutp[i]] == -1|| o1[cutp[i]] + o2[cutp[i]] == -1) {
 				seg00[temp] = tri0[0];
 				seg01[temp] = tri0[1];
 				seg02[temp] = tri0[2];
@@ -3038,7 +3042,7 @@ namespace fastEnvelope
 				seg12[temp] = tri1[2];
 				temp++;
 			}
-			if (o1[cutp[i]] * o3[cutp[i]] == -1) {
+			if (o1[cutp[i]] * o3[cutp[i]] == -1|| o1[cutp[i]] + o3[cutp[i]] == -1) {
 				seg00[temp] = tri0[0];
 				seg01[temp] = tri0[1];
 				seg02[temp] = tri0[2];
@@ -3047,7 +3051,7 @@ namespace fastEnvelope
 				seg12[temp] = tri2[2];
 				temp++;
 			}
-			if (o2[cutp[i]] * o3[cutp[i]] == -1) {
+			if (o2[cutp[i]] * o3[cutp[i]] == -1|| o2[cutp[i]] + o3[cutp[i]] == -1) {
 				seg00[temp] = tri1[0];
 				seg01[temp] = tri1[1];
 				seg02[temp] = tri1[2];
@@ -3059,7 +3063,7 @@ namespace fastEnvelope
 
 			for (int k = 0; k < 2; k++)
 			{
-
+				
 				bool precom = orient3D_LPI_prefilter(
 					seg00[k], seg01[k], seg02[k],
 					seg10[k], seg11[k], seg12[k],
@@ -3377,8 +3381,8 @@ namespace fastEnvelope
 			if (o1[i] == 1) ct1++;
 			if (o2[i] == 1) ct2++;// if ct1 or ct2 >0, then NOT totally inside
 		}
-		if (cutp.size() == 0 && ct1 == 0 && ct2 == 0) return true;// no intersected planes, and both two points are in one facet, 
-																	//then totally inside
+		if (cutp.size() == 0 && ct1 == 0 && ct2 == 0) return true;// no intersected planes, and each point is either inside of poly, 
+																	//or on one facet, since vertices are checked, then totally inside
 		if (cutp.size() == 0)
 		{
 			return false;
