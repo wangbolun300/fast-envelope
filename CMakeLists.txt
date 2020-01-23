@@ -52,9 +52,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # FastEnvelope options
 option(FAST_ENVELOPE_ENABLE_TBB        			"Enable TBB"                    ON)
 # option(FAST_ENVELOPE_USE_FLOAT          		"Use floats instead of double"  OFF)
-option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES        "Use whole Geogram for predicates"        OFF)
-option(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES    "Use Geogram predicates only"             ON)
-option(FAST_ENVELOPE_WITH_GMP						"Use gmp to have rational predicates"	  ON)
+option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES        "Use whole Geogram for predicates"        ON)
+option(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES    "Use Geogram predicates only"             OFF)
+option(FAST_ENVELOPE_WITH_GMP						"Use gmp to have rational predicates"	  OFF)
 
 # Sanitizer options
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)

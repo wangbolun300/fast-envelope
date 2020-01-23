@@ -21,11 +21,11 @@ namespace fastEnvelope {
 	static const bool OUT_PRISM = 1;
 	static const bool IN_PRISM = 0;
 
-	static const int FE_CUT_COPLANAR = 4;//TODO move to an independent folder
+	static const int FE_CUT_COPLANAR = 4;
 	static const int FE_CUT_EMPTY = -1;
 	static const int FE_CUT_FACE = 3;
 
-	static const int NOT_DEGENERATED = 0;//TODO
+	static const int NOT_DEGENERATED = 0;
 	static const int NERLY_DEGENERATED = 1;
 	static const int DEGENERATED_SEGMENT = 2;
 	static const int DEGENERATED_POINT = 3;

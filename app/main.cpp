@@ -41,13 +41,8 @@ using namespace fastEnvelope;
 using namespace std;
 
 
-void pausee(){
-	cout<<"pausing..."<<endl;
-	char c;
-	cin>>c;
-}
 
-void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {//TODO why use this one
+void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max) {
 	min = vertices.front();
 	max = vertices.front();
 
@@ -60,14 +55,12 @@ void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 
 }
 
 bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& ps, Scalar sampling_dist, AABBWrapper& sf_tree) {
-    ////
+    
     GEO::vec3 nearest_point;
     double sq_dist = std::numeric_limits<double>::max();
     GEO::index_t prev_facet = GEO::NO_FACET;
     Scalar eps_2 = pow(sampling_dist*(1 - (1 / sqrt(3))), 2);
-//    cout<<"eps_2 = "<<eps_2<<endl;
-//    pausee();
-    ////
+
 
     Scalar sqrt3_2 = std::sqrt(3) / 2;
 
@@ -179,9 +172,6 @@ bool sample_trianglex(const std::array<Vector3, 3>& vs, std::vector<GEO::vec3>& 
 bool is_out_function(const std::array<Vector3, 3>& triangle, const Scalar& dd, AABBWrapper& sf_tree) {
 	std::vector<GEO::vec3> ps;
 	return sample_trianglex(triangle, ps, dd, sf_tree);//dd is used for sapmling
-//    sample_trianglex(triangle, ps, dd, sf_tree);//dd is used for sapmling
-//	return sf_tree.is_out_sf_envelope(ps, pow(dd*(1 - (1 / sqrt(3))), 2));
-
 }
 
 std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName, vector<int>& inenvelope) {
@@ -234,709 +224,18 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 	return triangle;
 }
 
-//void test_in_wild(string inputFileName1, string input_surface_path1) {
-void test_in_wild() {
-	string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\109130.off";
-	///string inputFileName1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl_env.csv";
-	///string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\problems\\1088280.stl";
-	///
 
-	vector<int> outenvelope;
-	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
-
-	std::vector<Vector3> env_vertices;
-	std::vector<Vector3i> env_faces;
-	GEO::Mesh envmesh;
-
-	///////////////////////////////////////////////////////
-	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
-	if (!ok1) {
-		std::cout << ("Unable to load mesh") << std::endl;
-		return;
-	}
-	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
-
-
-
-	Scalar shrink = 1;
-	Scalar eps = 1e-3;
-
-	int ft;
-	// if there are over one million triangles, then test maximal one million triangles
-	if (triangles.size() > 1000000) {
-		ft = 1000000;
-	}
-	else {
-		ft = triangles.size();//test face number
-	}
-	//////////////////////////////////////////////////////////////
-	const int fn = ft;//test face number
-
-
-	eps = eps / shrink;
-	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-	igl::Timer timer, timer1, timer2;
-
-
-
-
-	timer.start();
-	timer1.start();
-	const fastEnvelope::FastEnvelope fast_envelope(env_vertices, env_faces, eps);
-	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
-	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
-	// fast_envelope.print_ini_number(); //TODO
-	timer2.start();
-	vector<bool> pos1, pos2;
-	pos1.resize(fn);
-	pos2.resize(fn);
-
-//#ifdef USE_TBB
-//	tbb::parallel_for(0, fn, [&](int i)
-//#else
-//	for (int i = 0; i < fn; i++) 
-//#endif
-	for (int i = 0; i < fn; i++)
-	{
-
-		pos1[i] = outenvelope[i];
-		//fast_envelope.print_prisms(triangles[i], "D:\\vs\\fast_envelope_csv\\problems\\");
-		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		//if (i - i / 1000*1000 == 0) cout << "ten thousand test over " << i / 1000 << endl;
-
-	}
-//#ifdef USE_TBB
-//	);
-//#endif
-	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
-	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
-
-
-	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
-	for (int i = 0; i < fn; i++) {
-		if (pos1[i] - pos2[i] != 0) {
-			//if (pos1[i]== 0) {
-			rcd = rcd + 1;
-			//std::cout << "envelope test different! different face NO. " << i << " the difference: " << pos1[i] - pos2[i] << std::endl;
-			//std::cout << "envelope test same! same face NO. " << i << "the in and out : " <<pos1[i] <<","<<pos2[i] << std::endl;
-		}
-		if (pos1[i] == 0) {
-			eq0 = eq0 + 1;
-		}
-		if (pos2[i] == 0) {
-			eq02 = eq02 + 1;
-		}
-		if (pos1[i] == 0 && pos2[i] == 1) {
-			rmk++;
-		}
-	}
-
-	std::cout << "how many different cases:  " << rcd << std::endl;
-	std::cout << "aabb inside triangle number:  " << eq0 << std::endl;
-	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
-	std::cout << "0-1 cases number " << rmk << std::endl;
-	cout << endl;
-	// FastEnvelope::print_number(); //TODO
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	std::vector<bool> pos3;
-	pos3.resize(fn);
-	std::array<Vector3, 3> tri;
-
-	int pieces;
-	std::vector<std::array<Vector3, 3>> t;
-	std::vector<int> trindex1, trindex2;
-	int insiden_o = 0, insiden_s = 0;
-
-	for (int i = 0; i < fn; i++) {
-		tri = triangles[i];
-		pieces = 20;
-		//l1 = (tri[0] - tri[1]).norm() / 30;
-		/*pos3[i] = fast_envelope.sample_triangle_outside(tri, pieces);*/
-	}
-
-	int count = 0, count1 = 0, count2 = 0, count3 = 0;
-	for (int i = 0; i < fn; i++) {
-		if (pos2[i] - pos3[i] != 0) {
-			count++;
-		}
-		if (pos2[i] - pos3[i] == 1) {
-			count1++;
-			trindex2.push_back(i);
-		}
-		if (pos2[i] - pos3[i] == -1) {
-			trindex1.push_back(i);
-		}
-		if (pos2[i] == 0) {
-			insiden_o++;
-		}
-		if (pos3[i] == 0) {
-			insiden_s++;
-		}
-
-	}
-
-	std::cout << "how many different cases in comparison:  " << count << std::endl;
-	std::cout << "1-0 cases in comparison:  " << count1 << std::endl;
-	std::cout << "!!0-1 cases in comparison:  " << trindex1.size() << std::endl;
-	for (int i = 0; i < trindex1.size(); i++) cout << "NO. " << trindex1[i] << endl;
-	std::cout << "1-0 case size:  " << trindex2.size() << std::endl;
-	std::cout << "our inside size:  " << insiden_o << std::endl;
-	std::cout << "sap inside size:  " << insiden_s << std::endl;
-
-	int nbr = 0;
-	for (int i = 0; i < trindex2.size(); i++) {
-
-		
-
-	}
-	cout << "\ndegeneration counting: " << nbr << endl;
-
-	////////////////////////////////////////////////////////////////////////////////////////
-
-	cout << "\nstarting iteration: " << endl;
-
-	const int irt = 12;
-	std::vector<bool> pos4;
-	vector<int> ti, ti1;//triangle index
-	ti = trindex2;
-	int lth[irt] = { 60,100,200,400,600,800,1000,2000,2500,5000,10000,20000 };
-	for (int j = 0; j < irt; j++) {
-		int howmany = 0;
-		ti1.resize(0);
-		pos4.resize(ti.size());
-		for (int i = 0; i < ti.size(); i++) {
-			tri = triangles[ti[i]];
-
-
-			/*pos4[i] = fast_envelope.sample_triangle_outside(tri, lth[j]);*/
-			if (pos4[i] == 0) {
-				howmany++;
-				ti1.push_back(ti[i]);
-			}
-
-		}
-		if (ti1.size() != 0) {
-			cout << "the ith iteration " << j << endl;
-			cout << "how many differences " << howmany << endl;
-			ti = ti1;
-		}
-		else {
-			cout << "kill all the different cases" << endl;
-			break;
-		};
-	}
-
-
-	/*for (int j = 0; j < irt; j++) {
-		int howmany = 0;
-		ti1.resize(0);
-		pos4.resize(ti.size());
-		for (int i = 0; i < ti.size(); i++) {
-			tri[0] = triangles[ti[i]][2];
-			tri[1] = triangles[ti[i]][1];
-			tri[2] = triangles[ti[i]][0];
-
-
-			pos4[i] = fast_envelope.sample_triangle_outside(tri, lth[j]);
-			if (pos4[i] == 0) {
-				howmany++;
-				ti1.push_back(ti[i]);
-			}
-
-		}
-		if (ti1.size() != 0) {
-			cout << "the ith iteration " << j << endl;
-			cout << "how many differences " << howmany << endl;
-			ti = ti1;
-		}
-		else {
-			cout << "kill all the different cases";
-			break;
-		};
-	}
-*/
-
-	if (ti1.size() > 0) {
-		cout << "still have 1-0 cases not finished" << endl;
-		for (int i = 0; i < ti1.size(); i++) {
-			cout << "NO. ith " << ti[i] << endl;
-		}
-	}
-
-	/*if (trindex1.size() > 0) {
-		std::ofstream fout;
-		fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\visualtriangle.txt");
-		int idx = 0;
-		std::cout << "output NO. " << trindex1[idx] << endl;
-		for (int i = 0; i < 3; i++) {
-
-			fout << std::setprecision(17) << triangles[trindex1[idx]][i][0] << " " << triangles[trindex1[idx]][i][1] << " " << triangles[trindex1[idx]][i][2] << endl;
-
-		}
-		fout.close();
-
-		fast_envelope.print_prisms(triangles[trindex1[idx]], "D:\\vs\\fast_envelope_csv\\problems\\");
-
-	}
-*/
-////for aabb method
-	Vector3 min, max;
-
-	Scalar dd;
-	get_bb_corners(env_vertices, min, max);
-	dd = ((max - min).norm()) *eps;
-	timer.start();
-	AABBWrapper sf_tree(envmesh);
-	for (int i = 0; i < fn; i++) {
-
-		is_out_function(triangles[i], dd, sf_tree); ;
-	}
-	cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
-
-	std::cout << "TEST aabb FINISHED  " << std::endl;
-	//////////////////////////////
-	//////////
-
-}
-
-
-
-//void test_without_sampling(string inputFileName1, string input_surface_path1) {
-void test_without_sampling() {
-	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\100639.stl_env.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\thingi10k_debug\\100639\\helicopter_logo_x1.stl";*/
-	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\1717685.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\1717685.stl";
-
-
-	vector<int> outenvelope;
-	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
-	int ft;
-	// if there are over one million triangles, then test maximal one million triangles
-	if (triangles.size() > 500000) {
-		ft = 500000;
-	}
-	else {
-		ft = triangles.size();//test face number
-	}
-	if (triangles.size() == 0) return;
-	std::vector<Vector3> env_vertices;
-	std::vector<Vector3i> env_faces;
-	GEO::Mesh envmesh;
-
-	///////////////////////////////////////////////////////
-	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
-	if (!ok1) {
-		std::cout << ("Unable to load mesh") << std::endl;
-		return;
-	}
-	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
-	// just for test validation
-	/*triangles.clear(); triangles.resize(env_faces.size());
-	for (int i = 0; i < env_faces.size(); i++) {
-		triangles[i][0] = env_vertices[env_faces[i][0]];
-		triangles[i][1] = env_vertices[env_faces[i][1]];
-		triangles[i][2] = env_vertices[env_faces[i][2]];
-	}*/
-	//
-	Vector3 min, max;
-	min = env_vertices.front();
-	max = env_vertices.front();
-
-	for (size_t j = 0; j < env_vertices.size(); j++)
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			min(i) = std::min(min(i), env_vertices[j](i));
-			max(i) = std::max(max(i), env_vertices[j](i));
-		}
-	}
-
-
-
-	const Scalar bbd = (max - min).norm();
-	
-
-	Scalar shrink = 1;
-	Scalar eps = 1e-3;
-	//eps = eps * sqrt(3);//make similar size to the original one
-	Scalar epsilon = bbd * eps; //eps*bounding box diagnal
-	
-	
-	//////////////////////////////////////////////////////////////
-	int fn = std::min((int)triangles.size(),ft);//test face number
-
-	
-	epsilon = epsilon / shrink;
-	std::cout << "epsilon " << epsilon << std::endl;
-	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-	igl::Timer timer, timer1, timer2;
-
-
-	Scalar temptime = 0;
-	timer.start();
-	timer1.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, epsilon);
-	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
-	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
-	// fast_envelope.print_ini_number(); //TODO
-	timer2.start();
-	vector<bool> pos1, pos2;
-	pos1.resize(fn);
-	pos2.resize(fn);
-
-	for (int i = 0; i < fn; i++) {//3294
-								  //34783,89402,
-
-		pos1[i] = outenvelope[i];
-		timer1.start();
-		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		if (i % 200 == 0) {
-
-			cout << "ten thousand test over " << i<<" time "<<timer2.getElapsedTimeInSec() << endl;
-			fast_envelope.printnumber();
-		}
-		if (timer1.getElapsedTimeInSec() > temptime) {
-			temptime = timer1.getElapsedTimeInSec();
-			cout << "time get longer " << i << ", " << temptime << std::endl;
-
-		}
-
-	}
-	std::ofstream fout;
-	fout.open("D:\\vs\\fast_envelope_csv\\problems\\exact_wrong\\our_result.csv");
-	for (int i = 0; i < fn; i++) {
-		fout << pos2[i] << std::endl;
-	}
-	fout.close();
-
-
-
-	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
-	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
-	fast_envelope.printnumber();
-	
-	//count_ip();
-	int rcd = 0, eq0 = 0, eq02 = 0, rmk = 0;
-	for (int i = 0; i < fn; i++) {
-		if (pos1[i] - pos2[i] != 0) {
-			//if (pos1[i]== 0) {
-			rcd = rcd + 1;
-			//std::cout << "envelope test different! different face NO. " << i << " the difference: " << pos1[i] - pos2[i] << std::endl;
-			//std::cout << "envelope test same! same face NO. " << i << "the in and out : " <<pos1[i] <<","<<pos2[i] << std::endl;
-		}
-		if (pos1[i] == 0) {
-			eq0 = eq0 + 1;
-		}
-		if (pos2[i] == 0) {
-			eq02 = eq02 + 1;
-		}
-		if (pos1[i] == 0 && pos2[i] == 1) {
-			rmk++;
-		}
-	}
-
-	std::cout << "how many different cases:  " << rcd << std::endl;
-	std::cout << "aabb inside triangle number:  " << eq0 << std::endl;
-	std::cout << "our  inside triangle number:  " << eq02 << std::endl;
-	std::cout << "0-1 cases number " << rmk << std::endl;
-	cout << endl;
-	// FastEnvelope::print_number(); //TODO
-
-////for aabb method
-
-
-	Scalar dd;
-
-	dd = ((max - min).norm()) *eps;
-	timer.start();
-	AABBWrapper sf_tree(envmesh);
-	for (int i = 0; i < fn; i++) {
-
-		is_out_function(triangles[i], dd, sf_tree);
-	}
-	cout << "aabb time, " << timer.getElapsedTimeInSec() << endl;
-
-	std::cout << "TEST aabb FINISHED  " << std::endl;
-	//////////////////////////////
-	//////////
-
-}
-double test_shrink_envelope(string inputFileName1, string input_surface_path1,double shrinksize) {
-
-	/*string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl";*/
-
-
-	vector<int> outenvelope;
-	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName1, outenvelope);
-	int ft;
-	// if there are over one million triangles, then test maximal one million triangles
-	if (triangles.size() > 500000) {
-		ft = 500000;
-	}
-	else {
-		ft = triangles.size();//test face number
-	}
-	if (triangles.size() == 0) return 0;
-	std::vector<Vector3> env_vertices;
-	std::vector<Vector3i> env_faces;
-	GEO::Mesh envmesh;
-
-	///////////////////////////////////////////////////////
-	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
-	if (!ok1) {
-		std::cout << ("Unable to load mesh") << std::endl;
-		return 0;
-	}
-	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
-	// just for test validation
-	/*triangles.clear(); triangles.resize(env_faces.size());
-	for (int i = 0; i < env_faces.size(); i++) {
-		triangles[i][0] = env_vertices[env_faces[i][0]];
-		triangles[i][1] = env_vertices[env_faces[i][1]];
-		triangles[i][2] = env_vertices[env_faces[i][2]];
-	}*/
-	//
-	Vector3 min, max;
-	min = env_vertices.front();
-	max = env_vertices.front();
-
-	for (size_t j = 0; j < env_vertices.size(); j++)
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			min(i) = std::min(min(i), env_vertices[j](i));
-			max(i) = std::max(max(i), env_vertices[j](i));
-		}
-	}
-
-
-
-	const Scalar bbd = (max - min).norm();
-
-
-	Scalar eps = 1e-3;
-	eps = eps * sqrt(3);//make similar size to the original one
-	Scalar epsilon = bbd * eps; //eps*bounding box diagnal
-	const int spac = 10;// space subdivision parameter
-
-	//////////////////////////////////////////////////////////////
-	int fn = std::min((int)triangles.size(), ft);//test face number
-
-
-	epsilon = epsilon * shrinksize;
-	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-	igl::Timer timer, timer1, timer2;
-
-
-	/////////////////////////////////
-	////for aabb method
-	//Vector3 min, max;
-	//Parameters params;
-	//Scalar dd;
-	//get_bb_corners(params, env_vertices, min, max);
-	//dd = ((max - min).norm()) / 1000 / shrink;
-	//timer.start();
-	//AABBWrapper sf_tree(envmesh);
-	//for (int i = 0; i < fn; i++) {
-
-	//	is_out_function(triangles[i], dd, sf_tree); ;
-	//}
-	//cout << "aabb time " << timer.getElapsedTimeInSec() << endl;
-
-	//std::cout << "TEST aabb FINISHED  " << std::endl;
-	//////////////////////////////
-
-	Scalar temptime = 0;
-	timer.start();
-	timer1.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, epsilon);
-	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
-	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
-	// fast_envelope.print_ini_number(); //TODO
-	timer2.start();
-	vector<bool> pos1, pos2;
-	pos1.resize(fn);
-	pos2.resize(fn);
-
-	for (int i = 0; i < fn; i++) {//3294
-								  //34783,89402,
-
-		pos1[i] = outenvelope[i];
-		timer1.start();
-		pos2[i] = fast_envelope.is_outside(triangles[i]);
-		//if (i % 100 == 0) cout << "ten thousand test over " << i << endl;
-		/*if (timer1.getElapsedTimeInSec() > temptime) {
-			temptime = timer1.getElapsedTimeInSec();
-			cout << "time get longer " << i << ", " << temptime << std::endl;
-
-		}*/
-
-	}
-	return timer2.getElapsedTimeInSec();
-
-	//std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
-	//std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
-	
-	//////////
-
-}
-//double test_original_surface( string input_surface_path1, double shrinksize) {
-double test_original_surface() {
-	double shrinksize = 0.1;
-	string inputFileName1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl_envelope_log.csv";
-	string input_surface_path1 = "d:\\vs\\fast_envelope_csv\\problems\\102626.stl";
-
-
-
-	int ft;
-	// if there are over one million triangles, then test maximal one million triangles
-
-	
-
-	
-	std::vector<Vector3> env_vertices;
-	std::vector<Vector3i> env_faces;
-	GEO::Mesh envmesh;
-
-	///////////////////////////////////////////////////////
-	bool ok1 = MeshIO::load_mesh(input_surface_path1, env_vertices, env_faces, envmesh);
-	if (!ok1) {
-		std::cout << ("Unable to load mesh") << std::endl;
-		return 0;
-	}
-	std::cout << "envface size  " << env_faces.size() << "\nenv ver size " << env_vertices.size() << std::endl;
-	std::vector<std::array<Vector3, 3>> triangles;
-	triangles.clear(); triangles.resize(env_faces.size());
-	for (int i = 0; i < env_faces.size(); i++) {
-		triangles[i][0] = env_vertices[env_faces[i][0]];
-		triangles[i][1] = env_vertices[env_faces[i][1]];
-		triangles[i][2] = env_vertices[env_faces[i][2]];
-	}
-
-	ft = triangles.size();//test face number
-	Vector3 min, max;
-	min = env_vertices.front();
-	max = env_vertices.front();
-
-	for (size_t j = 0; j < env_vertices.size(); j++)
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			min(i) = std::min(min(i), env_vertices[j](i));
-			max(i) = std::max(max(i), env_vertices[j](i));
-		}
-	}
-
-
-
-	const Scalar bbd = (max - min).norm();
-
-
-	Scalar eps = 1e-3;
-	eps = eps * sqrt(3);//make similar size to the original one
-	Scalar epsilon = bbd * eps; //eps*bounding box diagnal
-	
-
-	//////////////////////////////////////////////////////////////
-	int fn = std::min((int)triangles.size(), ft);//test face number
-
-	//////////////////////////////////////////////////////////////
-	/*std::vector<Vector3> points;
-	for (int i = 0; i < triangles.size(); i++) {
-		points.push_back(triangles[i][0]);
-		points.push_back(triangles[i][1]);
-		points.push_back(triangles[i][2]);
-	}
-	fn = points.size();*/
-	//////////////////////////////////////////////////////////////
-
-	epsilon = epsilon * shrinksize;
-	//eps = eps * sqrt(3)*(1 - (1 / sqrt(3)));//TODO to make bbd similar size to aabb method
-	igl::Timer timer, timer1, timer2;
-
-
-	/////////////
-
-	Scalar temptime = 0;
-	timer.start();
-	timer1.start();
-	const FastEnvelope fast_envelope(env_vertices, env_faces, epsilon);
-	//std::cout<<"p_size "<<fast_envelope.prism_size<<endl;
-	std::cout << "time in initialization, " << timer1.getElapsedTimeInSec() << endl;
-	// fast_envelope.print_ini_number(); //TODO
-	timer2.start();
-	vector<bool> pos1, pos2;
-	pos1.resize(fn);
-	pos2.resize(fn);
-	
-	for (int i = 0; i < fn; i++) {//3294
-								  //34783,89402,
-
-		
-		//timer1.start();
-		pos2[i] = fast_envelope.is_outside(triangles[i]);
-	
-
-	}
-	std::cout << "total size " << triangles.size() << std::endl;
-	int count = 0;
-	for (int i = 0; i < fn; i++) {
-		if (pos2[i] == 0) count++;
-	}
-	std::cout << "inside nbr " << count << std::endl;
-	std::cout << "time in checking, " << timer2.getElapsedTimeInSec() << endl;
-	std::cout << "time total, " << timer.getElapsedTimeInSec() << endl;
-
-	//////////
-	return 0;
-}
-void sample_triangle_test() {
-	string inputFileName = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\100029.stl_env.csv";
-	string input_surface_path1 = "D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\elevator_and_stabiliser_-_V4.stl";
-	vector<int> outenvelope;
-	std::vector<std::array<Vector3, 3>> triangles = read_CSV_triangle(inputFileName, outenvelope);
-	std::array<Vector3, 3> tri = triangles[10000];
-	std::vector<Vector3> ps;
-	Scalar l1 = max(max((tri[0] - tri[1]).norm(), (tri[2] - tri[1]).norm()), (tri[0] - tri[2]).norm()) / 10000;
-	cout << "l1 " << l1 << endl;
-	//FastEnvelope::triangle_sample(tri, ps, l1);
-	std::cout << "ps size " << ps.size() << endl;
-
-
-	std::ofstream fout;
-	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\triangle.txt");
-	for (int i = 0; i < 3; i++) {
-
-		fout << std::setprecision(17) << tri[i][0] << " " << tri[i][1] << " " << tri[i][2] << endl;
-
-	}
-	fout.close();
-
-	fout.open("D:\\vs\\fast_envelope_csv\\thingi10k_debug\\100029\\points.txt");
-	for (int i = 0; i < ps.size(); i++) {
-
-		fout << std::setprecision(17) << ps[i][0] << " " << ps[i][1] << " " << ps[i][2] << endl;
-
-	}
-	fout.close();
-
-}
 
 //can get the time, memory and all the result for queries of sampling method
 #include <geogram/mesh/mesh_AABB.h>
 void pure_sampling(string queryfile, string model,string resultfile, Scalar shrinksize, bool csv_model) {
-
+	std::cout << "using sampling method" << std::endl;
 	vector<int> outenvelope;
 	std::vector<Vector3> env_vertices, v;
 	std::vector<Vector3i> env_faces, f;
 	GEO::Mesh envmesh, mesh;
 
-	///////////////////////////////////////////////////////
+
 	
 
 
@@ -974,29 +273,7 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 	timer.start();
 	AABBWrapper sf_tree(envmesh);
 
-//	//fortest
-//	Scalar eps_2 = pow(dd*(1 - (1 / sqrt(3))), 2);
-//	GEO::MeshFacetsAABB tree(envmesh);
-//	for(int i=0;i<triangles.size();i++) {
-//		for(int j=0;j<3;j++) {
-//			auto& vi = triangles[i][j];
-//			double sq_dist = tree.squared_distance(GEO::vec3(vi[0], vi[1], vi[2]));
-//			if (sq_dist > eps_2) {
-//				cout << "sq_dist>eps_2!! " << sq_dist << endl;
-//				pausee();
-//			} else {
-//				GEO::vec3 nearest_point;
-//				double sq_dist1 = std::numeric_limits<double>::max();
-//				GEO::index_t prev_facet = GEO::NO_FACET;
-//				if (sf_tree.is_out_sf_envelope(GEO::vec3(vi[0], vi[1], vi[2]), eps_2, prev_facet, sq_dist1,
-//											   nearest_point)) {
-//					cout << "sf_tree.is_out_sf_envelope!! " << sq_dist1 << " (" << sq_dist << endl;
-//					pausee();
-//				}
-//			}
-//		}
-//	}
-//	//fortest
+
 
 	const double init_time = timer.getElapsedTimeInSec();
 	std::cout << "sampling initialization time " << init_time<< std::endl;
@@ -1046,15 +323,11 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 }
 
 void pure_our_method(string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model) {
-
+	std::cout << "running our method" << std::endl;
 	vector<int> outenvelope;
 	std::vector<Vector3> env_vertices, v;
 	std::vector<Vector3i> env_faces, f;
 	GEO::Mesh envmesh, mesh;
-
-	///////////////////////////////////////////////////////
-
-
 
 	std::vector<std::array<Vector3, 3>> triangles;
 	if (csv_model) {
@@ -1141,54 +414,6 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar s
 	std::cout << model << " done! " << std::endl;
 }
 
-void stl_to_off(string stlfile, string offfile) {
-	std::vector<std::vector<double> > vV,vN;
-	std::vector<std::vector<int> > vF;
-	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	bool read =igl::readSTL(stlfile, vV, vF, vN);
-	if (!read) std::cout << "read stl wrong" << std::endl;
-	igl::list_to_matrix(vV, V);
-	igl::list_to_matrix(vF, F);
-	igl::writeOFF(offfile, V, F);
-}
-double get_volume_of_real_envelope(const Vector2 p1, const Vector2 p2, const Vector2 p3, const double eps) {
-	double pi = 3.14159265358979323846;
-	double a = (p2 - p1).norm();
-	double b = (p3 - p1).norm();
-	double c = (p2 - p3).norm();
-	double cosA = (b*b + c * c - a * a) / (2 * b*c);
-	double cosB = (a*a + c * c - b * b) / (2 * a*c);
-	double cosC = (a*a + b * b - c * c) / (2 * a*b);
-	double A = acos(cosA);
-	double B = acos(cosB);
-	double C = acos(cosC);
-	double p = (a + b + c) / 2;
-	double T = sqrt(p*(p - a)*(p - b)*(p - c));
-
-	double s1 = T * 2 * eps;
-	double s2 = 0.5*pi*eps*eps*c;
-	double s3 = 0.5*pi*eps*eps*a;
-	double s4 = 0.5*pi*eps*eps*b;
-	double s5 = 4 * pi*eps*eps*eps / 3;
-	return (s1 + s2 + s3 + s4 + s5);
-}
-double get_triangle_area(Vector2 t0, Vector2 t1, Vector2 t2) {
-	double a = (t2 - t1).norm();
-	double b = (t0 - t1).norm();
-	double c = (t0 - t2).norm();
-	double p = (a + b + c) / 2;
-	double T = sqrt(p*(p - a)*(p - b)*(p - c));
-	return T;
-}
-
-//double get_volume_of_our_envelope(const Vector2 p1, const Vector2 p2, const Vector2 p3, const double eps) {
-//	double tolerance = eps / sqrt(3);
-//	double edgelength = tolerance * 2;
-//	int de = algorithms::is_triangle_degenerated(p1, p2, p3);
-//	//if (de== DEGENERATED_POINT) return edgelength*edge*
-//	return 0;
-//}
 
 void read_CSV_triangle_write_csv(const string inputFileName) {
 
@@ -1246,7 +471,7 @@ void read_CSV_triangle_write_csv(const string inputFileName) {
 	infile.close();
 }
 void pure_our_method_detailed(string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model) {
-
+	std::cout << "running our method with detailed time information in csv" << std::endl;
 	vector<int> outenvelope;
 	std::vector<Vector3> env_vertices, v;
 	std::vector<Vector3i> env_faces, f;
@@ -1338,106 +563,9 @@ void pure_our_method_detailed(string queryfile, string model, string resultfile,
 	fout.close();
 }
 
-void write_duplicated_csv() {
-	std::vector<std::array<Vector3, 3>> triangles;
-	std::vector<int> outenvelope;
-	const int tid = 2471;
-	std::string queryfile = "D:\\vs\\fast_envelope_csv\\python\\extreme_case\\110907.csv";
-	std::string outfile = "D:\\vs\\fast_envelope_csv\\python\\extreme_case\\nbr2471_noised.csv";
-	triangles = read_CSV_triangle(queryfile, outenvelope);
 
-	bool addnoise = true;
-	//srand(22);
-
-
-	std::ofstream fout;
-	fout.open(outfile);
-	for (int i = 0; i < 500; i++) {
-		std::cout << "i " << i << std::endl;
-		if (addnoise) {
-			triangles[tid][0] -= Vector3::Random()*1e-3;
-			triangles[tid][1] -= Vector3::Random()*1e-3;
-			triangles[tid][2] -= Vector3::Random()*1e-3;
-		}
-		for (int j = 0; j < 3; j++) {
-			fout << std::setprecision(16) << triangles[tid][j][0] << "," << triangles[tid][j][1] << "," << triangles[tid][j][2] << ",";
-		}
-		fout << outenvelope[tid] << std::endl;
-	}
-	fout.close();
-	
-}
-#ifdef ENVELOPE_WITH_GMP
-double get_oriented_volume(Vector3 p, Vector3 pl1, Vector3 pl2, Vector3 pl3) {
-	Vector3 v1 = pl1 - pl2;
-	Vector3 v2 = pl1 - pl3;
-	Vector3 v3 = pl1 - p;
-	//V=(1/3)*S*h
-	/*Rational t11, t12, t13;
-	t11=*/
-	Vector3 t1 = v1.cross(v2) / 2;// get area S
-	double t2 = t1.dot(v3) / 3;
-	return t2;
-}
-#include<igl/readOFF.h>
-bool read_file(const std::string filename, std::vector<fastEnvelope::Vector3>& v, std::vector<fastEnvelope::Vector3i>& f) {
-	std::vector<std::vector<double > >  V;
-	std::vector<std::vector<int > >  F;
-	std::vector<std::vector<double > >  N;
-	std::vector<std::vector<double > >  C;
-	bool OK = igl::readOFF(filename, V, F, N, C);
-	if (!OK) {
-		std::cout << "read file wrong" << std::endl;
-		return false;
-	}
-	v.resize(V.size());
-	f.resize(F.size());
-	for (int i = 0; i < V.size(); i++) {
-		v[i][0] = V[i][0];
-		v[i][1] = V[i][1];
-		v[i][2] = V[i][2];
-	}
-	for (int i = 0; i < F.size(); i++) {
-		f[i][0] = F[i][0];
-		f[i][1] = F[i][1];
-		f[i][2] = F[i][2];
-	}
-	/*std::cout << "v size " << v.size() << std::endl;
-	std::cout << "f size " << f.size() << std::endl;*/
-
-}
-double get_polyhedron_volume(std::string file) {
-	std::vector<fastEnvelope::Vector3> v;
-	std::vector<fastEnvelope::Vector3i> f;
-	read_file(file, v, f);
-	///////////////////////////this is just for debug
-	//for (int i = 0; i < v.size(); i++) {//enlarge the axis to see the volume
-	//	v[i][0] *= int(1024);
-	//	v[i][1] *= int(1024);
-	//	v[i][2] *= int(1024);
-	//}
-
-	////////////////////////////just for debug
-	double volume = 0;
-	Vector3 origin = Vector3(0, 0, 0);
-	for (int i = 0; i < v.size(); i++) {
-		origin += v[i];
-	}
-	origin = origin / v.size();
-
-
-	for (int i = 0; i < f.size(); i++) {
-		volume += get_oriented_volume(origin, v[f[i][0]], v[f[i][1]], v[f[i][2]]);
-	}
-
-	return fabs(volume);
-
-}
-
-
-#endif
 void pure_our_method_no_optimization(string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model) {
-
+	std::cout << "running our method without optimazation" << std::endl;
 	vector<int> outenvelope;
 	std::vector<Vector3> env_vertices, v;
 	std::vector<Vector3i> env_faces, f;
@@ -1531,7 +659,15 @@ void pure_our_method_no_optimization(string queryfile, string model, string resu
 	fout.close();
 	std::cout << model << " done! " << std::endl;
 }
+void appendix() {
+	Vector3 v1(1, 1, 1);
+	Vector3 v2(2, 4, 3);
+	Vector3 v3(0, 3, 7);
+	Vector3 bary = (v1 + v2 + v3) / 3;
+	std::cout <<"ori " <<Predicates::orient_3d(bary, v1, v2, v3) << std::endl;
+	std::cout << std::setprecision(16)<< "bary coor " << bary[0] << " " << bary[1] << " " << bary[2] << std::endl;
 
+}
 
 
 int main(int argc, char const *argv[])
@@ -1546,18 +682,15 @@ int main(int argc, char const *argv[])
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
 #ifdef ENVELOPE_WITH_GMP
-	
-
-
+	std::cout << "using rational calculation" << std::endl;
 #endif
-
 	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
 	//pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
 	//read_CSV_triangle_write_csv("D:\\vs\\fast_envelope_csv\\python\\differenteps\\37402_tem.csv");
 	//write_duplicated_csv();
-	pure_our_method_detailed("D:\\vs\\fast_envelope_csv\\python\\extreme_case\\110907.csv",
+	pure_our_method_no_optimization("D:\\vs\\fast_envelope_csv\\python\\extreme_case\\110907.csv",
 		"D:\\vs\\fast_envelope_csv\\python\\extreme_case\\110907.off",
 		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\result_r.csv", 1,1);
 	//pure_our_method_no_optimization(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));

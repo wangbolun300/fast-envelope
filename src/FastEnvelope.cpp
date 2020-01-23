@@ -6,13 +6,13 @@
 #include<fastenvelope/common_algorithms.h>
 #include <igl/Timer.h>
 #include <fstream>
-//double timettt = 0
+
 
 namespace fastEnvelope
 {
 
 	void FastEnvelope::printnumber() {
-		//std::cout << "time for ttt " << timettt << std::endl;
+
 	}
 
 #ifdef ENVELOPE_WITH_GMP
@@ -533,7 +533,7 @@ namespace fastEnvelope
 								idlistorder.emplace_back(intersect_face[list[check_id]]);
 								queue.emplace_back(list[check_id]);
 								idlist.emplace_back(filted_intersection[list[check_id]]);
-								coverlist[list[check_id]] = true;//TODO can we upload local_cover_list here? no, because it all depends on list[]
+								coverlist[list[check_id]] = true;
 							}
 						}
 					}
