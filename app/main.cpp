@@ -228,7 +228,7 @@ std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName
 
 //can get the time, memory and all the result for queries of sampling method
 #include <geogram/mesh/mesh_AABB.h>
-void pure_sampling(string queryfile, string model,string resultfile, Scalar shrinksize, bool csv_model) {
+void pure_sampling(string queryfile, string model,string resultfile, Scalar envsize, bool csv_model) {
 	std::cout << "using sampling method" << std::endl;
 	vector<int> outenvelope;
 	std::vector<Vector3> env_vertices, v;
@@ -264,8 +264,8 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 	}
 
 	Vector3 min, max;
-	Scalar eps = 1e-3;
-	eps = eps * shrinksize;
+	Scalar eps = envsize;
+	
 	Scalar dd;
 	get_bb_corners(env_vertices, min, max);
 	dd = ((max - min).norm()) *eps;
@@ -322,7 +322,7 @@ void pure_sampling(string queryfile, string model,string resultfile, Scalar shri
 	std::cout << model << " done! " << std::endl;
 }
 
-void pure_our_method(string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model) {
+void pure_our_method(string queryfile, string model, string resultfile, Scalar envsize, bool csv_model) {
 	std::cout << "running our method" << std::endl;
 	vector<int> outenvelope;
 	std::vector<Vector3> env_vertices, v;
@@ -356,8 +356,8 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar s
 	}
 
 	Vector3 min, max;
-	Scalar eps = 1e-3;
-	eps = eps * shrinksize;
+	Scalar eps = envsize;
+	
 	Scalar dd;
 	get_bb_corners(env_vertices, min, max);
 	dd = ((max - min).norm()) *eps;
@@ -470,7 +470,7 @@ void read_CSV_triangle_write_csv(const string inputFileName) {
 	fout.close();
 	infile.close();
 }
-void pure_our_method_detailed(string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model) {
+void pure_our_method_detailed(string queryfile, string model, string resultfile, Scalar envsize, bool csv_model) {
 	std::cout << "running our method with detailed time information in csv" << std::endl;
 	vector<int> outenvelope;
 	std::vector<Vector3> env_vertices, v;
@@ -508,8 +508,8 @@ void pure_our_method_detailed(string queryfile, string model, string resultfile,
 	}
 
 	Vector3 min, max;
-	Scalar eps = 1e-3;
-	eps = eps * shrinksize;
+	Scalar eps = envsize;
+	
 	Scalar dd;
 	get_bb_corners(env_vertices, min, max);
 	dd = ((max - min).norm()) *eps;
@@ -564,7 +564,7 @@ void pure_our_method_detailed(string queryfile, string model, string resultfile,
 }
 
 
-void pure_our_method_no_optimization(string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model) {
+void pure_our_method_no_optimization(string queryfile, string model, string resultfile, Scalar envsize, bool csv_model) {
 	std::cout << "running our method without optimazation" << std::endl;
 	vector<int> outenvelope;
 	std::vector<Vector3> env_vertices, v;
@@ -602,8 +602,8 @@ void pure_our_method_no_optimization(string queryfile, string model, string resu
 	}
 
 	Vector3 min, max;
-	Scalar eps = 1e-3;
-	eps = eps * shrinksize;
+	Scalar eps = envsize;
+	
 	Scalar dd;
 	get_bb_corners(env_vertices, min, max);
 	dd = ((max - min).norm()) *eps;
@@ -659,16 +659,20 @@ void pure_our_method_no_optimization(string queryfile, string model, string resu
 	fout.close();
 	std::cout << model << " done! " << std::endl;
 }
-void appendix() {
-	Vector3 v1(1, 1, 1);
-	Vector3 v2(2, 4, 3);
-	Vector3 v3(0, 3, 7);
-	Vector3 bary = (v1 + v2 + v3) / 3;
-	std::cout <<"ori " <<Predicates::orient_3d(bary, v1, v2, v3) << std::endl;
-	std::cout << std::setprecision(16)<< "bary coor " << bary[0] << " " << bary[1] << " " << bary[2] << std::endl;
-
-}
-
+//void appendix() {
+//	Vector3 s(1, 1, 1);
+//	Vector3 r(2, 4, 3);
+//	Vector3 t(0, 3, 7);
+//	Vector3 n = (r - s).cross(r - t);
+//	std::cout << "normal " << n << std::endl;
+//	Scalar p1 = 1, p2 = 1, p3;
+//	p3 = n.dot(r)-n[0]*p1-n[1]
+//	Vector3 bary = (v1 + v2 + v3) / 3;
+//	std::cout <<"ori " <<Predicates::orient_3d(bary, v1, v2, v3) << std::endl;
+//	std::cout << std::setprecision(16)<< "bary coor " << bary[0] << " " << bary[1] << " " << bary[2] << std::endl;
+//
+//}
+//
 
 int main(int argc, char const *argv[])
 {
@@ -682,17 +686,26 @@ int main(int argc, char const *argv[])
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
 #ifdef ENVELOPE_WITH_GMP
-	std::cout << "using rational calculation" << std::endl;
+	std::cout << "using RATIONAL calculation in GMP" << std::endl;
 #endif
-	//string queryfile, string model, string resultfile, Scalar shrinksize, bool csv_model
-	//pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	//pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	//pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	//read_CSV_triangle_write_csv("D:\\vs\\fast_envelope_csv\\python\\differenteps\\37402_tem.csv");
-	//write_duplicated_csv();
-	pure_our_method_no_optimization("D:\\vs\\fast_envelope_csv\\python\\extreme_case\\110907.csv",
-		"D:\\vs\\fast_envelope_csv\\python\\extreme_case\\110907.off",
-		"D:\\vs\\fast_envelope_csv\\python\\rational\\find_bug\\result_r.csv", 1,1);
-	//pure_our_method_no_optimization(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+
+	//string queryfile, string model, string resultfile, Scalar envelope size ratio epsilon, bool csv_model
+	string keyword = argv[6];
+	if (keyword == "sampling") {
+		pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	}
+	else if (keyword == "ours") {
+		pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	}
+	else if (keyword == "ours_without_optimazation") {
+		pure_our_method_no_optimization(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	}
+	else if (keyword == "ours_detailed_time") {
+		pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	}
+	else {
+		std::cout << "wrong arguments" << std::endl;
+	}
+	
 	return 0;
 }

@@ -1,13 +1,3 @@
-// This file is part of TriWild, a software for generating linear/curved triangle meshes.
-//
-// Copyright (C) 2019 Yixin Hu <yixin.hu@nyu.edu>
-// This Source Code Form is subject to the terms of the Mozilla Public License
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can
-// obtain one at http://mozilla.org/MPL/2.0/.
-//
-
-#ifndef TRIWILD_RATIONAL_H
-#define TRIWILD_RATIONAL_H
 
 #include <gmp.h>
 #include <iostream>
@@ -15,7 +5,7 @@
 namespace fastEnvelope {
 
 	class Rational
-	{ //https://cs.nyu.edu/acsys/cvc3/releases/1.5/doc/rational-gmp_8cpp-source.html
+	{ 
 	public:
 		mpq_t value;
 		void canonicalize()
@@ -178,4 +168,4 @@ namespace fastEnvelope {
 	};
 }
 
-#endif //TRIWILD_RATIONAL_H
+#endif 

@@ -1,0 +1,1 @@
+Figure 12 uses two datasets from qslim and ftetwild queries. Each dataset contains 2000 files. Due to the limits of upload file size, we randomly select and upload a subset (500 models) of each testing dataset.
