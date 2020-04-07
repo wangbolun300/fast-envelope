@@ -7,12 +7,19 @@
 #include <igl/Timer.h>
 #include <fstream>
 
-
+double time1 = 0, time2 = 0, time3 = 0,time4=0;
+igl::Timer timer, totaltimer,extimer; 
+int count1 = 0, count2 = 0,count3=0,count4=0;
 namespace fastEnvelope
 {
 
 	void FastEnvelope::printnumber() {
-
+		std::cout << "pre calculation float, " << time1 << std::endl;
+		std::cout << "post calculation float, " << time2 << std::endl;
+		std::cout << "total float, " << time3 << std::endl;
+		std::cout << "exact pre, " << time4 << std::endl;
+		std::cout << "exact pre nbr, " << count2<<" out of "<<count1 << std::endl;
+		std::cout << "exact post nbr, " << count4 << " out of " << count3 << std::endl;
 	}
 
 #ifdef ENVELOPE_WITH_GMP
@@ -436,6 +443,7 @@ namespace fastEnvelope
 
 						if (!cut) continue;
 #else
+						totaltimer.start();
 						cut = is_3_triangle_cut(triangle,
 							halfspace[jump1][intersect_face[queue[i]][k]][0],
 							halfspace[jump1][intersect_face[queue[i]][k]][1],
@@ -444,7 +452,7 @@ namespace fastEnvelope
 							halfspace[jump2][intersect_face[queue[j]][h]][0],
 							halfspace[jump2][intersect_face[queue[j]][h]][1],
 							halfspace[jump2][intersect_face[queue[j]][h]][2]);
-
+						time3 += totaltimer.getElapsedTimeInSec();
 						//timettt += timer.getElapsedTimeInSec();
 						if (!cut) continue;
 
@@ -2632,6 +2640,7 @@ namespace fastEnvelope
 		const std::array<Vector3, 3> &triangle,
 		const Vector3 &facet10, const Vector3 &facet11, const Vector3 &facet12, const Vector3 &facet20, const Vector3 &facet21, const Vector3 &facet22)
 	{
+		count1++;
 		TPI_filtered_suppvars st;
 		TPI_exact_suppvars  s;
 		Scalar
@@ -2646,6 +2655,7 @@ namespace fastEnvelope
 			f200, f201, f202,
 			f210, f211, f212,
 			f220, f221, f222;
+		timer.start();
 		bool pre =
 			orient3D_TPI_prefilter(
 				triangle[0][0], triangle[0][1], triangle[0][2],
@@ -2654,7 +2664,10 @@ namespace fastEnvelope
 				facet10[0], facet10[1], facet10[2], facet11[0], facet11[1], facet11[2], facet12[0], facet12[1], facet12[2],
 				facet20[0], facet20[1], facet20[2], facet21[0], facet21[1], facet21[2], facet22[0], facet22[1], facet22[2],
 				st);
+		time1 += timer.getElapsedTimeInSec();
 		if (pre == false) {
+			extimer.start();
+			count2++;
 			bool premulti = orient3D_TPI_pre_exact(
 				triangle[0][0], triangle[0][1], triangle[0][2],
 				triangle[1][0], triangle[1][1], triangle[1][2],
@@ -2662,6 +2675,7 @@ namespace fastEnvelope
 				facet10[0], facet10[1], facet10[2], facet11[0], facet11[1], facet11[2], facet12[0], facet12[1], facet12[2],
 				facet20[0], facet20[1], facet20[2], facet21[0], facet21[1], facet21[2], facet22[0], facet22[1], facet22[2],
 				s);
+			time4 += extimer.getElapsedTimeInSec();
 			if (premulti == false) return false;
 			return is_3_triangle_cut_pure_multiprecision(triangle, s);
 		}
@@ -2675,9 +2689,12 @@ namespace fastEnvelope
 
 
 		bool premulti = false;
+		timer.start();
 		int o1 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			triangle[0][0], triangle[0][1], triangle[0][2],
 			triangle[1][0], triangle[1][1], triangle[1][2]);
+		count3++;
+		time2 += timer.getElapsedTimeInSec();
 		if (o1 == 0)
 		{
 
@@ -2711,26 +2728,29 @@ namespace fastEnvelope
 			f221 = (facet22[1]);
 			f222 = (facet22[2]);
 
-
+			extimer.start();
 			premulti = orient3D_TPI_pre_exact(
 				t00, t01, t02, t10, t11, t12, t20, t21, t22,
 				f100, f101, f102, f110, f111, f112, f120, f121, f122,
 				f200, f201, f202, f210, f211, f212, f220, f221, f222,
 				s);
-
+			time4 += extimer.getElapsedTimeInSec();
 			o1 = orient3D_TPI_post_exact(
 				s,
 				n[0], n[1], n[2],
 				t00, t01, t02,
 				t10, t11, t12);
+			count4++;
 		}
 
 		if (o1 == 0)
 			return false;
-
+		timer.start();
 		int o2 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			triangle[1][0], triangle[1][1], triangle[1][2],
 			triangle[2][0], triangle[2][1], triangle[2][2]);
+		count3++;
+		time2 += timer.getElapsedTimeInSec();
 		if (o2 == 0)
 		{
 			if (premulti == false)
@@ -2765,26 +2785,30 @@ namespace fastEnvelope
 				f221 = (facet22[1]);
 				f222 = (facet22[2]);
 
-
+				extimer.start();
 				premulti = orient3D_TPI_pre_exact(
 					t00, t01, t02, t10, t11, t12, t20, t21, t22,
 					f100, f101, f102, f110, f111, f112, f120, f121, f122,
 					f200, f201, f202, f210, f211, f212, f220, f221, f222,
 					s);
+				
+				time4 += extimer.getElapsedTimeInSec();
 			}
 			o2 = orient3D_TPI_post_exact(
 				s,
 				n[0], n[1], n[2],
 				t10, t11, t12,
 				t20, t21, t22);
-
+			count4++;
 		}
 		if (o2 == 0 || o1 + o2 == 0)
 			return false;
-
+		timer.start();
 		int o3 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			triangle[2][0], triangle[2][1], triangle[2][2],
 			triangle[0][0], triangle[0][1], triangle[0][2]);
+		count3++;
+		time2 += timer.getElapsedTimeInSec();
 		if (o3 == 0)
 		{
 			if (premulti == false)
@@ -2818,18 +2842,20 @@ namespace fastEnvelope
 				f220 = (facet22[0]);
 				f221 = (facet22[1]);
 				f222 = (facet22[2]);
-
+				extimer.start();
 				premulti = orient3D_TPI_pre_exact(
 					t00, t01, t02, t10, t11, t12, t20, t21, t22,
 					f100, f101, f102, f110, f111, f112, f120, f121, f122,
 					f200, f201, f202, f210, f211, f212, f220, f221, f222,
 					s);
+				time4 += extimer.getElapsedTimeInSec();
 			}
 			o3 = orient3D_TPI_post_exact(
 				s,
 				n[0], n[1], n[2],
 				t20, t21, t22,
 				t00, t01, t02);
+			count4++;
 
 		}
 		if (o3 == 0 || o1 + o3 == 0 || o2 + o3 == 0)
@@ -2930,6 +2956,7 @@ namespace fastEnvelope
 			n = { {Vector3(rand(), rand(), rand())} };
 		}
 		TPI_filtered_suppvars st;
+		timer.start();
 		bool pre =
 			orient3D_TPI_prefilter(
 				tri0[0], tri0[1], tri0[2],
@@ -2938,20 +2965,24 @@ namespace fastEnvelope
 				facet10[0], facet10[1], facet10[2], facet11[0], facet11[1], facet11[2], facet12[0], facet12[1], facet12[2],
 				facet20[0], facet20[1], facet20[2], facet21[0], facet21[1], facet21[2], facet22[0], facet22[1], facet22[2],
 				st);
-
+		time1 += timer.getElapsedTimeInSec();
 		if (pre == false)
 			return 2; // means we dont know
+		timer.start();
 		int o1 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			tri0[0], tri0[1], tri0[2],
 			tri1[0], tri1[1], tri1[2]);
 		int o2 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			tri1[0], tri1[1], tri1[2],
 			tri2[0], tri2[1], tri2[2]);
+		time2 += timer.getElapsedTimeInSec();
 		if (o1 * o2 == -1)
 			return 0;
+		timer.start();
 		int o3 = orient3D_TPI_postfilter(st, n[0], n[1], n[2],
 			tri2[0], tri2[1], tri2[2],
 			tri0[0], tri0[1], tri0[2]);
+		time2 += timer.getElapsedTimeInSec();
 		if (o1 * o3 == -1 || o2 * o3 == -1)
 			return 0;
 		if (o1 * o2 * o3 == 0)
@@ -3123,7 +3154,7 @@ namespace fastEnvelope
 					bool neib = is_two_facets_neighbouring(cindex, cutp[i], cutp[j]);
 					if (neib == false) continue;
 				}
-
+				totaltimer.start();
 				int inter = is_3_triangle_cut_float_fast(
 					tri0, tri1, tri2,
 					halfspace[cindex][cutp[i]][0],
@@ -3132,6 +3163,7 @@ namespace fastEnvelope
 					halfspace[cindex][cutp[j]][0],
 					halfspace[cindex][cutp[j]][1],
 					halfspace[cindex][cutp[j]][2]);
+				time3 += totaltimer.getElapsedTimeInSec();
 				if (inter == 2)
 				{ //we dont know if point exist or if inside of triangle
 					cut[cutp[i]] = true;

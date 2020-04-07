@@ -368,7 +368,8 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar e
 	timer.stop();
 	const auto init_time = timer.getElapsedTimeInSec();
 	std::cout << "ours initialization time " << timer.getElapsedTimeInSec() << std::endl;
-	int fn = triangles.size() > 100000 ? 100000 : triangles.size();
+	//int fn = triangles.size() > 100000 ? 100000 : triangles.size();
+	int fn = triangles.size() > 1000 ? 1000 : triangles.size();
 	std::cout << "total query size, " << fn << std::endl;
 	std::vector<bool> results;
 	results.resize(fn);
@@ -398,7 +399,7 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar e
 	fout << "\"facets\": " << env_faces.size() << "\n";
 	fout << "}";
 	fout.close();
-
+	fast_envelope.printnumber();
 
 
 
