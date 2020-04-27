@@ -16,48 +16,20 @@
 
 #pragma intrinsic(fabs)
 
-#ifdef WIN32
-inline void setFPUModeToRoundUP() { _controlfp(_RC_UP, _MCW_RC); }
-inline void setFPUModeToRoundNEAR() { _controlfp(_RC_NEAR, _MCW_RC); }
-#else
+
+#ifndef WIN32
 
 #include <fenv.h>
+
 #if __APPLE__
 #define _FPU_SETCW(cw) // nothing https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/float.3.html
 #else
 #include <fpu_control.h>
 #endif
 
-inline void setFPUModeToRoundUP() { fesetround(FE_UPWARD); }
-inline void setFPUModeToRoundNEAR() { fesetround(FE_TONEAREST); }
-
 #endif
 
 #ifdef USE_MULTISTAGE_FILTERS
-interval_number interval_number::operator*(const interval_number& b) const
-{
-	casted_double l1(low), h1(high), l2(b.low), h2(b.high);
-	uint64_t conf = (l1.is_negative() << 3) + (h1.is_negative() << 2) + (l2.is_negative() << 1) + (h2.is_negative());
-	switch (conf)
-	{
-	case 0: return interval_number(-((-low)*b.low), high*b.high);
-	case 2: return interval_number(-((-high)*b.low), high*b.high);
-	case 3: return interval_number(-((-high)*b.low), low*b.high);
-	case 8: return interval_number(-((-low)*b.high), high*b.high);
-	case 10:
-		double ll, lh, hl, hh;
-		ll = low*b.low; lh = -((-low)*b.high); hl = -((-high)*b.low); hh = high*b.high;
-		if (hl < lh) lh = hl;
-		if (ll > hh) hh = ll;
-		return interval_number(lh, hh);
-	case 11: return interval_number(-((-high)*b.low), low*b.low);
-	case 12: return interval_number(-((-low)*b.high), high*b.low);
-	case 14: return interval_number(-((-low)*b.high), low*b.low);
-	case 15: return interval_number(-((-high)*b.high), low*b.low);
-	};
-
-	return interval_number(NAN);
-}
 
 /////////////////// Dynamic filters with interval arithmetic /////////////
 
@@ -779,401 +751,6 @@ int orient3D_TPI_filtered(
 #define Two_Product_2Presplit(a, _ah, _al, b, _bh, _bl, x, y) x = a * b; y = (_al * _bl) - (((x - _ah * _bh) - (_al * _bh)) - (_ah * _bl))
 
 
-// An instance of the following must be created to access functions for expansion arithmetic
-class expansionObject
-{
-	// Temporary vars used in low-level arithmetic
-	double _bv, _c, _ah, _al, _bh, _bl, _ch, _cl, _i, _j, _k, _l, _m, _n, _0, _1, _2, _u3;
-
-public:
-	expansionObject() {}
-
-	inline void two_Sum(const double& a, const double&b, double& x, double& y) { Two_Sum(a, b, x, y); }
-	inline void two_Sum(const double& a, const double&b, double *xy) { Two_Sum(a, b, xy[1], xy[0]); }
-
-	inline void two_Diff(const double& a, const double&b, double& x, double& y) { Two_Diff(a, b, x, y); }
-	inline void two_Diff(const double& a, const double&b, double *xy) { Two_Diff(a, b, xy[1], xy[0]); }
-
-	// [x,y] = [a]*[b]		 Multiplies two expansions [a] and [b] of length one
-	inline void Two_Prod(const double& a, const double&b, double& x, double& y)
-	{
-		_u3 = a * b;
-		Split(a, _ah, _al); Split(b, _bh, _bl);
-		y = ((_ah*_bh - _u3) + _ah*_bl + _al*_bh) + _al*_bl;
-		x = _u3;
-	}
-	inline void Two_Prod(const double& a, const double&b, double*xy) { Two_Prod(a, b, xy[1], xy[0]); }
-
-	// [x,y] = [a]^2		Squares an expansion of length one
-	inline void Square(const double& a, double& x, double& y)
-	{
-		x = a * a;
-		Split(a, _ah, _al);
-		y = (_al * _al) - ((x - (_ah * _ah)) - ((_ah + _ah) * _al));
-	}
-
-	// [x3,x2,x1,x0] = [a1,a0]*[b]		Multiplies an expansion [a1,a0] of length two by an expansion [b] of length one
-	inline void Two_One_Prod(const double& a1, const double&a0, const double& b, double& x3, double& x2, double& x1, double& x0)
-	{
-		Split(b, _bh, _bl);
-		Two_Prod_PreSplit(a0, b, _bh, _bl, _i, x0); Two_Prod_PreSplit(a1, b, _bh, _bl, _j, _0);
-		Two_Sum(_i, _0, _k, x1); Quick_Two_Sum(_j, _k, x3, x2);
-	}
-	inline void Two_One_Prod(const double *a, const double& b, double *x) { Two_One_Prod(a[1], a[0], b, x[3], x[2], x[1], x[0]); }
-
-	// [x3,x2,x1,x0] = [a1,a0]+[b1,b0]		Calculates the sum of two expansions of length two
-	inline void Two_Two_Sum(const double& a1, const double&a0, const double& b1, const double& b0, double& x3, double& x2, double& x1, double& x0)
-	{
-		Two_One_Sum(a1, a0, b0, _j, _0, x0); Two_One_Sum(_j, _0, b1, x3, x2, x1);
-	}
-
-	// [x3,x2,x1,x0] = [a1,a0]-[b1,b0]		Calculates the difference between two expansions of length two
-	inline void Two_Two_Diff(const double& a1, const double&a0, const double& b1, const double& b0, double& x3, double& x2, double& x1, double& x0)
-	{
-		Two_One_Diff(a1, a0, b0, _j, _0, x0); Two_One_Diff(_j, _0, b1, _u3, x2, x1); x3 = _u3;
-	}
-	inline void Two_Two_Diff(const double *a, const double *b, double *x) { Two_Two_Diff(a[1], a[0], b[1], b[0], x[3], x[2], x[1], x[0]); }
-
-	// Calculates the second component 'y' of the expansion [x,y] = [a]-[b] when 'x' is known
-	inline void Two_Diff_Back(const double& a, const double&b, double& x, double& y) { _bv = a - x; y = (a - (x + _bv)) + (_bv - b); }
-	inline void Two_Diff_Back(const double& a, const double&b, double *xy) { Two_Diff_Back(a, b, xy[1], xy[0]); }
-
-	// [h] = [a1,a0]^2		Squares an expansion of length 2
-	// 'h' must be allocated by the caller with 6 components.
-	void Two_Square(const double& a1, const double& a0, double *x);
-
-	// [h7,h6,...,h0] = [a1,a0]*[b1,b0]		Calculates the product of two expansions of length two.
-	// 'h' must be allocated by the caller with eight components.
-	void Two_Two_Prod(const double a1, const double a0, const double b1, const double b0, double *h);
-	inline void Two_Two_Prod(const double *a, const double *b, double *xy) { Two_Two_Prod(a[1], a[0], b[1], b[0], xy); }
-
-	// [e] <- 2*[e]		Inplace inversion
-	inline void Gen_Invert(const int elen, double *e) { for (int i = 0; i < elen; i++) e[i] = -e[i]; }
-
-	// [h] = [e] + [f]		Sums two expansions and returns number of components of result
-	// 'h' must be allocated by the caller with at least elen+flen components.
-	int Gen_Sum(const int elen, const double *e, const int flen, const double *f, double *h);
-	int Gen_Diff(const int elen, const double *e, const int flen, const double *f, double *h);
-
-	// Same as above, but 'h' is allocated internally. The caller must still call 'free' to release the memory.
-	int Gen_Sum_With_Alloc(const int elen, const double *e, const int flen, const double *f, double **h)
-	{
-		*h = (double *)malloc((elen + flen) * sizeof(double));
-		return Gen_Sum(elen, e, flen, f, *h);
-	}
-
-	// [h] = [e] * b		Multiplies an expansion by a scalar
-	// 'h' must be allocated by the caller with at least elen*2 components.
-	int Gen_Scale(const int elen, const double *e, const double& b, double *h);
-
-	// [h] = [a] * [b]
-	// 'h' must be allocated by the caller with at least 2*alen*blen components.
-	int Sub_product(const int alen, const double *a, const int blen, const double *b, double *h);
-
-	// [h] = [a] * [b]
-	// 'h' must be allocated by the caller with at least MAX(2*alen*blen, 8) components.
-	int Gen_Product(const int alen, const double *a, const int blen, const double *b, double *h);
-
-	// Same as above, but 'h' is allocated internally. The caller must still call 'free' to release the memory.
-	int Gen_Product_With_Alloc(const int alen, const double *a, const int blen, const double *b, double **h)
-	{
-		int h_len = alen * blen * 2;
-		if (h_len < 8) h_len = 8;
-		*h = (double *)malloc(h_len * sizeof(double));
-		return Gen_Product(alen, a, blen, b, *h);
-	}
-
-
-	// Assume that *h is pre-allocated with hlen doubles.
-	// If more elements are required, *h is re-allocated internally.
-	// In any case, the function returns the size of the resulting expansion.
-	// The caller must verify whether reallocation took place, and possibly call 'free' to release the memory.
-	// When reallocation takes place, *h becomes different from its original value.
-
-	int Gen_Scale_With_PreAlloc(const int elen, const double *e, const double& b, double **h, const int hlen)
-	{
-		int newlen = elen * 2;
-		if (hlen < newlen) *h = (double *)malloc(newlen * sizeof(double));
-		return Gen_Scale(elen, e, b, *h);
-	}
-
-	int Gen_Sum_With_PreAlloc(const int elen, const double *e, const int flen, const double *f, double **h, const int hlen)
-	{
-		int newlen = elen + flen;
-		if (hlen < newlen) *h = (double *)malloc(newlen * sizeof(double));
-		return Gen_Sum(elen, e, flen, f, *h);
-	}
-
-	int Gen_Product_With_PreAlloc(const int alen, const double *a, const int blen, const double *b, double **h, const int hlen)
-	{
-		int h_len = alen * blen * 2;
-		if (h_len < 8) h_len = 8;
-		if (hlen < h_len) *h = (double *)malloc(h_len * sizeof(double));
-		return Gen_Product(alen, a, blen, b, *h);
-	}
-
-	// Approximates the expansion to a double
-	static double To_Double(const int elen, const double *e);
-};
-
-int expansionObject::Gen_Sum(const int elen, const double *e, const int flen, const double *f, double *h)
-{
-	double Q, Qn, hh, en = e[0], fn = f[0];
-	int e_k, f_k, h_k;
-
-	h_k = e_k = f_k = 0;
-	if ((fn > en) == (fn > -en)) { Q = en; e_k++; } else { Q = fn; f_k++; }
-
-	if ((e_k < elen) && (f_k < flen))
-	{
-		en = e[e_k]; fn = f[f_k];
-		if ((fn > en) == (fn > -en)) { Quick_Two_Sum(en, Q, Qn, hh); e_k++; } else { Quick_Two_Sum(fn, Q, Qn, hh); f_k++; }
-		Q = Qn;
-		if (hh != 0.0) h[h_k++] = hh;
-		while ((e_k < elen) && (f_k < flen))
-		{
-			en = e[e_k]; fn = f[f_k];
-			if ((fn > en) == (fn > -en)) { Two_Sum(Q, en, Qn, hh); e_k++; } else { Two_Sum(Q, fn, Qn, hh); f_k++; }
-			Q = Qn;
-			if (hh != 0.0) h[h_k++] = hh;
-		}
-	}
-
-	while (e_k < elen)
-	{
-		en = e[e_k++];
-		Two_Sum(Q, en, Qn, hh);
-		Q = Qn;
-		if (hh != 0.0) h[h_k++] = hh;
-	}
-
-	while (f_k < flen)
-	{
-		fn = f[f_k++];
-		Two_Sum(Q, fn, Qn, hh);
-		Q = Qn;
-		if (hh != 0.0) h[h_k++] = hh;
-	}
-	if ((Q != 0.0) || (h_k == 0)) h[h_k++] = Q;
-
-	return h_k;
-}
-
-int expansionObject::Gen_Diff(const int elen, const double *e, const int flen, const double *f, double *h)
-{
-	double Q, Qn, hh, en = e[0], fn = -f[0];
-	int e_k, f_k, h_k;
-
-	h_k = e_k = f_k = 0;
-	if ((fn > en) == (fn > -en)) { Q = en; e_k++; } else { Q = fn; f_k++; }
-
-	if ((e_k < elen) && (f_k < flen))
-	{
-		en = e[e_k]; fn = -f[f_k];
-		if ((fn > en) == (fn > -en)) { Quick_Two_Sum(en, Q, Qn, hh); e_k++; } else { Quick_Two_Sum(fn, Q, Qn, hh); f_k++; }
-		Q = Qn;
-		if (hh != 0.0) h[h_k++] = hh;
-		while ((e_k < elen) && (f_k < flen))
-		{
-			en = e[e_k]; fn = -f[f_k];
-			if ((fn > en) == (fn > -en)) { Two_Sum(Q, en, Qn, hh); e_k++; } else { Two_Sum(Q, fn, Qn, hh); f_k++; }
-			Q = Qn;
-			if (hh != 0.0) h[h_k++] = hh;
-		}
-	}
-
-	while (e_k < elen)
-	{
-		en = e[e_k++];
-		Two_Sum(Q, en, Qn, hh);
-		Q = Qn;
-		if (hh != 0.0) h[h_k++] = hh;
-	}
-
-	while (f_k < flen)
-	{
-		fn = -f[f_k++];
-		Two_Sum(Q, fn, Qn, hh);
-		Q = Qn;
-		if (hh != 0.0) h[h_k++] = hh;
-	}
-	if ((Q != 0.0) || (h_k == 0)) h[h_k++] = Q;
-
-	return h_k;
-}
-
-// THE NEW VERSION ABOVE SHOULD BE EQUIVALENT BUT FIXES OUT-OR-RANGE ARRAY ACCESSES.
-// IN CASE OF UNEXPECTED/STRANGE BEHAVIOUR, TRY TO SWITCH BACK TO THE FOLLOWING VERSION.
-//
-//int expansionObject::Gen_Sum(const int elen, const double *e, const int flen, const double *f, double *h)
-//{
-//	double Q, Qn, hh, en = e[0], fn = f[0];
-//	int e_k, f_k, h_k;
-//
-//	h_k = e_k = f_k = 0;
-//	if ((fn > en) == (fn > -en)) { Q = en; en = e[++e_k]; } else { Q = fn; fn = f[++f_k]; }
-//
-//	if ((e_k < elen) && (f_k < flen))
-//	{
-//		if ((fn > en) == (fn > -en)) { Quick_Two_Sum(en, Q, Qn, hh); en = e[++e_k]; } else { Quick_Two_Sum(fn, Q, Qn, hh); fn = f[++f_k]; }
-//		Q = Qn;
-//		if (hh != 0.0) h[h_k++] = hh;
-//		while ((e_k < elen) && (f_k < flen))
-//		{
-//			if ((fn > en) == (fn > -en)) { Two_Sum(Q, en, Qn, hh); en = e[++e_k]; } else { Two_Sum(Q, fn, Qn, hh); fn = f[++f_k]; }
-//			Q = Qn;
-//			if (hh != 0.0) h[h_k++] = hh;
-//		}
-//	}
-//
-//	while (e_k < elen)
-//	{
-//		Two_Sum(Q, en, Qn, hh);
-//		en = e[++e_k];
-//		Q = Qn;
-//		if (hh != 0.0) h[h_k++] = hh;
-//	}
-//
-//	while (f_k < flen)
-//	{
-//		Two_Sum(Q, fn, Qn, hh);
-//		fn = f[++f_k];
-//		Q = Qn;
-//		if (hh != 0.0) h[h_k++] = hh;
-//	}
-//	if ((Q != 0.0) || (h_k == 0)) h[h_k++] = Q;
-//
-//	return h_k;
-//}
-
-int expansionObject::Gen_Scale(const int elen, const double *e, const double& b, double *h)
-{
-	double Q, sum, hh, pr1, pr0, enow;
-	int e_k, h_k;
-
-	Split(b, _bh, _bl);
-	Two_Prod_PreSplit(e[0], b, _bh, _bl, Q, hh);
-	h_k = 0;
-	if (hh != 0) h[h_k++] = hh;
-
-	for (e_k = 1; e_k < elen; e_k++)
-	{
-		enow = e[e_k];
-		Two_Prod_PreSplit(enow, b, _bh, _bl, pr1, pr0);
-		Two_Sum(Q, pr0, sum, hh);
-		if (hh != 0) h[h_k++] = hh;
-		Quick_Two_Sum(pr1, sum, Q, hh);
-		if (hh != 0) h[h_k++] = hh;
-	}
-	if ((Q != 0.0) || (h_k == 0)) h[h_k++] = Q;
-
-	return h_k;
-}
-
-
-void expansionObject::Two_Square(const double& a1, const double& a0, double *x)
-{
-	Square(a0, _j, x[0]);
-	_0 = a0 + a0;
-	Two_Prod(a1, _0, _k, _1);
-	Two_One_Sum(_k, _1, _j, _l, _2, x[1]);
-	Square(a1, _j, _1);
-	Two_Two_Sum(_j, _1, _l, _2, x[5], x[4], x[3], x[2]);
-}
-
-
-void expansionObject::Two_Two_Prod(const double a1, const double a0, const double b1, const double b0, double *h)
-{
-	Split(a0, _ah, _al);
-	Split(b0, _bh, _bl);
-	Two_Product_2Presplit(a0, _ah, _al, b0, _bh, _bl, _i, h[0]);
-	Split(a1, _ch, _cl);
-	Two_Product_2Presplit(a1, _ch, _cl, b0, _bh, _bl, _j, _0);
-	Two_Sum(_i, _0, _k, _1);
-	Quick_Two_Sum(_j, _k, _l, _2);
-	Split(b1, _bh, _bl);
-	Two_Product_2Presplit(a0, _ah, _al, b1, _bh, _bl, _i, _0);
-	Two_Sum(_1, _0, _k, h[1]);
-	Two_Sum(_2, _k, _j, _1);
-	Two_Sum(_l, _j, _m, _2);
-	Two_Product_2Presplit(a1, _ch, _cl, b1, _bh, _bl, _j, _0);
-	Two_Sum(_i, _0, _n, _0);
-	Two_Sum(_1, _0, _i, h[2]);
-	Two_Sum(_2, _i, _k, _1);
-	Two_Sum(_m, _k, _l, _2);
-	Two_Sum(_j, _n, _k, _0);
-	Two_Sum(_1, _0, _j, h[3]);
-	Two_Sum(_2, _j, _i, _1);
-	Two_Sum(_l, _i, _m, _2);
-	Two_Sum(_1, _k, _i, h[4]);
-	Two_Sum(_2, _i, _k, h[5]);
-	Two_Sum(_m, _k, h[7], h[6]);
-}
-
-
-int expansionObject::Sub_product(const int alen, const double *a, const int blen, const double *b, double *h)
-{
-	if (alen == 1) return Gen_Scale(blen, b, a[0], h);
-	else
-	{
-		const double* a1 = a;
-		int a1len = alen / 2;
-		const double* a2 = a1 + a1len;
-		int a2len = alen - a1len;
-
-		int a1blen, a2blen;
-		double *a1b = (double *)malloc(2 * a1len * blen * sizeof(double));
-		double *a2b = (double *)malloc(2 * a2len * blen * sizeof(double));
-		a1blen = Sub_product(a1len, a1, blen, b, a1b);
-		a2blen = Sub_product(a2len, a2, blen, b, a2b);
-		int hlen = Gen_Sum(a1blen, a1b, a2blen, a2b, h);
-		free(a1b);
-		free(a2b);
-		return hlen;
-	}
-}
-
-
-int expansionObject::Gen_Product(const int alen, const double *a, const int blen, const double *b, double *h)
-{
-	if (alen == 1)
-	{
-		if (blen == 1) { Two_Prod(a[0], b[0], h); return 2; } else if (blen == 2) { Two_One_Prod(b, a[0], h); return 4; } else return Gen_Scale(blen, b, a[0], h);
-	} else if (alen == 2)
-	{
-		if (blen == 1) { Two_One_Prod(a, b[0], h); return 4; } else if (blen == 2) { Two_Two_Prod(a[1], a[0], b[1], b[0], h); return 8; } else return Sub_product(alen, a, blen, b, h);
-	} else
-	{
-		if (blen == 1) return Gen_Scale(alen, a, b[0], h);
-		else if (alen < blen) return Sub_product(alen, a, blen, b, h);
-		else return Sub_product(blen, b, alen, a, h);
-	}
-}
-
-
-double expansionObject::To_Double(const int elen, const double *e)
-{
-	double Q = e[0];
-	for (int e_i = 1; e_i < elen; e_i++) Q += e[e_i];
-	return Q;
-}
-
-void initFPU()
-{
-#ifdef _WIN64
-	//do nothing
-#else
-#ifdef WIN32
-	_control87(_PC_53, _MCW_PC); /* Set FPU control word for double precision. */
-#else
-	int cword;
-	cword = 4722;                 /* set FPU control word for double precision */
-	_FPU_SETCW(cword);
-#endif
-#endif
-}
-
-
 //////////////////////////////////////////////////////////////////////////////////
 //
 //   O R I E N T 3 D _ L P I
@@ -1339,18 +916,18 @@ bool orient3D_LPI_pre_exact(
 
 	expansionObject o;
 
-	o.two_Diff(px, qx, a11[1], a11[0]); // a11 = px - qx;
-	o.two_Diff(py, qy, a12[1], a12[0]); // a12 = py - qy;
-	o.two_Diff(pz, qz, a13[1], a13[0]); // a13 = pz - qz;
-	o.two_Diff(sx, rx, a21[1], a21[0]); // a21 = sx - rx;
-	o.two_Diff(sy, ry, a22[1], a22[0]); // a22 = sy - ry;
-	o.two_Diff(sz, rz, a23[1], a23[0]); // a23 = sz - rz;
-	o.two_Diff(tx, rx, a31[1], a31[0]); // a31 = tx - rx;
-	o.two_Diff(ty, ry, a32[1], a32[0]); // a32 = ty - ry;
-	o.two_Diff(tz, rz, a33[1], a33[0]); // a33 = tz - rz;
-	o.two_Diff(px, rx, px_rx[1], px_rx[0]); // px_rx = px - rx;
-	o.two_Diff(py, ry, py_ry[1], py_ry[0]); // py_ry = py - ry;
-	o.two_Diff(pz, rz, pz_rz[1], pz_rz[0]); // pz_rz = pz - rz;
+	o.two_Diff(px, qx, a11); // a11 = px - qx;
+	o.two_Diff(py, qy, a12); // a12 = py - qy;
+	o.two_Diff(pz, qz, a13); // a13 = pz - qz;
+	o.two_Diff(sx, rx, a21); // a21 = sx - rx;
+	o.two_Diff(sy, ry, a22); // a22 = sy - ry;
+	o.two_Diff(sz, rz, a23); // a23 = sz - rz;
+	o.two_Diff(tx, rx, a31); // a31 = tx - rx;
+	o.two_Diff(ty, ry, a32); // a32 = ty - ry;
+	o.two_Diff(tz, rz, a33); // a33 = tz - rz;
+	o.two_Diff(px, rx, px_rx); // px_rx = px - rx;
+	o.two_Diff(py, ry, py_ry); // py_ry = py - ry;
+	o.two_Diff(pz, rz, pz_rz); // pz_rz = pz - rz;
 
 	o.Two_Two_Prod(a22[1], a22[0], a33[1], a33[0], t1); // t1 = a22 * a33;
 	o.Two_Two_Prod(a23[1], a23[0], a32[1], a32[0], t2); // t2 = a23 * a32;
@@ -1431,9 +1008,9 @@ int orient3D_LPI_post_exact(
 
 	expansionObject o;
 
-	o.two_Diff(px, cx, px_cx[1], px_cx[0]); //px_cx = px - cx;
-	o.two_Diff(py, cy, py_cy[1], py_cy[0]); //py_cy = py - cy;
-	o.two_Diff(pz, cz, pz_cz[1], pz_cz[0]); //pz_cz = pz - cz;
+	o.two_Diff(px, cx, px_cx); //px_cx = px - cx;
+	o.two_Diff(py, cy, py_cy); //py_cy = py - cy;
+	o.two_Diff(pz, cz, pz_cz); //pz_cz = pz - cz;
 
 	ii1l = o.Gen_Product(dl, d, 2, px_cx, ii1);
 	ii2l = o.Gen_Product(nl, n, 2, a11, ii2);
@@ -1447,12 +1024,12 @@ int orient3D_LPI_post_exact(
 	ii2l = o.Gen_Product(nl, n, 2, a13, ii2);
 	d13l = o.Gen_Sum(ii1l, ii1, ii2l, ii2, d13); //d13 = (d * pz_cz) + (a13 * n);
 
-	o.two_Diff(ax, cx, d21[1], d21[0]); //d21 = (ax - cx);
-	o.two_Diff(bx, cx, d31[1], d31[0]); //d31 = (bx - cx);
-	o.two_Diff(ay, cy, d22[1], d22[0]); //d22 = (ay - cy);
-	o.two_Diff(by, cy, d32[1], d32[0]); //d32 = (by - cy);
-	o.two_Diff(az, cz, d23[1], d23[0]); //d23 = (az - cz);
-	o.two_Diff(bz, cz, d33[1], d33[0]); //d33 = (bz - cz);
+	o.two_Diff(ax, cx, d21); //d21 = (ax - cx);
+	o.two_Diff(bx, cx, d31); //d31 = (bx - cx);
+	o.two_Diff(ay, cy, d22); //d22 = (ay - cy);
+	o.two_Diff(by, cy, d32); //d32 = (by - cy);
+	o.two_Diff(az, cz, d23); //d23 = (az - cz);
+	o.two_Diff(bz, cz, d33); //d33 = (bz - cz);
 
 	o.Two_Two_Prod(d22[1], d22[0], d33[1], d33[0], d2233); //d2233 = d22*d33;
 	o.Two_Two_Prod(-d23[1], -d23[0], d32[1], d32[0], d2332); //d2332 = -d23*d32;
@@ -1529,12 +1106,12 @@ inline void o3dTPI_tf1(expansionObject& o, double v1x, double v1y, double v1z, d
 	double v32x[2], v32y[2], v32z[2], v21x[2], v21y[2], v21z[2]; // 2
 	double tp1[8], tp2[8]; // 8
 
-	o.two_Diff(v3x, v2x, v32x[1], v32x[0]); // v32x = v3x - v2x;
-	o.two_Diff(v3y, v2y, v32y[1], v32y[0]); // v32y = v3y - v2y;
-	o.two_Diff(v3z, v2z, v32z[1], v32z[0]); // v32z = v3z - v2z;
-	o.two_Diff(v2x, v1x, v21x[1], v21x[0]); // v21x = v2x - v1x;
-	o.two_Diff(v2y, v1y, v21y[1], v21y[0]); // v21y = v2y - v1y;
-	o.two_Diff(v2z, v1z, v21z[1], v21z[0]); // v21z = v2z - v1z;
+	o.two_Diff(v3x, v2x, v32x); // v32x = v3x - v2x;
+	o.two_Diff(v3y, v2y, v32y); // v32y = v3y - v2y;
+	o.two_Diff(v3z, v2z, v32z); // v32z = v3z - v2z;
+	o.two_Diff(v2x, v1x, v21x); // v21x = v2x - v1x;
+	o.two_Diff(v2y, v1y, v21y); // v21y = v2y - v1y;
+	o.two_Diff(v2z, v1z, v21z); // v21z = v2z - v1z;
 
 	o.Two_Two_Prod(v21y[1], v21y[0], v32z[1], v32z[0], tp1); // tp1 = v21y*v32z;
 	o.Two_Two_Prod(v21z[1], v21z[0], v32y[1], v32y[0], tp2); // tp2 = v21z*v32y;
@@ -1831,12 +1408,12 @@ int orient3D_TPI_post_exact(
 	if (dq3y != dq3yp) free(dq3y);
 	if (dq3z != dq3zp) free(dq3z);
 
-	o.two_Diff(q1x, q3x, a21[1], a21[0]); // a21 = q1x - q3x;
-	o.two_Diff(q1y, q3y, a22[1], a22[0]); // a22 = q1y - q3y;
-	o.two_Diff(q1z, q3z, a23[1], a23[0]); // a23 = q1z - q3z;
-	o.two_Diff(q2x, q3x, a31[1], a31[0]); // a31 = q2x - q3x;
-	o.two_Diff(q2y, q3y, a32[1], a32[0]); // a32 = q2y - q3y;
-	o.two_Diff(q2z, q3z, a33[1], a33[0]); // a33 = q2z - q3z;
+	o.two_Diff(q1x, q3x, a21); // a21 = q1x - q3x;
+	o.two_Diff(q1y, q3y, a22); // a22 = q1y - q3y;
+	o.two_Diff(q1z, q3z, a23); // a23 = q1z - q3z;
+	o.two_Diff(q2x, q3x, a31); // a31 = q2x - q3x;
+	o.two_Diff(q2y, q3y, a32); // a32 = q2y - q3y;
+	o.two_Diff(q2z, q3z, a33); // a33 = q2z - q3z;
 
 	o.Two_Two_Prod(a22[1], a22[0], a33[1], a33[0], a2233); // a2233 = a22*a33;
 	o.Two_Two_Prod(a23[1], a23[0], a32[1], a32[0], a2332); // a2332 = a23*a32;

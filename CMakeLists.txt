@@ -193,21 +193,32 @@ endif()
 
 
 # Predicates
+fast_envelope_download_i_pred()
+
 set(INDIRECTPREDICATES_SOURCES
 	indirectPredicates/ip_filtered.cpp
 	indirectPredicates/ip_filtered.h
 
 	indirectPredicates/ip_filtered_ex.h
+
+	${FAST_ENVELOPE_EXTERNAL}/i_pred/numerics.h
+	${FAST_ENVELOPE_EXTERNAL}/i_pred/numerics.cpp
 )
+
+
+
+
 add_library(IndirectPredicates ${INDIRECTPREDICATES_SOURCES})
 indirect_predicates_copy_headers(${INDIRECTPREDICATES_SOURCES})
-target_include_directories(IndirectPredicates PRIVATE indirectPredicates/)
+target_include_directories(IndirectPredicates PRIVATE indirectPredicates/ ${FAST_ENVELOPE_EXTERNAL}/i_pred)
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	target_compile_options(IndirectPredicates PRIVATE "/fp:strict")
 elseif(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	target_compile_options(IndirectPredicates PRIVATE "-frounding-math")
+else()
+	message(WARNING "On CLang, there is no compiler flag which is required for ensuring the correctness of the algorithm.")
 endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE IndirectPredicates)
 
@@ -242,7 +253,7 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	add_executable(${PROJECT_NAME}_bin app/main.cpp)
 	add_subdirectory(app)
 	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
-	
+
 
 	if(NOT FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
 		# Geogram
@@ -261,7 +272,7 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 		add_sanitizers(${PROJECT_NAME}_bin)
 	endif()
 
-	
+
 	if(FAST_ENVELOPE_ENABLE_TBB)
 		target_link_libraries(${PROJECT_NAME}_bin PUBLIC tbb::tbb)
 	endif()

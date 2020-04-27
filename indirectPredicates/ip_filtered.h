@@ -1,4 +1,5 @@
 #include <math.h>
+#include <numerics.h>
 
 /****************************************************************************
 
@@ -73,42 +74,7 @@ the reference planes (see detailed comments below for usage examples).
 
 void initFPU();
 
-#ifdef USE_MULTISTAGE_FILTERS
-// Interval_number
-class interval_number
-{
-	typedef union error_approx_type_t
-	{
-		double d;
-		uint64_t u;
-
-		inline error_approx_type_t() {}
-		inline error_approx_type_t(double a) : d(a) {}
-		inline uint64_t is_negative() const { return u >> 63; }
-	} casted_double;
-
-	double low, high;
-
-public:
-	inline interval_number() {}
-	inline interval_number(double a) : low(a), high(a) {}
-	inline interval_number(double a, double b) : low(a), high(b) {}
-	inline interval_number(const interval_number& b) : low(b.low), high(b.high) {}
-
-	inline bool signIsReliable() const { return ((low>0 || high <0) && isfinite(low) && isfinite(high)); }
-
-	inline int sign() const { return (low > 0) ? (1) : ((low < 0) ? (-1) : (0)); }
-
-	inline interval_number& operator=(const interval_number& b) { low = b.low; high = b.high; return *this; }
-	inline interval_number operator+(const interval_number& b) const { return interval_number(-((-low) - b.low), high + b.high); }
-	inline interval_number operator-(const interval_number& b) const { return interval_number(-(b.high - low), high - b.low); }
-	interval_number operator*(const interval_number& b) const;
-
-	friend bool isfinite(const interval_number& i);
-};
-#endif
-
-inline bool isfinite(const interval_number& i) { return (::isfinite(i.low) && ::isfinite(i.high)); }
+inline bool isfinite(const interval_number &i) { return (::isfinite(i.inf()) && ::isfinite(i.sup())); }
 
 enum Filtered_Orientation {
 	POSITIVE = 1,					// Intersection point is OVER the reference plane

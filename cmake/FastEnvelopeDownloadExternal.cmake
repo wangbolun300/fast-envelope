@@ -74,6 +74,14 @@ function(fast_envelope_download_geogram)
 endfunction()
 
 
+function(fast_envelope_download_i_pred)
+    fast_envelope_download_project(i_pred
+        GIT_REPOSITORY https://github.com/MarcoAttene/Indirect_Predicates.git
+        GIT_TAG        e144a34c85cf25ee64ae9983745b548b27f9d996
+    )
+endfunction()
+
+
 # ## Geogram predicates LGPL
 # function(fast_envelope_download_geogram_predicates)
 #     fast_envelope_download_project(geogram_predicates
