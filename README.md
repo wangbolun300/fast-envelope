@@ -43,5 +43,6 @@ The flag is not available on clang. The code has been tested on GCC and Windows 
 ./FastEnvelope_bin ./queries/<INPUT>_envelope_log.csv ./ftetwild_queries/<INPUT> <OUTPUT> 1e-3 1 ours
 ```
 
-More details on where to find the input data will be available soon.
+# Data
+All data used in our paper can be downloaded from [https://archive.nyu.edu/handle/2451/61221](https://archive.nyu.edu/handle/2451/61221).
 
