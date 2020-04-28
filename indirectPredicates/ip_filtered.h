@@ -1,5 +1,5 @@
 #include <math.h>
-#include <numerics.h>
+#include <indirectpredicates/numerics.h>
 
 /****************************************************************************
 
