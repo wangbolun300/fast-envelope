@@ -32,7 +32,7 @@ The flag is not available on clang. The code has been tested on GCC and Windows 
  # Usage
   - Include `#include <fastenvelope/FastEnvelope.h>`
   - Initialize the envelope checker `FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);` with vertices, connectivity, and envelope size.
-  - Call one of the `is_outside` function with a trignale, point, or segment.
+  - Call one of the `is_outside` function with a triangle, point, or segment.
 
 
  # Testing
