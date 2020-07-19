@@ -15,6 +15,7 @@ If you use our code, please cite our paper
      publisher = {ACM}
 }
 ```
+This is the link of our talk on SIGGRAPH 2020 [https://www.youtube.com/watch?v=_Vm61nlxyBI](https://www.youtube.com/watch?v=_Vm61nlxyBI).
 
 ## Important Note
 There is a compiler flag which is required for ensuring the correctness of the algorithm.
@@ -45,4 +46,3 @@ The flag is not available on clang. The code has been tested on GCC and Windows 
 
 # Data
 All data used in our paper can be downloaded from [https://archive.nyu.edu/handle/2451/61221](https://archive.nyu.edu/handle/2451/61221).
-
