@@ -27,7 +27,7 @@ endfunction()
 function(fast_envelope_download_libigl)
     fast_envelope_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        7f7551af1613f60c7e89bef3934baf0da6298b06
+        GIT_TAG        21acee15fe4451e828b52bedcdba53b79d846376
     )
 endfunction()
 
