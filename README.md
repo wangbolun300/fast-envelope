@@ -1,5 +1,7 @@
 # Exact and Efficient Polyhedral Envelope Containment Check
 
+![Build](https://github.com/wangbolun300/fast-envelope/workflows/Build/badge.svg)
+
 ![](bunny.jpg)
 
 If you use our code, please cite our paper
