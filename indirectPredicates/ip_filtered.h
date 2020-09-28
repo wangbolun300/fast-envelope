@@ -76,10 +76,11 @@ void initFPU();
 
 inline bool isfinite(const interval_number &i) { return (::isfinite(i.inf()) && ::isfinite(i.sup())); }
 
-enum Filtered_Orientation {
-	POSITIVE = 1,					// Intersection point is OVER the reference plane
-	NEGATIVE = -1,					// Intersection point is UNDER the reference plane
-	UNCERTAIN = 0					// Precision is not sufficient
+enum Filtered_Orientation
+{
+	POSITIVE = 1,  // Intersection point is OVER the reference plane
+	NEGATIVE = -1, // Intersection point is UNDER the reference plane
+	UNCERTAIN = 0  // Precision is not sufficient
 };
 
 //
@@ -134,7 +135,6 @@ int orient3D_TPI_filtered(
 	double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
 	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z);
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 //
 // Split versions - use these functions if the same intersection point 'i' must be checked
@@ -185,7 +185,9 @@ public:
 //	double qx, qy, qz, rx, ry, rz, sx, sy, sz, tx, ty, tz;
 #endif
 
-	LPI_filtered_suppvars() {}
+	LPI_filtered_suppvars()
+	{
+	}
 };
 
 //
@@ -202,12 +204,12 @@ public:
 // Returns TRUE on success. FALSE if either overflow occurs or precision is insufficient.
 
 bool orient3D_LPI_prefilter(
-	const double& px, const double& py, const double& pz,
-	const double& qx, const double& qy, const double& qz,
-	const double& rx, const double& ry, const double& rz,
-	const double& sx, const double& sy, const double& sz,
-	const double& tx, const double& ty, const double& tz,
-	LPI_filtered_suppvars& s);
+	const double &px, const double &py, const double &pz,
+	const double &qx, const double &qy, const double &qz,
+	const double &rx, const double &ry, const double &rz,
+	const double &sx, const double &sy, const double &sz,
+	const double &tx, const double &ty, const double &tz,
+	LPI_filtered_suppvars &s);
 
 //
 // orient3D_LPI_postfilter
@@ -227,11 +229,11 @@ bool orient3D_LPI_prefilter(
 // - the input coordinates cause an under/overflow during the computation.
 
 int orient3D_LPI_postfilter(
-	const LPI_filtered_suppvars& s,
-	const double& px, const double& py, const double& pz,
-	const double& ax, const double& ay, const double& az,
-	const double& bx, const double& by, const double& bz,
-	const double& cx, const double& cy, const double& cz);
+	const LPI_filtered_suppvars &s,
+	const double &px, const double &py, const double &pz,
+	const double &ax, const double &ay, const double &az,
+	const double &bx, const double &by, const double &bz,
+	const double &cx, const double &cy, const double &cz);
 
 class TPI_filtered_suppvars
 {
@@ -244,7 +246,9 @@ public:
 	//	u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z;
 #endif
 
-	TPI_filtered_suppvars() {}
+	TPI_filtered_suppvars()
+	{
+	}
 };
 
 //
@@ -262,11 +266,10 @@ public:
 // Returns TRUE on success. FALSE if either overflow occurs or precision is insufficient.
 
 bool orient3D_TPI_prefilter(
-	const double& v1x, const double& v1y, const double& v1z, const double& v2x, const double& v2y, const double& v2z, const double& v3x, const double& v3y, const double& v3z,
-	const double& w1x, const double& w1y, const double& w1z, const double& w2x, const double& w2y, const double& w2z, const double& w3x, const double& w3y, const double& w3z,
-	const double& u1x, const double& u1y, const double& u1z, const double& u2x, const double& u2y, const double& u2z, const double& u3x, const double& u3y, const double& u3z,
-	TPI_filtered_suppvars& s);
-
+	const double &v1x, const double &v1y, const double &v1z, const double &v2x, const double &v2y, const double &v2z, const double &v3x, const double &v3y, const double &v3z,
+	const double &w1x, const double &w1y, const double &w1z, const double &w2x, const double &w2y, const double &w2z, const double &w3x, const double &w3y, const double &w3z,
+	const double &u1x, const double &u1y, const double &u1z, const double &u2x, const double &u2y, const double &u2z, const double &u3x, const double &u3y, const double &u3z,
+	TPI_filtered_suppvars &s);
 
 //
 // orient3D_TPI_postfilter
@@ -285,11 +288,9 @@ bool orient3D_TPI_prefilter(
 // - the input coordinates cause an under/overflow during the computation.
 
 int orient3D_TPI_postfilter(
-	const TPI_filtered_suppvars& s,
-	const double& q1x, const double& q1y, const double& q1z, const double& q2x, const double& q2y,
-	const double& q2z, const double& q3x, const double& q3y, const double& q3z);
-
-
+	const TPI_filtered_suppvars &s,
+	const double &q1x, const double &q1y, const double &q1z, const double &q2x, const double &q2y,
+	const double &q2z, const double &q3x, const double &q3y, const double &q3z);
 
 //
 // orient3D_LPI_exact
@@ -336,7 +337,6 @@ int orient3D_TPI_exact(
 	double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
 	double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
 	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z);
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -396,15 +396,14 @@ bool orient3D_LPI_pre_exact(
 	double rx, double ry, double rz,
 	double sx, double sy, double sz,
 	double tx, double ty, double tz,
-	LPI_exact_suppvars& s);
+	LPI_exact_suppvars &s);
 
 int orient3D_LPI_post_exact(
-	LPI_exact_suppvars& s,
+	LPI_exact_suppvars &s,
 	double px, double py, double pz,
 	double ax, double ay, double az,
 	double bx, double by, double bz,
 	double cx, double cy, double cz);
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -466,16 +465,11 @@ bool orient3D_TPI_pre_exact(
 	double v1x, double v1y, double v1z, double v2x, double v2y, double v2z, double v3x, double v3y, double v3z,
 	double w1x, double w1y, double w1z, double w2x, double w2y, double w2z, double w3x, double w3y, double w3z,
 	double u1x, double u1y, double u1z, double u2x, double u2y, double u2z, double u3x, double u3y, double u3z,
-	TPI_exact_suppvars& s
-	);
+	TPI_exact_suppvars &s);
 
 int orient3D_TPI_post_exact(
-	TPI_exact_suppvars& s,
-	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z
-	);
-
-
-
+	TPI_exact_suppvars &s,
+	double q1x, double q1y, double q1z, double q2x, double q2y, double q2z, double q3x, double q3y, double q3z);
 
 //
 // orient3D_LPI - Indirect exact 3D orientation predicate with floating point filter.

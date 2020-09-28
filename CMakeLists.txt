@@ -210,7 +210,8 @@ set(INDIRECTPREDICATES_SOURCES
 
 add_library(IndirectPredicates ${INDIRECTPREDICATES_SOURCES})
 indirect_predicates_copy_headers(${INDIRECTPREDICATES_SOURCES})
-target_include_directories(IndirectPredicates PRIVATE indirectPredicates/ ${FAST_ENVELOPE_EXTERNAL}/i_pred)
+# target_include_directories(IndirectPredicates PRIVATE indirectPredicates/ ${FAST_ENVELOPE_EXTERNAL}/i_pred)
+target_include_directories(IndirectPredicates PUBLIC ${PROJECT_BINARY_DIR}/include)
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
