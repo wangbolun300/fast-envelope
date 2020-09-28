@@ -27,7 +27,7 @@ endfunction()
 function(fast_envelope_download_libigl)
     fast_envelope_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        21acee15fe4451e828b52bedcdba53b79d846376
+        GIT_TAG        45cfc79fede992ea3923ded9de3c21d1c4faced1
     )
 endfunction()
 
@@ -68,8 +68,8 @@ endfunction()
 ## Geogram LGPL
 function(fast_envelope_download_geogram)
     fast_envelope_download_project(geogram
-        GIT_REPOSITORY https://github.com/alicevision/geogram.git
-        GIT_TAG        v1.6.8
+        GIT_REPOSITORY  https://github.com/polyfem/geogram.git
+        GIT_TAG        e6b9612f1146370e40deaa341b4dd7ef90502102
     )
 endfunction()
 
