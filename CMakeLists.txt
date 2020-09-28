@@ -282,12 +282,3 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
 	endif()
 endif()
-
-
-#if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	#foreach(config ${CMAKE_CONFIGURATION_TYPES})
-	#	string(TOUPPER ${config} config)
-	#	string(REPLACE /MT /MD CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-	#	string(REPLACE /MT /MD CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
-	#endforeach()
-#endif()
