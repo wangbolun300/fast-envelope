@@ -55,7 +55,7 @@ option(FAST_ENVELOPE_ENABLE_TBB        			"Enable TBB"                    ON)
 option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES        "Use whole Geogram for predicates"        ON)
 option(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES    "Use Geogram predicates only"             OFF)
 option(FAST_ENVELOPE_WITH_GMP						"Use gmp to have rational predicates"	  OFF)
-
+option(FAST_ENVELOPE_WITH_TIMER   "use timer in the library for debug" OFF)
 # Sanitizer options
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
 option(SANITIZE_MEMORY    "Sanitize Memory"        OFF)
@@ -213,6 +213,9 @@ indirect_predicates_copy_headers(${INDIRECTPREDICATES_SOURCES})
 # target_include_directories(IndirectPredicates PRIVATE indirectPredicates/ ${FAST_ENVELOPE_EXTERNAL}/i_pred)
 target_include_directories(IndirectPredicates PUBLIC ${PROJECT_BINARY_DIR}/include)
 
+if(FAST_ENVELOPE_WITH_TIMER)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE FAST_ENVELOPE_USE_TIMER)
+endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	target_compile_options(IndirectPredicates PRIVATE "/fp:strict")
