@@ -78,7 +78,7 @@ jobs:
         run: cd build; make -j2; ccache --show-stats
 
       - name: Tests
-        run: cd build; ctest --verbose --output-on-failure
+        run: cd build; make -j2; ./FastEnvelope_test     #ctest --verbose --output-on-failure
 
   ####################
   # Windows
@@ -134,4 +134,5 @@ jobs:
       - name: Tests
         run: |
           cd build
-          ctest --verbose --output-on-failure
+          ./FastEnvelope_test
+          #ctest --verbose --output-on-failure
