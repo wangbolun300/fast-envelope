@@ -1,10 +1,10 @@
 {
 "method": "ours",
-"init_time": 0.0011725,
-"query_time": 5.19867,
-"memory": 20369408,
+"init_time": 0.0010127,
+"query_time": 5.07593,
+"memory": 20344832,
 "inside": 0.97688,
 "queries": 100000,
-"vertices": 592,
+"vertices": 3546,
 "facets": 1182
 }

@@ -272,6 +272,7 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 		app/benchmark/sampling.h
 		app/benchmark/sampling.cpp
 	)
+	fast_envelope_copy_headers(${APP_SOURCES})
 	add_library(${PROJECT_NAME}_app ${APP_SOURCES})
 	target_include_directories(${PROJECT_NAME}_app PUBLIC ${PROJECT_BINARY_DIR}/include)
 	target_include_directories(${PROJECT_NAME}_app PUBLIC app)

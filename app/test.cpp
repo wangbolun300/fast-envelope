@@ -152,7 +152,7 @@ int main() {
 	std::string datapath = ENVELOPE_TEST_DATA_DIR;
 	std::cout << "Running the test dataset.\ndata path," << datapath << std::endl;
 	string query = datapath + "63465.stl_envelope_log.csv";
-	string model = datapath + "63465.off";
+	string model = datapath + "63465.stl";
 	string resultfile= datapath + "63465_result.csv";
 	Scalar scale_ratio = 1e-3;
 	bool csv_model = true;
