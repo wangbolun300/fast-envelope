@@ -100,10 +100,12 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar e
 	cout << "inside percentage, " << float(inbr) / float(fn) << std::endl;
 	std::cout << "inside number, " << inbr << std::endl;
 	if (inbr == 97688) {
+		
 		std::cout << "\n\n\nthe results are correct\n\n\n" << std::endl;
 	}
 	else {
 		std::cout << "\n\n\nTHIS TEST IS WRONG! the number of queries that are inside envelope should be 97688\n\n\n" << std::endl;
+		throw "\n\n\nWRONG ANSWERS\n\n\n";
 	}
 	std::ofstream fout;
 	fout.open(resultfile + ".json");
