@@ -50,12 +50,15 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 ################################################################################
 
 # FastEnvelope options
+option(FAST_ENVELOPE_WITH_UNIT_TESTS   "unit test project" ON)
 option(FAST_ENVELOPE_ENABLE_TBB        			"Enable TBB"                    ON)
 # option(FAST_ENVELOPE_USE_FLOAT          		"Use floats instead of double"  OFF)
+
 option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES        "Use whole Geogram for predicates"        ON)
 option(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES    "Use Geogram predicates only"             OFF)
 option(FAST_ENVELOPE_WITH_GMP						"Use gmp to have rational predicates"	  OFF)
 option(FAST_ENVELOPE_WITH_TIMER   "use timer in the library for debug" OFF)
+
 # Sanitizer options
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
 option(SANITIZE_MEMORY    "Sanitize Memory"        OFF)
@@ -263,9 +266,9 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 		# Geogram
 		fast_envelope_download_geogram()
 		include(geogram)
-		target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
+		
 	endif()
-
+	target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
 	target_link_libraries(${PROJECT_NAME}_bin
 		PUBLIC
 			${PROJECT_NAME}
@@ -284,4 +287,21 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
 		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
 	endif()
+
+
+	# unit tests
+	if(FAST_ENVELOPE_WITH_UNIT_TESTS)
+		add_executable(${PROJECT_NAME}_test app/test.cpp)
+		#add_subdirectory(app)
+		target_compile_features(${PROJECT_NAME}_test PUBLIC ${CXX14_FEATURES})
+
+		target_link_libraries(${PROJECT_NAME}_test PUBLIC geogram)
+		target_link_libraries(${PROJECT_NAME}_test
+			PUBLIC
+				${PROJECT_NAME}
+				warnings::all
+		)
+	endif()
+
+
 endif()

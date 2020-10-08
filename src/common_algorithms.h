@@ -21,5 +21,6 @@ namespace fastEnvelope {
 			 std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon);
 		 void halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
 			 std::vector<std::array<Vector3, 2>>& cornerlist, const std::vector<Scalar>& epsilons);
+		 void get_bb_corners(const std::vector<Vector3> &vertices, Vector3 &min, Vector3 &max);
 	}
 }
