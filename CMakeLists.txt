@@ -257,25 +257,43 @@ endif()
 
 # Main executable
 if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
-	add_executable(${PROJECT_NAME}_bin app/main.cpp)
-	add_subdirectory(app)
-	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+	# add an application library
+	#add_subdirectory(app/benchmark)
+	set(APP_SOURCES
+		app/benchmark/MeshIO.hpp
+		app/benchmark/MeshIO.cpp
+		app/benchmark/mesh_AABB.h
+		app/benchmark/mesh_AABB.cpp
+		app/benchmark/AABBWrapper.cpp
+		app/benchmark/AABBWrapper.h
+		app/benchmark/csv_reader.h
+		app/benchmark/csv_reader.cpp
+		app/benchmark/getRSS.hpp
+		app/benchmark/sampling.h
+		app/benchmark/sampling.cpp
+	)
+	add_library(${PROJECT_NAME}_app ${APP_SOURCES})
+	target_include_directories(${PROJECT_NAME}_app PUBLIC ${PROJECT_BINARY_DIR}/include)
+	target_include_directories(${PROJECT_NAME}_app PUBLIC app)
 
-
+	# link libraries to the app library
 	if(NOT FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
 		# Geogram
 		fast_envelope_download_geogram()
 		include(geogram)
-		target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
-		
+		target_link_libraries(${PROJECT_NAME}_app PUBLIC geogram)
 	endif()
-	
-	target_link_libraries(${PROJECT_NAME}_bin
+	target_link_libraries(${PROJECT_NAME}_app
 		PUBLIC
 			${PROJECT_NAME}
-			warnings::all
+			
 	)
 
+	# executable
+	add_executable(${PROJECT_NAME}_bin app/main.cpp)
+	target_link_libraries(${PROJECT_NAME}_bin PUBLIC ${PROJECT_NAME}_app)
+	
+	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 	if(FAST_ENVELOPE_WITH_SANITIZERS)
 		add_sanitizers(${PROJECT_NAME}_bin)
 	endif()
@@ -284,45 +302,66 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	if(FAST_ENVELOPE_ENABLE_TBB)
 		target_link_libraries(${PROJECT_NAME}_bin PUBLIC tbb::tbb)
 	endif()
-
 	if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
 		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
 	endif()
 
-
 	# unit tests
 	if(FAST_ENVELOPE_WITH_UNIT_TESTS)
-		target_compile_definitions(${PROJECT_NAME}_bin PRIVATE ENVELOPE_EXAMPLE_TEST)
+	
+		add_executable(${PROJECT_NAME}_test app/test.cpp)
+		target_compile_definitions(${PROJECT_NAME}_test PUBLIC
+    ENVELOPE_TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/app/test_data/")
+		target_link_libraries(${PROJECT_NAME}_test PUBLIC ${PROJECT_NAME}_app)
+		
+		target_compile_features(${PROJECT_NAME}_test PUBLIC ${CXX14_FEATURES})
+		if(FAST_ENVELOPE_WITH_SANITIZERS)
+			add_sanitizers(${PROJECT_NAME}_test)
+		endif()
+
+
+		if(FAST_ENVELOPE_ENABLE_TBB)
+			target_link_libraries(${PROJECT_NAME}_test PUBLIC tbb::tbb)
+		endif()
+		if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
+			set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_test)
+		endif()
 	endif()
-	#message("configure unit tests")
-	#	add_executable(${PROJECT_NAME}_test app/test.cpp)
-	#	#add_subdirectory(app)
-	#	message("built target")
-	#	target_sources(${PROJECT_NAME}_test PRIVATE ${APP_SOURCES})
-	#	message("built source")
-	#	target_compile_features(${PROJECT_NAME}_test PUBLIC ${CXX14_FEATURES})
+	###################################################################
+	#add_executable(${PROJECT_NAME}_bin app/main.cpp)
+	#target_sources(FastEnvelope_bin PRIVATE ${SOURCES})
 	#
-	#	target_link_libraries(${PROJECT_NAME}_test PUBLIC geogram)
-	#	message("linked geogram")
-	#	target_link_libraries(${PROJECT_NAME}_test
-	#		PUBLIC
-	#			${PROJECT_NAME}
-	#			warnings::all
-	#	)
-	#	message("library got linked to the excutive")
-	#	if(FAST_ENVELOPE_WITH_SANITIZERS)
-	#		add_sanitizers(${PROJECT_NAME}_test)
-	#	endif()
+	#target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 	#
 	#
-	#	if(FAST_ENVELOPE_ENABLE_TBB)
-	#		target_link_libraries(${PROJECT_NAME}_test PUBLIC tbb::tbb)
-	#	endif()
-	#
-	#	if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
-	#		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_test)
-	#	endif()
+	#if(NOT FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
+	#	# Geogram
+	#	fast_envelope_download_geogram()
+	#	include(geogram)
+	#	
 	#endif()
+	#target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
+	#target_link_libraries(${PROJECT_NAME}_bin
+	#	PUBLIC
+	#		${PROJECT_NAME}
+	#		warnings::all
+	#)
+	#
+	#if(FAST_ENVELOPE_WITH_SANITIZERS)
+	#	add_sanitizers(${PROJECT_NAME}_bin)
+	#endif()
+	#
+	#
+	#if(FAST_ENVELOPE_ENABLE_TBB)
+	#	target_link_libraries(${PROJECT_NAME}_bin PUBLIC tbb::tbb)
+	#endif()
+	#
+	#if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
+	#	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
+	#endif()
+
+	##########################################################################################################
+	
 
 
 endif()

@@ -1,6 +1,7 @@
 #include <fastenvelope/csv_reader.h>
 #include<iostream>
 #include<fstream>
+#include<fastenvelope/mesh_AABB.h>
 using namespace std;
 namespace fastEnvelope{
 	std::vector<std::array<Vector3, 3>> read_CSV_triangle(const string inputFileName, vector<int>& inenvelope) {
