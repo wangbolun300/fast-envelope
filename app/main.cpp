@@ -633,23 +633,33 @@ int main(int argc, char const *argv[])
 	std::cout << "using RATIONAL calculation in GMP" << std::endl;
 #endif
 
+
 	//string queryfile, string model, string resultfile, Scalar envelope size ratio epsilon, bool csv_model
-	string keyword = argv[6];
-	if (keyword == "sampling") {
-		pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	}
-	else if (keyword == "ours") {
-		pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	}
-	else if (keyword == "ours_without_optimazation") {
-		pure_our_method_no_optimization(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
-	}
-	else if (keyword == "ours_detailed_time") {
-		pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+	if (argc == 7) {
+		string keyword = argv[6];
+		if (keyword == "sampling") {
+			pure_sampling(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+		}
+		else if (keyword == "ours") {
+			pure_our_method(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+		}
+		else if (keyword == "ours_without_optimazation") {
+			pure_our_method_no_optimization(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+		}
+		else if (keyword == "ours_detailed_time") {
+			pure_our_method_detailed(argv[1], argv[2], argv[3], stod(argv[4]), stoi(argv[5]));
+		}
+		else {
+			std::cout << "wrong arguments" << std::endl;
+		}
 	}
 	else {
-		std::cout << "wrong arguments" << std::endl;
+		std::cout << "PLEASE CHECK THE INPUT FORMAT, THEY SHOULD BE:\n" <<
+			"/FastEnvelope_bin query_file model result_file_name envelope_ratio_to_bounding_box_diagnal if_the_queries_are_from_a_csv_file" 
+			<< std::endl;
 	}
+
+	
 	
 	return 0;
 }

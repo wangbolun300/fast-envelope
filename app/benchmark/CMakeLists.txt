@@ -1,4 +1,4 @@
-set(SOURCES
+set(APP_SOURCES
 	MeshIO.hpp
 	MeshIO.cpp
 
@@ -18,8 +18,8 @@ sampling.h
 sampling.cpp
 )
 
-prepend_current_path(SOURCES)
-fast_envelope_copy_headers(${SOURCES})
-fast_envelope_set_source_group(${SOURCES})
-target_sources(FastEnvelope_bin PRIVATE ${SOURCES})
+prepend_current_path(APP_SOURCES)
+fast_envelope_copy_headers(${APP_SOURCES})
+fast_envelope_set_source_group(${APP_SOURCES})
+target_sources(FastEnvelope_bin PRIVATE ${APP_SOURCES})
 

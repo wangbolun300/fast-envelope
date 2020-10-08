@@ -266,9 +266,10 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 		# Geogram
 		fast_envelope_download_geogram()
 		include(geogram)
+		target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
 		
 	endif()
-	target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
+	
 	target_link_libraries(${PROJECT_NAME}_bin
 		PUBLIC
 			${PROJECT_NAME}
@@ -291,17 +292,37 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 
 	# unit tests
 	if(FAST_ENVELOPE_WITH_UNIT_TESTS)
-		add_executable(${PROJECT_NAME}_test app/test.cpp)
-		#add_subdirectory(app)
-		target_compile_features(${PROJECT_NAME}_test PUBLIC ${CXX14_FEATURES})
-
-		target_link_libraries(${PROJECT_NAME}_test PUBLIC geogram)
-		target_link_libraries(${PROJECT_NAME}_test
-			PUBLIC
-				${PROJECT_NAME}
-				warnings::all
-		)
+		target_compile_definitions(${PROJECT_NAME}_bin PRIVATE ENVELOPE_EXAMPLE_TEST)
 	endif()
+	#message("configure unit tests")
+	#	add_executable(${PROJECT_NAME}_test app/test.cpp)
+	#	#add_subdirectory(app)
+	#	message("built target")
+	#	target_sources(${PROJECT_NAME}_test PRIVATE ${APP_SOURCES})
+	#	message("built source")
+	#	target_compile_features(${PROJECT_NAME}_test PUBLIC ${CXX14_FEATURES})
+	#
+	#	target_link_libraries(${PROJECT_NAME}_test PUBLIC geogram)
+	#	message("linked geogram")
+	#	target_link_libraries(${PROJECT_NAME}_test
+	#		PUBLIC
+	#			${PROJECT_NAME}
+	#			warnings::all
+	#	)
+	#	message("library got linked to the excutive")
+	#	if(FAST_ENVELOPE_WITH_SANITIZERS)
+	#		add_sanitizers(${PROJECT_NAME}_test)
+	#	endif()
+	#
+	#
+	#	if(FAST_ENVELOPE_ENABLE_TBB)
+	#		target_link_libraries(${PROJECT_NAME}_test PUBLIC tbb::tbb)
+	#	endif()
+	#
+	#	if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
+	#		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_test)
+	#	endif()
+	#endif()
 
 
 endif()
