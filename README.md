@@ -17,7 +17,7 @@ If you use our code, please cite our paper
      publisher = {ACM}
 }
 ```
-Please click [https://cims.nyu.edu/gcl/papers/2020-Fast-Envelope.pdf]( here )to download the paper.
+Please click [HERE](https://cims.nyu.edu/gcl/papers/2020-Fast-Envelope.pdf) to download the paper.
 This is the link of our talk on SIGGRAPH 2020 [https://www.youtube.com/watch?v=_Vm61nlxyBI](https://www.youtube.com/watch?v=_Vm61nlxyBI).
 
 ## Important Note
