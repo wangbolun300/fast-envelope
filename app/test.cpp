@@ -137,7 +137,27 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar e
 	std::cout << model << " done! " << std::endl;
 }
 
-int main() {
+void test_initialization(const std::string& filename  ) {
+	std::vector<Vector3> env_vertices;
+	std::vector<Vector3i> env_faces;
+	GEO::Mesh envmesh;
+	bool ok = MeshIO::load_mesh(filename, env_vertices, env_faces, envmesh);
+	if (!ok) {
+		std::cout << ("Unable to load mesh") << std::endl;
+		return;
+	}
+
+	Vector3 min, max;
+	Scalar eps = 1e-3;
+
+	Scalar dd;
+	algorithms::get_bb_corners(env_vertices, min, max);
+	dd = ((max - min).norm()) *eps;
+	std::cout << "bounding box \nmin " << min.transpose() << "\nmax" << max.transpose() << std::endl;
+	const FastEnvelope fast_envelope(env_vertices, env_faces, dd);
+	
+}
+int main(int argc, char const *argv[]) {
 #ifndef WIN32
 	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
 #endif
@@ -149,8 +169,8 @@ int main() {
 	std::cout << "using RATIONAL calculation in GMP" << std::endl;
 #endif
 
-
-
+	/*const string filename = "D:\\vs/envelope_x64\\Debug\\M-L-Femur.stl";
+	test_initialization(filename);*/
 	std::string datapath = ENVELOPE_TEST_DATA_DIR;
 	std::cout << "Running the test dataset.\ndata path," << datapath << std::endl;
 	string query = datapath + "63465.stl_envelope_log.csv";
@@ -159,5 +179,7 @@ int main() {
 	Scalar scale_ratio = 1e-3;
 	bool csv_model = true;
 	pure_our_method(query, model, resultfile, scale_ratio, csv_model);
+
+	
 	return 0;
 }

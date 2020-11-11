@@ -85,12 +85,12 @@ namespace fastEnvelope {
 			return DEGENERATED_POINT;
 		}
 
-		
+
 		Vector3 accurate_normal_vector(const Vector3 &p0, const Vector3 &p1,
 			const Vector3 &p2)
 		{
 			Vector3 v;
-			triangle_normal_exact(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2],v[0],v[1],v[2]);
+			triangle_normal_exact(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2], v[0], v[1], v[2]);
 			return v;
 		}
 		Vector3 accurate_cross_product_direction(const Vector3 &p0, const Vector3 &p1,
@@ -103,7 +103,7 @@ namespace fastEnvelope {
 		}
 
 
-		void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew) {
+		void resorting(const std::vector<Vector3> &Vori, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew) {
 			std::vector<std::array<int, 3>> ct;
 			struct sortstruct {
 				int order;
@@ -113,6 +113,30 @@ namespace fastEnvelope {
 			const int multi = 1000;
 			ct.resize(F.size());
 			list.resize(F.size());
+
+			//since the morton code requires a correct scale of input vertices,
+			// we need to scale the vertices if their coordinates are out of range
+			std::vector<Vector3> V = Vori;//this is for rescaling vertices
+			Vector3 vmin, vmax;
+			get_bb_corners(V, vmin, vmax);
+			Vector3 center = (vmin + vmax) / 2;
+
+			for (int i = 0; i < V.size(); i++) {
+				V[i] = V[i]-center;// make box centered at origin
+			}
+
+			Vector3 scale_point = vmax - center;// after placing box at origin, vmax and vmin are symetric.
+
+			Scalar xscale, yscale, zscale;
+			xscale = fabs(scale_point[0]);
+			yscale = fabs(scale_point[1]);
+			zscale = fabs(scale_point[2]);
+			Scalar scale = std::max(std::max(xscale, yscale), zscale);
+			if (scale > 300) {
+				for (int i = 0; i < V.size(); i++) {
+					V[i] = V[i] / scale;// if the box is too big, resize it
+				}
+			}
 
 			for (int i = 0; i < F.size(); i++) {
 				ct[i][0] = int(((V[F[i][0]] + V[F[i][1]] + V[F[i][2]])*multi)[0]);
@@ -135,7 +159,7 @@ namespace fastEnvelope {
 
 		}
 
-		void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew, std::vector<int>& new2old){
+		void resorting(const std::vector<Vector3> &V, const std::vector<Vector3i> &F, std::vector<Vector3i> &fnew, std::vector<int>& new2old) {
 			std::vector<std::array<int, 3>> ct;
 			struct sortstruct {
 				int order;
@@ -204,10 +228,10 @@ namespace fastEnvelope {
 			envbox[7] = p1 + width * (-v + v1 - v2); //right hand in direction
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	// this function provide an algorithm build halfspaces for a list of triangles. each prism has 7-8 facets
 	void algorithms::halfspace_generation(const std::vector<Vector3> &m_ver, const std::vector<Vector3i> &m_faces, std::vector<std::vector<std::array<Vector3, 3>>>& halfspace,
 		std::vector<std::array<Vector3, 2>>& cornerlist, const Scalar &epsilon) {
@@ -223,7 +247,7 @@ namespace fastEnvelope {
 		bbox_offset[2] = 1;
 		bbox_offset = bbox_offset * tolerance*sqrt(3)*(1 + 1e-6);
 
-		const auto get_triangle_obtuse_angle= [](const Vector3& p0, const Vector3& p1, const Vector3& p2) {
+		const auto get_triangle_obtuse_angle = [](const Vector3& p0, const Vector3& p1, const Vector3& p2) {
 			const auto dot_sign = [](const Vector3 &a, const Vector3 &b)
 			{
 				Scalar t = a.dot(b);
@@ -234,7 +258,7 @@ namespace fastEnvelope {
 
 				return dot_product_sign(a[0], a[1], a[2], b[0], b[1], b[2]);
 			};
-			
+
 			if (dot_sign(p1 - p0, p1 - p2) < 0) return 1;
 			if (dot_sign(p2 - p1, p2 - p0) < 0) return 2;
 			if (dot_sign(p0 - p1, p0 - p2) < 0) return 0;
@@ -252,7 +276,7 @@ namespace fastEnvelope {
 				{-1, -1, -1},
 				{1, -1, -1},
 			} };
-		const auto get_corner_plane=[](const Vector3& p0, const Vector3& midp, const Vector3 &normal, const Scalar& distance,
+		const auto get_corner_plane = [](const Vector3& p0, const Vector3& midp, const Vector3 &normal, const Scalar& distance,
 			Vector3& plane0, Vector3& plane1, Vector3& plane2, const bool use_exact) {
 			Scalar distance_small = distance * 1;// to be conservative to reduce numerical error, can set the Scalar as 0.999
 			Vector3 direction = (p0 - midp).normalized();
@@ -284,7 +308,7 @@ namespace fastEnvelope {
 
 			if (de == DEGENERATED_POINT)
 			{
-				 //logger().debug("Envelope Triangle Degeneration- Point");
+				//logger().debug("Envelope Triangle Degeneration- Point");
 				for (int j = 0; j < 8; j++)
 				{
 					box[j] = m_ver[m_faces[i][0]] + boxorder[j] * tolerance;
@@ -297,12 +321,12 @@ namespace fastEnvelope {
 				}
 				//cornerlist[i] = (get_bb_corners_8(box));
 
-				
+
 				continue;
 			}
 			if (de == DEGENERATED_SEGMENT)
 			{
-				 //logger().debug("Envelope Triangle Degeneration- Segment");
+				//logger().debug("Envelope Triangle Degeneration- Segment");
 				Scalar length1 = AB.dot(AB), length2 = AC.dot(AC), length3 = BC.dot(BC);
 				if (length1 >= length2 && length1 >= length3)
 				{
@@ -326,7 +350,7 @@ namespace fastEnvelope {
 				}
 				//cornerlist[i] = (get_bb_corners_8(box));
 
-			
+
 				continue;
 			}
 			if (de == NERLY_DEGENERATED)
@@ -353,7 +377,7 @@ namespace fastEnvelope {
 			plane[1] = m_ver[m_faces[i][2]] - normaldist;
 			plane[2] = m_ver[m_faces[i][1]] - normaldist;// order: 0, 2, 1
 			halfspace[i].emplace_back(plane);// number 1
-			
+
 			int obtuse = get_triangle_obtuse_angle(m_ver[m_faces[i][0]], m_ver[m_faces[i][1]], m_ver[m_faces[i][2]]);
 
 
@@ -365,10 +389,10 @@ namespace fastEnvelope {
 			plane[2] = plane[0] + normal;
 			halfspace[i].emplace_back(plane);// number 2
 
-			
+
 			if (obtuse != 1) {
 				get_corner_plane(m_ver[m_faces[i][1]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][2]]) / 2, normal,
-					tolerance, plane[0], plane[1], plane[2],use_accurate_cross);
+					tolerance, plane[0], plane[1], plane[2], use_accurate_cross);
 				halfspace[i].emplace_back(plane);// number 3;
 
 			}
@@ -384,7 +408,7 @@ namespace fastEnvelope {
 
 			if (obtuse != 2) {
 				get_corner_plane(m_ver[m_faces[i][2]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][1]]) / 2, normal,
-					tolerance, plane[0], plane[1], plane[2],use_accurate_cross);
+					tolerance, plane[0], plane[1], plane[2], use_accurate_cross);
 				halfspace[i].emplace_back(plane);// number 5;
 
 			}
@@ -392,7 +416,7 @@ namespace fastEnvelope {
 			edgedire = -AC.normalized();
 			if (use_accurate_cross)edgenormaldist = accurate_cross_product_direction(origin, edgedire, origin, normal)*tolerance;
 			else edgenormaldist = edgedire.cross(normal).normalized()*tolerance;
-			
+
 			plane[0] = m_ver[m_faces[i][2]] + edgenormaldist;
 			plane[1] = m_ver[m_faces[i][0]] + edgenormaldist;
 			plane[2] = plane[1] + normal;
@@ -400,12 +424,12 @@ namespace fastEnvelope {
 
 			if (obtuse != 0) {
 				get_corner_plane(m_ver[m_faces[i][0]], (m_ver[m_faces[i][1]] + m_ver[m_faces[i][2]]) / 2, normal,
-					tolerance, plane[0], plane[1], plane[2],use_accurate_cross);
+					tolerance, plane[0], plane[1], plane[2], use_accurate_cross);
 				halfspace[i].emplace_back(plane);// number 7;
 
 			}
 			//std::cout << "envelope face nbr " << halfspace[i].size() << std::endl;
-		
+
 		}
 
 	}
@@ -417,8 +441,8 @@ namespace fastEnvelope {
 		for (int i = 0; i < epsilons.size(); i++) {
 			tolerance[i] = epsilons[i] / sqrt(3);// the envelope thickness, to be conservative
 		}
-		
-		
+
+
 		Vector3 AB, AC, BC, normal;
 		int de;
 		std::array<Vector3, 3> plane;
@@ -429,10 +453,10 @@ namespace fastEnvelope {
 			bbox_offset[i][0] = 1;
 			bbox_offset[i][1] = 1;
 			bbox_offset[i][2] = 1;
-			bbox_offset[i] = bbox_offset[i] * tolerance[i]*sqrt(3)*(1 + 1e-6);
+			bbox_offset[i] = bbox_offset[i] * tolerance[i] * sqrt(3)*(1 + 1e-6);
 		}
 
-		
+
 
 		const auto get_triangle_obtuse_angle = [](const Vector3& p0, const Vector3& p1, const Vector3& p2) {
 			const auto dot_sign = [](const Vector3 &a, const Vector3 &b)
@@ -578,7 +602,7 @@ namespace fastEnvelope {
 
 			if (obtuse != 1) {
 				get_corner_plane(m_ver[m_faces[i][1]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][2]]) / 2, normal,
-					tolerance[i], plane[0], plane[1], plane[2],use_accurate_cross);
+					tolerance[i], plane[0], plane[1], plane[2], use_accurate_cross);
 				halfspace[i].emplace_back(plane);// number 3;
 
 			}
@@ -593,7 +617,7 @@ namespace fastEnvelope {
 
 			if (obtuse != 2) {
 				get_corner_plane(m_ver[m_faces[i][2]], (m_ver[m_faces[i][0]] + m_ver[m_faces[i][1]]) / 2, normal,
-					tolerance[i], plane[0], plane[1], plane[2],use_accurate_cross);
+					tolerance[i], plane[0], plane[1], plane[2], use_accurate_cross);
 				halfspace[i].emplace_back(plane);// number 5;
 
 			}
@@ -608,7 +632,7 @@ namespace fastEnvelope {
 
 			if (obtuse != 0) {
 				get_corner_plane(m_ver[m_faces[i][0]], (m_ver[m_faces[i][1]] + m_ver[m_faces[i][2]]) / 2, normal,
-					tolerance[i], plane[0], plane[1], plane[2],use_accurate_cross);
+					tolerance[i], plane[0], plane[1], plane[2], use_accurate_cross);
 				halfspace[i].emplace_back(plane);// number 7;
 
 			}
