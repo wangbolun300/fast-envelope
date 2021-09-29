@@ -85,6 +85,9 @@ option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 OFF)
 option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            OFF)
 option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 
+if(NOT ${FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES} AND NOT ${FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES})
+	option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         ON)
+endif()
 
 
 
@@ -120,6 +123,9 @@ if(NOT TARGET igl::core)
 	find_package(LIBIGL REQUIRED)
 endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC igl::core)
+if(LIBIGL_WITH_PREDICATES)
+	target_link_libraries(${PROJECT_NAME} PUBLIC igl::predicates)
+endif()
 
 if(FAST_ENVELOPE_WITH_SANITIZERS)
 	add_sanitizers(${PROJECT_NAME})
@@ -287,13 +293,13 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	target_link_libraries(${PROJECT_NAME}_app
 		PUBLIC
 			${PROJECT_NAME}
-			
+
 	)
 
 	# executable
 	add_executable(${PROJECT_NAME}_bin app/main.cpp)
 	target_link_libraries(${PROJECT_NAME}_bin PUBLIC ${PROJECT_NAME}_app)
-	
+
 	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 	if(FAST_ENVELOPE_WITH_SANITIZERS)
 		add_sanitizers(${PROJECT_NAME}_bin)
@@ -309,12 +315,12 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 
 	# unit tests
 	if(FAST_ENVELOPE_WITH_UNIT_TESTS)
-	
+
 		add_executable(${PROJECT_NAME}_test app/test.cpp)
 		target_compile_definitions(${PROJECT_NAME}_test PUBLIC
     ENVELOPE_TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/app/test_data/")
 		target_link_libraries(${PROJECT_NAME}_test PUBLIC ${PROJECT_NAME}_app)
-		
+
 		target_compile_features(${PROJECT_NAME}_test PUBLIC ${CXX14_FEATURES})
 		if(FAST_ENVELOPE_WITH_SANITIZERS)
 			add_sanitizers(${PROJECT_NAME}_test)
@@ -339,7 +345,7 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	#	# Geogram
 	#	fast_envelope_download_geogram()
 	#	include(geogram)
-	#	
+	#
 	#endif()
 	#target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
 	#target_link_libraries(${PROJECT_NAME}_bin
@@ -362,7 +368,7 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 	#endif()
 
 	##########################################################################################################
-	
+
 
 
 endif()

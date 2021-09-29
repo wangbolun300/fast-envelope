@@ -1,6 +1,4 @@
 set(SOURCES
-	predicates.c
-
 	Predicates.cpp
 	Predicates.hpp
 
