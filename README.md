@@ -20,6 +20,10 @@ If you use our code, please cite our paper
 Please click [HERE](https://cims.nyu.edu/gcl/papers/2020-Fast-Envelope.pdf) to download the paper.
 This is the link of our talk on SIGGRAPH 2020 [https://www.youtube.com/watch?v=_Vm61nlxyBI](https://www.youtube.com/watch?v=_Vm61nlxyBI).
 
+**CGAL**
+
+A partial reimplementation of the algorithm in this repository which does not use the indirect predicates is available in CGAL 5.3 (https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title36).
+
 ## Important Note
 There is a compiler flag which is required for ensuring the correctness of the algorithm.
 The flag is not available on clang. The code has been tested on GCC and Windows compiler.
