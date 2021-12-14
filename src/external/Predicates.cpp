@@ -32,7 +32,7 @@ namespace fastEnvelope
 #ifdef ENVELOPE_WITH_GEO
 		const int result = -GEO::PCK::orient_3d(p1.data(), p2.data(), p3.data(), p4.data());
 #else
-		const Scalar result = orient3d(p1.data(), p2.data(), p3.data(), p4.data());
+		const int result = (int)igl::predicates::orient3d(p1, p2, p3, p4);
 #endif
 
 		//		if (result > SCALAR_ZERO)
@@ -72,7 +72,7 @@ namespace fastEnvelope
 #ifdef ENVELOPE_WITH_GEO
 		const int ori = -GEO::PCK::orient_3d(p1.data(), p2.data(), p3.data(), p4.data());
 #else
-		const Scalar ori = orient3d(p1.data(), p2.data(), p3.data(), p4.data());
+		const int ori = (int)igl::predicates::orient3d(p1, p2, p3, p4);
 #endif
 		if (ori <= 0)
 			return ori;
@@ -86,7 +86,7 @@ namespace fastEnvelope
 #ifdef ENVELOPE_WITH_GEO
 		const int result = -GEO::PCK::orient_2d(p1.data(), p2.data(), p3.data());
 #else
-		const Scalar result = orient2d(p1.data(), p2.data(), p3.data());
+		const int result = (int)igl::predicates::orient2d(p1, p2, p3);
 #endif
 		if (result > 0)
 			return ORI_POSITIVE;
