@@ -226,7 +226,7 @@ jobs:
           # Scoop modifies the PATH so we make it available for the next steps of the job
           echo "${env:PATH}" >> ${env:GITHUB_PATH}
 
-      - name: Configure with Geogram_Predicates
+      - name: Configure and run with Geogram_Predicates
         if: matrix.opts == 'Geogram_Predicates'
         shell: cmd
         run: |
@@ -238,8 +238,10 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -B build ^
             -S .
+          cd build
+          ninja -j1
 
-      - name: Configure with Geogram_Psm_Predicates
+      - name: Configure and run with Geogram_Psm_Predicates
         if: matrix.opts == 'Geogram_Psm_Predicates'
         shell: cmd
         run: |
@@ -251,8 +253,10 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -B build ^
             -S .
+          cd build
+          ninja -j1
 
-      - name: Configure without Geogram
+      - name: Configure and run without Geogram
         if: matrix.opts == 'None'
         shell: cmd
         run: |
@@ -264,10 +268,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -B build ^
             -S .
-
-      - name: Build
-        shell: cmd
-        run: |
           cd build
           ninja -j1
 
