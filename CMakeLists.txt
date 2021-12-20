@@ -50,14 +50,14 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 ################################################################################
 
 # FastEnvelope options
-option(FAST_ENVELOPE_WITH_UNIT_TESTS   "unit test project" ON)
+option(FAST_ENVELOPE_WITH_UNIT_TESTS   			"unit test project" 			ON)
 option(FAST_ENVELOPE_ENABLE_TBB        			"Enable TBB"                    ON)
 # option(FAST_ENVELOPE_USE_FLOAT          		"Use floats instead of double"  OFF)
 
 option(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES        "Use whole Geogram for predicates"        ON)
 option(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES    "Use Geogram predicates only"             OFF)
 option(FAST_ENVELOPE_WITH_GMP						"Use gmp to have rational predicates"	  OFF)
-option(FAST_ENVELOPE_WITH_TIMER   "use timer in the library for debug" OFF)
+option(FAST_ENVELOPE_WITH_TIMER   					"use timer in the library for debug" 	  OFF)
 
 # Sanitizer options
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
