@@ -182,7 +182,7 @@ if(FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES)
 	target_compile_definitions(GeoPredicates PRIVATE GEO_STATIC_LIBS)
 
 	target_link_libraries(${PROJECT_NAME} PUBLIC GeoPredicates)
-	target_compile_definitions(${PROJECT_NAME} PUBLIC ENVELOPE_WITH_GEO_PSM)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC ENVELOPE_WITH_GEO_PSM ENVELOPE_WITH_GEO)
 
 elseif(FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
 	if(NOT TARGET geogram AND NOT TARGET geogram::geogram)

@@ -1,9 +1,9 @@
 #include <fastenvelope/Predicates.hpp>
 
+#ifdef ENVELOPE_WITH_GEO
 #ifdef ENVELOPE_WITH_GEO_PSM
 #include <Predicates_psm.h>
-#endif
-#ifdef ENVELOPE_WITH_GEO
+#else
 #include <geogram/delaunay/delaunay_3d.h>
 #else
 #include <igl/predicates/predicates.h>
