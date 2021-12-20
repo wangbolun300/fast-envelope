@@ -5,6 +5,7 @@
 #include <Predicates_psm.h>
 #else
 #include <geogram/delaunay/delaunay_3d.h>
+#endif
 #else
 #include <igl/predicates/predicates.h>
 #endif
