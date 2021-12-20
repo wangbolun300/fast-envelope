@@ -63,7 +63,7 @@ jobs:
           ccache -V && ccache --show-stats && ccache --zero-stats
 
       - name: Configure with Geogram_Predicates
-        if: runner.opts == 'Geogram_Predicates'
+        if: matrix.opts == 'Geogram_Predicates'
         run: |
           mkdir -p build
           cd build
@@ -74,7 +74,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }}
 
       - name: Configure with Geogram_Psm_Predicates
-        if: runner.opts == 'Geogram_Psm_Predicates'
+        if: matrix.opts == 'Geogram_Psm_Predicates'
         run: |
           mkdir -p build
           cd build
@@ -85,7 +85,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }}
 
       - name: Configure without Geogram
-        if: runner.opts == 'None'
+        if: matrix.opts == 'None'
         run: |
           mkdir -p build
           cd build
@@ -143,7 +143,7 @@ jobs:
           ccache -V && ccache --show-stats && ccache --zero-stats
 
       - name: Configure with Geogram_Predicates
-        if: runner.opts == 'Geogram_Predicates'
+        if: matrix.opts == 'Geogram_Predicates'
         run: |
           mkdir -p build
           cd build
@@ -155,7 +155,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }}
 
       - name: Configure with Geogram_Psm_Predicates
-        if: runner.opts == 'Geogram_Psm_Predicates'
+        if: matrix.opts == 'Geogram_Psm_Predicates'
         run: |
           mkdir -p build
           cd build
@@ -167,7 +167,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }}
 
       - name: Configure without Geogram
-        if: runner.opts == 'None'
+        if: matrix.opts == 'None'
         run: |
           mkdir -p build
           cd build
@@ -226,8 +226,8 @@ jobs:
           # Scoop modifies the PATH so we make it available for the next steps of the job
           echo "${env:PATH}" >> ${env:GITHUB_PATH}
 
-      - name: Configure with Geogram_Predicates
-        if: runner.opts == 'Geogram_Predicates'
+      - name: Configure and run with Geogram_Predicates
+        if: matrix.opts == 'Geogram_Predicates'
         shell: cmd
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
@@ -238,9 +238,11 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -B build ^
             -S .
+          cd build
+          ninja -j1
 
-      - name: Configure with Geogram_Psm_Predicates
-        if: runner.opts == 'Geogram_Psm_Predicates'
+      - name: Configure and run with Geogram_Psm_Predicates
+        if: matrix.opts == 'Geogram_Psm_Predicates'
         shell: cmd
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
@@ -251,9 +253,11 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -B build ^
             -S .
+          cd build
+          ninja -j1
 
-      - name: Configure without Geogram
-        if: runner.opts == 'None'
+      - name: Configure and run without Geogram
+        if: matrix.opts == 'None'
         shell: cmd
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
@@ -264,10 +268,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -B build ^
             -S .
-
-      - name: Build
-        shell: cmd
-        run: |
           cd build
           ninja -j1
 
