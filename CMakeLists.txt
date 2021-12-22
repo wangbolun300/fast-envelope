@@ -110,6 +110,7 @@ target_compile_features(${PROJECT_NAME} PRIVATE ${CXX11_FEATURES})
 
 # Public include directory for FastEnvelope
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Extra warnings
 target_link_libraries(${PROJECT_NAME} PRIVATE warnings::all)
@@ -225,7 +226,6 @@ endif()
 # Sources
 add_subdirectory(src)
 target_sources(${PROJECT_NAME} PRIVATE indirectPredicates/ip_filtered.cpp)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(FAST_ENVELOPE_WITH_GMP)
 	find_package(GMP)

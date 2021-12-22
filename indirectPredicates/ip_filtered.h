@@ -1,5 +1,5 @@
 #include <math.h>
-#include <indirectpredicates/numerics.h>
+#include <numerics.h>
 
 /****************************************************************************
 
@@ -241,7 +241,7 @@ public:
 	double d, n1, n2, n3, max1, max2, max3, max4, max5, max6, max7;
 #ifdef USE_MULTISTAGE_FILTERS
 	interval_number id, in1, in2, in3;
-	//double v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
+	// double v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z,
 	//	w1x, w1y, w1z, w2x, w2y, w2z, w3x, w3y, w3z,
 	//	u1x, u1y, u1z, u2x, u2y, u2z, u3x, u3y, u3z;
 #endif
