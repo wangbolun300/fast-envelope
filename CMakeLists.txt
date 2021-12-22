@@ -209,6 +209,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	message(WARNING "On CLang, there is no compiler flag which is required for ensuring the correctness of the algorithm.")
 endif()
 target_sources(${PROJECT_NAME} PRIVATE indirectPredicates/ip_filtered.cpp)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 if(FAST_ENVELOPE_WITH_TIMER)
