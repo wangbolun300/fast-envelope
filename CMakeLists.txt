@@ -110,8 +110,6 @@ target_compile_features(${PROJECT_NAME} PRIVATE ${CXX11_FEATURES})
 
 # Public include directory for FastEnvelope
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR}/include)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
 # Extra warnings
 target_link_libraries(${PROJECT_NAME} PRIVATE warnings::all)
 
@@ -209,7 +207,11 @@ target_link_libraries(${PROJECT_NAME} PUBLIC indirectPredicates)
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	message(WARNING "On CLang, there is no compiler flag which is required for ensuring the correctness of the algorithm.")
 endif()
-
+set(INDIRECTPREDICATES_HEADERS
+	indirectPredicates/ip_filtered.h
+	indirectPredicates/ip_filtered_ex.h
+)
+indirect_predicates_copy_headers(${INDIRECTPREDICATES_HEADERS})
 
 if(FAST_ENVELOPE_WITH_TIMER)
 	target_compile_definitions(${PROJECT_NAME} PRIVATE FAST_ENVELOPE_USE_TIMER)
