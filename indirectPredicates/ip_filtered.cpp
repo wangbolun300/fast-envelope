@@ -14,6 +14,8 @@
 #include <fenv.h>
 #include "ip_filtered.h"
 
+#include <cassert>
+
 #pragma intrinsic(fabs)
 
 #ifndef WIN32
@@ -477,7 +479,7 @@ int orient3D_LPI_postfilter(const LPI_filtered_suppvars &svs,
 	//		svs.sx, svs.sy, svs.sz, svs.tx, svs.ty, svs.tz, ax, ay, az, bx, by, bz, cx, cy, cz);
 	//#else
 	return Filtered_Orientation::UNCERTAIN; // Fast reject in case of under/overflow
-	//#endif
+											//#endif
 }
 
 bool orient3D_TPI_prefilter(
