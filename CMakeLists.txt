@@ -1,5 +1,5 @@
 ################################################################################
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.15)
 project(FastEnvelope)
 ################################################################################
 
@@ -20,6 +20,7 @@ else()
 endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/recipes)
 list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
 
 # Color output
@@ -202,38 +203,19 @@ endif()
 
 
 # Predicates
-fast_envelope_download_i_pred()
+include("ipred")
+target_link_libraries(${PROJECT_NAME} PUBLIC indirectPredicates)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	message(WARNING "On CLang, there is no compiler flag which is required for ensuring the correctness of the algorithm.")
+endif()
+target_sources(${PROJECT_NAME} PRIVATE indirectPredicates/ip_filtered.cpp)
 
-set(INDIRECTPREDICATES_SOURCES
-	indirectPredicates/ip_filtered.cpp
-	indirectPredicates/ip_filtered.h
-
-	indirectPredicates/ip_filtered_ex.h
-
-	${FAST_ENVELOPE_EXTERNAL}/i_pred/numerics.h
-	${FAST_ENVELOPE_EXTERNAL}/i_pred/numerics.cpp
-)
-
-
-
-
-add_library(IndirectPredicates ${INDIRECTPREDICATES_SOURCES})
-indirect_predicates_copy_headers(${INDIRECTPREDICATES_SOURCES})
-# target_include_directories(IndirectPredicates PRIVATE indirectPredicates/ ${FAST_ENVELOPE_EXTERNAL}/i_pred)
-target_include_directories(IndirectPredicates PUBLIC ${PROJECT_BINARY_DIR}/include)
 
 if(FAST_ENVELOPE_WITH_TIMER)
 	target_compile_definitions(${PROJECT_NAME} PRIVATE FAST_ENVELOPE_USE_TIMER)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	target_compile_options(IndirectPredicates PRIVATE "/fp:strict")
-elseif(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-	target_compile_options(IndirectPredicates PRIVATE "-frounding-math")
-else()
-	message(WARNING "On CLang, there is no compiler flag which is required for ensuring the correctness of the algorithm.")
-endif()
-target_link_libraries(${PROJECT_NAME} PRIVATE IndirectPredicates)
+
 
 
 

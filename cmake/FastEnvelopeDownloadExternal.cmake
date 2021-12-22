@@ -27,7 +27,7 @@ endfunction()
 function(fast_envelope_download_libigl)
     fast_envelope_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        45cfc79fede992ea3923ded9de3c21d1c4faced1
+        GIT_TAG        fc7f4b99415e0b0e3c4109d8e55b7ff6a5fc8b72
     )
 endfunction()
 
@@ -69,15 +69,7 @@ endfunction()
 function(fast_envelope_download_geogram)
     fast_envelope_download_project(geogram
         GIT_REPOSITORY  https://github.com/polyfem/geogram.git
-        GIT_TAG        e6b9612f1146370e40deaa341b4dd7ef90502102
-    )
-endfunction()
-
-
-function(fast_envelope_download_i_pred)
-    fast_envelope_download_project(i_pred
-        GIT_REPOSITORY https://github.com/MarcoAttene/Indirect_Predicates.git
-        GIT_TAG        e144a34c85cf25ee64ae9983745b548b27f9d996
+        GIT_TAG        14001ad54398a478681c6bba7eaf10729068b5ce
     )
 endfunction()
 

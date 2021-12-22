@@ -114,7 +114,7 @@ jobs:
         os: [macos-latest]
         config: [Debug, Release]
         opts: [Geogram_Predicates, Geogram_Psm_Predicates, None]
-        arch: [x86_64] # TODO: add arm64
+        arch: [x86_64, arm64]
         include:
           - os: macos-latest
             name: macOS
