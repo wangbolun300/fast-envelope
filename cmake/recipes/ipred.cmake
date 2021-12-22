@@ -8,7 +8,7 @@ include(FetchContent)
 FetchContent_Declare(
     ipred
     GIT_REPOSITORY https://github.com/teseoch/Indirect_Predicates.git
-    GIT_TAG f0528c03f392e25fc077ace893eb233e7ebc704d
+    GIT_TAG a0bf2cd73383202b491a3d8d89f65a8efff232b1
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(ipred)
