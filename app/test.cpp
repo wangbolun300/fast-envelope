@@ -100,7 +100,7 @@ void pure_our_method(string queryfile, string model, string resultfile, Scalar e
 	cout << "inside percentage, " << float(inbr) / float(fn) << std::endl;
 	std::cout << "inside number, " << inbr << std::endl;
 	if (inbr == 97688) {
-		
+
 		std::cout << "\n\n\nthe results are correct\n\n\n" << std::endl;
 	}
 	else {
@@ -155,7 +155,7 @@ void test_initialization(const std::string& filename  ) {
 	dd = ((max - min).norm()) *eps;
 	std::cout << "bounding box \nmin " << min.transpose() << "\nmax" << max.transpose() << std::endl;
 	const FastEnvelope fast_envelope(env_vertices, env_faces, dd);
-	
+
 }
 int main(int argc, char const *argv[]) {
 #ifndef WIN32
@@ -180,6 +180,6 @@ int main(int argc, char const *argv[]) {
 	bool csv_model = true;
 	pure_our_method(query, model, resultfile, scale_ratio, csv_model);
 
-	
+
 	return 0;
 }
