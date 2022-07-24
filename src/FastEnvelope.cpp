@@ -3606,6 +3606,8 @@ namespace fastEnvelope
 		if (i == 1 && j != 0) return true;
 		if (j == 0 && i != 1) return true;
 		if (j == 1 && i != 0) return true;
+		if(i==0&&j==1) return false;
+		if(j==0&&i==1) return false;
 		if (i - j == 1 || j - i == 1) return true;
 		if (i == 2 && j == facesize - 1) return true;
 		if (j == 2 && i == facesize - 1) return true;
