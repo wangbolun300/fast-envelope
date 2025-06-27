@@ -219,7 +219,7 @@ endif()
 
 # Predicates
 include("ipred")
-target_link_libraries(${PROJECT_NAME} PUBLIC indirectPredicates)
+target_link_libraries(${PROJECT_NAME} PRIVATE indirectPredicates)
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	message(WARNING "On CLang, there is no compiler flag which is required for ensuring the correctness of the algorithm.")
 endif()
