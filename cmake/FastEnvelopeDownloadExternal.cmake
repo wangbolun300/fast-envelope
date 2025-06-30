@@ -25,10 +25,17 @@ endfunction()
 
 ## libigl
 function(fast_envelope_download_libigl)
-    fast_envelope_download_project(libigl
-        GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        fc7f4b99415e0b0e3c4109d8e55b7ff6a5fc8b72
+    if(TARGET igl::core)
+    return()
+    endif()
+
+    include(FetchContent)
+    FetchContent_Declare(
+    libigl
+    GIT_REPOSITORY https://github.com/libigl/libigl.git
+    GIT_TAG v2.4.0
     )
+    FetchContent_MakeAvailable(libigl)
 endfunction()
 
 
