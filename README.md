@@ -3,6 +3,9 @@
 ![Build](https://github.com/wangbolun300/fast-envelope/workflows/Build/badge.svg)
 
 ![](bunny.jpg)
+This is the implementation of the paper "Exact and Efficient Polyhedral Envelope Containment Check". Our algorithm conservatively tells you if the distance between a query triangle and a triangle mesh is within a user-specific parameter $\epsilon$, and thus can be used to conservatively/safely reject a triangle that is too far from a triangle mesh. 
+
+Using a polyhedral envelope presentation, our distance bound is a little bit tighter than the traditional Hausdorff distance bound, and our polyhedral-envelope check is exact! It means that if our algorithm returns "true" when checking if a triangle is within $\epsilon$ distance from a triangle mesh, it is also within a Hausdorff distance of $\epsilon$, without any uncertainty caused by numerical instability. Our method is significantly faster than the traditional sampling-based Hausdorff distance prediction methods when $\epsilon$ is small, e.g., $10^{-4}$ of the diagonal length of the axis-aligned bounding box of the reference triangle mesh.
 
 If you use our code, please cite our paper
 ```bibtex
@@ -18,29 +21,29 @@ If you use our code, please cite our paper
 }
 ```
 Please click [HERE](https://cims.nyu.edu/gcl/papers/2020-Fast-Envelope.pdf) to download the paper.
-This is the link of our talk on SIGGRAPH 2020 [https://www.youtube.com/watch?v=_Vm61nlxyBI](https://www.youtube.com/watch?v=_Vm61nlxyBI).
+This is the link to our talk on SIGGRAPH 2020 [https://www.youtube.com/watch?v=_Vm61nlxyBI](https://www.youtube.com/watch?v=_Vm61nlxyBI).
 
-**CGAL**
+**Implementation in CGAL**
 
-A partial reimplementation of the algorithm in this repository which does not use the indirect predicates is available in CGAL 5.3 (https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title36).
+A partial reimplementation of the algorithm in this repository, which does not use the indirect predicates, is available in CGAL 5.3 (https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title36). We still recommend you use our implementation, since our code has been fully tested and evaluated in multiple remeshing applications.
 
 ## Important Note
-There is a compiler flag which is required for ensuring the correctness of the algorithm.
-The flag is not available on clang. The code has been tested on GCC and Windows compiler.
+There is a compiler flag that is required to ensure the correctness of the algorithm.
+The flag is not available on Clang. The code has been tested on GCC and the Windows compiler.
 
 
 # Installation via CMake
- - clone our repository in your dependency folder (or add it as submodule)
- - add this in your main `CMakeLists.txt` file `add_subdirectory` pointing to the directory where you cloned this repository
+ - Clone our repository in your dependency folder (or add it as a submodule)
+ - Add this in your main `CMakeLists.txt` file, `add_subdirectory` pointing to the directory where you cloned this repository
  - link your target with our library `target_link_libraries(<your-target> PUBLIC FastEnvelope)`
 
  ## Note
- Our library requires standard predicates to work, by default we use the fast predicates inside [Geogram](http://alice.loria.fr/software/geogram/doc/html/index.html). If you want to avoid having Geogram as dependency, you can disable it by setting `FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES` to `ON`. The code will be slower.
+ Our library requires standard predicates to work; by default, we use the fast predicates inside [Geogram](http://alice.loria.fr/software/geogram/doc/html/index.html). If you want to avoid having Geogram as a dependency, you can disable it by setting `FAST_ENVELOPE_WITH_GEOGRAM_PSM_PREDICATES` to `ON`. The code will be slower.
 
  # Usage
   - Include `#include <fastenvelope/FastEnvelope.h>`
   - Initialize the envelope checker `FastEnvelope(const std::vector<Vector3>& m_ver, const std::vector<Vector3i>& m_faces, const Scalar eps);` with vertices, connectivity, and envelope size.
-  - Call one of the `is_outside` function with a triangle, point, or segment.
+  - Call one of the `is_outside` functions with a triangle, point, or segment.
 
 
  # Testing
