@@ -25,7 +25,7 @@ This is the link to our talk on SIGGRAPH 2020 [https://www.youtube.com/watch?v=_
 
 **Implementation in CGAL**
 
-A partial reimplementation of the algorithm in this repository, which does not use the indirect predicates, is available in CGAL 5.3 (https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title36). We still recommend you use our implementation, since our code has been fully tested and evaluated in multiple remeshing applications.
+A partial reimplementation of the algorithm in this repository, which does not use the indirect predicates, is available in CGAL 5.3 (https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title36). We still recommend you use our implementation, since our code has been fully tested and evaluated in multiple remeshing applications, including [fTetWild](https://github.com/wildmeshing/fTetWild).
 
 ## Important Note
 There is a compiler flag that is required to ensure the correctness of the algorithm.
