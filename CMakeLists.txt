@@ -137,6 +137,7 @@ else()
 		endif()
 		target_link_libraries(${PROJECT_NAME} PUBLIC igl::core)
 		target_link_libraries(${PROJECT_NAME} PUBLIC igl::predicates)
+		target_include_directories(${PROJECT_NAME} PUBLIC ${THIRD_PARTY_DIR}/libigl/include/igl/predicates)
 	else()
 		# Assume eigen exists in the other lib
 		target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
