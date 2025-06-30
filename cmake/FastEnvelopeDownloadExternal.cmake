@@ -41,12 +41,12 @@ function(fast_envelope_download_cli11)
 endfunction()
 
 ## tbb
-function(fast_envelope_download_tbb)
-    fast_envelope_download_project(tbb
-        GIT_REPOSITORY https://github.com/wjakob/tbb.git
-        GIT_TAG        08b4341a1893a72656467e96137f1f99d0112547
-    )
-endfunction()
+# function(fast_envelope_download_tbb)
+#     fast_envelope_download_project(tbb
+#         GIT_REPOSITORY https://github.com/uxlfoundation/oneTBB.git
+#         GIT_TAG        8acdf22f9ea88feef3c85e520abab683fb2734d7
+#     )
+# endfunction()
 
 
 ## Sanitizers

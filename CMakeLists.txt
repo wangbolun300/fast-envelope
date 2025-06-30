@@ -154,29 +154,8 @@ endif()
 
 
 # TBB
-if(FAST_ENVELOPE_ENABLE_TBB AND NOT TARGET tbb::tbb)
-	fast_envelope_download_tbb()
-	set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
-	set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-	set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
-	set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
-	set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-	set(TBB_NO_DATE ON CACHE BOOL " " FORCE)
-
-	add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
-	set_target_properties(tbb_static PROPERTIES
-		INTERFACE_INCLUDE_DIRECTORIES "${THIRD_PARTY_DIR}/tbb/include"
-	)
-	if(NOT MSVC)
-		set_target_properties(tbb_static PROPERTIES
-			COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-missing-field-initializers -Wno-unused-parameter -Wno-keyword-macro"
-		)
-		set_target_properties(tbb_static PROPERTIES POSITION_INDEPENDENT_CODE ON)
-	endif()
-	target_compile_definitions(tbb_static PUBLIC -DUSE_TBB)
-	add_library(tbb::tbb ALIAS tbb_static)
-
-	set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
+if(FAST_ENVELOPE_ENABLE_TBB AND NOT TARGET TBB::tbb)
+include(tbb)
 endif()
 
 
@@ -308,7 +287,7 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 
 
 	if(FAST_ENVELOPE_ENABLE_TBB)
-		target_link_libraries(${PROJECT_NAME}_bin PUBLIC tbb::tbb)
+		target_link_libraries(${PROJECT_NAME}_bin PUBLIC TBB::tbb)
 	endif()
 	if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
 		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
@@ -329,46 +308,13 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 
 
 		if(FAST_ENVELOPE_ENABLE_TBB)
-			target_link_libraries(${PROJECT_NAME}_test PUBLIC tbb::tbb)
+			target_link_libraries(${PROJECT_NAME}_test PUBLIC TBB::tbb)
 		endif()
 		if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
 			set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_test)
 		endif()
 	endif()
 	###################################################################
-	#add_executable(${PROJECT_NAME}_bin app/main.cpp)
-	#target_sources(FastEnvelope_bin PRIVATE ${SOURCES})
-	#
-	#target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
-	#
-	#
-	#if(NOT FAST_ENVELOPE_WITH_GEOGRAM_PREDICATES)
-	#	# Geogram
-	#	fast_envelope_download_geogram()
-	#	include(geogram)
-	#
-	#endif()
-	#target_link_libraries(${PROJECT_NAME}_bin PUBLIC geogram)
-	#target_link_libraries(${PROJECT_NAME}_bin
-	#	PUBLIC
-	#		${PROJECT_NAME}
-	#		warnings::all
-	#)
-	#
-	#if(FAST_ENVELOPE_WITH_SANITIZERS)
-	#	add_sanitizers(${PROJECT_NAME}_bin)
-	#endif()
-	#
-	#
-	#if(FAST_ENVELOPE_ENABLE_TBB)
-	#	target_link_libraries(${PROJECT_NAME}_bin PUBLIC tbb::tbb)
-	#endif()
-	#
-	#if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
-	#	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
-	#endif()
-
-	##########################################################################################################
 
 
 
