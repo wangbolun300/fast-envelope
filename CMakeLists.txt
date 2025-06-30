@@ -252,7 +252,13 @@ if(FAST_ENVELOPE_TOPLEVEL_PROJECT)
 		# Geogram
 		fast_envelope_download_geogram()
 		include(geogram)
-		target_link_libraries(${PROJECT_NAME}_app PUBLIC geogram)
+		if(TARGET geogram)
+			target_link_libraries(${PROJECT_NAME}_app PUBLIC geogram)
+		elseif(TARGET geogram::geogram)
+			target_link_libraries(${PROJECT_NAME}_app PUBLIC geogram::geogram)
+		else()
+			MESSAGE(FATAL_ERROR "Unable to get geogram or geogram::geogram targets")
+		endif()
 	endif()
 	target_link_libraries(${PROJECT_NAME}_app
 		PUBLIC
